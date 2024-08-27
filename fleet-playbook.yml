@@ -1,0 +1,17 @@
+content:
+  sources:
+    - url: https://github.com/rancher/fleet-product-docs.git
+      branches: [main]
+
+ui:
+  bundle:
+    url: https://gitlab.com/antora/antora-ui-default/-/jobs/artifacts/HEAD/raw/build/ui-bundle.zip?job=bundle-stable
+    snapshot: true
+  supplemental_files: ./susecom-2023
+
+# Description: SUSE UI bundle which needs to be configured
+#ui:
+#  bundle:
+#    url: https://github.com/rancher/product-docs-ui/blob/main/build/ui-bundle.zip?raw=true
+#    snapshot: true
+#  supplemental_files: ./product-docs-supplemental-files

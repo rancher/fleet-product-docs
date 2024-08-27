@@ -1,0 +1,7 @@
+name: fleet-documentation
+title: Fleet Documentation
+version: main
+display_version: 'v0.10'
+start_page: ROOT:index.adoc
+nav:
+  - modules/ROOT/v0.10-sidebars.adoc
