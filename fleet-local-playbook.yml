@@ -1,12 +1,12 @@
 site:
   title: Fleet Documentation
   url: /
-  start_page: main@fleet-documentation::index.adoc
+  start_page: v0.10@fleet-documentation::index.adoc
 
 content:
   sources:
     - url: ./
-      branches: [main]
+      start_paths: [versions/v0.9, versions/v0.10]
 
 # Description: SUSE UI bundle
 ui:
