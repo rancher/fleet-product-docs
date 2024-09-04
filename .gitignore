@@ -1,2 +1,5 @@
-build/
+tmp/
+docs/
 node_modules/
+build/
+.vscode/
