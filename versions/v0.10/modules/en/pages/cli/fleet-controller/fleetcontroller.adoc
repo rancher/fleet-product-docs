@@ -1,7 +1,7 @@
-== fleet-manager
+== fleetcontroller
 
 ----
-fleet-manager [flags]
+fleetcontroller [flags]
 ----
 
 === Options
@@ -9,9 +9,8 @@ fleet-manager [flags]
 ----
       --debug                             Turn on debug logging
       --debug-level int                   If debugging is enabled, set klog -v=X
-      --disable-gitops                    disable gitops components
       --disable-metrics                   disable metrics
-  -h, --help                              help for fleet-manager
+  -h, --help                              help for fleetcontroller
       --kubeconfig string                 Paths to a kubeconfig. Only required if out-of-cluster.
       --namespace string                  namespace to watch (default "cattle-fleet-system")
       --shard-id string                   only manage resources labeled with a specific shard ID
@@ -24,6 +23,6 @@ fleet-manager [flags]
 
 === SEE ALSO
 
-* xref:./fleet-manager_agentmanagement.adoc[fleet-manager agentmanagement]	 -
-* xref:./fleet-manager_cleanup.adoc[fleet-manager cleanup]	 -
-* xref:./fleet-manager_gitjob.adoc[fleet-manager gitjob]	 -
+* xref:./fleetcontroller_agentmanagement.adoc[fleetcontroller agentmanagement]	 -
+* xref:./fleetcontroller_cleanup.adoc[fleetcontroller cleanup]	 -
+* xref:./fleetcontroller_gitjob.adoc[fleetcontroller gitjob]	 -

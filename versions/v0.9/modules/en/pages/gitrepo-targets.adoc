@@ -161,22 +161,22 @@ NOTE: Configuration management is not limited to deployments but can be expanded
 
 === Supported Customizations
 
-* xref:./ref-crds#_bundledeploymentoptions[DefaultNamespace]
-* xref:./ref-crds#_bundledeploymentoptions[ForceSyncGeneration]
-* xref:./ref-crds#_bundledeploymentoptions[KeepResources]
-* xref:./ref-crds#_bundledeploymentoptions[ServiceAccount]
-* xref:./ref-crds#_bundledeploymentoptions[TargetNamespace]
-* xref:./ref-crds#_helmoptions[Helm.Atomic]
-* xref:./ref-crds#_helmoptions[Helm.Chart]
-* xref:./ref-crds#_helmoptions[Helm.DisablePreProcess]
-* xref:./ref-crds#_helmoptions[Helm.Force]
-* xref:./ref-crds#_helmoptions[Helm.ReleaseName]
-* xref:./ref-crds#_helmoptions[Helm.Repo]
-* xref:./ref-crds#_helmoptions[Helm.TakeOwnership]
-* xref:./ref-crds#_helmoptions[Helm.TimeoutSeconds]
-* xref:./ref-crds#_helmoptions[Helm.ValuesFrom]
-* xref:./ref-crds#_helmoptions[Helm.Values]
-* xref:./ref-crds#_helmoptions[Helm.Version]
+* link:/ref-crds#bundledeploymentoptions[DefaultNamespace]
+* link:/ref-crds#bundledeploymentoptions[ForceSyncGeneration]
+* link:/ref-crds#bundledeploymentoptions[KeepResources]
+* link:/ref-crds#bundledeploymentoptions[ServiceAccount]
+* link:/ref-crds#bundledeploymentoptions[TargetNamespace]
+* link:/ref-crds#helmoptions[Helm.Atomic]
+* link:/ref-crds#helmoptions[Helm.Chart]
+* link:/ref-crds#helmoptions[Helm.DisablePreProcess]
+* link:/ref-crds#helmoptions[Helm.Force]
+* link:/ref-crds#helmoptions[Helm.ReleaseName]
+* link:/ref-crds#helmoptions[Helm.Repo]
+* link:/ref-crds#helmoptions[Helm.TakeOwnership]
+* link:/ref-crds#helmoptions[Helm.TimeoutSeconds]
+* link:/ref-crds#helmoptions[Helm.ValuesFrom]
+* link:/ref-crds#helmoptions[Helm.Values]
+* link:/ref-crds#helmoptions[Helm.Version]
 +
 
 [CAUTION]
@@ -191,10 +191,10 @@ etcd's configured maximum blob size. See https://github.com/rancher/fleet/issues
 ====
 
 
-* xref:./ref-crds#_helmoptions[Helm.WaitForJobs]
-* xref:./ref-crds#_kustomizeoptions[Kustomize.Dir]
-* xref:./ref-crds#_yamloptions[YAML.Overlays]
-* xref:./ref-crds#_diffoptions[Diff.ComparePatches]
+* link:/ref-crds#helmoptions[Helm.WaitForJobs]
+* link:/ref-crds#kustomizeoptions[Kustomize.Dir]
+* link:/ref-crds#yamloptions[YAML.Overlays]
+* link:/ref-crds#diffoptions[Diff.ComparePatches]
 
 == Additional Examples
 

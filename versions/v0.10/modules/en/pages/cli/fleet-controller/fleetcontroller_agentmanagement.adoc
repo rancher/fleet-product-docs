@@ -1,7 +1,7 @@
-== fleet-manager agentmanagement
+== fleetcontroller agentmanagement
 
 ----
-fleet-manager agentmanagement [flags]
+fleetcontroller agentmanagement [flags]
 ----
 
 === Options
@@ -22,4 +22,4 @@ fleet-manager agentmanagement [flags]
 
 === SEE ALSO
 
-* xref:./fleet-manager.adoc[fleet-manager]	 -
+* xref:./fleetcontroller.adoc[fleetcontroller]	 -
