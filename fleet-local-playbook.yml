@@ -1,7 +1,7 @@
 site:
-  title: Fleet Documentation
+  title: Fleet
   url: /
-  start_page: v0.10@fleet-documentation::index.adoc
+  start_page: v0.10@fleet-documentation:en:index.adoc
 
 content:
   sources:
