@@ -6,7 +6,7 @@ site:
 content:
   sources:
     - url: ./
-      start_paths: [versions/v0.9, versions/v0.10]
+      start_paths: [versions/v0.10, versions/v0.9]
 
 # Description: SUSE UI bundle
 ui:
