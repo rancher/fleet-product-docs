@@ -40,7 +40,7 @@ You can configure https://kubernetes.io/docs/concepts/services-networking/ingres
 [discrete]
 === 2. Go to your webhook provider and configure the webhook callback url. Here is a Github example.
 
-image::/img/webhook.png[]
+image::webhook.png[]
 
 Configuring a secret is optional. This is used to validate the webhook payload as the payload should not be trusted by default.
 If your webhook server is publicly accessible to the Internet, then it is recommended to configure the secret. If you do configure the

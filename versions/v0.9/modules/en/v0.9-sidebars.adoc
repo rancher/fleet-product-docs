@@ -40,4 +40,10 @@
 ** xref:ref-bundle.adoc[Bundle Resource]
 * xref:troubleshooting.adoc[Troubleshooting]
 * Changelog
-** xref:v0.9.0.adoc[v0.9.0]
+** xref:changelogs/changelogs/v0.9.0.adoc[v0.9.0]
+** xref:changelogs/changelogs/v0.9.1.adoc[v0.9.1]
+** xref:changelogs/changelogs/v0.9.2.adoc[v0.9.2]
+** xref:changelogs/changelogs/v0.9.3.adoc[v0.9.3]
+** xref:changelogs/changelogs/v0.9.4.adoc[v0.9.4]
+** xref:changelogs/changelogs/v0.9.5.adoc[v0.9.5]
+** xref:changelogs/changelogs/v0.9.6.adoc[v0.9.6]

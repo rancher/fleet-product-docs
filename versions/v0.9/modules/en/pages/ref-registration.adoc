@@ -47,10 +47,10 @@ It's important to note that there are multiple ways to start this:
 * Creating a `Cluster` resource with a kubeconfig. Rancher does this for downstream clusters. See link:./cluster-registration.adoc#manager-initiated[manager-initiated registration].
 * Create a `ClusterRegistrationToken` resource, optionally create a `Cluster` resource for a pre-defined (`clientID`) cluster. See link:./cluster-registration.adoc#agent-initiated[agent-initiated registration].
 
-image::/img/FleetRegistration.svg[Registration]
+image::FleetRegistration.svg[Registration]
 
 === Secrets
 
 This diagram shows the resources created during registration and focuses on the k8s API server configuration.
 
-image::/img/FleetRegistrationSecrets.svg[Registration Secrets]
+image::FleetRegistrationSecrets.svg[Registration Secrets]

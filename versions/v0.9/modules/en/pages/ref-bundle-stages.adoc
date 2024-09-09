@@ -15,4 +15,4 @@ NOTE: The job pod with the image name `rancher/tekton-utils` will be under the s
 
 This diagram shows the different rendering stages a bundle goes through until deployment.
 
-image::/img/FleetBundleStages.svg[Bundle Stages]
+image::FleetBundleStages.svg[Bundle Stages]
