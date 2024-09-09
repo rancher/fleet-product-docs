@@ -1,79 +1,80 @@
 = Custom Resources Spec
 :doctype: book
 
-* <<bundle,Bundle>>
-* <<bundledeployment,BundleDeployment>>
-* <<bundlenamespacemapping,BundleNamespaceMapping>>
-* <<cluster,Cluster>>
-* <<clustergroup,ClusterGroup>>
-* <<clusterregistration,ClusterRegistration>>
-* <<clusterregistrationtoken,ClusterRegistrationToken>>
-* <<content,Content>>
-* <<gitrepo,GitRepo>>
-* <<gitreporestriction,GitRepoRestriction>>
-* <<imagescan,ImageScan>>
+== Resources
 
-= Sub Resources
+* <<Bundle,Bundle>>
+* <<BundleDeployment,BundleDeployment>>
+* <<BundleNamespaceMapping,BundleNamespaceMapping>>
+* <<Cluster,Cluster>>
+* <<ClusterGroup,ClusterGroup>>
+* <<ClusterRegistration,ClusterRegistration>>
+* <<ClusterRegistrationToken,ClusterRegistrationToken>>
+* <<Content,Content>>
+* <<GitRepo,GitRepo>>
+* <<GitRepoRestriction,GitRepoRestriction>>
+* <<ImageScan,ImageScan>>
 
-* <<bundledisplay,BundleDisplay>>
-* <<bundleref,BundleRef>>
-* <<bundleresource,BundleResource>>
-* <<bundlespec,BundleSpec>>
-* <<bundlestatus,BundleStatus>>
-* <<bundlesummary,BundleSummary>>
-* <<bundletarget,BundleTarget>>
-* <<bundletargetrestriction,BundleTargetRestriction>>
-* <<nonreadyresource,NonReadyResource>>
-* <<partition,Partition>>
-* <<partitionstatus,PartitionStatus>>
-* <<resourcekey,ResourceKey>>
-* <<rolloutstrategy,RolloutStrategy>>
-* <<bundledeploymentdisplay,BundleDeploymentDisplay>>
-* <<bundledeploymentoptions,BundleDeploymentOptions>>
-* <<bundledeploymentresource,BundleDeploymentResource>>
-* <<bundledeploymentspec,BundleDeploymentSpec>>
-* <<bundledeploymentstatus,BundleDeploymentStatus>>
-* <<comparepatch,ComparePatch>>
-* <<configmapkeyselector,ConfigMapKeySelector>>
-* <<diffoptions,DiffOptions>>
-* <<helmoptions,HelmOptions>>
-* <<ignoreoptions,IgnoreOptions>>
-* <<kustomizeoptions,KustomizeOptions>>
-* <<localobjectreference,LocalObjectReference>>
-* <<modifiedstatus,ModifiedStatus>>
-* <<nonreadystatus,NonReadyStatus>>
-* <<operation,Operation>>
-* <<secretkeyselector,SecretKeySelector>>
-* <<valuesfrom,ValuesFrom>>
-* <<yamloptions,YAMLOptions>>
-* <<agentstatus,AgentStatus>>
-* <<clusterdisplay,ClusterDisplay>>
-* <<clusterspec,ClusterSpec>>
-* <<clusterstatus,ClusterStatus>>
-* <<clustergroupdisplay,ClusterGroupDisplay>>
-* <<clustergroupspec,ClusterGroupSpec>>
-* <<clustergroupstatus,ClusterGroupStatus>>
-* <<clusterregistrationspec,ClusterRegistrationSpec>>
-* <<clusterregistrationstatus,ClusterRegistrationStatus>>
-* <<clusterregistrationtokenspec,ClusterRegistrationTokenSpec>>
-* <<clusterregistrationtokenstatus,ClusterRegistrationTokenStatus>>
-* <<commitspec,CommitSpec>>
-* <<correctdrift,CorrectDrift>>
-* <<gitrepodisplay,GitRepoDisplay>>
-* <<gitreporesource,GitRepoResource>>
-* <<gitreporesourcecounts,GitRepoResourceCounts>>
-* <<gitrepospec,GitRepoSpec>>
-* <<gitrepostatus,GitRepoStatus>>
-* <<gittarget,GitTarget>>
-* <<resourceperclusterstate,ResourcePerClusterState>>
-* <<alphabeticalpolicy,AlphabeticalPolicy>>
-* <<imagepolicychoice,ImagePolicyChoice>>
-* <<imagescanspec,ImageScanSpec>>
-* <<imagescanstatus,ImageScanStatus>>
-* <<semverpolicy,SemVerPolicy>>
+== Sub Resources
 
-[discrete]
-==== Bundle
+* <<BundleDisplay,BundleDisplay>>
+* <<BundleRef,BundleRef>>
+* <<BundleResource,BundleResource>>
+* <<BundleSpec,BundleSpec>>
+* <<BundleStatus,BundleStatus>>
+* <<BundleSummary,BundleSummary>>
+* <<BundleTarget,BundleTarget>>
+* <<BundleTargetRestriction,BundleTargetRestriction>>
+* <<NonReadyResource,NonReadyResource>>
+* <<Partition,Partition>>
+* <<PartitionStatus,PartitionStatus>>
+* <<ResourceKey,ResourceKey>>
+* <<RolloutStrategy,RolloutStrategy>>
+* <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+* <<BundleDeploymentOptions,BundleDeploymentOptions>>
+* <<BundleDeploymentResource,BundleDeploymentResource>>
+* <<BundleDeploymentSpec,BundleDeploymentSpec>>
+* <<BundleDeploymentStatus,BundleDeploymentStatus>>
+* <<ComparePatch,ComparePatch>>
+* <<ConfigMapKeySelector,ConfigMapKeySelector>>
+* <<DiffOptions,DiffOptions>>
+* <<HelmOptions,HelmOptions>>
+* <<IgnoreOptions,IgnoreOptions>>
+* <<KustomizeOptions,KustomizeOptions>>
+* <<LocalObjectReference,LocalObjectReference>>
+* <<ModifiedStatus,ModifiedStatus>>
+* <<NonReadyStatus,NonReadyStatus>>
+* <<Operation,Operation>>
+* <<SecretKeySelector,SecretKeySelector>>
+* <<ValuesFrom,ValuesFrom>>
+* <<YAMLOptions,YAMLOptions>>
+* <<AgentStatus,AgentStatus>>
+* <<ClusterDisplay,ClusterDisplay>>
+* <<ClusterSpec,ClusterSpec>>
+* <<ClusterStatus,ClusterStatus>>
+* <<ClusterGroupDisplay,ClusterGroupDisplay>>
+* <<ClusterGroupSpec,ClusterGroupSpec>>
+* <<ClusterGroupStatus,ClusterGroupStatus>>
+* <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+* <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+* <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+* <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+* <<CommitSpec,CommitSpec>>
+* <<CorrectDrift,CorrectDrift>>
+* <<GitRepoDisplay,GitRepoDisplay>>
+* <<GitRepoResource,GitRepoResource>>
+* <<GitRepoResourceCounts,GitRepoResourceCounts>>
+* <<GitRepoSpec,GitRepoSpec>>
+* <<GitRepoStatus,GitRepoStatus>>
+* <<GitTarget,GitTarget>>
+* <<ResourcePerClusterState,ResourcePerClusterState>>
+* <<AlphabeticalPolicy,AlphabeticalPolicy>>
+* <<ImagePolicyChoice,ImagePolicyChoice>>
+* <<ImageScanSpec,ImageScanSpec>>
+* <<ImageScanStatus,ImageScanStatus>>
+* <<SemVerPolicy,SemVerPolicy>>
+
+=== Bundle
 
 Bundle contains the resources of an application and its deployment options. It will be deployed as a Helm chart to target clusters.\n\nWhen a GitRepo is scanned it will produce one or more bundles. Bundles are a collection of resources that get deployed to one or more cluster(s). Bundle is the fundamental deployment unit used in Fleet. The contents of a Bundle may be Kubernetes manifests, Kustomize configuration, or Helm charts. Regardless of the source the contents are dynamically rendered into a Helm chart by the agent and installed into the downstream cluster as a Helm release.
 
@@ -98,8 +99,7 @@ Bundle contains the resources of an application and its deployment options. It w
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDisplay
+=== BundleDisplay
 
 BundleDisplay contains the number of ready, desiredready clusters and a summary state for the bundle.
 
@@ -119,8 +119,7 @@ BundleDisplay contains the number of ready, desiredready clusters and a summary 
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleRef
+=== BundleRef
 
 |===
 | Field | Description | Scheme | Required
@@ -138,8 +137,8 @@ BundleDisplay contains the number of ready, desiredready clusters and a summary 
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleResource
+
+=== BundleResource
 
 BundleResource represents the content of a single resource from the bundle, like a YAML manifest.
 
@@ -164,8 +163,8 @@ BundleResource represents the content of a single resource from the bundle, like
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleSpec
+
+=== BundleSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -203,8 +202,8 @@ BundleResource represents the content of a single resource from the bundle, like
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleStatus
+
+=== BundleStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -272,8 +271,8 @@ BundleResource represents the content of a single resource from the bundle, like
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleSummary
+
+=== BundleSummary
 
 BundleSummary contains the number of bundle deployments in each state and a list of non-ready resources. It is used in the bundle, clustergroup, cluster and gitrepo status.
 
@@ -328,8 +327,8 @@ BundleSummary contains the number of bundle deployments in each state and a list
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleTarget
+
+=== BundleTarget
 
 BundleTarget declares clusters to deploy to. Fleet will merge the BundleDeploymentOptions from customizations into this struct.
 
@@ -369,8 +368,8 @@ BundleTarget declares clusters to deploy to. Fleet will merge the BundleDeployme
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleTargetRestriction
+
+=== BundleTargetRestriction
 
 BundleTargetRestriction is used internally by Fleet and should not be modified. It acts as an allow list, to prevent the creation of BundleDeployments from Targets created by TargetCustomizations in fleet.yaml.
 
@@ -405,8 +404,8 @@ BundleTargetRestriction is used internally by Fleet and should not be modified. 
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== NonReadyResource
+
+=== NonReadyResource
 
 NonReadyResource contains information about a bundle that is not ready for a given state like "ErrApplied". It contains a list of non-ready or modified resources and their states.
 
@@ -441,8 +440,8 @@ NonReadyResource contains information about a bundle that is not ready for a giv
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== Partition
+
+=== Partition
 
 Partition defines a separate rollout strategy for a set of clusters.
 
@@ -482,8 +481,8 @@ Partition defines a separate rollout strategy for a set of clusters.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== PartitionStatus
+
+=== PartitionStatus
 
 PartitionStatus is the status of a single rollout partition.
 
@@ -518,8 +517,8 @@ PartitionStatus is the status of a single rollout partition.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ResourceKey
+
+=== ResourceKey
 
 ResourceKey lists resources, which will likely be deployed.
 
@@ -549,8 +548,8 @@ ResourceKey lists resources, which will likely be deployed.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== RolloutStrategy
+
+=== RolloutStrategy
 
 RolloverStrategy controls the rollout of the bundle across clusters.
 
@@ -580,8 +579,8 @@ RolloverStrategy controls the rollout of the bundle across clusters.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDeployment
+
+=== BundleDeployment
 
 BundleDeployment is used internally by Fleet and should not be used directly. When a Bundle is deployed to a cluster an instance of a Bundle is called a BundleDeployment. A BundleDeployment represents the state of that Bundle on a specific cluster with its cluster-specific customizations. The Fleet agent is only aware of BundleDeployment resources that are created for the cluster the agent is managing.
 
@@ -606,8 +605,8 @@ BundleDeployment is used internally by Fleet and should not be used directly. Wh
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDeploymentDisplay
+
+=== BundleDeploymentDisplay
 
 |===
 | Field | Description | Scheme | Required
@@ -630,8 +629,8 @@ BundleDeployment is used internally by Fleet and should not be used directly. Wh
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDeploymentOptions
+
+=== BundleDeploymentOptions
 
 |===
 | Field | Description | Scheme | Required
@@ -704,8 +703,8 @@ BundleDeployment is used internally by Fleet and should not be used directly. Wh
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDeploymentResource
+
+=== BundleDeploymentResource
 
 BundleDeploymentResource contains the metadata of a deployed resource.
 
@@ -740,8 +739,8 @@ BundleDeploymentResource contains the metadata of a deployed resource.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDeploymentSpec
+
+=== BundleDeploymentSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -784,8 +783,8 @@ BundleDeploymentResource contains the metadata of a deployed resource.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleDeploymentStatus
+
+=== BundleDeploymentStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -843,8 +842,8 @@ BundleDeploymentResource contains the metadata of a deployed resource.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ComparePatch
+
+=== ComparePatch
 
 ComparePatch matches a resource and removes fields from the check for modifications.
 
@@ -884,8 +883,8 @@ ComparePatch matches a resource and removes fields from the check for modificati
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ConfigMapKeySelector
+
+=== ConfigMapKeySelector
 
 |===
 | Field | Description | Scheme | Required
@@ -903,8 +902,8 @@ ComparePatch matches a resource and removes fields from the check for modificati
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== DiffOptions
+
+=== DiffOptions
 
 |===
 | Field | Description | Scheme | Required
@@ -917,8 +916,8 @@ ComparePatch matches a resource and removes fields from the check for modificati
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== HelmOptions
+
+=== HelmOptions
 
 HelmOptions for the deployment. For Helm-based bundles, all options can be used, otherwise some options are ignored. For example ReleaseName works with all bundle types.
 
@@ -1008,8 +1007,8 @@ HelmOptions for the deployment. For Helm-based bundles, all options can be used,
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== IgnoreOptions
+
+=== IgnoreOptions
 
 IgnoreOptions defines conditions to be ignored when monitoring the Bundle.
 
@@ -1024,8 +1023,8 @@ IgnoreOptions defines conditions to be ignored when monitoring the Bundle.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== KustomizeOptions
+
+=== KustomizeOptions
 
 KustomizeOptions for a deployment.
 
@@ -1040,8 +1039,8 @@ KustomizeOptions for a deployment.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== LocalObjectReference
+
+=== LocalObjectReference
 
 |===
 | Field | Description | Scheme | Required
@@ -1054,8 +1053,8 @@ KustomizeOptions for a deployment.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ModifiedStatus
+
+=== ModifiedStatus
 
 ModifiedStatus is used to report the status of a resource that is modified. It indicates if the modification was a create, a delete or a patch.
 
@@ -1100,8 +1099,8 @@ ModifiedStatus is used to report the status of a resource that is modified. It i
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== NonReadyStatus
+
+=== NonReadyStatus
 
 NonReadyStatus is used to report the status of a resource that is not ready. It includes a summary.
 
@@ -1141,8 +1140,8 @@ NonReadyStatus is used to report the status of a resource that is not ready. It 
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== Operation
+
+=== Operation
 
 Operation of a ComparePatch, usually "remove".
 
@@ -1167,8 +1166,8 @@ Operation of a ComparePatch, usually "remove".
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== SecretKeySelector
+
+=== SecretKeySelector
 
 |===
 | Field | Description | Scheme | Required
@@ -1186,8 +1185,8 @@ Operation of a ComparePatch, usually "remove".
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ValuesFrom
+
+=== ValuesFrom
 
 Define helm values that can come from configmap, secret or external. Credit: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
 
@@ -1207,8 +1206,8 @@ Define helm values that can come from configmap, secret or external. Credit: htt
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== YAMLOptions
+
+=== YAMLOptions
 
 YAMLOptions, if using raw YAML these are names that map to overlays/\{name} files that will be used to replace or patch a resource.
 
@@ -1223,8 +1222,8 @@ YAMLOptions, if using raw YAML these are names that map to overlays/\{name} file
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== BundleNamespaceMapping
+
+=== BundleNamespaceMapping
 
 BundleNamespaceMapping maps bundles to clusters in other namespaces.
 
@@ -1249,8 +1248,8 @@ BundleNamespaceMapping maps bundles to clusters in other namespaces.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== AgentStatus
+
+=== AgentStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -1288,8 +1287,8 @@ BundleNamespaceMapping maps bundles to clusters in other namespaces.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== Cluster
+
+=== Cluster
 
 Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted clusters. Clusters to which Fleet deploys manifests are referred to as downstream clusters. In the single cluster use case, the Fleet manager Kubernetes cluster is both the manager and downstream cluster at the same time.
 
@@ -1314,8 +1313,8 @@ Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted c
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterDisplay
+
+=== ClusterDisplay
 
 |===
 | Field | Description | Scheme | Required
@@ -1343,8 +1342,8 @@ Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted c
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterSpec
+
+=== ClusterSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -1412,8 +1411,8 @@ Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted c
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterStatus
+
+=== ClusterStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -1521,8 +1520,8 @@ Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted c
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterGroup
+
+=== ClusterGroup
 
 ClusterGroup is a re-usable selector to target a group of clusters.
 
@@ -1547,8 +1546,8 @@ ClusterGroup is a re-usable selector to target a group of clusters.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterGroupDisplay
+
+=== ClusterGroupDisplay
 
 |===
 | Field | Description | Scheme | Required
@@ -1571,8 +1570,8 @@ ClusterGroup is a re-usable selector to target a group of clusters.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterGroupSpec
+
+=== ClusterGroupSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -1585,8 +1584,8 @@ ClusterGroup is a re-usable selector to target a group of clusters.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterGroupStatus
+
+=== ClusterGroupStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -1629,8 +1628,8 @@ ClusterGroup is a re-usable selector to target a group of clusters.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterRegistration
+
+=== ClusterRegistration
 
 ClusterRegistration is used internally by Fleet and should not be used directly.
 
@@ -1655,8 +1654,8 @@ ClusterRegistration is used internally by Fleet and should not be used directly.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterRegistrationSpec
+
+=== ClusterRegistrationSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -1679,8 +1678,8 @@ ClusterRegistration is used internally by Fleet and should not be used directly.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterRegistrationStatus
+
+=== ClusterRegistrationStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -1698,8 +1697,8 @@ ClusterRegistration is used internally by Fleet and should not be used directly.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterRegistrationToken
+
+=== ClusterRegistrationToken
 
 ClusterRegistrationToken is used by agents to register a new cluster.
 
@@ -1724,8 +1723,8 @@ ClusterRegistrationToken is used by agents to register a new cluster.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterRegistrationTokenSpec
+
+=== ClusterRegistrationTokenSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -1738,8 +1737,8 @@ ClusterRegistrationToken is used by agents to register a new cluster.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ClusterRegistrationTokenStatus
+
+=== ClusterRegistrationTokenStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -1757,8 +1756,8 @@ ClusterRegistrationToken is used by agents to register a new cluster.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== Content
+
+=== Content
 
 Content is used internally by Fleet and should not be used directly. It contains the resources from a bundle for a specific target cluster.
 
@@ -1778,8 +1777,8 @@ Content is used internally by Fleet and should not be used directly. It contains
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== CommitSpec
+
+=== CommitSpec
 
 CommitSpec specifies how to commit changes to the git repository
 
@@ -1804,8 +1803,8 @@ CommitSpec specifies how to commit changes to the git repository
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== CorrectDrift
+
+=== CorrectDrift
 
 |===
 | Field | Description | Scheme | Required
@@ -1828,8 +1827,8 @@ CommitSpec specifies how to commit changes to the git repository
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepo
+
+=== GitRepo
 
 GitRepo describes a git repository that is watched by Fleet. The resource contains the necessary information to deploy the repo, or parts of it, to target clusters.
 
@@ -1854,8 +1853,8 @@ GitRepo describes a git repository that is watched by Fleet. The resource contai
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepoDisplay
+
+=== GitRepoDisplay
 
 |===
 | Field | Description | Scheme | Required
@@ -1883,8 +1882,8 @@ GitRepo describes a git repository that is watched by Fleet. The resource contai
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepoResource
+
+=== GitRepoResource
 
 GitRepoResource contains metadata about the resources of a bundle.
 
@@ -1954,8 +1953,8 @@ GitRepoResource contains metadata about the resources of a bundle.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepoResourceCounts
+
+=== GitRepoResourceCounts
 
 GitRepoResourceCounts contains the number of resources in each state.
 
@@ -2005,8 +2004,8 @@ GitRepoResourceCounts contains the number of resources in each state.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepoSpec
+
+=== GitRepoSpec
 
 |===
 | Field | Description | Scheme | Required
@@ -2114,8 +2113,8 @@ GitRepoResourceCounts contains the number of resources in each state.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepoStatus
+
+=== GitRepoStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -2183,8 +2182,8 @@ GitRepoResourceCounts contains the number of resources in each state.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitTarget
+
+=== GitTarget
 
 GitTarget is a cluster or cluster group to deploy to.
 
@@ -2219,8 +2218,8 @@ GitTarget is a cluster or cluster group to deploy to.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ResourcePerClusterState
+
+=== ResourcePerClusterState
 
 ResourcePerClusterState is generated for each non-ready resource of the bundles.
 
@@ -2260,8 +2259,8 @@ ResourcePerClusterState is generated for each non-ready resource of the bundles.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== GitRepoRestriction
+
+=== GitRepoRestriction
 
 GitRepoRestriction is a resource that can optionally be used to restrict the options of GitRepos in the same namespace.
 
@@ -2306,8 +2305,8 @@ GitRepoRestriction is a resource that can optionally be used to restrict the opt
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== AlphabeticalPolicy
+
+=== AlphabeticalPolicy
 
 AlphabeticalPolicy specifies a alphabetical ordering policy.
 
@@ -2322,8 +2321,8 @@ AlphabeticalPolicy specifies a alphabetical ordering policy.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ImagePolicyChoice
+
+=== ImagePolicyChoice
 
 ImagePolicyChoice is a union of all the types of policy that can be supplied.
 
@@ -2343,8 +2342,8 @@ ImagePolicyChoice is a union of all the types of policy that can be supplied.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ImageScan
+
+=== ImageScan
 
 |===
 | Field | Description | Scheme | Required
@@ -2367,8 +2366,8 @@ ImagePolicyChoice is a union of all the types of policy that can be supplied.
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ImageScanSpec
+
+=== ImageScanSpec
 
 API is taken from https://github.com/fluxcd/image-reflector-controller
 
@@ -2413,8 +2412,8 @@ API is taken from https://github.com/fluxcd/image-reflector-controller
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== ImageScanStatus
+
+=== ImageScanStatus
 
 |===
 | Field | Description | Scheme | Required
@@ -2457,8 +2456,8 @@ API is taken from https://github.com/fluxcd/image-reflector-controller
 
 <<custom-resources,Back to Custom Resources>>
 
-[discrete]
-==== SemVerPolicy
+
+=== SemVerPolicy
 
 SemVerPolicy specifies a semantic version policy.
 
