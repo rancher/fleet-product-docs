@@ -1,0 +1,31 @@
+= v0.9.2
+:date: 2024-03-22 15:49:16 +0000 UTC
+
+* (rancherio-gh-m) released this 2024-03-22 15:49:16 +0000 UTC*
+
+== Description
+
+== What's Changed
+
+* [0.9] Revert trigger rework 0.9 by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2258[#2258]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.1...v0.9.2[+++<tt>+++v0.9.1\...v0.9.2+++</tt>+++]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.2/sha256sum-amd64.txt[sha256sum-amd64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleetcontroller-windows-amd64.exe[fleetcontroller-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleetagent-linux-amd64[fleetagent-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleet-crd-0.9.2.tgz[fleet-crd-0.9.2.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleet-agent-0.9.2.tgz[fleet-agent-0.9.2.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleet-0.9.2.tgz[fleet-0.9.2.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/sha256sum-arm64.txt[sha256sum-arm64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.2/fleet-linux-arm64[fleet-linux-arm64]
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.2[here]_

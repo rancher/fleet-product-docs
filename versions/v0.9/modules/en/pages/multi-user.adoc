@@ -2,7 +2,7 @@
 
 Fleet uses Kubernetes RBAC where possible.
 
-One addition on top of RBAC is the xref:./namespaces.adoc#restricting-gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
+One addition on top of RBAC is the link:./namespaces.adoc#restricting-gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
 
 A multi-user fleet setup looks like this:
 
@@ -12,7 +12,7 @@ upstream cluster, where they can create GitRepo resources
 namespaces on downstream clusters
 * clusters are in a separate namespace
 
-image::FleetSharedClusters.svg[Shared Clusters]
+image::/img/FleetSharedClusters.svg[Shared Clusters]
 
 [CAUTION]
 .important information
@@ -30,7 +30,7 @@ deploy resources without conflicts.
 ====
 
 
-== Example Fleet Standalone
+== Example User
 
 This would create a user 'fleetuser', who can only manage GitRepo resources in the 'project1' namespace.
 
@@ -47,85 +47,11 @@ If we want to give access to multiple namespaces, we can use a single cluster ro
 
 This makes sure, tenants can't interfere with GitRepo resources from other tenants, since they don't have access to their namespaces.
 
-== Example Fleet in Rancher
-
-When a new fleet workspace is created, a corresponding namespace with an identical name is automatically generated within the Rancher local cluster.
-For a user to see and deploy fleet resources in a specific workspace, they need at least the following permissions:
-
-* list/get the `fleetworkspace` cluster-wide resource in the local cluster
-* Permissions to create fleet resources (such as `bundles`, `gitrepos`, ...) in the backing namespace for the workspace in the local cluster.
-
-Let's grant permissions to deploy fleet resources in the `project1` and `project2` fleet workspaces:
-
-* To create the `project1` and `project2` fleet workspaces, you can either do it in the https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#accessing-fleet-in-the-rancher-ui[Rancher UI] or use the following YAML resources:
-
-----
-apiVersion: management.cattle.io/v3
-kind: FleetWorkspace
-metadata:
-  name: project1
-----
-
-----
-apiVersion: management.cattle.io/v3
-kind: FleetWorkspace
-metadata:
-  name: project2
-----
-
-* Create a `GlobalRole` that grants permission to deploy fleet resources in the `project1` and `project2` fleet workspaces:
-
-----
-apiVersion: management.cattle.io/v3
-kind: GlobalRole
-metadata:
-  name: fleet-projects1and2
-namespacedRules:
-  project1:
-    - apiGroups:
-        - fleet.cattle.io
-      resources:
-        - gitrepos
-        - bundles
-        - clusterregistrationtokens
-        - gitreporestrictions
-        - clusters
-        - clustergroups
-      verbs:
-        - '*'
-  project2:
-    - apiGroups:
-        - fleet.cattle.io
-      resources:
-        - gitrepos
-        - bundles
-        - clusterregistrationtokens
-        - gitreporestrictions
-        - clusters
-        - clustergroups
-      verbs:
-        - '*'
-rules:
-  - apiGroups:
-      - management.cattle.io
-    resourceNames:
-      - project1
-      - project2
-    resources:
-      - fleetworkspaces
-    verbs:
-      - '*'
-----
-
-Assign the `GlobalRole` to users or groups, more info can be found in the https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher docs]
-
-The user now has access to the `Continuous Delivery` tab in Rancher and can deploy resources to both the `project1` and `project2` workspaces.
-
 == Allow Access to Clusters
 
 This assumes all GitRepos created by 'fleetuser' have the `team: one` label. Different labels could be used, to select different cluster namespaces.
 
-In each of the user's namespaces, as an admin create a xref:./namespaces.adoc#cross-namespace-deployments[`BundleNamespaceMapping`].
+In each of the user's namespaces, as an admin create a link:./namespaces.adoc#cross-namespace-deployments[`BundleNamespaceMapping`].
 
 ....
 kind: BundleNamespaceMapping

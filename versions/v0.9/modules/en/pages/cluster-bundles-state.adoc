@@ -1,4 +1,4 @@
-= Cluster and Bundle States
+= Cluster and Bundle State
 
 Clusters and Bundles have different states in each phase of applying Bundles.
 

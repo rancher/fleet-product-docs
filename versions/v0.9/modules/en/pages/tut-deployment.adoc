@@ -1,5 +1,9 @@
 :doctype: book
 
+import CodeBlock from '@theme/CodeBlock';
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+
 = Creating a Deployment
 
 To deploy workloads onto downstream clusters, first create a Git repo, then create a GitRepo resource and apply it.

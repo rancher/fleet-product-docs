@@ -1,7 +1,7 @@
-== fleet-manager cleanup
+== fleetcontroller cleanup
 
 ----
-fleet-manager cleanup [flags]
+fleetcontroller cleanup [flags]
 ----
 
 === Options
@@ -21,4 +21,4 @@ fleet-manager cleanup [flags]
 
 === SEE ALSO
 
-* xref:./fleet-manager.adoc[fleet-manager]	 -
+* xref:./fleetcontroller.adoc[fleetcontroller]	 -

@@ -1,0 +1,39 @@
+= v0.9.3
+:date: 2024-04-17 09:34:37 +0000 UTC
+
+* (rancherio-gh-m) released this 2024-04-17 09:34:37 +0000 UTC*
+
+== Description
+
+== Bugfixes
+
+* Prevent creating Content objects if Bundle does not match any target by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2215[#2215]
+
+== What's Changed
+
+* Bump github.com/docker/docker to v23.0.10 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2308[#2308]
+* Bump github.com/containerd/containerd to 1.7.11 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2308[#2308]
+* Bump google.golang.org/protobuf to v1.33.0 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2308[#2308]
+* Bump k8s to 0.28.8 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2310[#2310]
+* Bump Gitjob to v0.9.6 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2320[#2320]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.2...v0.9.3[+++<tt>+++v0.9.2\...v0.9.3+++</tt>+++]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.3/sha256sum-amd64.txt[sha256sum-amd64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleetcontroller-windows-amd64.exe[fleetcontroller-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleetagent-linux-amd64[fleetagent-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleet-crd-0.9.3.tgz[fleet-crd-0.9.3.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleet-agent-0.9.3.tgz[fleet-agent-0.9.3.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleet-0.9.3.tgz[fleet-0.9.3.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/sha256sum-arm64.txt[sha256sum-arm64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.3/fleet-linux-arm64[fleet-linux-arm64]
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.3[here]_

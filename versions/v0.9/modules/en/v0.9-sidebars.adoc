@@ -24,19 +24,13 @@
 ** xref:bundle-add.adoc[Create a Bundle Resource]
 * Reference
 ** CLI
-*** xref:fleet-agent.adoc[fleet-agent]
-*** xref:fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
-*** xref:fleet-agent_register.adoc[fleet-agent register]
-*** xref:fleet.adoc[fleet]
-*** xref:fleet_apply.adoc[fleet apply]
-*** xref:fleet_cleanup.adoc[fleet cleanup]
-*** xref:fleet_deploy.adoc[fleet deploy]
-*** xref:fleet_target.adoc[fleet target]
-*** xref:fleet_test.adoc[fleet test]
-*** xref:fleet-manager.adoc[fleet-manager]
-*** xref:fleet-manager_agentmanagement.adoc[fleet-manager agentmanagement]
-*** xref:fleet-manager_cleanup.adoc[fleet-manager cleanup]
-** xref:ref-status-fields.adoc[Status Fields]
+*** xref:cli/fleet-agent/fleet-agent.adoc[fleet-agent]
+*** fleet-gitjob-cli
+**** xref:cli/fleet-cli/fleet.adoc[fleet]
+**** xref:cli/fleet-cli/fleet_apply.adoc[fleet apply]
+**** xref:cli/fleet-cli/fleet_test.adoc[fleet test]
+*** xref:cli/fleet-controller/fleet-manager.adoc[fleet-manager]
+** xref:ref-status-fields.adoc[Cluster and Bundle State]
 ** xref:ref-registration.adoc[Cluster Registration Internals]
 ** xref:ref-configuration.adoc[Configuration]
 ** xref:ref-resources.adoc[List of Deployed Resources]
@@ -46,4 +40,4 @@
 ** xref:ref-bundle.adoc[Bundle Resource]
 * xref:troubleshooting.adoc[Troubleshooting]
 * Changelog
-** xref:v0.10.0.adoc[v0.10.0]
+** xref:v0.9.0.adoc[v0.9.0]
