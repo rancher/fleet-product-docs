@@ -165,9 +165,11 @@ In the previous example credentials for username `user` will be used for the pat
 
 `caBundle` and `sshPrivateKey` must be base64 encoded.
 
-:::note
+[NOTE]
+====
 If you are using https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher["rancher-backups"] and want this secret to be included the backup, please add the label `resources.cattle.io/backup: true` to the secret. In that case, make sure to encrypt the backup to protect sensitive credentials.
 
-= Troubleshooting
+**Troubleshooting**
 
 See Fleet Troubleshooting section xref:./troubleshooting.adoc[here].
+====
