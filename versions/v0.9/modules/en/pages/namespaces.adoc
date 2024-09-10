@@ -31,7 +31,7 @@ When deploying a Fleet bundle, the specified namespace will automatically be cre
 
 An overview of the xref:./namespaces.adoc[namespaces] used by fleet and their resources.
 
-image::/img/FleetNamespaces.svg[Namespace]
+image::FleetNamespaces.svg[Namespace]
 
 === fleet-local (local workspace, cluster registration namespace)
 

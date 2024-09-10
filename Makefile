@@ -1,7 +1,7 @@
 local:
 	mkdir -p tmp
 	npx antora --version
-	npx antora --stacktrace --log-format=pretty \
+	npx antora --stacktrace --log-format=pretty --log-level=info \
 		fleet-local-playbook.yml \
 		2>&1 | tee tmp/local-build.log 2>&1
 
