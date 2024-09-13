@@ -5,8 +5,10 @@
 
 == Description
 
+[discrete]
 == Notes
 
+[discrete]
 == Additions
 
 * Allow correctDrift to be overridden in target customization by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1982[#1982]
@@ -14,6 +16,7 @@
 * Keep CRDs when deleting a Bundle by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2024[#2024]
 * Add security context to token cleanup job by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2192[#2192]
 
+[discrete]
 === Performance
 
 * Use index when listing BundleDeployments by Bundle by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1954[#1954]
@@ -21,6 +24,7 @@
 * Use UniqueApplyForResourceVersion in Bundle and GitRepo GeneratingHandlers by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2061[#2061]
 * Reduce BundleDeployment triggering on deployed resources updates by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2031[#2031]
 
+[discrete]
 == Bugfixes
 
 * Fix azure devops git clone error by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/gitjob/pull/400[rancher/gitjob#400]
@@ -29,6 +33,7 @@
 * Fixes panic when imagescan uses prereleases and * by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2183[#2183]
 * Fix Existing Namespace Not Found By Label by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2204[#2204]
 
+[discrete]
 == What's Changed
 
 * Bump to https://github.com/rancher/gitjob/releases/tag/v0.9.1[gitjob chart v0.9.1] by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2079[#2079]

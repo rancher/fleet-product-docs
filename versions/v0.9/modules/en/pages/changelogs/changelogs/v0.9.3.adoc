@@ -5,10 +5,12 @@
 
 == Description
 
+[discrete]
 == Bugfixes
 
 * Prevent creating Content objects if Bundle does not match any target by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2215[#2215]
 
+[discrete]
 == What's Changed
 
 * Bump github.com/docker/docker to v23.0.10 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2308[#2308]

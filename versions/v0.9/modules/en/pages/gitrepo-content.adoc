@@ -99,7 +99,7 @@ It is up to the user to fulfill the dependency list for the Helm charts. As such
 The available fields are documented in the xref:./ref-fleet-yaml.adoc[fleet.yaml reference]
 
 For a private Helm repo, users can reference a secret from the git repo resource.
-See link:./gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories] for more information.
+See xref:./gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories] for more information.
 
 == Using Helm Values
 

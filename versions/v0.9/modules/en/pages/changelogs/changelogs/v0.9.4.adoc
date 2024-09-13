@@ -5,6 +5,7 @@
 
 == Description
 
+[discrete]
 == What's Changed
 
 * Bump github.com/hashicorp/go-getter to v1.7.4 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2350[#2350]

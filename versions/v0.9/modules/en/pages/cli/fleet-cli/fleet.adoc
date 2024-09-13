@@ -18,6 +18,6 @@ fleet [flags]
 
 === SEE ALSO
 
-* link:./fleet_apply[fleet apply]	 - Render a bundle into a Kubernetes resource and apply it in the Fleet Manager
-* link:./fleet_cleanup[fleet cleanup]	 - Clean up outdated cluster registrations
-* link:./fleet_test[fleet test]	 - Match a bundle to a target and render the output
+* xref:./fleet_apply.adoc[fleet apply]	 - Render a bundle into a Kubernetes resource and apply it in the Fleet Manager
+* xref:./fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated cluster registrations
+* xref:./fleet_test.adoc[fleet test]	 - Match a bundle to a target and render the output

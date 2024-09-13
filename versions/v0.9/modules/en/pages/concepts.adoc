@@ -6,7 +6,7 @@ to manage GitOps for a single Kubernetes cluster or a large-scale deployment of 
 [IMPORTANT]
 ====
 
-For more on the naming conventions of CRDs, click link:./troubleshooting.adoc#naming-conventions-for-crds[here].
+For more on the naming conventions of CRDs, click xref:./troubleshooting.adoc#naming-conventions-for-crds[here].
 ====
 
 
@@ -45,6 +45,6 @@ ____
   A `BundleDeployment` represents the state of that `Bundle` on a specific cluster with its cluster specific
   customizations. The Fleet agent is only aware of `BundleDeployment` resources that are created for
   the cluster the agent is managing.
- ** For an example of how to deploy Kubernetes manifests across clusters using Fleet customization, click link:./gitrepo-targets.adoc#customization-per-cluster[here].
+ ** For an example of how to deploy Kubernetes manifests across clusters using Fleet customization, click xref:./gitrepo-targets.adoc#customization-per-cluster[here].
 * *Downstream Cluster*: Clusters to which Fleet deploys manifests are referred to as downstream clusters. In the single cluster use case, the Fleet manager Kubernetes cluster is both the manager and downstream cluster at the same time.
 * *Cluster Registration Token*: Tokens used by agents to register a new cluster.

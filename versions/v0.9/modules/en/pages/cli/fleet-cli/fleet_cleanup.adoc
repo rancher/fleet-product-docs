@@ -28,4 +28,4 @@ fleet cleanup [flags]
 
 === SEE ALSO
 
-* link:./fleet[fleet]	 -
+* xref:./fleet.adoc[fleet]	 -

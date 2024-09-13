@@ -46,4 +46,4 @@ fleet apply [flags] BUNDLE_NAME PATH...
 
 === SEE ALSO
 
-* link:./fleet[fleet]	 -
+* xref:./fleet.adoc[fleet]	 -
