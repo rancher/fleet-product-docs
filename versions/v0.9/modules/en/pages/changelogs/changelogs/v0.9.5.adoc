@@ -5,6 +5,7 @@
 
 == Description
 
+[discrete]
 == What's Changed
 
 * Bump gitjob to version 0.9.8 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2478[#2478]

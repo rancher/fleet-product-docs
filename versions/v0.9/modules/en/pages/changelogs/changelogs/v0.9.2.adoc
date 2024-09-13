@@ -5,6 +5,7 @@
 
 == Description
 
+[discrete]
 == What's Changed
 
 * [0.9] Revert trigger rework 0.9 by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2258[#2258]

@@ -5,14 +5,17 @@
 
 == Description
 
+[discrete]
 == Notes
 
 Fleet 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the helm SDK.
 
+[discrete]
 == Known Issues
 
 * Gitjob might report "git binary not found" if the path within the repository does not exist. https://github.com/rancher/rancher/issues/43499[rancher/rancher#43499]
 
+[discrete]
 == Additions
 
 * Add helm version to capabilities by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1743[#1743]
@@ -24,6 +27,7 @@ Fleet 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[
 * Helm Storage Backend With Caching by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1809[#1809]
 * Include nonResourceURLs Fleet-Agent's RBAC by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1806[#1806]
 
+[discrete]
 == Bugfixes
 
 * Add SecurityContext to job container by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1878[#1878]
@@ -31,6 +35,7 @@ Fleet 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[
 * Initialise cluster registration labels map if empty by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/1832[#1832]
 * Pin version of k8s.io/dynamic-resource-allocation by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1754[#1754]
 
+[discrete]
 == What's Changed
 
 * Add dev scripts to simplify using E2E tests by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1764[#1764]

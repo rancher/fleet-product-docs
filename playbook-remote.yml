@@ -5,10 +5,11 @@ site:
 
 content:
   sources:
-    - url: ./
+    - url: https://github.com/rancher/fleet-product-docs.git
+      branches: [main]
       start_paths: [versions/v0.10, versions/v0.9]
 
-# Description: SUSE UI bundle
+
 ui:
   bundle:
     url: https://github.com/rancher/product-docs-ui/blob/main/build/ui-bundle.zip?raw=true
@@ -24,6 +25,3 @@ asciidoc:
 antora:
   extensions:
   - require: '@antora/lunr-extension'
-
-output:
-  dir: build/site

@@ -2,7 +2,7 @@
 
 Bundles are automatically created by Fleet when a `GitRepo` is created.
 
-The content of the resource corresponds to the link:./ref-crds#bundlespec[BundleSpec].
+The content of the resource corresponds to the xref:./ref-crds#bundlespec[BundleSpec].
 For more information on how to use the Bundle resource xref:./bundle-add.adoc[Create a Bundle Resource].
 
 [,yaml]

@@ -10,6 +10,7 @@ The deployed resources within bundles can be found in `status.ResourceKey`. This
 
 Similar to bundles, the deployed resources in `GitRepos` are listed in `status.Resources`. This list is also derived from `bundleDeployments`.
 
+[discrete]
 === Resource Counts
 
 == GitRepos
