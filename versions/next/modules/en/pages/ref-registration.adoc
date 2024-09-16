@@ -3,7 +3,7 @@
 == How does cluster registration work?
 
 This text describes cluster registration with more technical details. The text ignores agent initiated registration, as it's not commonly used.
-xref:./cluster-registration.adoc#agent-initiated[Agent initiated registration] is xref:./cluster-registration.adoc#create-cluster-registration-tokens["``ClusterRegistrationToken`` first"], which means pre-creating a cluster is optional.
+xref:./cluster-registration.adoc#_agent_initiated[Agent initiated registration] is xref:./cluster-registration.adoc#_create_cluster_registration_tokens["``ClusterRegistrationToken`` first"], which means pre-creating a cluster is optional.
 
 See "xref:./cluster-registration.adoc[Register Downstream Clusters]" to learn how to register clusters.
 
@@ -39,6 +39,8 @@ Then agent creates the final `ClusterRegistration` resource in fleet-default on 
 The Fleet controller triggers and tries to grant the `ClusterRegistration` request to create agent's service account and create the 'c-*' registration secret with the client's new kubeconfig. The registration secret name is `hash("clientID-clientRandom")`.
 
 The new kubeconfig uses the "request" account. The "request" account can access the cluster status, `BundleDeployments` and `Contents`.
+
+image::FleetRegistrationToken.svg[Static, 600]
 
 === Fleet Agent is Registered, Watches for `BundleDeployments`
 
