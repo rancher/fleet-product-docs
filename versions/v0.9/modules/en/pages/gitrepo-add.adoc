@@ -95,7 +95,7 @@ If you are using openssh format for the private key and you are creating it in t
 
 === Using HTTP Auth
 
-Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:./troubleshooting#http-secrets-in-github[HTTP secrets in Github].
+Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:./troubleshooting#_http_secrets_in_github[HTTP secrets in Github].
 
  kubectl create secret generic basic-auth-secret -n fleet-default --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
 
