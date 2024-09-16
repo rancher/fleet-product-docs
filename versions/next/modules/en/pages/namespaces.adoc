@@ -129,7 +129,7 @@ registered through Rancher.
 `fleet-local` is limited.
 
 [WARNING] 
-.important information
+.Important Information
 ====
 Deleting the workspace, cluster registration namespace, will delete all the clusters within that namespace.
 This will uninstall all deployed bundles, except for the fleet agent, from the deleted clusters.
