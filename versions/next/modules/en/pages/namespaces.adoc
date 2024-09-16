@@ -128,6 +128,13 @@ registered through Rancher.
 * `fleet-local` will contain the local cluster by default. Access to
 `fleet-local` is limited.
 
+[WARNING] 
+.important information
+====
+Deleting the workspace, cluster registration namespace, will delete all the clusters within that namespace.
+This will uninstall all deployed bundles, except for the fleet agent, from the deleted clusters.
+====
+
 If you are using Fleet in a xref:./concepts.adoc[single cluster] style, the namespace
 will always be *fleet-local*. Check
 https://fleet.rancher.io/namespaces/#fleet-local[here] for more on the
