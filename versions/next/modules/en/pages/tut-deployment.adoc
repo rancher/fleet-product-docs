@@ -15,7 +15,7 @@ For more details on the options that are available per Git repository see xref:.
 
 == Single-Cluster Examples
 
-All examples will deploy content to clusters with no per-cluster customizations. This is a good starting point to understand the basics of structuring Git repos for Fleet.
+All examples will deploy content to clusters with no per-cluster customizations. This is a good starting point to understand the basics of structuring Git repos for{product_name}.
 
 [tabs,sync-group-id=examples]
 ====

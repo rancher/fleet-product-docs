@@ -8,13 +8,13 @@ Clusters and Bundles have different states in each phase of applying Bundles.
 
 *NotReady*: Bundles have been deployed and some resources are not ready.
 
-*WaitApplied*: Bundles have been synced from Fleet controller and downstream cluster, but are waiting to be deployed.
+*WaitApplied*: Bundles have been synced from {product_name} controller and downstream cluster, but are waiting to be deployed.
 
-*ErrApplied*: Bundles have been synced from the Fleet controller and the downstream cluster, but there were some errors when deploying the Bundle.
+*ErrApplied*: Bundles have been synced from the {product_name} controller and the downstream cluster, but there were some errors when deploying the Bundle.
 
-*OutOfSync*: Bundles have been synced from Fleet controller, but downstream agent hasn't synced the change yet.
+*OutOfSync*: Bundles have been synced from {product_name} controller, but downstream agent hasn't synced the change yet.
 
-*Pending*: Bundles are being processed by Fleet controller.
+*Pending*: Bundles are being processed by {product_name} controller.
 
 *Modified*: Bundles have been deployed and all resources are ready, but there are some changes that were not made from the Git Repository.
 

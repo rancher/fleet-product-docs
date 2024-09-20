@@ -1,6 +1,6 @@
 = Bundle Resource
 
-Bundles are automatically created by Fleet when a `GitRepo` is created.
+Bundles are automatically created by {product_name} when a `GitRepo` is created.
 
 The content of the resource corresponds to the xref:./ref-crds#_bundlespec[BundleSpec].
 For more information on how to use the Bundle resource xref:./bundle-add.adoc[Create a Bundle Resource].
@@ -79,14 +79,14 @@ spec:
                   - containerPort: 80
     name: nginx.yaml
 
-  # Target clusters to deploy to if running Fleet in a multi-cluster
+  # Target clusters to deploy to if running {product_name} in a multi-cluster
   # style. Refer to the "Mapping to Downstream Clusters" docs for
   # more information.
   #
   # targets: ...
 
-  # This field is used by Fleet internally, and it should not be modified manually.
-  # Fleet will copy all targets into targetRestrictions when a Bundle is created for a GitRepo.
+  # This field is used by {product_name} internally, and it should not be modified manually.
+  # {product_name} will copy all targets into targetRestrictions when a Bundle is created for a GitRepo.
   # targetRestrictions: ...
 
   # Refers to the bundles which must be ready before this bundle can be deployed.

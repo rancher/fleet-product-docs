@@ -103,7 +103,7 @@ helm:
   # helm automatically replaces '+' to '_' before uploading it.
   #
   # You should use the version with the '+' in this file, as the '_' character
-  # is not supported by semver and Fleet also replaces '+' to '_' when accessing
+  # is not supported by semver and {product_name} also replaces '+' to '_' when accessing
   # the OCI registry.
   version: 0.1.0
 
@@ -307,7 +307,7 @@ clusterSelector:
   matchLabels:
     env: prod
 +
-= A selector used to match a specific cluster by name. When using Fleet in
+= A selector used to match a specific cluster by name. When using {product_name} in
 +
 = Rancher, make sure to put the name of the clusters.fleet.cattle.io
 +
@@ -373,7 +373,7 @@ dependsOn:
   matchLabels:
     app: weak-monkey
 
-= Ignore fields when monitoring a Bundle. This can be used when Fleet thinks
+= Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
 
 = some conditions in Custom Resources makes the Bundle to be in an error state
 

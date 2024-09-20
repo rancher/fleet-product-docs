@@ -196,7 +196,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       env: prod
-  # A selector used to match a specific cluster by name. When using Fleet in
+  # A selector used to match a specific cluster by name. When using {product_name} in
   # Rancher, make sure to put the name of the clusters.fleet.cattle.io resource.
   clusterName: dev-cluster
   # A selector used to match cluster groups.
@@ -221,7 +221,7 @@ dependsOn:
       matchLabels:
         app: weak-monkey
 
-# Ignore fields when monitoring a Bundle. This can be used when Fleet thinks some conditions in Custom Resources
+# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks some conditions in Custom Resources
 # makes the Bundle to be in an error state when it shouldn't.
 ignore:
   # Conditions to be ignored

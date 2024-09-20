@@ -1,12 +1,12 @@
 = Mapping to Downstream Clusters
 
-https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/[Fleet in Rancher] allows users to manage clusters easily as if they were one cluster. Users can deploy bundles, which can be comprised of deployment manifests or any other Kubernetes resource, across clusters using grouping configuration.
+https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/[{product_name} in Rancher] allows users to manage clusters easily as if they were one cluster. Users can deploy bundles, which can be comprised of deployment manifests or any other Kubernetes resource, across clusters using grouping configuration.
 
 [IMPORTANT]
 ====
 
 *Multi-cluster Only*:
-This approach only applies if you are running Fleet in a multi-cluster style
+This approach only applies if you are running {product_name} in a multi-cluster style
 If no targets are specified, i.e. when using a single-cluster, the bundles target the default cluster group.
 ====
 
@@ -82,7 +82,7 @@ targets:
   - clusterName: fleetname
 ----
 
-When using Fleet in Rancher, make sure to put the name of the `clusters.fleet.cattle.io` resource.
+When using {product_name} in Rancher, make sure to put the name of the `clusters.fleet.cattle.io` resource.
 
 == Default Target
 
@@ -119,7 +119,7 @@ To demonstrate how to deploy Kubernetes manifests across different clusters with
 
 *Advantage of Fleet:*
 
-Instead of deploying the app on each cluster, Fleet allows you to deploy across all clusters following these steps:
+Instead of deploying the app on each cluster, {product_name} allows you to deploy across all clusters following these steps:
 
 . Deploy gitRepo `+https://github.com/rancher/fleet-examples.git+` and specify the path `multi-cluster/helm`.
 . Under `multi-cluster/helm`, a Helm chart will deploy the frontend app service and backend database service.
@@ -155,9 +155,9 @@ targetCustomizations:
 
 *Result:*
 
-Fleet will deploy the Helm chart with your customized `values.yaml` to the different clusters.
+{product_name} will deploy the Helm chart with your customized `values.yaml` to the different clusters.
 
-NOTE: Configuration management is not limited to deployments but can be expanded to general configuration management. Fleet is able to apply configuration management through customization among any set of clusters automatically.
+NOTE: Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
 
 === Supported Customizations
 
@@ -183,10 +183,10 @@ NOTE: Configuration management is not limited to deployments but can be expanded
 .important information
 ====
 Overriding the version of a Helm chart via target customizations will lead to bundles containing _all_ versions, ie the
-default one and the custom one(s), of the chart, to accommodate all clusters. This in turn means that Fleet will
+default one and the custom one(s), of the chart, to accommodate all clusters. This in turn means that {product_name} will
 deploy larger bundles.
 +
-As Fleet stores bundles via etcd, this may cause issues on some clusters where resultant bundle sizes may exceed
+As {product_name} stores bundles via etcd, this may cause issues on some clusters where resultant bundle sizes may exceed
 etcd's configured maximum blob size. See https://github.com/rancher/fleet/issues/1650[this issue] for more details.
 ====
 
@@ -199,4 +199,4 @@ etcd's configured maximum blob size. See https://github.com/rancher/fleet/issues
 == Additional Examples
 
 Examples using raw Kubernetes YAML, Helm charts, Kustomize, and combinations
-of the three are in the https://github.com/rancher/fleet-examples/[Fleet Examples repo].
+of the three are in the https://github.com/rancher/fleet-examples/[{product_name} Examples repo].

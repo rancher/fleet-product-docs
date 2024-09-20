@@ -1,6 +1,6 @@
 = Setup Multi User
 
-Fleet uses Kubernetes RBAC where possible.
+{product_name} uses Kubernetes RBAC where possible.
 
 One addition on top of RBAC is the xref:./namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
 
@@ -20,12 +20,12 @@ image::FleetSharedClusters.svg[Shared Clusters]
 
 The isolation of tenants is not complete and relies on Kubernetes RBAC to be
 set up correctly. Without manual setup from an operator tenants can still
-deploy cluster wide resources. Even with the available Fleet restrictions,
+deploy cluster wide resources. Even with the available {product_name} restrictions,
 users are only restricted to namespaces, but namespaces don't provide much
 isolation on their own. E.g. they can still consume as many resources as they
 like.
 
-However, the existing Fleet restrictions allow users to share clusters, and
+However, the existing {product_name} restrictions allow users to share clusters, and
 deploy resources without conflicts.
 ====
 

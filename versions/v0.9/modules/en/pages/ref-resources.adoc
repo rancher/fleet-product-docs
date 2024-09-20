@@ -1,6 +1,6 @@
 = List of Deployed Resources
 
-After installing Fleet in Rancher these resources are created in the upstream cluster.
+After installing {product_name} in Rancher these resources are created in the upstream cluster.
 
 |===
 | Type | Name | Namespace
