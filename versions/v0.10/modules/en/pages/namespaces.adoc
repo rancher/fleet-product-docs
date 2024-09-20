@@ -1,8 +1,8 @@
 = Namespaces
 
-All types in the Fleet manager are namespaced.  The namespaces of the manager types do not correspond to the namespaces
-of the deployed resources in the downstream cluster. Understanding how namespaces are use in the Fleet manager is
-important to understand the security model and how one can use Fleet in a multi-tenant fashion.
+All types in the {product_name} manager are namespaced.  The namespaces of the manager types do not correspond to the namespaces
+of the deployed resources in the downstream cluster. Understanding how namespaces are use in the {product_name} manager is
+important to understand the security model and how one can use {product_name} in a multi-tenant fashion.
 
 == GitRepos, Bundles, Clusters, ClusterGroups
 
@@ -14,18 +14,18 @@ not be able to target each others clusters, they should be in different namespac
 
 === GitRepo Namespace
 
-Git repos are added to the Fleet manager using the `GitRepo` custom resource type. The `GitRepo` type is namespaced. By default, Rancher will create two Fleet workspaces: *fleet-default* and *fleet-local*.
+Git repos are added to the {product_name} manager using the `GitRepo` custom resource type. The `GitRepo` type is namespaced. By default, Rancher will create two {product_name} workspaces: *fleet-default* and *fleet-local*.
 
 * `Fleet-default` will contain all the downstream clusters that are already registered through Rancher.
 * `Fleet-local` will contain the local cluster by default.
 
-If you are using Fleet in a xref:./concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check https://fleet.rancher.io/namespaces/#fleet-local[here] for more on the `fleet-local` namespace.
+If you are using {product_name} in a xref:./concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check https://fleet.rancher.io/namespaces/#fleet-local[here] for more on the `fleet-local` namespace.
 
 For a xref:./concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
 == Namespace Creation Behavior in Bundles
 
-When deploying a Fleet bundle, the specified namespace will automatically be created if it does not already exist.
+When deploying a {product_name} bundle, the specified namespace will automatically be created if it does not already exist.
 
 == Special Namespaces
 
@@ -36,19 +36,19 @@ image::FleetNamespaces.svg[Namespace]
 === fleet-local (local workspace, cluster registration namespace)
 
 The *fleet-local* namespace is a special namespace used for the single cluster use case or to bootstrap
-the configuration of the Fleet manager.
+the configuration of the {product_name} manager.
 
 When fleet is installed the `fleet-local` namespace is created along with one `Cluster` called `local` and one
 `ClusterGroup` called `default`.  If no targets are specified on a `GitRepo`, it is by default targeted to the
 `ClusterGroup` named `default`.  This means that all `GitRepos` created in `fleet-local` will
-automatically target the `local` `Cluster`.  The `local` `Cluster` refers to the cluster the Fleet manager is running
+automatically target the `local` `Cluster`.  The `local` `Cluster` refers to the cluster the {product_name} manager is running
 on.
 
 The cluster registration namespace contains the cluster and the clusterregistration resources, as well as any gitrepos and bundles.
 
 === cattle-fleet-system (system namespace)
 
-The Fleet controller and Fleet agent run in this namespace. All service accounts referenced by `GitRepos` are expected
+The {product_name} controller and {product_name} agent run in this namespace. All service accounts referenced by `GitRepos` are expected
 to live in this namespace in the downstream cluster.
 
 === cattle-fleet-clusters-system (system registration namespace)
@@ -58,7 +58,7 @@ especially secrets.
 
 === Cluster Namespaces
 
-For every cluster that is registered a namespace is created by the Fleet manager for that cluster.
+For every cluster that is registered a namespace is created by the {product_name} manager for that cluster.
 These namespaces are named in the form `+cluster-${namespace}-${cluster}-${random}+`.  The purpose of this
 namespace is that all `BundleDeployments` for that cluster are put into this namespace and
 then the downstream cluster is given access to watch and update `BundleDeployments` in that namespace only.

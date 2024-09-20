@@ -13,7 +13,7 @@ manager-initiated is a better workflow.
 
 Agent-initiated refers to a pattern in which the downstream cluster installs an agent with a
 <<_create_cluster_registration_tokens,cluster registration token>> and optionally a client ID. The cluster
-agent will then make a API request to the Fleet manager and initiate the registration process. Using
+agent will then make a API request to the {product_name} manager and initiate the registration process. Using
 this process the Manager will never make an outbound API request to the downstream clusters and will thus
 never need to have direct network access. The downstream cluster only needs to make outbound HTTPS
 calls to the manager.
@@ -21,7 +21,7 @@ calls to the manager.
 === Manager-Initiated Registration
 
 Manager-initiated registration is a process in which you register an existing Kubernetes cluster
-with the Fleet manager and the Fleet manager will make an API call to the downstream cluster to
+with the {product_name} manager and the {product_name} manager will make an API call to the downstream cluster to
 deploy the agent. This style can place additional network access requirements because the Fleet
 manager must be able to communicate with the downstream cluster API server for the registration process.
 After the cluster is registered there is no further need for the manager to contact the downstream
@@ -50,14 +50,14 @@ Alternatively one can pass the token directly to the helm install command via `-
 
 There are two styles of registering an agent. You can have the cluster for this agent dynamically created, in which
 case you will probably want to specify *cluster labels* upon registration.  Or you can have the agent register to a predefined
-cluster in the Fleet manager, in which case you will need a *client ID*.  The former approach is typically the easiest.
+cluster in the {product_name} manager, in which case you will need a *client ID*.  The former approach is typically the easiest.
 
 === Install Agent For a New Cluster
 
-The Fleet agent is installed as a Helm chart. Following are explanations how to determine and set its parameters.
+The {product_name} agent is installed as a Helm chart. Following are explanations how to determine and set its parameters.
 
 First, follow the <<_create_cluster_registration_tokens,cluster registration token instructions>> to obtain the `values.yaml` which contains
-the registration token to authenticate against the Fleet cluster.
+the registration token to authenticate against the {product_name} cluster.
 
 Second, optionally you can define labels that will assigned to the newly created cluster upon registration. After
 registration is completed an agent cannot change the labels of the cluster. To add cluster labels add
@@ -70,7 +70,7 @@ add `--set-string labels.foo=bar --set-string labels.bar=baz` to the command lin
 CLUSTER_LABELS="--set-string labels.example=true --set-string labels.env=dev"
 ----
 
-Third, set variables with the Fleet cluster's API Server URL and CA, for the downstream cluster to use for connecting.
+Third, set variables with the {product_name} cluster's API Server URL and CA, for the downstream cluster to use for connecting.
 
 [,shell]
 ----
@@ -104,9 +104,9 @@ to change which cluster Helm is installing to.
 
 
 [CAUTION]
-.Fleet in Rancher
+.{product_name} in Rancher
 ====
-Rancher has separate helm charts for Fleet and uses a different repository.
+Rancher has separate helm charts for {product_name} and uses a different repository.
 ====
 
 
@@ -144,7 +144,7 @@ You can check that status of the fleet pods by running the below commands:
 
 The agent should now be deployed.
 
-Additionally you should see a new cluster registered in the Fleet manager.  Below is an example of checking that a new cluster
+Additionally you should see a new cluster registered in the {product_name} manager.  Below is an example of checking that a new cluster
 was registered in the `clusters` xref:./namespaces.adoc[namespace].  Please ensure your `+${HOME}/.kube/config+` is pointed to the Fleet
 manager to run this command.
 
@@ -160,19 +160,19 @@ cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   202
 
 === Install Agent For a Predefined Cluster
 
-Client IDs are for the purpose of predefining clusters in the Fleet manager with existing labels and repos targeted to them.
+Client IDs are for the purpose of predefining clusters in the {product_name} manager with existing labels and repos targeted to them.
 A client ID is not required and is just one approach to managing clusters.
 The *client ID* is a unique string that will identify the cluster.
-This string is user generated and opaque to the Fleet manager and agent.  It is assumed to be sufficiently unique. For security reasons one should not be able to easily guess this value
+This string is user generated and opaque to the {product_name} manager and agent.  It is assumed to be sufficiently unique. For security reasons one should not be able to easily guess this value
 as then one cluster could impersonate another.  The client ID is optional and if not specified the UID field of the `kube-system` namespace
-resource will be used as the client ID. Upon registration if the client ID is found on a `Cluster` resource in the Fleet manager it will associate
+resource will be used as the client ID. Upon registration if the client ID is found on a `Cluster` resource in the {product_name} manager it will associate
 the agent with that `Cluster`.  If no `Cluster` resource is found with that client ID a new `Cluster` resource will be created with the specific
 client ID.
 
-The Fleet agent is installed as a Helm chart. The only parameters to the helm chart installation should be the cluster registration token, which
+The {product_name} agent is installed as a Helm chart. The only parameters to the helm chart installation should be the cluster registration token, which
 is represented by the `values.yaml` file and the client ID.  The client ID is optional.
 
-First, create a `Cluster` in the Fleet Manager with the random client ID you have chosen.
+First, create a `Cluster` in the {product_name} Manager with the random client ID you have chosen.
 
 [,yaml]
 ----
@@ -245,7 +245,7 @@ You can check that status of the fleet pods by running the below commands:
 
 The agent should now be deployed.
 
-Additionally you should see a new cluster registered in the Fleet manager.  Below is an example of checking that a new cluster
+Additionally you should see a new cluster registered in the {product_name} manager.  Below is an example of checking that a new cluster
 was registered in the `clusters` xref:./namespaces.adoc[namespace].  Please ensure your `+${HOME}/.kube/config+` is pointed to the Fleet
 manager to run this command.
 
@@ -265,7 +265,7 @@ my-cluster             1/1             1/1           k3d-cluster2-server-0   202
 ====
 
 *Not needed for Manager-initiated registration*:
-For manager-initiated registrations the token is managed by the Fleet manager and does
+For manager-initiated registrations the token is managed by the {product_name} manager and does
 not need to be manually created and obtained.
 ====
 
@@ -291,7 +291,7 @@ such that it will expire after a specific time.
 
 The `ClusterRegistationToken` is a namespaced type and should be created in the same namespace
 in which you will create `GitRepo` and `ClusterGroup` resources. For in depth details on how namespaces
-are used in Fleet refer to the documentation on xref:./namespaces.adoc[namespaces].  Create a new
+are used in {product_name} refer to the documentation on xref:./namespaces.adoc[namespaces].  Create a new
 token with the below YAML.
 
 [,yaml]
@@ -306,7 +306,7 @@ spec:
     ttl: 240h
 ----
 
-After the `ClusterRegistrationToken` is created, Fleet will create a corresponding `Secret` with the same name.
+After the `ClusterRegistrationToken` is created, {product_name} will create a corresponding `Secret` with the same name.
 As the `Secret` creation is performed asynchronously, you will need to wait until it's available before using it.
 
 One way to do so is via the following one-liner:
@@ -319,7 +319,7 @@ while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
 ==== Obtaining Token Value (Agent values.yaml)
 
 The token value contains YAML content for a `values.yaml` file that is expected to be passed to `helm install`
-to install the Fleet agent on a downstream cluster.
+to install the {product_name} agent on a downstream cluster.
 
 Such value is contained in the `values` field of the `Secret` mentioned above. To obtain the YAML content for the
 above example one can run the following one-liner:
@@ -334,12 +334,12 @@ Once the `values.yaml` is ready it can be used repeatedly by clusters to registe
 == Manager Initiated
 
 The manager-initiated registration flow is accomplished by creating a
-`Cluster` resource in the Fleet Manager that refers to a Kubernetes
+`Cluster` resource in the {product_name} Manager that refers to a Kubernetes
 `Secret` containing a valid kubeconfig file in the data field called `value`.
 
 [IMPORTANT]
 ====
-If you are using Fleet standalone _without Rancher_, it must be installed as described in xref:./installation#_configuration_for_multi_cluster[installation details].
+If you are using {product_name} standalone _without Rancher_, it must be installed as described in xref:./installation#_configuration_for_multi_cluster[installation details].
 
 The manager-initiated registration is used when you add a cluster from the Rancher dashboard.
 ====
@@ -349,7 +349,7 @@ The manager-initiated registration is used when you add a cluster from the Ranch
 
 The format of this secret is intended to match the https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[format] of the kubeconfig
 secret used in https://github.com/kubernetes-sigs/cluster-api[cluster-api].
-This means you can use `cluster-api` to create a cluster that is dynamically registered with Fleet.
+This means you can use `cluster-api` to create a cluster that is dynamically registered with{product_name}.
 
 [,yaml]
 ----

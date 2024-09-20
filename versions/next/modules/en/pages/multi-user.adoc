@@ -1,6 +1,6 @@
 = Setup Multi User
 
-Fleet uses Kubernetes RBAC where possible.
+{product_name} uses Kubernetes RBAC where possible.
 
 One addition on top of RBAC is the xref:./namespaces.adoc#restricting-gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
 
@@ -20,17 +20,17 @@ image::FleetSharedClusters.svg[Shared Clusters]
 
 The isolation of tenants is not complete and relies on Kubernetes RBAC to be
 set up correctly. Without manual setup from an operator tenants can still
-deploy cluster wide resources. Even with the available Fleet restrictions,
+deploy cluster wide resources. Even with the available {product_name} restrictions,
 users are only restricted to namespaces, but namespaces don't provide much
 isolation on their own. E.g. they can still consume as many resources as they
 like.
 
-However, the existing Fleet restrictions allow users to share clusters, and
+However, the existing {product_name} restrictions allow users to share clusters, and
 deploy resources without conflicts.
 ====
 
 
-== Example Fleet Standalone
+== Example {product_name} Standalone
 
 This would create a user 'fleetuser', who can only manage GitRepo resources in the 'project1' namespace.
 
@@ -47,7 +47,7 @@ If we want to give access to multiple namespaces, we can use a single cluster ro
 
 This makes sure, tenants can't interfere with GitRepo resources from other tenants, since they don't have access to their namespaces.
 
-== Example Fleet in Rancher
+== Example {product_name} in Rancher
 
 When a new fleet workspace is created, a corresponding namespace with an identical name is automatically generated within the Rancher local cluster.
 For a user to see and deploy fleet resources in a specific workspace, they need at least the following permissions:

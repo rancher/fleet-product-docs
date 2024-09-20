@@ -327,17 +327,17 @@ BundleSummary contains the number of bundle deployments in each state and a list
 | false
 
 | waitApplied
-| WaitApplied is the number of bundle deployments that have been synced from Fleet controller and downstream cluster, but are waiting to be deployed.
+| WaitApplied is the number of bundle deployments that have been synced from {product_name} controller and downstream cluster, but are waiting to be deployed.
 | int
 | false
 
 | errApplied
-| ErrApplied is the number of bundle deployments that have been synced from the Fleet controller and the downstream cluster, but with some errors when deploying the bundle.
+| ErrApplied is the number of bundle deployments that have been synced from the {product_name} controller and the downstream cluster, but with some errors when deploying the bundle.
 | int
 | false
 
 | outOfSync
-| OutOfSync is the number of bundle deployments that have been synced from Fleet controller, but not yet by the downstream agent.
+| OutOfSync is the number of bundle deployments that have been synced from {product_name} controller, but not yet by the downstream agent.
 | int
 | false
 
@@ -352,7 +352,7 @@ BundleSummary contains the number of bundle deployments in each state and a list
 | true
 
 | pending
-| Pending is the number of bundle deployments that are being processed by Fleet controller.
+| Pending is the number of bundle deployments that are being processed by {product_name} controller.
 | int
 | false
 
@@ -372,7 +372,7 @@ BundleSummary contains the number of bundle deployments in each state and a list
 
 === BundleTarget
 
-BundleTarget declares clusters to deploy to. Fleet will merge the BundleDeploymentOptions from customizations into this struct.
+BundleTarget declares clusters to deploy to. {product_name} will merge the BundleDeploymentOptions from customizations into this struct.
 
 |===
 | Field | Description | Scheme | Required
@@ -413,7 +413,7 @@ BundleTarget declares clusters to deploy to. Fleet will merge the BundleDeployme
 
 === BundleTargetRestriction
 
-BundleTargetRestriction is used internally by Fleet and should not be modified. It acts as an allow list, to prevent the creation of BundleDeployments from Targets created by TargetCustomizations in fleet.yaml.
+BundleTargetRestriction is used internally by {product_name} and should not be modified. It acts as an allow list, to prevent the creation of BundleDeployments from Targets created by TargetCustomizations in fleet.yaml.
 
 |===
 | Field | Description | Scheme | Required
@@ -624,7 +624,7 @@ RolloverStrategy controls the rollout of the bundle across clusters.
 
 === BundleDeployment
 
-BundleDeployment is used internally by Fleet and should not be used directly. When a Bundle is deployed to a cluster an instance of a Bundle is called a BundleDeployment. A BundleDeployment represents the state of that Bundle on a specific cluster with its cluster-specific customizations. The Fleet agent is only aware of BundleDeployment resources that are created for the cluster the agent is managing.
+BundleDeployment is used internally by {product_name} and should not be used directly. When a Bundle is deployed to a cluster an instance of a Bundle is called a BundleDeployment. A BundleDeployment represents the state of that Bundle on a specific cluster with its cluster-specific customizations. The {product_name} agent is only aware of BundleDeployment resources that are created for the cluster the agent is managing.
 
 |===
 | Field | Description | Scheme | Required
@@ -1063,7 +1063,7 @@ HelmOptions for the deployment. For Helm-based bundles, all options can be used,
 | false
 
 | disableDNS
-| DisableDNS can be used to customize Helm's EnableDNS option, which Fleet sets to `true` by default.
+| DisableDNS can be used to customize Helm's EnableDNS option, which {product_name} sets to `true` by default.
 | bool
 | false
 
@@ -1379,7 +1379,7 @@ BundleNamespaceMappingList contains a list of BundleNamespaceMapping
 
 === Cluster
 
-Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted clusters. Clusters to which Fleet deploys manifests are referred to as downstream clusters. In the single cluster use case, the Fleet manager Kubernetes cluster is both the manager and downstream cluster at the same time.
+Cluster corresponds to a Kubernetes cluster. {product_name} deploys bundles to targeted clusters. Clusters to which {product_name} deploys manifests are referred to as downstream clusters. In the single cluster use case, the {product_name} manager Kubernetes cluster is both the manager and downstream cluster at the same time.
 
 |===
 | Field | Description | Scheme | Required
@@ -1578,12 +1578,12 @@ ClusterList contains a list of Cluster
 | false
 
 | agentNamespaceMigrated
-| AgentNamespaceMigrated is always set to true after importing a cluster. If false, it will trigger a migration. Old Fleet agents don't have this in their status.
+| AgentNamespaceMigrated is always set to true after importing a cluster. If false, it will trigger a migration. Old {product_name} agents don't have this in their status.
 | bool
 | false
 
 | cattleNamespaceMigrated
-| CattleNamespaceMigrated is always set to true after importing a cluster. If false, it will trigger a migration. Old Fleet agents, don't have this in their status.
+| CattleNamespaceMigrated is always set to true after importing a cluster. If false, it will trigger a migration. Old {product_name} agents, don't have this in their status.
 | bool
 | false
 
@@ -1762,7 +1762,7 @@ ClusterGroupList contains a list of ClusterGroup
 
 === ClusterRegistration
 
-ClusterRegistration is used internally by Fleet and should not be used directly.
+ClusterRegistration is used internally by {product_name} and should not be used directly.
 
 |===
 | Field | Description | Scheme | Required
@@ -1932,7 +1932,7 @@ ClusterRegistrationTokenList contains a list of ClusterRegistrationToken
 
 === Content
 
-Content is used internally by Fleet and should not be used directly. It contains the resources from a bundle for a specific target cluster.
+Content is used internally by {product_name} and should not be used directly. It contains the resources from a bundle for a specific target cluster.
 
 |===
 | Field | Description | Scheme | Required

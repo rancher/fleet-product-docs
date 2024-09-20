@@ -41,9 +41,9 @@ Labels used by fleet:
 * `fleet.cattle.io/shard-id=<shard-id>` - The shard ID of a fleet controller pod.
 * `fleet.cattle.io/shard-default=true` - true if this is the controller managing resources without a shard reference label.
 * `fleet.cattle.io/shard-ref=<shard-id>` - references the Shard ID assigned by
-Fleet to resources, inherited from a `GitRepo`, which determines which Fleet controller deployment will reconcile them.
- ** If this label is not provided or has an empty value, then the unsharded Fleet controller will process the resource.
- ** If this label has a value which does not match any shard ID for which a Fleet controller is deployed, then the
+{product_name} to resources, inherited from a `GitRepo`, which determines which {product_name} controller deployment will reconcile them.
+ ** If this label is not provided or has an empty value, then the unsharded {product_name} controller will process the resource.
+ ** If this label has a value which does not match any shard ID for which a {product_name} controller is deployed, then the
 resource will not be processed.
 
 == Annotations
@@ -60,13 +60,13 @@ Annotations used by fleet:
 * `fleet.cattle.io/managed` - appears unused
 * `fleet.cattle.io/service-account`
 
-== Fleet agent configuration
+== {product_name} agent configuration
 
-Tolerations, affinity and resources can be customized for the Fleet agent. These fields can be provided when creating a
+Tolerations, affinity and resources can be customized for the {product_name} agent. These fields can be provided when creating a
 xref:./ref-crds#_clusterspec[Cluster], see xref:./cluster-registration.adoc[Registering Downstream Cluster] for more info on how to create
 Clusters. Default configuration will be used if these fields are not provided.
 
 If you change the resources limits, make sure the limits allow the fleet-agent to work normally.
 
-Keep in mind that if you downgrade Fleet to a previous version than v0.7.0 Fleet will fallback to the built-in defaults.
-Agents will redeploy if they had custom affinity. If Fleet version number does not change, redeployment might not be immediate.
+Keep in mind that if you downgrade {product_name} to a previous version than v0.7.0 {product_name} will fallback to the built-in defaults.
+Agents will redeploy if they had custom affinity. If {product_name} version number does not change, redeployment might not be immediate.

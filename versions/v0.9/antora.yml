@@ -3,5 +3,8 @@ title: Fleet
 version: v0.9
 display_version: '0.9'
 start_page: en:index.adoc
+asciidoc:
+  attributes:
+    product_name: Fleet
 nav:
   - modules/en/v0.9-sidebars.adoc

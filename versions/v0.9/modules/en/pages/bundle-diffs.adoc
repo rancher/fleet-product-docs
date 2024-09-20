@@ -13,7 +13,7 @@ image::ModifiedGitRepo.png[]
 Associated Bundle
 image::ModifiedBundle.png[]
 
-Fleet bundles support the ability to specify a custom http://jsonpatch.com/[jsonPointer patch].
+{product_name} bundles support the ability to specify a custom http://jsonpatch.com/[jsonPointer patch].
 
 With the patch, users can instruct fleet to ignore object modifications.
 

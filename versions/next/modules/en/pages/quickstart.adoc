@@ -8,12 +8,12 @@ Who needs documentation, lets just run this thing!
 
 == Install
 
-Fleet is distributed as a Helm chart. Helm 3 is a CLI, has no server side component, and its use is fairly straightforward. To install the Helm 3 CLI follow the https://helm.sh/docs/intro/install[official install instructions].
+{product_name} is distributed as a Helm chart. Helm 3 is a CLI, has no server side component, and its use is fairly straightforward. To install the Helm 3 CLI follow the https://helm.sh/docs/intro/install[official install instructions].
 
 [CAUTION]
-.Fleet in Rancher
+.{product_name} in Rancher
 ====
-Rancher has separate helm charts for Fleet and uses a different repository.
+Rancher has separate helm charts for {product_name} and uses a different repository.
 ====
 
 
@@ -36,7 +36,7 @@ helm repo add fleet https://rancher.github.io/fleet-helm-charts/
 ----
 ====
 
-Install the Fleet Helm charts (there's two because we separate out CRDs for ultimate flexibility.)
+Install the {product_name} Helm charts (there's two because we separate out CRDs for ultimate flexibility.)
 
 [source,bash]
 ----

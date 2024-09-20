@@ -8,7 +8,7 @@
 [discrete]
 == Notes
 
-Fleet 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the helm SDK.
+{product_name} 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the helm SDK.
 
 [discrete]
 == Known Issues

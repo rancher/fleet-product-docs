@@ -110,11 +110,11 @@ spec:
   # downstream cluster in the cattle-fleet-system namespace. It is assumed
   # this service account already exists so it should be create before
   # hand, most likely coming from another git repo registered with
-  # the Fleet manager.
+  # the {product_name} manager.
   #
   # serviceAccount: moreSecureAccountThanClusterAdmin
 
-  # Target clusters to deploy to if running Fleet in a multi-cluster
+  # Target clusters to deploy to if running {product_name} in a multi-cluster
   # style. Refer to the "Mapping to Downstream Clusters" docs for
   # more information.
   # If empty, the "default" cluster group is used.

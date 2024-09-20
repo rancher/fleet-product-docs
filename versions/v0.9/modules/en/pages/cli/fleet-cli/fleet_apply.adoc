@@ -1,6 +1,6 @@
 == fleet apply
 
-Render a bundle into a Kubernetes resource and apply it in the Fleet Manager
+Render a bundle into a Kubernetes resource and apply it in the {product_name} Manager
 
 ----
 fleet apply [flags] BUNDLE_NAME PATH...
