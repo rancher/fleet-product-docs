@@ -1,5 +1,5 @@
-name: fleet-documentation
-title: Fleet
+name: continuous-delivery
+title: Continous Delivery
 version: next
 display_version: 'Next'
 start_page: en:index.adoc
