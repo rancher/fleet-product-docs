@@ -73,7 +73,8 @@
 * <<ImageScanSpec,ImageScanSpec>>
 * <<ImageScanStatus,ImageScanStatus>>
 * <<SemVerPolicy,SemVerPolicy>>
-
+* <<FleetYAML,FleetYAML>>
+* <<ImageScanYAML,ImageScanYAML>>
 
 === Bundle
 
@@ -703,6 +704,11 @@ BundleDeployment is used internally by {product_name} and should not be used dir
 | namespaceAnnotations
 | NamespaceAnnotations are annotations that will be appended to the namespace created by Fleet.
 | *map[string]string
+| false
+
+| deleteCRDResources 
+| DeleteCRDResources deletes CRDs. Warning! this will also delete all your Custom Resources. 
+| bool 
 | false
 |===
 
@@ -1510,6 +1516,11 @@ Cluster corresponds to a Kubernetes cluster. {product_name} deploys bundles to t
 | apiServerCAHash
 | APIServerCAHash is a hash of the upstream API server CA, used to detect changes.
 | string
+| false
+
+| agentTLSMode 
+| AgentTLSMode supports two values: `system-store` and `strict`. If set to `system-store`, instructs the agent to trust CA bundles from the operating system's store. If set to `strict`, then the agent shall only connect to a server which uses the exact CA configured when creating/updating the agent. 
+| string 
 | false
 
 | display
@@ -2478,6 +2489,66 @@ SemVerPolicy specifies a semantic version policy.
 | Range gives a semver range for the image tag; the highest version within the range that's a tag yields the latest image.
 | string
 | true
+|===
+
+<<Resources,Back to Custom Resources>>
+
+=== FleetYAML
+
+FleetYAML is the top-level structure of the fleet.yaml file. The fleet.yaml file adds options to a bundle. Any directory with a fleet.yaml is automatically turned into a bundle.
+
+|===
+| Field | Description | Scheme | Required
+
+| name 
+| Name of the bundle which will be created. 
+| string 
+| false
+
+| labels 
+| Labels are copied to the bundle and can be used in a dependsOn.selector. 
+| map[string]string 
+| false
+
+| BundleSpec 
+|  
+| <<BundleSpec,BundleSpec>>
+| false
+
+| targetCustomizations 
+| TargetCustomizations are used to determine how resources should be modified per target. Targets are evaluated in order and the first one to match a cluster is used for that cluster. 
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| imageScans 
+| ImageScans are optional and used to update container image references in the git repo. 
+| []<<ImageScanYAML,ImageScanYAML>>
+| false
+
+| overrideTargets 
+| OverrideTargets overrides targets that are defined in the GitRepo resource. If overrideTargets is provided the bundle will not inherit targets from the GitRepo. 
+| []<<GitTarget,GitTarget>>
+| false
+|===
+
+<<Resources,Back to Custom Resources>>
+
+=== ImageScanYAML
+
+ImageScanYAML is a single entry in the ImageScan list from fleet.yaml.
+
+|===
+| Field | Description | Scheme | Required
+
+| name 
+| Name of the image scan. Unused. 
+| string 
+| false
+
+| ImageScanSpec 
+|  
+| <<ImageScanSpec,ImageScanSpec>>
+| false
 |===
 
 <<Resources,Back to Custom Resources>>

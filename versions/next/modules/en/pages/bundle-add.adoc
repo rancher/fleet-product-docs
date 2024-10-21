@@ -56,6 +56,23 @@ spec:
   - clusterName: local
 ----
 
+== Targets
+
+The bundle can target multiple clusters. It uses the same xref:./gitrepo-targets#_target_matching[targeting as the GitRepo].
+Additional xref:./gitrepo-targets#_supported_customizations[customization options] can be specified per target:
+
+[,yaml]
+----
+targets:
+- clusterSelector:
+    matchLabels:
+      env: dev
+  defaultNamespace: lab-1
+  helm:
+    values:
+      replicas: 1
+----
+
 == Limitations
 
 Helm options related to downloading the helm chart will be ignored. The helm chart is downloaded by the fleet-cli, which creates the bundles. The bundle has to contain all the resources from the chart. Therefore the bundle will ignore:
