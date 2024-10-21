@@ -85,7 +85,8 @@
 * <<ImageScanSpec,ImageScanSpec>>
 * <<ImageScanStatus,ImageScanStatus>>
 * <<SemVerPolicy,SemVerPolicy>>
-
+* <<FleetYAML,FleetYAML>>
+* <<ImageScanYAML,ImageScanYAML>>
 
 === Bundle
 
@@ -2522,6 +2523,7 @@ GitTarget is a cluster or cluster group to deploy to.
 |===
 
 <<Resources,Back to Custom Resources>>
+
 === ResourcePerClusterState
 
 ResourcePerClusterState is generated for each non-ready resource of the bundles.
@@ -2812,6 +2814,66 @@ SemVerPolicy specifies a semantic version policy.
 | Range gives a semver range for the image tag; the highest version within the range that's a tag yields the latest image.
 | string
 | true
+|===
+
+<<Resources,Back to Custom Resources>>
+
+=== FleetYAML
+
+FleetYAML is the top-level structure of the fleet.yaml file. The fleet.yaml file adds options to a bundle. Any directory with a fleet.yaml is automatically turned into a bundle.
+
+|===
+| Field | Description | Scheme | Required
+
+| name 
+| Name of the bundle which will be created. 
+| string 
+| false
+
+| labels 
+| Labels are copied to the bundle and can be used in a dependsOn.selector. 
+| map[string]string 
+| false
+
+| BundleSpec 
+|  
+| <<BundleSpec,BundleSpec>>
+| false
+
+| targetCustomizations 
+| TargetCustomizations are used to determine how resources should be modified per target. Targets are evaluated in order and the first one to match a cluster is used for that cluster. 
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| imageScans 
+| ImageScans are optional and used to update container image references in the git repo. 
+| []<<ImageScanYAML,ImageScanYAML>>
+| false
+
+| overrideTargets 
+| OverrideTargets overrides targets that are defined in the GitRepo resource. If overrideTargets is provided the bundle will not inherit targets from the GitRepo. 
+| []<<GitTarget,GitTarget>>
+| false
+|===
+
+<<Resources,Back to Custom Resources>>
+
+=== ImageScanYAML
+
+ImageScanYAML is a single entry in the ImageScan list from fleet.yaml.
+
+|===
+| Field | Description | Scheme | Required
+
+| name 
+| Name of the image scan. Unused. 
+| string 
+| false
+
+| ImageScanSpec 
+|  
+| <<ImageScanSpec,ImageScanSpec>>
+| false
 |===
 
 <<Resources,Back to Custom Resources>>
