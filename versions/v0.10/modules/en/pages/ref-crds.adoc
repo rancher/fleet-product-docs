@@ -2402,6 +2402,11 @@ GitRepoResourceCounts contains the number of resources in each state.
 | string 
 | false
 
+| webhookCommit 
+| WebhookCommit is the latest Git commit hash received from a webhook
+| string 
+| false
+
 | readyClusters
 | ReadyClusters is the lowest number of clusters that are ready over all the bundles of this GitRepo.
 | int
