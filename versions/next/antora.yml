@@ -4,4 +4,4 @@ version: next
 display_version: 'Next'
 start_page: en:index.adoc
 nav:
-  - modules/en/version-next-sidebars.adoc
+  - modules/en/nav.adoc

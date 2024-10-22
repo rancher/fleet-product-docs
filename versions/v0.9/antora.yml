@@ -7,4 +7,4 @@ asciidoc:
   attributes:
     product_name: SUSE® Rancher Prime Continuous Delivery
 nav:
-  - modules/en/v0.9-sidebars.adoc
+  - modules/en/nav.adoc
