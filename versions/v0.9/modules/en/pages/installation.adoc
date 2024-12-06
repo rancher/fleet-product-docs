@@ -116,7 +116,7 @@ clusters:
 
 * cluster:
   certificate-authority-data: LS0tLS1CRUdJTi...
-  server: https://example.com:6443
+  server: https://<EXAMPLE_URL>:6443
 ----
 
 [discrete]
