@@ -26,7 +26,7 @@ jobs:
             --log-format=pretty \
             --log-level=info \
             --log-failure-level=warn \
-            playbook-local.yml 2>&1 | tee local-build.log 2>&1
+            fleet-local-playbook.yml 2>&1 | tee local-build.log 2>&1
             BUILD_STATUS=${PIPESTATUS[0]}
             if grep "INFO (asciidoctor)" local-build.log; then
               BUILD_STATUS=1
