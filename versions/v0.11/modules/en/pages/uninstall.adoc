@@ -1,0 +1,17 @@
+= Uninstall
+
+{product_name} is packaged as two Helm charts so uninstall is accomplished by
+uninstalling the appropriate Helm charts. To uninstall {product_name} run the following
+two commands:
+
+[,shell]
+----
+helm -n cattle-fleet-system uninstall fleet
+helm -n cattle-fleet-system uninstall fleet-crd
+----
+
+[CAUTION]
+====
+Uninstalling the CRDs will remove all deployed workloads.
+====
+
