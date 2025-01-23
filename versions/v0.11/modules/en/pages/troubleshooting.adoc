@@ -35,9 +35,19 @@ Normally, errors should appear in the Rancher UI. However, if there is not enoug
 For debugging and bug reports the raw JSON of the resources status fields is most useful.
 This can be accessed in the Rancher UI, or through `kubectl`:
 
+[,shell]
 ----
 kubectl get bundle -n fleet-local fleet-agent-local -o=jsonpath={.status}
 kubectl get gitrepo -n fleet-default gitrepo-name -o=jsonpath={.status}
+----
+
+To download more resources other than the spec fields:
+
+[,shell]
+----
+kubectl get clusters.fleet.cattle.io -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.metadata.labels}{"\t"}{.status}{"\n"}{end}'
+kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
 ----
 
 === Check a chart rendering error in `Kustomize`?
