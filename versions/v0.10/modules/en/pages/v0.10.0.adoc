@@ -224,7 +224,7 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * Re-enable fossa by https://github.com/olblak[@olblak] in https://github.com/rancher/fleet/pull/2446[#2446]
 ====
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.5...v0.10.0[+++<tt>+++v0.9.5\...v0.10.0+++</tt>+++]
+*Full Changelog*: link:++https://github.com/rancher/fleet/compare/v0.9.5...v0.10.0++[v0.9.5...v0.10.0]
 
 == Download
 
