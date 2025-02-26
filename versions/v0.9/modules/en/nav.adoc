@@ -47,3 +47,8 @@
 ** xref:changelogs/changelogs/v0.9.4.adoc[v0.9.4]
 ** xref:changelogs/changelogs/v0.9.5.adoc[v0.9.5]
 ** xref:changelogs/changelogs/v0.9.6.adoc[v0.9.6]
+** xref:changelogs/changelogs/v0.9.8.adoc[v0.9.8]
+** xref:changelogs/changelogs/v0.9.9.adoc[v0.9.9]
+** xref:changelogs/changelogs/v0.9.10.adoc[v0.9.10]
+** xref:changelogs/changelogs/v0.9.11.adoc[v0.9.11]
+
