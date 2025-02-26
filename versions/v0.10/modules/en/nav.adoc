@@ -48,3 +48,8 @@
 * xref:troubleshooting.adoc[Troubleshooting]
 * Changelog
 ** xref:v0.10.0.adoc[v0.10.0]
+** xref:v0.10.1.adoc[v0.10.1]
+** xref:v0.10.2.adoc[v0.10.2]
+** xref:v0.10.3.adoc[v0.10.3]
+** xref:v0.10.4.adoc[v0.10.4]
+** xref:v0.10.6.adoc[v0.10.6]
