@@ -1,12 +1,12 @@
 site:
   title: Continous Delivery
   url: /
-  start_page: v0.11@continuous-delivery:en:index.adoc
+  start_page: v0.12@continuous-delivery:en:index.adoc
 
 content:
   sources:
     - url: ./
-      start_paths: [versions/v0.11, versions/v0.10, versions/v0.9]
+      start_paths: [versions/v0.12, versions/v0.11, versions/v0.10, versions/v0.9]
 
 # Description: SUSE UI bundle
 ui:
