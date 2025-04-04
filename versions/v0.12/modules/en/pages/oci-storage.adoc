@@ -1,7 +1,7 @@
 = OCI Storage
 
-OCI storage is an experimental feature to store a bundle's resources in an OCI registry, instead of k8s resources.
-Fleet won't be limited by https://etcd.io/docs/v3.4/dev-guide/limit/[`etcd` size limitations]. However,
+OCI storage is an experimental feature to store a bundle's resources in an OCI registry, instead of K8s resources.
+Fleet is not limited by https://etcd.io/docs/v3.4/dev-guide/limit/[`etcd` size limitations]. However,
 Fleet needs write access to a registry and that registry needs to be accessible by the agents in downstream clusters.
 
 == Summary

@@ -29,7 +29,7 @@ data:
 
 The `rancher-config` resource is created by the Rancher chart and can be patched:
 
-[source,yaml]
+[source,shell]
 ----
 kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'

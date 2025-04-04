@@ -7,11 +7,11 @@ These fields are also used by the Rancher UI to display information about the st
 
 See xref:./ref-status-fields.adoc[status fields reference] for more information on status fields and conditions.
 
-== K8S Events
+== K8s Events
 
-Fleet will generate k8s events a user can subscribe to. This is the list of events:
+Fleet will generate K8s events a user can subscribe to. This is the list of events:
 
-* `Created `- a new git cloning job was created
+* `Created `- a new git cloning job is created
 * `GotNewCommit `- a git repository has a new commit
 * `JobDeleted `- a successful git cloning job is removed
 * `FailedValidatingSecret `- a git cloning job cannot be created, because a required secret is missing
@@ -22,7 +22,7 @@ Fleet will generate k8s events a user can subscribe to. This is the list of even
 
 == Metrics
 
-Fleet publishes prometheus metrics. They can be retrieved from these services:
+Fleet publishes Prometheus metrics. They can be retrieved from these services:
 
 * `monitoring-fleet-controller.cattle-fleet-system.svc.cluster.local:8080/metrics`
 * `monitoring-gitjob.cattle-fleet-system.svc.cluster.local:8081/metrics`

@@ -500,17 +500,15 @@ foo-bar-${PWD}
 ----
 
 [CAUTION]
-.empty values
+.Empty values  
+====  
+It is easier to use `global.fleet.clusterLabels.LABELNAME` instead of templating. When using templating, make sure to protect against null values.  
 
-====
-It is easier to use `global.fleet.clusterLabels.LABELNAME` instead of templating. When using templating, make sure to protect against null values.
+Example:  
 
-Example:
-
-[source,yaml]
-----
-${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }missing${ end}
-----
-
-====
+[source,yaml]  
+----  
+${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }missing${ end}  
+----  
+====  
 

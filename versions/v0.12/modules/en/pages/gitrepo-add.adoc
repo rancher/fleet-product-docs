@@ -138,10 +138,10 @@ Validating a repository using a certificate signed by a custom Certificate Autho
 
 [IMPORTANT]
 ====
-Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see
-https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[this]
+Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see the respective pages on
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
-https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[that]),
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
 Fleet will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 ====
 
@@ -162,11 +162,11 @@ For a private Helm repo, users can reference a secret with the following keys:
 
 [IMPORTANT]
 ====
- Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see
-https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[this]
+Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see the respective pages on
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
-https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[that]),
- Fleet will use those CA bundles if no CA bundle is specified in the Helm secret.
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
+Fleet will use those CA bundles if no CA bundle is specified in the Helm secret.
 ====
 
 . `ssh-privatekey` for ssh private key if repo is using ssh protocol. Private key with passphase is not supported currently.
