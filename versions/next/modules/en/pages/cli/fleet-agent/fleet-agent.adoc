@@ -1,5 +1,7 @@
 == fleet-agent
 
+Manage operations with the Fleet agent that communicates with the Fleet controller
+
 ----
 fleet-agent [flags]
 ----

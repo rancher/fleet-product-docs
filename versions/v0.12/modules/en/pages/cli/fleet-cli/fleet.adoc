@@ -1,5 +1,7 @@
 == fleet
 
+Manage Fleet operations 
+
 ----
 fleet [flags]
 ----

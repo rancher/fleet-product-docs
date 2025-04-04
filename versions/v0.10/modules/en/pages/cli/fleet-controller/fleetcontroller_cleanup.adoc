@@ -1,5 +1,7 @@
 == fleetcontroller cleanup
 
+Clean up outdated controller resources
+
 ----
 fleetcontroller cleanup [flags]
 ----
@@ -21,4 +23,4 @@ fleetcontroller cleanup [flags]
 
 === SEE ALSO
 
-* xref:./fleetcontroller.adoc[fleetcontroller]	 -
+* xref:./fleetcontroller.adoc[fleetcontroller]	 - Manage the Fleet controller that communicates with the Fleet agent

@@ -33,4 +33,4 @@ fleet test [flags]
 
 === SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 -
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations

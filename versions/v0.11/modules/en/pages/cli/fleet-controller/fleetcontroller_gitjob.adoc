@@ -1,5 +1,7 @@
 == fleetcontroller gitjob
 
+Configure Fleet controller gitjob operations
+
 ----
 fleetcontroller gitjob [flags]
 ----
@@ -28,4 +30,4 @@ fleetcontroller gitjob [flags]
 
 === SEE ALSO
 
-* xref:./fleetcontroller.adoc[fleetcontroller]	 -
+* xref:./fleetcontroller.adoc[fleetcontroller]	 - Manage the Fleet controller that communicates with the Fleet agent

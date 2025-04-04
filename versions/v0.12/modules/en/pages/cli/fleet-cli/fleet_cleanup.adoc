@@ -14,6 +14,6 @@ fleet cleanup [flags]
 
 === SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 -
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations
 * xref:./fleet_cleanup_clusterregistration.adoc[fleet cleanup clusterregistration]	 - Clean up outdated cluster registrations
 * xref:./fleet_cleanup_gitjob.adoc[fleet cleanup gitjob]	 - Clean up outdated git jobs

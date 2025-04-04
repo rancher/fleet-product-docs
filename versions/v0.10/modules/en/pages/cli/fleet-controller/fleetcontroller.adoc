@@ -1,5 +1,7 @@
 == fleetcontroller
 
+Manage the Fleet controller that communicates with the Fleet agent
+
 ----
 fleetcontroller [flags]
 ----
@@ -23,6 +25,6 @@ fleetcontroller [flags]
 
 === SEE ALSO
 
-* xref:./fleetcontroller_agentmanagement.adoc[fleetcontroller agentmanagement]	 -
-* xref:./fleetcontroller_cleanup.adoc[fleetcontroller cleanup]	 -
-* xref:./fleetcontroller_gitjob.adoc[fleetcontroller gitjob]	 -
+* xref:./fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]	 - Configure Fleet agent management
+* xref:./fleet-controller_cleanup.adoc[fleet-controller cleanup]	 - Clean up outdated controller resources
+* xref:./fleet-controller_gitjob.adoc[fleet-controller gitjob]	 - Configure Fleet controller gitjob operations

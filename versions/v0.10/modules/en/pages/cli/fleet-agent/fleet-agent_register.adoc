@@ -18,4 +18,4 @@ fleet-agent register [flags]
 
 === SEE ALSO
 
-* xref:./fleet-agent.adoc[fleet-agent]	 -
+* xref:./fleet-agent.adoc[fleet-agent]	 - Manage operations with the Fleet agent that communicates with the Fleet controller
