@@ -1,9 +1,9 @@
-== fleetcontroller agentmanagement
+== fleet-controller agentmanagement
 
 Configure Fleet agent management
 
 ----
-fleetcontroller agentmanagement [flags]
+fleet-controller agentmanagement [flags]
 ----
 
 === Options
@@ -24,4 +24,4 @@ fleetcontroller agentmanagement [flags]
 
 === SEE ALSO
 
-* xref:./fleetcontroller.adoc[fleetcontroller]	 - Manage the Fleet controller that communicates with the Fleet agent
+* xref:./fleet-controller.adoc[fleet-controller]	 - Manage the Fleet controller that communicates with the Fleet agent
