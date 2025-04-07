@@ -3,14 +3,14 @@
 
 * (github-actions[bot]) released this 2024-11-04 06:02:50 +0000 UTC*
 
-== Description
+== Release Note
 
-== What's Changed
+=== What's Changed
 
 * Bump Go to 1.22 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3011[#3011]
 * Bump gitjob to v0.9.17 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3016[#3016]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.10...v0.9.11[+++<tt>+++v0.9.10\...v0.9.11+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.10...v0.9.11[v0.9.10\...v0.9.11]
 
 == Download
 

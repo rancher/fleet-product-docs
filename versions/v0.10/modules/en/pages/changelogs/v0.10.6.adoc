@@ -3,9 +3,9 @@
 
 * (github-actions[bot]) released this 2024-11-15 15:19:27 +0000 UTC*
 
-== Description
+== Release Note
 
-== What's Changed
+=== What's Changed
 
 * [v0.10] Fix apply defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3084[#3084]
 * Fix status conflict between agent and fleetcontroller by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3005[#3005]
@@ -14,7 +14,7 @@
 * Use Patch instead of Update for modifying the status field by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3022[#3022]
 * Backport GitRepo status resources improvements by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3033[#3033]
 
-*Full Changelog*: link:++https://github.com/rancher/fleet/compare/v0.10.4...v0.10.6++[v0.10.4...v0.10.6]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.4...v0.10.6[v0.10.4...v0.10.6]
 
 == Download
 

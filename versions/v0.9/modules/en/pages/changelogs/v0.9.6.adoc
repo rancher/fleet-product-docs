@@ -3,10 +3,9 @@
 
 * (github-actions[bot]) released this 2024-07-17 16:29:25 +0000 UTC*
 
-== Description
+== Release Note
 
-[discrete]
-== What's Changed
+=== What's Changed
 
 * Honor Helm's MaxHistory when using drift correction by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2517[#2517]
 * Fix drift end-to-end tests and run them in CI by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2536[#2536]
@@ -15,7 +14,7 @@
 * Add strict TLS mode by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2577[#2577]
 * Bump go-getter by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2619[#2619]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.5...v0.9.6[+++<tt>+++v0.9.5\...v0.9.6+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.5...v0.9.6[v0.9.5\...v0.9.6]
 
 == Download
 

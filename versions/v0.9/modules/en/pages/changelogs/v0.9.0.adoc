@@ -3,43 +3,14 @@
 
 * (rancherio-gh-m) released this 2023-11-07 12:30:45 +0000 UTC*
 
-== Description
+== Release Note
 
-[discrete]
-== Notes
+{product_name} 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The Tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the Helm SDK.
 
-{product_name} 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the helm SDK.
-
-[discrete]
-== Known Issues
-
-* Gitjob might report "git binary not found" if the path within the repository does not exist. https://github.com/rancher/rancher/issues/43499[rancher/rancher#43499]
-
-[discrete]
-== Additions
-
-* Add helm version to capabilities by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1743[#1743]
-* Add support for spec field identifying KUBECONFIG namespace for imported clusters by https://github.com/aiyengar2[@aiyengar2] in https://github.com/rancher/fleet/pull/1786[#1786]
-* Allow configuring EnableDNS property in Helm through fleet.yaml by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1755[#1755]
-* Allow skipping Helm's schema validation through fleet.yaml by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1769[#1769]
-* Document public API by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1639[#1639]
-* Add descriptions to CRDs by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1798[#1798]
-* Helm Storage Backend With Caching by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1809[#1809]
-* Include nonResourceURLs Fleet-Agent's RBAC by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1806[#1806]
-
-[discrete]
-== Bugfixes
-
-* Add SecurityContext to job container by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1878[#1878]
-* Incorrect agent's DebugLevel when settings propagation is set by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1776[#1776]
-* Initialise cluster registration labels map if empty by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/1832[#1832]
-* Pin version of k8s.io/dynamic-resource-allocation by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1754[#1754]
-
-[discrete]
-== What's Changed
+=== What's Changed
 
 * Add dev scripts to simplify using E2E tests by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1764[#1764]
-* Add integration test to verify fleet.yaml helm options for non-helm type bundles by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/1775[#1775]
+* Add integration test to verify fleet.yaml Helm options for non-Helm type bundles by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/1775[#1775]
 * CI: Retry on context deadline exceeded by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1788[#1788]
 * Document APIServerURL in the config by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1795[#1795]
 * E2E: Fix flaky single cluster tests by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1784[#1784]
@@ -66,7 +37,29 @@
 * Bump bci/bci-base from 15.5.36.5.33 to 15.5.36.5.34 in /package by https://github.com/dependabot[@dependabot] in https://github.com/rancher/fleet/pull/1805[#1805]
 * Bump github.com/evanphx/json-patch from 5.6.0+incompatible to 5.7.0+incompatible by https://github.com/dependabot[@dependabot] in https://github.com/rancher/fleet/pull/1802[#1802]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.8.0...v0.9.0[+++<tt>+++v0.8.0\...v0.9.0+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.8.0...v0.9.0[v0.8.0\...v0.9.0]
+
+=== Known Issues
+
+* Gitjob might report "git binary not found" if the path within the repository does not exist. https://github.com/rancher/rancher/issues/43499[rancher/rancher#43499]
+
+=== Additions
+
+* Add Helm version to capabilities by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1743[#1743]
+* Add support for spec field identifying KUBECONFIG namespace for imported clusters by https://github.com/aiyengar2[@aiyengar2] in https://github.com/rancher/fleet/pull/1786[#1786]
+* Allow configuring EnableDNS property in Helm through fleet.yaml by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1755[#1755]
+* Allow skipping Helm's schema validation through fleet.yaml by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1769[#1769]
+* Document public API by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1639[#1639]
+* Add descriptions to CRDs by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1798[#1798]
+* Helm Storage Backend With Caching by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1809[#1809]
+* Include nonResourceURLs Fleet-Agent's RBAC by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1806[#1806]
+
+=== Bugfixes
+
+* Add SecurityContext to job container by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1878[#1878]
+* Incorrect agent's DebugLevel when settings propagation is set by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1776[#1776]
+* Initialise cluster registration labels map if empty by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/1832[#1832]
+* Pin version of k8s.io/dynamic-resource-allocation by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1754[#1754]
 
 == Download
 

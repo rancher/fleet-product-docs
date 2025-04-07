@@ -3,16 +3,15 @@
 
 * (rancherio-gh-m) released this 2024-05-02 12:48:10 +0000 UTC*
 
-== Description
+== Release Note
 
-[discrete]
-== What's Changed
+=== What's Changed
 
 * Bump github.com/hashicorp/go-getter to v1.7.4 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2350[#2350]
 * Bump golang.org/x/net to v0.23.0 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2384[#2384]
 * Bump gitjob to 0.9.7 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2385[#2385]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.3...v0.9.4[+++<tt>+++v0.9.3\...v0.9.4+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.3...v0.9.4[v0.9.3\...v0.9.4]
 
 == Download
 

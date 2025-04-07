@@ -3,13 +3,13 @@
 
 * (github-actions[bot]) released this 2024-08-13 14:30:43 +0000 UTC*
 
-== Description
+== Release Note
 
-== What's Changed
+=== What's Changed
 
 * Update Gitjob version to 0.9.13 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2740[#2740]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.6...v0.9.8[+++<tt>+++v0.9.6\...v0.9.8+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.6...v0.9.8[v0.9.6\...v0.9.8]
 
 == Download
 

@@ -3,14 +3,14 @@
 
 * (github-actions[bot]) released this 2024-10-18 05:47:47 +0000 UTC*
 
-== Description
+== Release Note
 
-== What's Changed
+=== What's Changed
 
 * Bump Gitjob to v0.9.15 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2894[#2894]
 * Bump docker to 23.0.15 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2948[#2948]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.9...v0.9.10[+++<tt>+++v0.9.9\...v0.9.10+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.9...v0.9.10[v0.9.9\...v0.9.10]
 
 == Download
 

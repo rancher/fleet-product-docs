@@ -3,15 +3,14 @@
 
 * (rancherio-gh-m) released this 2024-06-05 07:58:14 +0000 UTC*
 
-== Description
+== Release Note
 
-[discrete]
-== What's Changed
+=== What's Changed
 
 * Bump gitjob to version 0.9.8 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2478[#2478]
 * chore: Bump docker/docker to v23.0.11 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2479[#2479]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.4...v0.9.5[+++<tt>+++v0.9.4\...v0.9.5+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.4...v0.9.5[v0.9.4\...v0.9.5]
 
 == Download
 

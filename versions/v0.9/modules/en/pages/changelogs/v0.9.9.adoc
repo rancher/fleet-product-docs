@@ -3,13 +3,13 @@
 
 * (github-actions[bot]) released this 2024-09-13 12:44:41 +0000 UTC*
 
-== Description
+== Release Note
 
-== What's Changed
+=== What's Changed
 
 * Bump Docker to v23.0.14 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2761[#2761]
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.8...v0.9.9[+++<tt>+++v0.9.8\...v0.9.9+++</tt>+++]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.8...v0.9.9[v0.9.8\...v0.9.9]
 
 == Download
 

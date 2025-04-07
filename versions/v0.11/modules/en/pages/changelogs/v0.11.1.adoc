@@ -3,9 +3,7 @@
 
 * (github-actions[bot]) released this 2024-11-15 15:30:49 +0000 UTC*
 
-== Description
-
-== Notes
+== Release Note
 
 Fleet v0.11.1 improves several log and status messages. It reduces the amount of reconciles done by the controllers for resource changes.
 
@@ -25,39 +23,7 @@ There are a few known issues with this 0.11.1 release:
 * Target customization for namespace labels and annotations cannot modify/remove labels when updating.
 * In version 0.10, GitRepo resources provided a comprehensive list of all deployed resources across all clusters in their status. However, in version 0.11, this list has been modified to report resources only once until the feature is integrated into the Rancher UI. While this change addresses a UI freeze issue, it may result in potential inaccuracies in the list of resources and resource counts under some conditions.
 
-== Additions
-
-* Adds k8s events to the gitops controller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2698[#2698]
-* Configurable git client timeout by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2605[#2605]
-* Git job creation on the same node as the controller shard by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2620[#2620]
-* Improved post render error when using targetNamespace or namespace by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2660[#2660]
-* Make Helm release garbage collection interval configurable by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2665[#2665]
-* Simplify target customisations for namespace labels and annotations by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2664[#2664]
-* Return error code 401 for auth errors in webhooks by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2777[#2777]
-* Tolerate uninitialized node taint by https://github.com/k0da[@k0da] in https://github.com/rancher/fleet/pull/2782[#2782]
-* Propagate drift correction force mode to Helm rollback by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2798[#2798]
-* Fleet deploy CLI always outputs list of deployed resources by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2847[#2847]
-* BundleDeployment status error message improvement by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2679[#2679]
-* Increase worker count for reconcilers by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2897[#2897]
-* Fleet deploy prints hook resources too by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2968[#2968]
-
-== Bugfixes
-
-* KubeVersion fix for fleet deploy --dry-run by https://github.com/ampie[@ampie] in https://github.com/rancher/fleet/pull/2686[#2686]
-* Fix status conflict between agent and fleetcontroller by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2998[#2998]
-* Fixes status not being populated to cluster and clustergroups by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2791[#2791]
-* Prevent `0` as value for gitClientTimeout by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2756[#2756]
-* Gitjob container has writable /tmp dir by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2827[#2827]
-* Create CABundle Secret for gitjob by https://github.com/sebastienmusso[@sebastienmusso] in https://github.com/rancher/fleet/pull/2825[#2825]
-* Skip CA bundle secret creation with empty payload by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2918[#2918]
-* Fix helm.sh/resource-policy being added to everything and not just CRDs by https://github.com/SuperTux88[@SuperTux88] in https://github.com/rancher/fleet/pull/2850[#2850]
-* Deletes retries in the gitops job. by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2872[#2872]
-* Propagate drift correction error to bundle deployment status by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2792[#2792]
-* GitRepo resources list doesn't list resources multiple times by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3027[#3027]
-* Fix namespace target customization support with no defaults (https://github.com/rancher/fleet/pull/3052[#3052]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3057[#3057]
-* Fix defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3080[#3080]
-
-== What's Changed
+=== What's Changed
 
 * Add dev docs for logging by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2812[#2812]
 * Clean up content resources through finalizers by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2566[#2566]
@@ -100,14 +66,46 @@ There are a few known issues with this 0.11.1 release:
 * Remove reconcile error from retry by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3045[#3045]
 * Update Wrangler to v3.1 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3062[#3062]+++</details>+++
 
-== New Contributors
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.4...v0.11.1[v0.10.4\...v0.11.1]
+
+=== Additions
+
+* Adds k8s events to the gitops controller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2698[#2698]
+* Configurable git client timeout by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2605[#2605]
+* Git job creation on the same node as the controller shard by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2620[#2620]
+* Improved post render error when using targetNamespace or namespace by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2660[#2660]
+* Make Helm release garbage collection interval configurable by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2665[#2665]
+* Simplify target customisations for namespace labels and annotations by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2664[#2664]
+* Return error code 401 for auth errors in webhooks by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2777[#2777]
+* Tolerate uninitialized node taint by https://github.com/k0da[@k0da] in https://github.com/rancher/fleet/pull/2782[#2782]
+* Propagate drift correction force mode to Helm rollback by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2798[#2798]
+* Fleet deploy CLI always outputs list of deployed resources by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2847[#2847]
+* BundleDeployment status error message improvement by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2679[#2679]
+* Increase worker count for reconcilers by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2897[#2897]
+* Fleet deploy prints hook resources too by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2968[#2968]
+
+=== Bugfixes
+
+* KubeVersion fix for fleet deploy --dry-run by https://github.com/ampie[@ampie] in https://github.com/rancher/fleet/pull/2686[#2686]
+* Fix status conflict between agent and fleetcontroller by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2998[#2998]
+* Fixes status not being populated to cluster and clustergroups by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2791[#2791]
+* Prevent `0` as value for gitClientTimeout by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2756[#2756]
+* Gitjob container has writable /tmp dir by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2827[#2827]
+* Create CABundle Secret for gitjob by https://github.com/sebastienmusso[@sebastienmusso] in https://github.com/rancher/fleet/pull/2825[#2825]
+* Skip CA bundle secret creation with empty payload by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2918[#2918]
+* Fix helm.sh/resource-policy being added to everything and not just CRDs by https://github.com/SuperTux88[@SuperTux88] in https://github.com/rancher/fleet/pull/2850[#2850]
+* Deletes retries in the gitops job. by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2872[#2872]
+* Propagate drift correction error to bundle deployment status by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2792[#2792]
+* GitRepo resources list doesn't list resources multiple times by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3027[#3027]
+* Fix namespace target customization support with no defaults (https://github.com/rancher/fleet/pull/3052[#3052]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3057[#3057]
+* Fix defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3080[#3080]
+
+=== New Contributors
 
 * https://github.com/ampie[@ampie] made their first contribution in https://github.com/rancher/fleet/pull/2686[#2686]
 * https://github.com/sebastienmusso[@sebastienmusso] made their first contribution in https://github.com/rancher/fleet/pull/2825[#2825]
 * https://github.com/k0da[@k0da] made their first contribution in https://github.com/rancher/fleet/pull/2782[#2782]
 * https://github.com/SuperTux88[@SuperTux88] made their first contribution in https://github.com/rancher/fleet/pull/2850[#2850]
-
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.4...v0.11.1[+++<tt>+++v0.10.4\...v0.11.1+++</tt>+++]
 
 == Download
 
