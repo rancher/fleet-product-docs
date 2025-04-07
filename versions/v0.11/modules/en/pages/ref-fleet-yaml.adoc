@@ -431,4 +431,6 @@ foo-bar-${`${PWD}`}
 
 will result in the following text:
 
-`foo-bar-${PWD}`
+----
+foo-bar-${PWD}
+----
