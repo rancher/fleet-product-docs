@@ -344,7 +344,7 @@ overrideTargets:
 == Helm Options
 
 [discrete]
-==== How fleet-agent deploys the bundle
+=== How fleet-agent deploys the bundle
 
 These options also apply to kustomize- and manifest-style bundles.  They control
 how the fleet-agent deploys the bundle. All bundles are converted into Helm
@@ -361,7 +361,7 @@ Helm CLI options for install and update.
 * waitForJobs
 
 [discrete]
-==== Helm Chart Download Options
+=== Helm Chart Download Options
 
 These options are for Helm-style bundles, they specify how to download the
 chart.
@@ -380,7 +380,7 @@ of the chart. go-getter also allows to download a chart from a Git repo.
 * an OCI Helm repository, specified by `repo` and optionally `version`.
 
 [discrete]
-==== Helm Chart Value Options
+=== Helm Chart Value Options
 
 Options for the downloaded Helm chart.
 
@@ -407,6 +407,7 @@ the cluster resource.
 
 To access Labels or Annotations by their key name:
 
+[source,shell]
 ----
 ${ get .ClusterLabels "management.cattle.io/cluster-display-name" }
 ----
@@ -415,12 +416,11 @@ NOTE: The fleet.yaml must be valid yaml. Templating uses `${ }` as delims,
 unlike Helm which uses `{{ }}`.  These fleet.yaml template delimiters can be
 escaped using backticks, eg.:
 
+[source,shell]
 ----
 foo-bar-${`${PWD}`}
 ----
 
 will result in the following text:
 
-----
-foo-bar-${PWD}
-----
+`foo-bar-${PWD}`
