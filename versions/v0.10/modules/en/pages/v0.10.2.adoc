@@ -3,7 +3,7 @@
 
 * (github-actions[bot]) released this 2024-09-13 12:27:15 +0000 UTC*
 
-== Description
+== Release Note
 
 === What's Changed
 
@@ -15,7 +15,7 @@
 * Create cabundle secret by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2831[#2831]
 * Gitjob container has writable /tmp dir by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2830[#2830]
 
-*Full Changelog*: link:++https://github.com/rancher/fleet/compare/v0.10.1...v0.10.2++[v0.10.1...v0.10.2]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.1...v0.10.2[v0.10.1...v0.10.2]
 
 == Download
 

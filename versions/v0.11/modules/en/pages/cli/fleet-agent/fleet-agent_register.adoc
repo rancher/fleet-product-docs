@@ -1,4 +1,4 @@
-== fleet-agent register
+= fleet-agent register
 
 Register agent with an upstream cluster
 
@@ -6,7 +6,7 @@ Register agent with an upstream cluster
 fleet-agent register [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --debug               Turn on debug logging
@@ -16,6 +16,6 @@ fleet-agent register [flags]
       --namespace string    system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
-* xref:./fleet-agent.adoc[fleet-agent]	 -
+* xref:./fleet-agent.adoc[fleet-agent]	 - Manage operations with the Fleet agent that communicates with the Fleet controller

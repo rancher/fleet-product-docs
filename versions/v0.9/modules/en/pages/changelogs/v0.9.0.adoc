@@ -1,0 +1,85 @@
+= v0.9.0
+:date: 2023-11-07 12:30:45 +0000 UTC
+
+* (rancherio-gh-m) released this 2023-11-07 12:30:45 +0000 UTC*
+
+== Release Note
+
+{product_name} 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The Tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the Helm SDK.
+
+=== What's Changed
+
+* Add dev scripts to simplify using E2E tests by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1764[#1764]
+* Add integration test to verify fleet.yaml Helm options for non-Helm type bundles by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/1775[#1775]
+* CI: Retry on context deadline exceeded by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1788[#1788]
+* Document APIServerURL in the config by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1795[#1795]
+* E2E: Fix flaky single cluster tests by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1784[#1784]
+* E2E: Increase testenv reliability by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1704[#1704]
+* Fix nightly image build workflow YAML by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1758[#1758]
+* Fix patch_crd_descriptions.sh when yq is not installed by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1810[#1810]
+* Fixes for running multi cluster E2E tests locally by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1762[#1762]
+* Fix CA variable usage in dev/setup-fleet by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1766[#1766]
+* Improve release scripts by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/1761[#1761]
+* Increase speed of clusterregistration clean up hook by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1712[#1712]
+* Remove previous version selection in release against rancher script by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/1773[#1773]
+* Remove Tekton references from release docs by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/1833[#1833]
+* Remove tekton by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1782[#1782]
+* Retry k3d image import in workflows by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1793[#1793]
+* Simplify Golang version management by https://github.com/olblak[@olblak] in https://github.com/rancher/fleet/pull/1714[#1714]
+* Switch k3d import to default mode to detect error in e2e setup by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1797[#1797]
+* Testenv infra uses local fleet module by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1756[#1756]
+* Update README.md with instructions on how to use nektos/act by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1765[#1765]
+* Upgrade k3d k8s versions in CI by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1780[#1780]
+* Use constants for agent cluster role names by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1814[#1814]
+* Go K8s related security bumps by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/1709[#1709]
+* Bump Golang to 1.21.0 by https://github.com/rancherbot[@rancherbot] in https://github.com/rancher/fleet/pull/1716[#1716]
+* Bump all modules by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1745[#1745]
+* Bump bci/bci-base from 15.5.36.5.33 to 15.5.36.5.34 in /package by https://github.com/dependabot[@dependabot] in https://github.com/rancher/fleet/pull/1805[#1805]
+* Bump github.com/evanphx/json-patch from 5.6.0+incompatible to 5.7.0+incompatible by https://github.com/dependabot[@dependabot] in https://github.com/rancher/fleet/pull/1802[#1802]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.8.0...v0.9.0[v0.8.0\...v0.9.0]
+
+=== Known Issues
+
+* Gitjob might report "git binary not found" if the path within the repository does not exist. https://github.com/rancher/rancher/issues/43499[rancher/rancher#43499]
+
+=== Additions
+
+* Add Helm version to capabilities by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1743[#1743]
+* Add support for spec field identifying KUBECONFIG namespace for imported clusters by https://github.com/aiyengar2[@aiyengar2] in https://github.com/rancher/fleet/pull/1786[#1786]
+* Allow configuring EnableDNS property in Helm through fleet.yaml by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1755[#1755]
+* Allow skipping Helm's schema validation through fleet.yaml by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1769[#1769]
+* Document public API by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1639[#1639]
+* Add descriptions to CRDs by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1798[#1798]
+* Helm Storage Backend With Caching by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1809[#1809]
+* Include nonResourceURLs Fleet-Agent's RBAC by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1806[#1806]
+
+=== Bugfixes
+
+* Add SecurityContext to job container by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1878[#1878]
+* Incorrect agent's DebugLevel when settings propagation is set by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1776[#1776]
+* Initialise cluster registration labels map if empty by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/1832[#1832]
+* Pin version of k8s.io/dynamic-resource-allocation by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1754[#1754]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.0/sha256sum-amd64.txt[sha256sum-amd64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetcontroller-windows-amd64.exe[fleetcontroller-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetagent-linux-amd64[fleetagent-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-crd-0.9.0.tgz[fleet-crd-0.9.0.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-agent-0.9.0.tgz[fleet-agent-0.9.0.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-0.9.0.tgz[fleet-0.9.0.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/sha256sum-arm64.txt[sha256sum-arm64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/sha256sum-s390x.txt[sha256sum-s390x.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetcontroller-linux-s390x[fleetcontroller-linux-s390x]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleetagent-linux-s390x[fleetagent-linux-s390x]
+* https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-linux-s390x[fleet-linux-s390x]
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.0[here]_

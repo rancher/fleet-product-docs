@@ -22,6 +22,7 @@
 ** xref:webhook.adoc[Using Webhooks Instead of Polling]
 ** xref:imagescan.adoc[Using Image Scan to Update Container Image References]
 ** xref:bundle-add.adoc[Create a Bundle Resource]
+** xref:observability.adoc[Observability]
 * Reference
 ** CLI
 *** xref:cli/fleet-agent/fleet-agent.adoc[fleet-agent]
@@ -30,14 +31,17 @@
 *** xref:cli/fleet-cli/fleet.adoc[fleet]
 *** xref:cli/fleet-cli/fleet_apply.adoc[fleet apply]
 *** xref:cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]
+*** xref:cli/fleet-cli/fleet_cleanup_clusterregistration.adoc[fleet cleanup clusterregistration]
+*** xref:cli/fleet-cli/fleet_cleanup_gitjob.adoc[fleet cleanup gitjob]
 *** xref:cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
+*** xref:cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
 *** xref:cli/fleet-cli/fleet_target.adoc[fleet target]
 *** xref:cli/fleet-cli/fleet_test.adoc[fleet test]
-*** xref:cli/fleet-controller/fleetcontroller.adoc[fleetcontroller]
-*** xref:cli/fleet-controller/fleetcontroller_agentmanagement.adoc[fleetcontroller agentmanagement]
-*** xref:cli/fleet-controller/fleetcontroller_cleanup.adoc[fleetcontroller cleanup]
-** xref:ref-status-fields.adoc[Cluster and Bundle State]
-** xref:resources-list.adoc[Resources List]
+*** xref:cli/fleet-controller/fleet-controller.adoc[fleet-controller]
+*** xref:cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
+*** xref:cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]
+*** xref:cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-controller gitjob]
+** xref:ref-status-fields.adoc[Status Fields]
 ** xref:ref-registration.adoc[Cluster Registration Internals]
 ** xref:ref-configuration.adoc[Configuration]
 ** xref:ref-resources.adoc[List of Deployed Resources]
@@ -49,5 +53,5 @@
 * Changelog
 ** xref:changelogs/next.adoc[Next]
 * Experimental Features
-** xref:enableexperimental.adoc[How to Enable Experimental Features]
+** xref:enableexperimental.adoc[How to enable experimental features]
 ** xref:oci-storage.adoc[OCI Storage]

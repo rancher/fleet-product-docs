@@ -1,10 +1,12 @@
-== fleet-agent
+= fleet-agent
+
+Manage operations with the Fleet agent that communicates with the Fleet manager
 
 ----
 fleet-agent [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --agent-scope string        An identifier used to scope the agent bundleID names, typically the same as namespace

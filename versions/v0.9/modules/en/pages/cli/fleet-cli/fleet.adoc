@@ -1,10 +1,12 @@
-== fleet
+= fleet
+
+Manage Fleet operations
 
 ----
 fleet [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --context string            kubeconfig context for authentication
@@ -16,7 +18,7 @@ fleet [flags]
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet_apply.adoc[fleet apply]	 - Render a bundle into a Kubernetes resource and apply it in the {product_name} Manager
 * xref:./fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated cluster registrations

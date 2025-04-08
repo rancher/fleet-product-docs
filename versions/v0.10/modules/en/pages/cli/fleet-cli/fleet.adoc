@@ -1,16 +1,18 @@
-== fleet
+= fleet
+
+Manage Fleet operations
 
 ----
 fleet [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -h, --help   help for fleet
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet_apply.adoc[fleet apply]	 - Create bundles from directories, and output them or apply them on a cluster
 * xref:./fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated cluster registrations

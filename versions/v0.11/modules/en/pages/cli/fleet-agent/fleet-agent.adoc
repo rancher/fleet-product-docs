@@ -1,10 +1,12 @@
-== fleet-agent
+= fleet-agent
+
+Manage operations with the Fleet agent that communicates with the Fleet controller
 
 ----
 fleet-agent [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --agent-scope string                An identifier used to scope the agent bundleID names, typically the same as namespace
@@ -20,7 +22,7 @@ fleet-agent [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]	 - Continuously report resource status to the upstream cluster
 * xref:./fleet-agent_register.adoc[fleet-agent register]	 - Register agent with an upstream cluster

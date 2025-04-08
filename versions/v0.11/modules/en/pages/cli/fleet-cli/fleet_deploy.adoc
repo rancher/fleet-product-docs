@@ -1,4 +1,4 @@
-== fleet deploy
+= fleet deploy
 
 Deploy a bundledeployment/content resource to a cluster, by creating a Helm release. This will not deploy the bundledeployment/content resources directly to the cluster.
 
@@ -6,7 +6,7 @@ Deploy a bundledeployment/content resource to a cluster, by creating a Helm rele
 fleet deploy [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -a, --agent-namespace string            Set the agent namespace, normally cattle-fleet-system. If set, fleet agent will garbage collect the helm release, i.e. delete it if the bundledeployment is missing.
@@ -22,6 +22,6 @@ fleet deploy [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 -
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations

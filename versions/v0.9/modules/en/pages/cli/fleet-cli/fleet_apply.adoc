@@ -1,4 +1,4 @@
-== fleet apply
+= fleet apply
 
 Render a bundle into a Kubernetes resource and apply it in the {product_name} Manager
 
@@ -6,7 +6,7 @@ Render a bundle into a Kubernetes resource and apply it in the {product_name} Ma
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
-=== Options
+== Options
 
 ----
   -b, --bundle-file string                     Location of the raw Bundle resource yaml
@@ -35,7 +35,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --username string                        Basic auth username for helm repo
 ----
 
-=== Options inherited from parent commands
+== Options inherited from parent commands
 
 ----
       --context string            kubeconfig context for authentication
@@ -46,4 +46,4 @@ fleet apply [flags] BUNDLE_NAME PATH...
 
 === SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 -
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations

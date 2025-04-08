@@ -3,84 +3,11 @@
 
 * (github-actions[bot]) released this 2024-07-17 11:54:57 +0000 UTC*
 
-== Description
+== Release Note
 
 The {product_name} v0.10 release brings significant changes, including a redesign that splits components into containers and switches to the controller-runtime framework. The rewritten controllers switch to structured logging. To reduce image size and complexity, v0.10 integrates the gitjob repository, merges various controller codes, and introduces new features such as sharding with node selectors, prometheus metrics, configurable leader election, and worker count for the fleet-controller. The release deprecates the "fleet test" command in favor of "`target`" and "`deploy`" with a dry-run option and adds experimental OCI content storage. Bug fixes enhance drift detection, cluster status reporting, and various operational aspects, while automation improvements bolster testing, CI, and the release workflow.
 
-[discrete]
-== Additions
-
-* Populate bundle status from bundleDeployment status resources by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2535[#2535]
-* Add strict TLS mode support by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2507[#2507]
-* Adding NodeSelection for Controller Shards by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2505[#2505]
-* Extend strict TLS mode to `fleet-agent` container by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2556[#2556]
-* Gitcloner recurses submodules by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2557[#2557]
-* Bundle content storage in OCI by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2561[#2561]
-* Add metrics to gitops controller by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2530[#2530]
-* Use bundleDeployment to store resources in gitRepo status by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2523[#2523]
-* Adds extraEnv to gitjob and fleet-controller deployments by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2493[#2493]
-* Deprecate "fleet test" command, previously used to debug chart by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2113[#2113]
-* Support for Azure DevOps Webhook for gitRepos using SSH URL by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2440[#2440]
-* Keep CRDs when deleting a Bundle by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2028[#2028]
-* Add correctDrift to targetCustomization by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2014[#2014]
-* Add target/deploy/dry-run CLI commands by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2102[#2102]
-* Adds option to disable polling for Git repos by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2226[#2226]
-* Only create Content resource if Bundle matches any target by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2239[#2239]
-* Removes cluster node status reporting from agent by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2190[#2190]
-* Merge controller and gitjob images by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2236[#2236]
-* Add static sharding support by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2323[#2323]
-* Add Prometheus Metrics by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2172[#2172]
-* Merge binaries by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2361[#2361]
-* Configurable leader election via chart values by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1981[#1981]
-* Replace ImageScan and Bundle Labels With fleet.yaml Labels by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2360[#2360]
-* Reduce logging for bundles from cleanup controller by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2393[#2393]
-* Delete namespace when a gitRepo is deleted by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2373[#2373]
-* Add readOnlyRootFilesystem to deployment_gitjob.yaml by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2379[#2379]
-* Creation of a New Webhook endpoint for Github test Webhook by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2395[#2395]
-* Add a Parameter to Configure Worker count for fleet-controller by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2430[#2430]
-
-[discrete]
-== Bugfixes
-
-* Ignore status fields during drift detection by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2522[#2522]
-* Fixes error display and improves user experience in git poller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2542[#2542]
-* Honor Helm's MaxHistory when using drift correction by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2519[#2519]
-* Remove trailing comma from bootstrap template by https://github.com/Danil-Grigorev[@Danil-Grigorev] in https://github.com/rancher/fleet/pull/2452[#2452]
-* Do not count deleted bundledeployments in cluster status by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2454[#2454]
-* Fixes infinite job generation after ForceSyncGeneration changed by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2477[#2477]
-* GitRepo Initial Checkout when DisablePolling is True by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2469[#2469]
-* Filter namespaces by the kubernetes.io/metadata.name label by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2009[#2009]
-* Catch OCI version errors and return them by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2311[#2311]
-* Make AlphabeticalPolicy string check case insensitive by https://github.com/aditditto[@aditditto] in https://github.com/rancher/fleet/pull/2216[#2216]
-* Ignore not-found errors when deleting bundle deployments by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2329[#2329]
-* Bump helm fork to 3.14.4 by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2337[#2337]
-* Add missing serviceName in fleet-agent statefulset by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2045[#2045]
-* Fix gitjob log messages for controller and webhook by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2367[#2367]
-* Fix helm deployer ignoring kubeconfig CLI arg by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2112[#2112]
-* Return commit for revision instead of HEAD by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2410[#2410]
-* Merges gitrepo and gitops controllers by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2537[#2537]
-* Partially replace cleanup with finalizers by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2431[#2431]
-* Moves functionality from gitrepo to gitjob controller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2475[#2475]
-
-[discrete]
-== Redesign
-
-* Convert fleet-agent to controller-runtime by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1772[#1772]
-* Convert fleetcontroller to controller-runtime by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2018[#2018]
-* Move `rancher/gitjob` logic to this repository by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2098[#2098]
-* Split fleet-agent by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1905[#1905]
-* Switch container images to busybox and suse/git by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1940[#1940]
-* Remove `GitJob` resource by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2129[#2129]
-* Clustergroup controller migration by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2400[#2400]
-
-[discrete]
-== Performance
-
-* Reduce the number of times that Bundle resources are serialized by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1952[#1952]
-* Replace json-based implementation of DeepCopy on GenericMap by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1915[#1915]
-
-[discrete]
-== What's Changed
+=== What's Changed
 
 .Click to Expand Details
 [%collapsible]
@@ -137,8 +64,77 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * Gitjob controller updates GitRepo with generation it is reconciling by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2451[#2451]
 ====
 
-[discrete]
-== CI / Automation
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.5...v0.10.0[v0.9.5...v0.10.0]
+
+=== Additions
+
+* Populate bundle status from bundleDeployment status resources by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2535[#2535]
+* Add strict TLS mode support by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2507[#2507]
+* Adding NodeSelection for Controller Shards by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2505[#2505]
+* Extend strict TLS mode to `fleet-agent` container by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2556[#2556]
+* Gitcloner recurses submodules by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2557[#2557]
+* Bundle content storage in OCI by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2561[#2561]
+* Add metrics to gitops controller by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2530[#2530]
+* Use bundleDeployment to store resources in gitRepo status by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2523[#2523]
+* Adds extraEnv to gitjob and fleet-controller deployments by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2493[#2493]
+* Deprecate "fleet test" command, previously used to debug chart by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2113[#2113]
+* Support for Azure DevOps Webhook for gitRepos using SSH URL by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2440[#2440]
+* Keep CRDs when deleting a Bundle by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2028[#2028]
+* Add correctDrift to targetCustomization by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2014[#2014]
+* Add target/deploy/dry-run CLI commands by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2102[#2102]
+* Adds option to disable polling for Git repos by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2226[#2226]
+* Only create Content resource if Bundle matches any target by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2239[#2239]
+* Removes cluster node status reporting from agent by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2190[#2190]
+* Merge controller and gitjob images by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2236[#2236]
+* Add static sharding support by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2323[#2323]
+* Add Prometheus Metrics by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2172[#2172]
+* Merge binaries by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2361[#2361]
+* Configurable leader election via chart values by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1981[#1981]
+* Replace ImageScan and Bundle Labels With fleet.yaml Labels by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2360[#2360]
+* Reduce logging for bundles from cleanup controller by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2393[#2393]
+* Delete namespace when a gitRepo is deleted by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2373[#2373]
+* Add readOnlyRootFilesystem to deployment_gitjob.yaml by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2379[#2379]
+* Creation of a New Webhook endpoint for Github test Webhook by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2395[#2395]
+* Add a Parameter to Configure Worker count for fleet-controller by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2430[#2430]
+
+=== Bugfixes
+
+* Ignore status fields during drift detection by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2522[#2522]
+* Fixes error display and improves user experience in git poller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2542[#2542]
+* Honor Helm's MaxHistory when using drift correction by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2519[#2519]
+* Remove trailing comma from bootstrap template by https://github.com/Danil-Grigorev[@Danil-Grigorev] in https://github.com/rancher/fleet/pull/2452[#2452]
+* Do not count deleted bundledeployments in cluster status by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2454[#2454]
+* Fixes infinite job generation after ForceSyncGeneration changed by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2477[#2477]
+* GitRepo Initial Checkout when DisablePolling is True by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2469[#2469]
+* Filter namespaces by the kubernetes.io/metadata.name label by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2009[#2009]
+* Catch OCI version errors and return them by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2311[#2311]
+* Make AlphabeticalPolicy string check case insensitive by https://github.com/aditditto[@aditditto] in https://github.com/rancher/fleet/pull/2216[#2216]
+* Ignore not-found errors when deleting bundle deployments by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2329[#2329]
+* Bump helm fork to 3.14.4 by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2337[#2337]
+* Add missing serviceName in fleet-agent statefulset by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2045[#2045]
+* Fix gitjob log messages for controller and webhook by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2367[#2367]
+* Fix helm deployer ignoring kubeconfig CLI arg by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2112[#2112]
+* Return commit for revision instead of HEAD by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2410[#2410]
+* Merges gitrepo and gitops controllers by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2537[#2537]
+* Partially replace cleanup with finalizers by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2431[#2431]
+* Moves functionality from gitrepo to gitjob controller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2475[#2475]
+
+=== Redesign
+
+* Convert fleet-agent to controller-runtime by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1772[#1772]
+* Convert fleetcontroller to controller-runtime by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2018[#2018]
+* Move `rancher/gitjob` logic to this repository by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2098[#2098]
+* Split fleet-agent by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1905[#1905]
+* Switch container images to busybox and suse/git by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1940[#1940]
+* Remove `GitJob` resource by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2129[#2129]
+* Clustergroup controller migration by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2400[#2400]
+
+=== Performance
+
+* Reduce the number of times that Bundle resources are serialized by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1952[#1952]
+* Replace json-based implementation of DeepCopy on GenericMap by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1915[#1915]
+
+=== CI / Automation
 
 .Click to Expand Details
 [%collapsible]
@@ -223,8 +219,6 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * metrics: make sure metrics work well with sharding by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/2420[#2420]
 * Re-enable fossa by https://github.com/olblak[@olblak] in https://github.com/rancher/fleet/pull/2446[#2446]
 ====
-
-*Full Changelog*: link:++https://github.com/rancher/fleet/compare/v0.9.5...v0.10.0++[v0.9.5...v0.10.0]
 
 == Download
 

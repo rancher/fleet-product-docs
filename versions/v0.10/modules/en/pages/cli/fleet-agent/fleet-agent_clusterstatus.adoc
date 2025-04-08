@@ -1,4 +1,4 @@
-== fleet-agent clusterstatus
+= fleet-agent clusterstatus
 
 Continuously report resource status to the upstream cluster
 
@@ -6,7 +6,7 @@ Continuously report resource status to the upstream cluster
 fleet-agent clusterstatus [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --checkin-interval string   How often to post cluster status
@@ -17,6 +17,6 @@ fleet-agent clusterstatus [flags]
       --namespace string          system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
-* xref:./fleet-agent.adoc[fleet-agent]	 -
+* xref:./fleet-agent.adoc[fleet-agent]	 - Manage operations with the Fleet agent that communicates with the Fleet controller

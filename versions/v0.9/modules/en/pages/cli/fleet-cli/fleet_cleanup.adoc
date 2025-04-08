@@ -1,4 +1,4 @@
-== fleet cleanup
+= fleet cleanup
 
 Clean up outdated cluster registrations
 
@@ -6,7 +6,7 @@ Clean up outdated cluster registrations
 fleet cleanup [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --debug             Turn on debug logging
@@ -17,7 +17,7 @@ fleet cleanup [flags]
       --min string        Minimum delay between deletes (default: 10ms)
 ----
 
-=== Options inherited from parent commands
+== Options inherited from parent commands
 
 ----
       --context string            kubeconfig context for authentication
@@ -26,6 +26,6 @@ fleet cleanup [flags]
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 -
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations

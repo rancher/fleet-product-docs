@@ -1,0 +1,62 @@
+= v0.9.1
+:date: 2024-03-21 16:35:26 +0000 UTC
+
+* (rancherio-gh-m) released this 2024-03-21 16:35:26 +0000 UTC*
+
+== Release Note
+
+=== What's Changed
+
+* Bump to https://github.com/rancher/gitjob/releases/tag/v0.9.1[gitjob chart v0.9.1] by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2079[#2079]
+* OCI test changes by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1959[#1959]
+* OCI auth test changes by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1961[#1961]
+* Remove s390x by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2027[#2027]
+* Remove s390x by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/gitjob/pull/381[rancher/gitjob#381]
+* BCI base version by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2064[#2064]
+* Update CI for k8s 1.29 by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2072[#2072]
+* Bump go git 5.11 by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2059[#2059]
+* Bump go-git module by https://github.com/manno[@manno] in https://github.com/rancher/gitjob/pull/406[rancher/gitjob#406]
+* Bump wrangler/v2 by https://github.com/manno[@manno] in https://github.com/rancher/gitjob/pull/408[rancher/gitjob#408]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.0...v0.9.1[v0.9.0\...v0.9.1]
+
+=== Additions
+
+* Allow correctDrift to be overridden in target customization by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/1982[#1982]
+* Add azure webhook by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/gitjob/pull/412[rancher/gitjob#412]
+* Keep CRDs when deleting a Bundle by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/fleet/pull/2024[#2024]
+* Add security context to token cleanup job by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2192[#2192]
+
+=== Performance
+
+* Use index when listing BundleDeployments by Bundle by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1954[#1954]
+* Replace json-based implementation of DeepCopy on GenericMap by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1955[#1955]
+* Use UniqueApplyForResourceVersion in Bundle and GitRepo GeneratingHandlers by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2061[#2061]
+* Reduce BundleDeployment triggering on deployed resources updates by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2031[#2031]
+
+=== Bugfixes
+
+* Fix azure devops git clone error by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/gitjob/pull/400[rancher/gitjob#400]
+* Add http proxy env vars to containers and initContainers created by GitJob by https://github.com/raulcabello[@raulcabello] in https://github.com/rancher/gitjob/pull/380[rancher/gitjob#380]
+* Add support for Azure DevOps Webhook for gitRepos using SSH URL by https://github.com/p-se[@p-se] in https://github.com/rancher/gitjob/pull/446[rancher/gitjob#446]
+* Fixes panic when imagescan uses prereleases and * by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2183[#2183]
+* Fix Existing Namespace Not Found By Label by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2204[#2204]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.1/sha256sum-amd64.txt[sha256sum-amd64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleetcontroller-windows-amd64.exe[fleetcontroller-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleetagent-linux-amd64[fleetagent-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleet-crd-0.9.1.tgz[fleet-crd-0.9.1.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleet-agent-0.9.1.tgz[fleet-agent-0.9.1.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleet-0.9.1.tgz[fleet-0.9.1.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/sha256sum-arm64.txt[sha256sum-arm64.txt]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.9.1/fleet-linux-arm64[fleet-linux-arm64]
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.1[here]_

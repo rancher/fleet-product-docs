@@ -3,7 +3,7 @@
 
 * (github-actions[bot]) released this 2024-10-17 15:02:32 +0000 UTC*
 
-== Description
+== Release Note
 
 === What's Changed
 
@@ -24,7 +24,7 @@
 * Limit `Deployed bundle` logs by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2946[#2946]
 * Cleanup jobs back to cronjob by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2952[#2952]
 
-*Full Changelog*: link:++https://github.com/rancher/fleet/compare/v0.10.3...v0.10.4++[v0.10.3...v0.10.4]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.3...v0.10.4[v0.10.3...v0.10.4]
 
 == Download
 
