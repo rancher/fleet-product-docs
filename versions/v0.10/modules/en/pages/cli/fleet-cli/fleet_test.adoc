@@ -1,4 +1,4 @@
-== fleet test
+= fleet test
 
 Match a bundle to a target and render the output (deprecated)
 
@@ -6,7 +6,7 @@ Match a bundle to a target and render the output (deprecated)
 fleet test [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -b, --bundle-file string    Location of the raw Bundle resource yaml
@@ -20,6 +20,6 @@ fleet test [flags]
   -t, --target string         Explicit target to match
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet.adoc[fleet]	 - Manage Fleet operations

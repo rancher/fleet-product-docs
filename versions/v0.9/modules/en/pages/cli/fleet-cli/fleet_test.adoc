@@ -1,4 +1,4 @@
-== fleet test
+= fleet test
 
 Match a bundle to a target and render the output
 
@@ -6,7 +6,7 @@ Match a bundle to a target and render the output
 fleet test [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -b, --bundle-file string    Location of the raw Bundle resource yaml
@@ -22,7 +22,7 @@ fleet test [flags]
   -t, --target string         Explicit target to match
 ----
 
-=== Options inherited from parent commands
+== Options inherited from parent commands
 
 ----
       --context string            kubeconfig context for authentication
@@ -31,6 +31,6 @@ fleet test [flags]
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet.adoc[fleet]	 - Manage Fleet operations

@@ -1,4 +1,4 @@
-== fleet apply
+= fleet apply
 
 Create bundles from directories, and output them or apply them on a cluster
 
@@ -6,7 +6,7 @@ Create bundles from directories, and output them or apply them on a cluster
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
-=== Options
+== Options
 
 ----
   -b, --bundle-file string                     Location of the raw Bundle resource yaml
@@ -44,6 +44,6 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --username string                        Basic auth username for helm repo
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet.adoc[fleet]	 - Manage Fleet operations

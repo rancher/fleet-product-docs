@@ -1,4 +1,4 @@
-== fleet target
+= fleet target
 
 Print available targets for a bundle
 
@@ -6,7 +6,7 @@ Print available targets for a bundle
 fleet target [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -b, --bundle-file string                Location of the Bundle resource yaml
@@ -21,6 +21,6 @@ fleet target [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet.adoc[fleet]	 - Manage Fleet operations

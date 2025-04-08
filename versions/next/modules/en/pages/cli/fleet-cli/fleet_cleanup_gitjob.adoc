@@ -1,4 +1,4 @@
-== fleet cleanup gitjob
+= fleet cleanup gitjob
 
 Clean up outdated git jobs
 
@@ -6,7 +6,7 @@ Clean up outdated git jobs
 fleet cleanup gitjob [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --batch-size int      Number of git jobs to retrieve at once (default 5000)
@@ -18,6 +18,6 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources

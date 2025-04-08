@@ -1,4 +1,4 @@
-== fleet-manager
+= fleet-manager
 
 Configure the Fleet manager that communicates with the Fleet agent
 
@@ -6,7 +6,7 @@ Configure the Fleet manager that communicates with the Fleet agent
 fleet-manager [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --debug               Turn on debug logging

@@ -1,4 +1,4 @@
-== fleet gitcloner
+= fleet gitcloner
 
 Clones a git repository
 
@@ -6,7 +6,7 @@ Clones a git repository
 fleet gitcloner [REPO] [PATH] [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -b, --branch string                 git branch
@@ -20,6 +20,6 @@ fleet gitcloner [REPO] [PATH] [flags]
   -u, --username string               user name for basic auth
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet.adoc[fleet]	 - Manage Fleet operations

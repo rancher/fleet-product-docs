@@ -1,4 +1,4 @@
-== fleet cleanup
+= fleet cleanup
 
 Clean up outdated resources
 
@@ -6,13 +6,13 @@ Clean up outdated resources
 fleet cleanup [flags]
 ----
 
-=== Options
+== Options
 
 ----
   -h, --help   help for cleanup
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet.adoc[fleet]	 - Manage Fleet operations
 * xref:./fleet_cleanup_clusterregistration.adoc[fleet cleanup clusterregistration]	 - Clean up outdated cluster registrations

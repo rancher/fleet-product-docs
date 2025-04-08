@@ -1,4 +1,4 @@
-== fleet cleanup clusterregistration
+= fleet cleanup clusterregistration
 
 Clean up outdated cluster registrations
 
@@ -6,7 +6,7 @@ Clean up outdated cluster registrations
 fleet cleanup clusterregistration [flags]
 ----
 
-=== Options
+== Options
 
 ----
       --context string      kubeconfig context for authentication
@@ -20,6 +20,6 @@ fleet cleanup clusterregistration [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:./fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources
