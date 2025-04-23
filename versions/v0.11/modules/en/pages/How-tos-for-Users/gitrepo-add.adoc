@@ -4,11 +4,11 @@
 == Create GitRepo Instance
 
 Git repositories are registered by creating a `GitRepo` resource in Kubernetes. Refer
-to the xref:./tut-deployment.adoc[creating a deployment tutorial] for examples.
+to the xref:Tutorials/tut-deployment.adoc[creating a deployment tutorial] for examples.
 
-xref:./gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
+xref:Explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
 
-The available fields of the GitRepo custom resource are documented in the xref:./ref-gitrepo.adoc[GitRepo resource reference]
+The available fields of the GitRepo custom resource are documented in the xref:Reference/ref-gitrepo.adoc[GitRepo resource reference]
 
 === Proper Namespace
 
@@ -17,9 +17,9 @@ Git repos are added to the {product_name} manager using the `GitRepo` custom res
 * `fleet-default` will contain all the downstream clusters that are already registered through Rancher.
 * `fleet-local` will contain the local cluster by default.
 
-If you are using {product_name} in a xref:./concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:./namespaces#_cluster_registration_namespace_fleet_local[here] for more on the `fleet-local` namespace.
+If you are using {product_name} in a xref:Explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:Explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[here] for more on the `fleet-local` namespace.
 
-For a xref:./concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
+For a xref:Explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
 == Override Workload's Namespace
 
@@ -120,7 +120,7 @@ stringData:
 
 === Using HTTP Auth
 
-Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:./troubleshooting#_http_secrets_in_github[HTTP secrets in Github].
+Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:troubleshooting.adoc#_http_secrets_in_github[HTTP secrets in Github].
 
  kubectl create secret generic basic-auth-secret -n fleet-default --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
 
@@ -200,7 +200,7 @@ It's recommended not to store credentials in Git. Even if the repository is prop
 As a workaround tools like SOPS can be used to encrypt the credentials.
 
 Instead it is recommended to reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles this must be done in the manifests, e.g. by https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].
-Helm-style bundles can use xref:gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
+Helm-style bundles can use xref:Explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
 When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, it is recommended to configure the upstream cluster to include several {product_name} CRDs in encryption resource list:
 
@@ -214,4 +214,4 @@ When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encryp
 
 **Troubleshooting**
 
-See {product_name} Troubleshooting section xref:./troubleshooting.adoc[here].
+See {product_name} Troubleshooting section xref:troubleshooting.adoc[here].

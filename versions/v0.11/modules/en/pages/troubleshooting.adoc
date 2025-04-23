@@ -69,7 +69,7 @@ kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"
 
 === Check a chart rendering error in `Kustomize`?
 
-Check the xref:./troubleshooting.adoc#_fetch_the_log_from_fleet_controller[`fleet-controller` logs] and the xref:./troubleshooting.adoc#_fetch_the_log_from_the_fleet_agent[`fleet-agent` logs].
+Check the xref:troubleshooting.adoc#_fetch_the_log_from_fleet_controller[`fleet-controller` logs] and the xref:troubleshooting.adoc#_fetch_the_log_from_the_fleet_agent[`fleet-agent` logs].
 
 === Check errors about watching or checking out the `GitRepo`, or about the downloaded Helm repo in `fleet.yaml`?
 
@@ -125,7 +125,7 @@ When testing {product_name} with private git repositories, you will notice that 
 
 === {product_name} fails with bad response code: 403
 
-If your GitJob returns the error below, the problem may be that {product_name} cannot access the Helm repo you specified in your xref:./ref-fleet-yaml.adoc[`fleet.yaml`]:
+If your GitJob returns the error below, the problem may be that {product_name} cannot access the Helm repo you specified in your xref:Reference/ref-fleet-yaml.adoc[`fleet.yaml`]:
 
 ----
 time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
@@ -203,14 +203,14 @@ Based on the above log, you can add the following entry to remove the operation:
 
 *Modified* means that there is a mismatch between the actual state and the desired state, the source of truth, which lives in the git repository.
 
-. Check the xref:./bundle-diffs.adoc[bundle diffs documentation] for more information.
+. Check the xref:How-tos-for-Users/bundle-diffs.adoc[bundle diffs documentation] for more information.
 . You can also force update the `gitrepo` to perform a manual resync. Select *GitRepo* on the left navigation bar, then select *Force Update*.
 
 === Bundle has a Horizontal Pod Autoscaler (HPA) in modified state
 
 For bundles with an HPA, the expected state is `Modified`, as the bundle contains fields that differ from the state of the Bundle at deployment - usually `ReplicaSet`.
 
-You must define a patch in the `fleet.yaml` to ignore this field according to xref:./troubleshooting.adoc#_gitrepo_or_bundle_stuck_in_modified_state[`GitRepo` or `Bundle` stuck in modified state].
+You must define a patch in the `fleet.yaml` to ignore this field according to xref:troubleshooting.adoc#_gitrepo_or_bundle_stuck_in_modified_state[`GitRepo` or `Bundle` stuck in modified state].
 
 Here is an example of such a patch for the deployment `nginx` in namespace `default`:
 

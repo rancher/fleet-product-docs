@@ -5,11 +5,11 @@ The `fleet.yaml` file adds options to a bundle. Any directory with a
 `fleet.yaml` is automatically turned into bundle.
 
 For more information on how to use the `fleet.yaml` to customize bundles see
-xref:./gitrepo-content.adoc[Git Repository Contents].
+xref:Explanations/gitrepo-content.adoc[Git Repository Contents].
 
 The content of the fleet.yaml corresponds to the `FleetYAML` struct at
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go],
-which contains the xref:./ref-crds#_bundlespec[BundleSpec].
+which contains the xref:Reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Reference
 
