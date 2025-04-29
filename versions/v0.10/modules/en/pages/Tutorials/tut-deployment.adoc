@@ -8,8 +8,8 @@ This tutorial uses the https://github.com/rancher/fleet-examples[fleet-examples]
 
 [NOTE]
 ====
-For more details on how to structure the repository and configure the deployment of each bundle see xref:./gitrepo-content.adoc[GitRepo Contents].
-For more details on the options that are available per Git repository see xref:./gitrepo-add.adoc[Adding a GitRepo].
+For more details on how to structure the repository and configure the deployment of each bundle see xref:Explanations/gitrepo-content.adoc[GitRepo Contents].
+For more details on the options that are available per Git repository see xref:How-tos-for-Users/gitrepo-add.adoc[Adding a GitRepo].
 ====
 
 
