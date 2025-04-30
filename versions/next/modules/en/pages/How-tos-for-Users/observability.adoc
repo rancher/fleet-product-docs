@@ -5,7 +5,7 @@
 Fleet reports most information via status fields on its custom resources.
 These fields are also used by the Rancher UI to display information about the state of the resources.
 
-See xref:Reference/ref-status-fields.adoc[status fields reference] for more information on status fields and conditions.
+See xref:reference/ref-status-fields.adoc[status fields reference] for more information on status fields and conditions.
 
 == K8s Events
 

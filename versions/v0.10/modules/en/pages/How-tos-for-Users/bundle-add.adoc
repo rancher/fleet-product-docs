@@ -12,7 +12,7 @@ Resources can be compressed with gz. See https://github.com/rancher/rancher/blob
 an example of how Rancher uses compression in go code.
 
 If you would like to deploy in downstream clusters, you need to define targets. Targets work similarly to targets in `GitRepo`.
-See xref:How-tos-for-Users/gitrepo-targets.adoc#_defining_targets[Mapping to Downstream Clusters].
+See xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[Mapping to Downstream Clusters].
 
 The following example creates a nginx `Deployment` in the local cluster:
 
