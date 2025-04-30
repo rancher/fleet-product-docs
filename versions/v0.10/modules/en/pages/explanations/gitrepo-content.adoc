@@ -15,7 +15,7 @@ deployed must *gzip to less than 1MB*.
 == How repos are scanned
 
 Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
-Internally each scanned path will become a xref:./concepts.adoc[bundle] that {product_name} will manage,
+Internally each scanned path will become a xref:explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
 The following files are looked for to determine the how the resources will be deployed.
@@ -33,7 +33,7 @@ The following files are looked for to determine the how the resources will be de
 
 | *fleet.yaml*
 | Any subpath
-| If any fleet.yaml is found a new xref:./concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo
+| If any fleet.yaml is found a new xref:explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo
 
 | ** *.yaml **
 | Any subpath
@@ -85,7 +85,7 @@ This currently comes with a few limitations, the following not being supported:
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
 the resources are deployed and customized.  The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
-and if a subdirectory is found with a `fleet.yaml` a new xref:./concepts.adoc[bundle] is defined that will then be
+and if a subdirectory is found with a `fleet.yaml` a new xref:explanations/concepts.adoc[bundle] is defined that will then be
 configured differently from the parent bundle.
 
 [CAUTION]
@@ -96,10 +96,10 @@ It is up to the user to fulfill the dependency list for the Helm charts. As such
 ====
 
 
-The available fields are documented in the xref:./ref-fleet-yaml.adoc[fleet.yaml reference]
+The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fleet.yaml reference]
 
 For a private Helm repo, users can reference a secret from the git repo resource.
-See xref:./gitrepo-add#_using_private_helm_repositories[Using Private Helm Repositories] for more information.
+See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories] for more information.
 
 == Using Helm Values
 
@@ -243,7 +243,7 @@ using YAML syntax.
 
 == Cluster and Bundle State
 
-See xref:./ref-status-fields.adoc[Cluster and Bundle state].
+See xref:reference/ref-status-fields.adoc[Cluster and Bundle state].
 
 == Nested GitRepo CRs
 
