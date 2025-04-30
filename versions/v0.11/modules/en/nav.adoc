@@ -47,7 +47,7 @@
 ** xref:Reference/ref-bundle.adoc[Bundle Resource]
 * xref:troubleshooting.adoc[Troubleshooting]
 * Changelog
-** xref:Changelogs/v0.11.1.adoc[v0.11.1]
+** xref:changelogs/v0.11.1.adoc[v0.11.1]
 * Experimental Features
 ** xref:Experimental-Features/enableexperimental.adoc[How to enable experimental features]
 ** xref:Experimental-Features/oci-storage.adoc[OCI Storage]
