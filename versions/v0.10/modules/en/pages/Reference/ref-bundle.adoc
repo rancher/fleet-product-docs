@@ -2,7 +2,7 @@
 
 Bundles are automatically created by {product_name} when a `GitRepo` is created.
 
-The content of the resource corresponds to the xref:Reference/ref-crds#_bundlespec[BundleSpec].
+The content of the resource corresponds to the xref:Reference/ref-crds.adoc#_bundlespec[BundleSpec].
 For more information on how to use the Bundle resource xref:How-tos-for-Users/bundle-add.adoc[Create a Bundle Resource].
 
 [,yaml]

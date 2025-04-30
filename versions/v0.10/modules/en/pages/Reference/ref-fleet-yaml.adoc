@@ -9,7 +9,7 @@ xref:Explanations/gitrepo-content.adoc[Git Repository Contents].
 
 The content of the fleet.yaml corresponds to the struct at
 https://github.com/rancher/fleet/blob/b501b7e7864d37e310dfcdb109c73e5aec4240bb/pkg/bundlereader/read.go#L132-L139[pkg/bundlereader/read.go],
-which contains the xref:Reference/ref-crds#_bundlespec[BundleSpec].
+which contains the xref:Reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Reference
 
