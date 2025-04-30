@@ -38,4 +38,4 @@ The parameters are the same, but you have to add the `fleet.` prefix.
 
 Right now {product_name} supports the following experimental features:
 
-* xref:./oci-storage.adoc[`EXPERIMENTAL_OCI_STORAGE`]
+* xref:experimental-features/oci-storage.adoc[`EXPERIMENTAL_OCI_STORAGE`]

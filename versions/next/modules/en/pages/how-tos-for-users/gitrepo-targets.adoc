@@ -161,22 +161,22 @@ NOTE: Configuration management is not limited to deployments but can be expanded
 
 === Supported Customizations
 
-* xref:./ref-crds#_bundledeploymentoptions[DefaultNamespace]
-* xref:./ref-crds#_bundledeploymentoptions[ForceSyncGeneration]
-* xref:./ref-crds#_bundledeploymentoptions[KeepResources]
-* xref:./ref-crds#_bundledeploymentoptions[ServiceAccount]
-* xref:./ref-crds#_bundledeploymentoptions[TargetNamespace]
-* xref:./ref-crds#_helmoptions[Helm.Atomic]
-* xref:./ref-crds#_helmoptions[Helm.Chart]
-* xref:./ref-crds#_helmoptions[Helm.DisablePreProcess]
-* xref:./ref-crds#_helmoptions[Helm.Force]
-* xref:./ref-crds#_helmoptions[Helm.ReleaseName]
-* xref:./ref-crds#_helmoptions[Helm.Repo]
-* xref:./ref-crds#_helmoptions[Helm.TakeOwnership]
-* xref:./ref-crds#_helmoptions[Helm.TimeoutSeconds]
-* xref:./ref-crds#_helmoptions[Helm.ValuesFrom]
-* xref:./ref-crds#_helmoptions[Helm.Values]
-* xref:./ref-crds#_helmoptions[Helm.Version]
+* xref:reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]
+* xref:reference/ref-crds.adoc#_bundledeploymentoptions[ForceSyncGeneration]
+* xref:reference/ref-crds.adoc#_bundledeploymentoptions[KeepResources]
+* xref:reference/ref-crds.adoc#_bundledeploymentoptions[ServiceAccount]
+* xref:reference/ref-crds.adoc#_bundledeploymentoptions[TargetNamespace]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.Atomic]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.Chart]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.DisablePreProcess]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.Force]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.ReleaseName]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.Repo]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.TakeOwnership]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.TimeoutSeconds]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.ValuesFrom]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.Values]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.Version]
 +
 
 [CAUTION]
@@ -191,10 +191,10 @@ etcd's configured maximum blob size. See https://github.com/rancher/fleet/issues
 ====
 
 
-* xref:./ref-crds#_helmoptions[Helm.WaitForJobs]
-* xref:./ref-crds#_kustomizeoptions[Kustomize.Dir]
-* xref:./ref-crds#_yamloptions[YAML.Overlays]
-* xref:./ref-crds#_diffoptions[Diff.ComparePatches]
+* xref:reference/ref-crds.adoc#_helmoptions[Helm.WaitForJobs]
+* xref:reference/ref-crds.adoc#_kustomizeoptions[Kustomize.Dir]
+* xref:reference/ref-crds.adoc#_yamloptions[YAML.Overlays]
+* xref:reference/ref-crds.adoc#_diffoptions[Diff.ComparePatches]
 
 == Additional Examples
 
