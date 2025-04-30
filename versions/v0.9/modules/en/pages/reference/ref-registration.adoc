@@ -3,9 +3,9 @@
 == How does cluster registration work?
 
 This text describes cluster registration with more technical details. The text ignores agent initiated registration, as it's not commonly used.
-xref:./cluster-registration.adoc#_agent_initiated[Agent initiated registration] is xref:./cluster-registration.adoc#_create_cluster_registration_tokens["``ClusterRegistrationToken`` first"], which means pre-creating a cluster is optional.
+xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[Agent initiated registration] is xref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["``ClusterRegistrationToken`` first"], which means pre-creating a cluster is optional.
 
-See "xref:./cluster-registration.adoc[Register Downstream Clusters]" to learn how to register clusters.
+See "xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]" to learn how to register clusters.
 
 [discrete]
 ==== Cluster first
@@ -17,7 +17,7 @@ For manager initiated registration the process is identical for the local cluste
 [discrete]
 ==== Cluster \-> ClusterRegistrationToken + Import Account
 
-Now that a cluster resource exists, `fleet-controller` triggers and runs `import.go` to create the fleet-agent deployment. `fleet-controller` also creates a xref:./architecture.adoc#_security[`clusterregistrationtoken`] and waits for it to be complete. The `clusterregistationtoken` triggers the creation of the import service account, which can create `clusterregistrations` and read any secret in the system registration namespace (eg "cattle-fleet-clusters-system").
+Now that a cluster resource exists, `fleet-controller` triggers and runs `import.go` to create the fleet-agent deployment.`fleet-controller` also creates a xref:explanations/architecture.adoc#_security[`clusterregistrationtoken`] and waits for it to be complete. The `clusterregistationtoken` triggers the creation of the import service account, which can create `clusterregistrations` and read any secret in the system registration namespace (eg "cattle-fleet-clusters-system").
 The `import.go` will enqueue itself until the import service account exists, because that's needed to create the `fleet-agent-bootstrap` secret.
 Now, the `fleet-agent` and the bootstrap secret are present on the downstream cluster
 
@@ -44,8 +44,8 @@ Detailed analysis of the registration process for clusters. This shows the inter
 It's important to note that there are multiple ways to start this:
 
 * Creating a bootstrap config. {product_name} does this for the local agent.
-* Creating a `Cluster` resource with a kubeconfig. Rancher does this for downstream clusters. See xref:./cluster-registration.adoc#_manager_initiated[manager-initiated registration].
-* Create a `ClusterRegistrationToken` resource, optionally create a `Cluster` resource for a pre-defined (`clientID`) cluster. See xref:./cluster-registration.adoc#_agent_initiated[agent-initiated registration].
+* Creating a `Cluster` resource with a kubeconfig. Rancher does this for downstream clusters. See xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager-initiated registration].
+* Create a `ClusterRegistrationToken` resource, optionally create a `Cluster` resource for a pre-defined (`clientID`) cluster. See xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[agent-initiated registration].
 
 image::FleetRegistration.svg[Registration]
 
