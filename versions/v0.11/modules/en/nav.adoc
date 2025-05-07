@@ -31,6 +31,7 @@
 *** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
 *** xref:reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]
 *** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
+*** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
 *** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
 *** xref:reference/cli/fleet-cli/fleet_test.adoc[fleet test]
 *** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
