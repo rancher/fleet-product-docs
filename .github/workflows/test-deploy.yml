@@ -32,6 +32,8 @@ jobs:
               BUILD_STATUS=1
             fi
             echo "BUILD_STATUS=$BUILD_STATUS" >> $GITHUB_ENV
+      - name: Check files for missing nav entries
+        run: bin/files-missing-nav
       - name: Check for build errors
         run: |
           echo ${{ env.BUILD_STATUS }}
