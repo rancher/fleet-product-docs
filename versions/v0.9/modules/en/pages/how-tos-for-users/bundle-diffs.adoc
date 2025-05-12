@@ -8,10 +8,11 @@ The bundled charts may have some objects that are amended at runtime, for exampl
 
 This leads the status of the bundle and associated GitRepo to be reported as "Modified"
 
-image::ModifiedGitRepo.png[]
+image::ModifiedGitRepo.png[Static, 600]
 
 Associated Bundle
-image::ModifiedBundle.png[]
+
+image::ModifiedBundle.png[Static, 600]
 
 {product_name} bundles support the ability to specify a custom http://jsonpatch.com/[jsonPointer patch].
 
