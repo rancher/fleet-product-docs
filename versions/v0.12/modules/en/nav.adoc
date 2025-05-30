@@ -1,4 +1,5 @@
 * xref:index.adoc[Overview]
+* xref:persona.adoc[Key Personas and Their Roles]
 * Tutorials
 ** xref:quickstart.adoc[Quickstart]
 ** xref:tut-deployment.adoc[Creating a Deployment]
