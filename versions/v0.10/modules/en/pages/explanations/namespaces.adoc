@@ -19,7 +19,7 @@ Git repos are added to the {product_name} manager using the `GitRepo` custom res
 * `Fleet-default` will contain all the downstream clusters that are already registered through Rancher.
 * `Fleet-local` will contain the local cluster by default.
 
-If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check https://fleet.rancher.io/namespaces/#fleet-local[here] for more on the `fleet-local` namespace.
+If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. 
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
