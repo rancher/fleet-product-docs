@@ -136,9 +136,7 @@ This will uninstall all deployed bundles, except for the fleet agent, from the d
 ====
 
 If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace
-will always be *fleet-local*. Check
-https://fleet.rancher.io/namespaces/#fleet-local[here] for more on the
-`fleet-local` namespace.
+will always be *fleet-local*. 
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct
 repo that will map to the right target clusters.

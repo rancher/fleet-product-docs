@@ -62,8 +62,7 @@ spec:
   # helmRepoURLRegex: https://charts.rancher.io/*
 
   # Contains the auth secret for private Helm repository for each path.
-  # See [Create a GitRepo Resource](.gitrepo-add#_use_different_helm_credentials_for_each_path)
-  #
+  
   # helmSecretNameForPaths: multi-helm-secret
 
   # To add additional ca-bundle for self-signed certs, caBundle can be
@@ -98,7 +97,7 @@ spec:
 
   # When disablePolling is set to true the git repo won't be checked periodically.
   # It will rely on webhooks only.
-  # See [Using Webhooks Instead of Polling](https://fleet.rancher.io/webhook)
+
   # disablePolling: false
 
   # Paused  causes changes in Git to not be propagated down to the clusters but
@@ -144,3 +143,8 @@ spec:
   #
   # targets: ...
 ----
+
+For more information, refer to:
+
+* xref:../how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Create a GitRepo Resource].
+* xref:../how-tos-for-users/webhook.adoc[Using Webhooks Instead of Polling].

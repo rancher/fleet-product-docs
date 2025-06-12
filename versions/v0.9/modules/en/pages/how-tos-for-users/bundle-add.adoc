@@ -1,8 +1,7 @@
 = Create a Bundle Resource
 
 Bundles are automatically created by {product_name} when a `GitRepo` is created. In most cases `Bundles` should not be created
-manually by the user. If you want to deploy resources from a git repository use a
-https://fleet.rancher.io/gitrepo-add[GitRepo] instead.
+manually by the user. If you want to deploy resources from a git repository use a xref:./gitrepo-add.adoc[GitRepo] instead.
 
 If you want to deploy resources without a git repository follow this guide to create a `Bundle`.
 
@@ -12,7 +11,7 @@ Resources can be compressed with gz. See https://github.com/rancher/rancher/blob
 an example of how Rancher uses compression in go code.
 
 If you would like to deploy in downstream clusters, you need to define targets. Targets work similarly to targets in `GitRepo`.
-See https://fleet.rancher.io/gitrepo-targets#defining-targets[Mapping to Downstream Clusters].
+Refer to xref:gitrepo-targets.adoc#defining-targets[Mapping to Downstream Clusters].
 
 The following example creates a nginx `Deployment` in the local cluster:
 
