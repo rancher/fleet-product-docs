@@ -3,7 +3,7 @@
 The GitRepo resource describes git repositories, how to access them and where the bundles are located.
 
 The content of the resource corresponds to the xref:./ref-crds#_gitrepospec[GitRepoSpec].
-For more information on how to use GitRepo resource, e.g. how to watch private repositories, see xref:./gitrepo-add.adoc[Create a GitRepo Resource].
+For more information on how to use GitRepo resource, e.g. how to watch private repositories, see xref:gitrepo-add.adoc[Create a GitRepo Resource].
 
 [,yaml]
 ----
@@ -145,6 +145,6 @@ spec:
 
 For more information, refer to:
 
-* xref:../how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Create a GitRepo Resource].
-* xref:../how-tos-for-users/webhook.adoc[Using Webhooks Instead of Polling].
+* xref:gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Create a GitRepo Resource].
+* xref:webhook.adoc[Using Webhooks Instead of Polling].
 
