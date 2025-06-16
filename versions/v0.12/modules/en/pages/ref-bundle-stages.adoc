@@ -53,4 +53,4 @@ fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
 fleet deploy --input-file bd.yaml --dry-run
 ----
 
-For information about apply, refer xref:bundle-add.adoc[Create a Bundle Resource].
+For information about apply, refer to xref:bundle-add.adoc[Create a Bundle Resource].
