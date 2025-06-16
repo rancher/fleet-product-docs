@@ -1,7 +1,6 @@
 = Create a Bundle Resource
 
-Bundles are automatically created by {product_name} when a `GitRepo` is created. In most cases `Bundles` should not be created
-manually by the user. If you want to deploy resources from a git repository use a xref:./gitrepo-add.adoc[GitRepo] instead.
+Bundles are automatically created by {product_name} when a `GitRepo` is created. In most cases `Bundles` should not be created manually by the user. If you want to deploy resources from a git repository use a xref:how-tos-for-users/gitrepo-add.adoc[GitRepo] instead.
 
 If you want to deploy resources without a git repository follow this guide to create a `Bundle`.
 
