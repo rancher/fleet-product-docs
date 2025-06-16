@@ -216,7 +216,7 @@ targetCustomizations:
   clusterName: fleetname
 ----
 
-Refer to xref:../how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clusters] for more information and a list of supported customizations.
+Refer to xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clusters] for more information and a list of supported customizations.
 
 == Raw YAML Resource Customization
 
