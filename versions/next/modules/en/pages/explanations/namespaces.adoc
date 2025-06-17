@@ -135,7 +135,7 @@ Deleting the workspace, cluster registration namespace, will delete all the clus
 This will uninstall all deployed bundles, except for the fleet agent, from the deleted clusters.
 ====
 
-If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*.  Refer to the <<#_fleet_local_local_workspace_cluster_registration_namespace,`fleet-local` namespaces section>> for more information.
+If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*.  Refer to the <<_cluster_registration_namespace_fleet_local,`fleet-local` namespaces section>> for more information.
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct
 repo that will map to the right target clusters.
