@@ -2,8 +2,8 @@
 
 The GitRepo resource describes git repositories, how to access them and where the bundles are located.
 
-The content of the resource corresponds to the xref:./ref-crds#_gitrepospec[GitRepoSpec].
-For more information on how to use GitRepo resource, e.g. how to watch private repositories, see xref:./gitrepo-add.adoc[Create a GitRepo Resource].
+The content of the resource corresponds to the xref:ref-crds.adoc#_gitrepospec[GitRepoSpec].
+For more information on how to use GitRepo resource, e.g. how to watch private repositories, see xref:gitrepo-add.adoc[Create a GitRepo Resource].
 
 [,yaml]
 ----
@@ -62,7 +62,6 @@ spec:
   # helmRepoURLRegex: https://charts.rancher.io/*
 
   # Contains the auth secret for private Helm repository for each path.
-  # See [Create a GitRepo Resource](.gitrepo-add#_use_different_helm_credentials_for_each_path)
   #
   # helmSecretNameForPaths: multi-helm-secret
 
@@ -98,7 +97,6 @@ spec:
 
   # When disablePolling is set to true the git repo won't be checked periodically.
   # It will rely on webhooks only.
-  # See [Using Webhooks Instead of Polling](https://fleet.rancher.io/webhook)
   # disablePolling: false
 
   # Paused  causes changes in Git to not be propagated down to the clusters but
@@ -144,3 +142,9 @@ spec:
   #
   # targets: ...
 ----
+
+For more information, refer to:
+
+* xref:gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Create a GitRepo Resource].
+* xref:webhook.adoc[Using Webhooks Instead of Polling].
+

@@ -48,8 +48,9 @@ The deploy command can be used to bring bundles to air-gapped clusters.
 ----
 git clone https://github.com/rancher/fleet-test-data
 cd fleet-test-data
-# for information about apply see https://fleet.rancher.io/bundle-add
 fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
 fleet deploy --input-file bd.yaml --dry-run
 ----
+
+For information about apply, refer to xref:how-tos-for-users/bundle-add.adoc[Create a Bundle Resource].
