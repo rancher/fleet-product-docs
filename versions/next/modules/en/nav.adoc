@@ -26,6 +26,7 @@
 ** xref:how-tos-for-users/observability.adoc[Observability]
 ** xref:how-tos-for-users/oci-storage.adoc[OCI Storage]
 ** xref:how-tos-for-users/rollout.adoc[Rollout Strategy]
+** xref:how-tos-for-users/helm-ops.adoc[Helm Ops]
 
 * Reference
 ** CLI
