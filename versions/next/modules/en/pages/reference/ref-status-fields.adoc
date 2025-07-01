@@ -56,6 +56,25 @@ The resources lists contain the deployed resources, categorized under `Bundles` 
 
 The deployed resources within bundles can be found in `status.ResourceKey`. This key represents the actual resources deployed via `bundleDeployments`.
 
+=== HelmOp Conditions
+
+Ready::
+All bundle deployments are ready.
+
+Accepted::
+The HelmOp can manage deployments to target clusters. This condition is false if:
+
+* Helm options are invalid
+* A chart version cannot be resolved
+* Scheduling a polling job fails
+
+Polled::
+True if polling is enabled and the last attempt succeeded, False otherwise. If False, an error message explains the polling failure.
+
+=== Resources List
+
+The resource lists contain the resources deployed to target clusters, categorized under ++GitRepos++ and ++HelmOps++.
+
 === GitRepos
 
 Similar to bundles, the deployed resources in `GitRepos` are listed in `status.Resources`. This list is also derived from `bundleDeployments`.

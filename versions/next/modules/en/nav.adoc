@@ -23,6 +23,10 @@
 ** xref:how-tos-for-users/imagescan.adoc[Using Image Scan to Update Container Image References]
 ** xref:how-tos-for-users/bundle-add.adoc[Create a Bundle Resource]
 ** xref:how-tos-for-users/observability.adoc[Observability]
+** xref:how-tos-for-users/observability.adoc[Observability]
+** xref:how-tos-for-users/oci-storage.adoc[OCI Storage]
+** xref:how-tos-for-users/rollout.adoc[Rollout Strategy]
+
 * Reference
 ** CLI
 *** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
@@ -54,4 +58,3 @@
 ** xref:changelogs/next.adoc[Next]
 * Experimental Features
 ** xref:experimental-features/enableexperimental.adoc[How to enable experimental features]
-** xref:experimental-features/oci-storage.adoc[OCI Storage]
