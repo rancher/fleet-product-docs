@@ -2,7 +2,7 @@
 
 Fleet uses a rollout strategy to control how apps are deployed across clusters. You can define the order and grouping of cluster deployments using partitions, enabling controlled rollouts and safer updates.
 
-Fleet evaluates the ++Ready++ status of each ++BundleDeployment++ to determine when to proceed to the next partition. For more information, refer to the <<ref-status-fields.adoc,Status Fields>>.
+Fleet evaluates the ++Ready++ status of each ++BundleDeployment++ to determine when to proceed to the next partition. For more information, refer to the xref:reference\ref-status-fields.adoc[Status fields].
 
 During a rollout, the GitRepo status indicates deployment progress. This helps you understand when bundles become ++Ready++ before continuing:
 
@@ -13,7 +13,7 @@ During a rollout, the GitRepo status indicates deployment progress. This helps y
 ** One or more clusters may be in a ++NotReady++ state.
 ** Remaining clusters are marked ++OutOfSync++ until the deployment continues.
 
-The rollout configuration options are documented in the ++rolloutStrategy++ field of the <<ref-fleet-yaml.adoc,fleet.yaml reference>>.
+The rollout configuration options are documented in the ++rolloutStrategy++ field of the xref:reference\ref-fleet-yaml.adoc[++fleet.yaml++].
 
 [NOTE]
 ====
