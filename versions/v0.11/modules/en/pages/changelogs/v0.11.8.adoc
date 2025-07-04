@@ -1,0 +1,38 @@
+= v0.11.8
+:date: 2025-05-16 08:32:50 +0000 UTC
+
+*(github-actions[bot]) released this 2025-05-16 08:32:50 +0000 UTC*
+
+== Release Note
+
+=== What's Changed
+
+* Stable BundleDeployment modified/nonReady status by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3533[#3533]
+* Prevent empty patches drift reconciler by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3578[#3578]
+* Calls semaphore Acquire inside go routine by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3634[#3634]
+* Remove serviceaccount migration by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3603[#3603]
+* Update dependencies: golang.org/x/net to v0.38.0 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3676[#3676]
+* Update gomod-k8sio-dependencies (release/v0.11) by @renovate-rancher in https://github.com/rancher/fleet/pull/3657[#3657]
+
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.7...v0.11.8[v0.11.7...v0.11.8]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-crd-0.11.8.tgz[fleet-crd-0.11.8.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-0.11.8.tgz[fleet-0.11.8.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-agent-0.11.8.tgz[fleet-agent-0.11.8.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet_0.11.8_checksums.txt[fleet_0.11.8_checksums.txt]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.8/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+[NOTE]
+====
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.8[Fleet release v0.11.8]
+====

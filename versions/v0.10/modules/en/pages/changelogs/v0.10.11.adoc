@@ -1,0 +1,37 @@
+= v0.10.11
+:page-date: 2025-04-15 16:19:35 +0000 UTC
+
+*Released on 2025-04-15 16:19:35 +0000 UTC by `github-actions[bot]`.*
+
+== Description
+
+=== What's Changed
+
+
+* Support strict host key checks by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3526[#3526]
+* Add Lifecycle Secrets by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3530[#3530]
+* Prevent panic when fetching latest commit by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3541[#3541]
+* Bump Go modules by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3507[#3507]
+* Bump Go toolchain version to 1.23.8 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3546[#3546]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.10...v0.10.11[v0.10.10...v0.10.11]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet-agent-0.10.11.tgz[fleet-agent-v0.10.11.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet-crd-0.10.11.tgz[fleet-crd-0.10.11.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet-0.10.11.tgz[fleet-0.10.11.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet_0.10.11_checksums.txt[fleet_0.10.11_checksums.txt]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleetagent-linux-amd64[fleetagent-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.10.11/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+[NOTE]
+====
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.11[Fleet release v0.10.11]
+====

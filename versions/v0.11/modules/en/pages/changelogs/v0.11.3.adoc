@@ -1,0 +1,39 @@
+= v0.11.3
+:date: 2025-01-17 16:03:21 +0000 UTC
+
+*(github-actions[bot]) released this 2025-01-17 16:03:21 +0000 UTC*
+
+== Release Note
+
+=== What's Changed
+
+* Calculate Clusters resourceCount from BundleDeployments instead of GitRepos by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3145[#3145]
+* Make agent worker counts configurable by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3162[#3162]
+* Adds logs for new commit or error checking for the latest by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3184[#3184]
+* Backport of Add jitter and resync to polling by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3198[#3198]
+* Add template errors to bundle and gitrepo status by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3193[#3193]
+* Bump golang.org/x/crypto to v0.31.0 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3154[#3154]
+* Update golang.org/x/net to v0.33.0 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3173[#3173]
+* Update go-git to v5.13.1 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3206[#3206]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.2...v0.11.3[v0.11.2...v0.11.3]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet-crd-0.11.3.tgz[fleet-crd-0.11.3.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet-0.11.3.tgz[fleet-0.11.3.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet-agent-0.11.3.tgz[fleet-agent-0.11.3.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet_0.11.3_checksums.txt[fleet_0.11.3_checksums.txt]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.3/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+[NOTE]
+====
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.3[Fleet release v0.11.3]
+====

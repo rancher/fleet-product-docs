@@ -1,0 +1,35 @@
+= v0.10.9
+:page-date: 2025-02-19 17:08:31 +0000 UTC
+
+*Released on 2025-02-19 17:08:31 +0000 UTC by `github-actions[bot]`.*
+
+== Description
+
+=== What's Changed
+
+* Always returns result with RequeueAfter set by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3239[#3239]
+* Prevent empty Patch updates by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3254[#3254]
+* Bump Go to 1.23.6 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3339[#3339]
+* Add affected cluster to template error message by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3346[#3346]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.8...v0.10.9[v0.10.8...v0.10.9]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-agent-0.10.9.tgz[fleet-agent-v0.10.9.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-crd-0.10.9.tgz[fleet-crd-0.10.9.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-0.10.9.tgz[fleet-0.10.9.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet_0.10.9_checksums.txt[fleet_0.10.9_checksums.txt]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleetagent-linux-amd64[fleetagent-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.10.9/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+[NOTE]
+====
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.9[Fleet release v0.10.9]
+====

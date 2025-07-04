@@ -1,0 +1,38 @@
+= v0.11.6
+:date: 2025-04-17 08:11:53 +0000 UTC
+
+*(github-actions[bot]) released this 2025-04-17 08:11:53 +0000 UTC*
+
+== Release Note
+
+=== What's Changed
+
+* Ensure same bundle is selected for non-ready status by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3496[#3496]
+* Support strict host key checks by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3525[#3525]
+* Add Lifecycle Secrets by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3529[#3529]
+* Prevent panic when fetching latest commit by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3540[#3540]
+* Prevent breaking change in PerClusterState on rollback by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3549[#3549]
+* Bump Go toolchain version to 1.23.8 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3545[#3545]
+* Bump Go modules by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3506[#3506]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.5...v0.11.6[v0.11.5...v0.11.6]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet-crd-0.11.6.tgz[fleet-crd-0.11.6.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet-0.11.6.tgz[fleet-0.11.6.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet-agent-0.11.6.tgz[fleet-agent-0.11.6.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet_0.11.6_checksums.txt[fleet_0.11.6_checksums.txt]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.6/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+[NOTE]
+====
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.6[Fleet release v0.11.6]
+====

@@ -1,0 +1,33 @@
+= v0.11.2
+:date: 2024-12-12 15:16:49 +0000 UTC
+
+*(github-actions[bot]) released this 2024-12-12 15:16:49 +0000 UTC*
+
+== Release Note
+
+=== What's Changed
+
+* Deduplicate status messages (https://github.com/rancher/fleet/pull/3042[#3042]) by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3119[#3119]
+* Disable jobs cleanup cronjob if gitOps is disabled by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3129[#3129]
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.1...v0.11.2[v0.11.1...v0.11.2]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet-crd-0.11.2.tgz[fleet-crd-0.11.2.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet-0.11.2.tgz[fleet-0.11.2.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet-agent-0.11.2.tgz[fleet-agent-0.11.2.tgz]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet_0.11.2_checksums.txt[fleet_0.11.2_checksums.txt]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet-linux-amd64[fleet-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleet-linux-arm64[fleet-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleetagent-linux-arm64[fleetagent-linux-arm64]
+* https://github.com/rancher/fleet/releases/download/v0.11.2/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+[NOTE]
+====
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.2[Fleet release v0.11.2]
+====
