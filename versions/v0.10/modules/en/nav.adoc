@@ -53,3 +53,4 @@
 ** xref:changelogs/v0.10.3.adoc[v0.10.3]
 ** xref:changelogs/v0.10.4.adoc[v0.10.4]
 ** xref:changelogs/v0.10.6.adoc[v0.10.6]
+** xref:changelogs/v0.10.14.adoc[v0.10.14]

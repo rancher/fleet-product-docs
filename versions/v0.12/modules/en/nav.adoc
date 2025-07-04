@@ -52,6 +52,7 @@
 * xref:troubleshooting.adoc[Troubleshooting]
 * Changelog
 ** xref:changelogs/v0.12.0.adoc[v0.12.0]
+** xref:changelogs/v0.12.4.adoc[v0.12.4]
 * Experimental Features
 ** xref:enableexperimental.adoc[How to enable experimental features]
 ** xref:oci-storage.adoc[OCI Storage]
