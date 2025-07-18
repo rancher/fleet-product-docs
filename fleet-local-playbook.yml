@@ -1,7 +1,7 @@
 site:
-  title: Continous Delivery
+  title: Fleet
   url: /
-  start_page: v0.12@continuous-delivery:en:index.adoc
+  start_page: v0.12@Fleet:en:index.adoc
 
 content:
   sources:
@@ -12,7 +12,7 @@ content:
 # Description: SUSE UI bundle
 ui:
   bundle:
-    url: https://github.com/SUSEdoc/dsc-style-bundle/blob/main/default-ui/ui-bundle.zip?raw=true
+    url: ./product-ui-bundle.zip
     snapshot: true
   supplemental_files: ./dsc-style-bundle/supplemental-files/rancher
 

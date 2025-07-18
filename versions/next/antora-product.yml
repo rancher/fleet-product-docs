@@ -1,0 +1,13 @@
+name: continuous-delivery
+title: Continuous Delivery
+version: next
+display_version: 'Next'
+start_page: index.adoc
+asciidoc:
+  attributes:
+    product_name: SUSE® Rancher Prime Continuous Delivery 
+    build-type: prodcut
+nav:
+  - modules/nav.adoc
+
+

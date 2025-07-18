@@ -1,0 +1,221 @@
+= OCI Storage
+
+ifeval::["{build-type}" == "product"]
+<<_suse_rancher_prime_continous_delivery,{product_name}>> stores Kubernetes bundle resources in etcd by default. However, etcd has strict size limits and is not optimized for large workloads. If your bundle resources exceed the etcd size limits in the target cluster, consider using an OCI registry as the storage backend.
+endif::[] 
+
+ifeval::["{build-type}" == "community"]
+<<_continous_delivery,{product_name}>> stores Kubernetes bundle resources in etcd by default. However, etcd has strict size limits and is not optimized for large workloads. If your bundle resources exceed the etcd size limits in the target cluster, consider using an OCI registry as the storage backend.
+endif::[] 
+
+
+[NOTE]
+====
+To reduce bundle size, compress and base64-encode bundle content before uploading to the OCI registry.
+====
+
+
+Using an OCI registry helps you:
+
+* Reduce etcd load by offloading large bundle content.
+* Use a standardized storage backend for large manifests or Helm charts.
+
+image::/images/fleet-ociStorage-flow.png[A visual asset displaying the flow of Fleet with OCI Storage.]
+
+[NOTE]
+====
+
+ifeval::["{build-type}" == "product"]
+<<_suse_rancher_prime_continous_delivery,{product_name}>> checks for the integrity of OCI artifacts and <<_suse_rancher_prime_continous_delivery,{product_name}>> tags OCI artifact as `latest`.
+endif::[] 
+
+ifeval::["{build-type}" == "community"]
+<<_continous_delivery,{product_name}>> checks for the integrity of OCI artifacts and <<_continous_delivery,{product_name}>> tags OCI artifact as `latest`.
+endif::[] 
+
+====
+
+
+== Prerequisites
+
+* A running OCI registry.
+* A Kubernetes secret with valid credentials.
++
+ifeval::["{build-type}" == "product"]
+* <<_suse_rancher_prime_continous_delivery,{product_name}>> installation (v2.12.0 or later) .
+endif::[] 
++
+ifeval::["{build-type}" == "community"]
+* <<_continous_delivery,{product_name}>> installation (v2.12.0 or later) .
+endif::[] 
+
+== How to enable OCI storage
+
+To enable OCI storage, create a secret that includes the necessary information and access options for the OCI registry. There are two ways of defining secrets:
+
+ifeval::["{build-type}" == "product"]
+* *Global secret:* A secret exactly named `ocistorage` in the same namespace as your ``GitRepo``s.
+ ** This is the fallback secret. If no `GitRepo`-level secret is specified, <<_suse_rancher_prime_continous_delivery,{product_name}>> uses this secret for all ``GitRepo``s in the namespace.
+endif::[] 
++
+ifeval::["{build-type}" == "community"]
+* *Global secret:* A secret exactly named `ocistorage` in the same namespace as your ``GitRepo``s.
+ ** This is the fallback secret. If no `GitRepo`-level secret is specified, <<_continous_delivery,{product_name}>> uses this secret for all ``GitRepo``s in the namespace.
+endif::[] 
++
+* *GitRepo-level secret:* A custom secret for specific `GitRepo` resouces.
+ ** This is a user-defined secret can have any name and must be referenced in the `GitRepo` resource.
+ ** Set the `ociRegistrySecret` field in the `GitRepo` spec to the secret's name.
+
+[NOTE]
+====
+
+ifeval::["{build-type}" == "product"]
+<<_suse_rancher_prime_continous_delivery,{product_name}>> does not fall back to etcd if the secret is missing or invalid. Instead, it logs an error and skips the deployment.
+endif::[] 
+
+ifeval::["{build-type}" == "community"]
+<<_continous_delivery,{product_name}>> does not fall back to etcd if the secret is missing or invalid. Instead, it logs an error and skips the deployment.
+endif::[] 
+
+====
+
+
+Create a Kubernetes Secret that contains the registry address and optional credentials:
+
+[,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocistorage
+  namespace: fleet-local
+type: fleet.cattle.io/bundle-oci-storage/v1alpha1
+data:
+  reference: <base64-encoded-registry-url> # Only the reference field is required. All other fields are optional.
+  username: <base64-encoded-user>
+  password: <base64-encoded-password>
+  insecureSkipTLS: <base64-encoded-true/false>
+  basicHTTP: <base64-encoded-true/false>
+  agentUsername: <base64-encoded-readonly-user>
+  agentPassword: <base64-encoded-password>
+----
+
+[NOTE]
+====
+
+ifeval::["{build-type}" == "product"]
+The secret must have the type: `fleet.cattle.io/bundle-oci-storage/v1alpha1`. <<_suse_rancher_prime_continous_delivery,{product_name}>> requires this value and rejects any secret with a different type.
+
+====
+
+Changing the secret does not trigger a redeployment. <<_suse_rancher_prime_continous_delivery,{product_name}>> uses the new registry only after a Git update or a manual force update.
+
+endif::[] 
+
+ifeval::["{build-type}" == "community"]
+The secret must have the type: `fleet.cattle.io/bundle-oci-storage/v1alpha1`. <<_continous_delivery,{product_name}>> requires this value and rejects any secret with a different type.
+
+====
+
+Changing the secret does not trigger a redeployment. <<_continous_delivery,{product_name}>> uses the new registry only after a Git update or a manual force update.
+
+endif::[] 
+
+=== Secret Field Reference
+
+The fields you can configure are:
+
+|===
+| Field | Description | Format | Notes
+
+| `reference`
+| URL of the OCI registry.
+| Base64-encoded string
+| Do not use `oci://` or similar prefixes.
+
+| `username`
+| Username with write access to the registry.
+| Base64-encoded string
+| If not specified, it accesses the registry without authentication.
+
+| `password`
+| Password for the write-access user.
+| Base64-encoded string
+| If not specified, it accesses the registry without authentication.
+
+| `agentUsername`
+| Read-only username for agents.
+| Base64-encoded string
+| Use read-only credentials for agents to enhance security. If you don't set these credentials, the agent uses username.
+
+| `agentPassword`
+| Read-only password for agents.
+| Base64-encoded string
+| Use read-only credentials for agents to enhance security. If you don't set these credentials, the agent uses user password.
+
+| `insecureSkipTLS`
+| Skips TLS certificate validation.
+| Base64-encoded `true/false`
+| Use only for development or testing. By default, `InsecureSkipTLS` is set to `false`.
+
+| `basicHTTP`
+| Enables HTTP instead of HTTPS.
+| Base64-encoded `true/false`
+| Not recommended. Allows insecure traffic. By default, `basicHTTP` is set to `false`.
+|===
+
+
+ifeval::["{build-type}" == "product"]
+== <<_suse_rancher_prime_continous_delivery,{product_name}>> Example
+
+endif::[] 
+
+ifeval::["{build-type}" == "community"]
+== <<_continous_delivery,{product_name}>> Example
+
+endif::[] 
+
+Consider the following `GitRepo` file:
+
+[,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: frontend-oci
+  namespace: fleet-local
+spec:
+  repo: https://github.com/your-org/fleet-oci-example.git
+  branch: main
+  paths:
+    - ./frontend
+  ociRegistrySecret: ocistorage
+----
+
+You can either create and apply a YAML file that contains the registry address and optional credentials similar to the example above. Then run `kubectl apply -f secrets/oci-secret.yaml` before applying the `GitRepo`.
+
+Or you can use `kubectl` command to create the secret using unencoded text. Kubernetes converts them to base64 encoded for storing the secret.
+
+[,bash]
+----
+kubectl -n fleet-local create secret generic ocistorage \
+  --type=fleet.cattle.io/bundle-oci-storage/v1alpha1 \
+  --from-literal=username=fleet-ci \
+  --from-literal=password=fleetRocks \
+  --from-literal=reference=192.168.1.39:8082 \
+  --from-literal=insecureSkipTLS=true \
+  --from-literal=basicHTTP=false \
+  --from-literal=agentUsername=fleet-ci-readonly \
+  --from-literal=agentPassword=readonlypass
+----
+
+To validate your secret, you can run:
+
+`kubectl get secret ocistorage -n fleet-local -o yaml`
+
+To decrypt your secret, you can run:
+
+`kubectl get secret ocistorage -n fleet-local -o json | jq '.data | map_values(@base64d)`
+
+image::./images/ociStorage-secret-ss.png[A screenshot of OCI secrets enabled for Fleet]

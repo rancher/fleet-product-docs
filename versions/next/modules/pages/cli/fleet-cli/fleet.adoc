@@ -1,0 +1,22 @@
+=
+:sidebar_label: fleet
+
+== fleet
+
+----
+fleet [flags]
+----
+
+=== Options
+
+----
+  -h, --help   help for fleet
+----
+
+=== SEE ALSO
+
+* link:./fleet_apply[fleet apply]	 - Create bundles from directories, and output them or apply them on a cluster
+* link:./cleanup/fleet_cleanup[fleet cleanup]	 - Clean up outdated resources
+* link:./fleet_deploy[fleet deploy]	 - Deploy a bundledeployment/content resource to a cluster, by creating a Helm release. This will not deploy the bundledeployment/content resources directly to the cluster.
+* link:./fleet_gitcloner[fleet gitcloner]	 - Clones a git repository
+* link:./fleet_target[fleet target]	 - Print available targets for a bundle

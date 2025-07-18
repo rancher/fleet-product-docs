@@ -1,0 +1,22 @@
+=
+:sidebar_label: fleet cleanup
+
+== fleet cleanup
+
+Clean up outdated resources
+
+----
+fleet cleanup [flags]
+----
+
+=== Options
+
+----
+  -h, --help   help for cleanup
+----
+
+=== SEE ALSO
+
+* link:../fleet[fleet]	 -
+* link:./fleet_cleanup_clusterregistration[fleet cleanup clusterregistration]	 - Clean up outdated cluster registrations
+* link:./fleet_cleanup_gitjob[fleet cleanup gitjob]	 - Clean up outdated git jobs

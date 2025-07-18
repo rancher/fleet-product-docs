@@ -1,0 +1,65 @@
+* xref:index.adoc[Overview]
+* xref:persona.adoc[Persona]
+
+* Tutorials
+** xref:quickstart.adoc[Quickstart]
+** xref:tut-deployment.adoc[Tutorial: Deployment]
+** xref:uninstall.adoc[Uninstall]
+
+* Explanations
+** xref:architecture.adoc[Architecture]
+** xref:concepts.adoc[Concepts]
+** xref:ref-bundle-stages.adoc[Bundle Stages]
+** xref:gitrepo-content.adoc[GitRepo Content]
+** xref:namespaces.adoc[Namespaces]
+** xref:resources-during-deployment.adoc[Resources During Deployment]
+
+* How-tos for Operators
+** xref:installation.adoc[Installation]
+** xref:cluster-registration.adoc[Cluster Registration]
+** xref:cluster-group.adoc[Cluster Group]
+** xref:multi-user.adoc[Multi-user]
+
+* How-tos for Users
+** xref:gitrepo-add.adoc[Add GitRepo]
+** xref:gitrepo-targets.adoc[GitRepo Targets]
+** xref:bundle-diffs.adoc[Bundle Diffs]
+** xref:oci-storage.adoc[OCI Storage]
+** xref:webhook.adoc[Webhook]
+** xref:imagescan.adoc[Image Scanning]
+** xref:bundle-add.adoc[Add Bundle]
+** xref:observability.adoc[Observability]
+** xref:helm-ops.adoc[Helm Operations]
+** xref:rollout.adoc[Rollout Strategies]
+
+* Reference
+** CLI
+*** xref:cli/fleet-agent/fleet-agent.adoc[fleet-agent]
+*** xref:cli/fleet-agent/fleet-agent_clusterstatus.adoc[clusterstatus]
+*** xref:cli/fleet-agent/fleet-agent_register.adoc[register]
+*** xref:cli/fleet-cli/fleet.adoc[fleet CLI]
+*** xref:cli/fleet-cli/fleet_apply.adoc[fleet apply]
+*** xref:cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]
+*** xref:cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[cleanup clusterregistration]
+*** xref:cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[cleanup gitjob]
+*** xref:cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
+*** xref:cli/fleet-cli/fleet_target.adoc[fleet target]
+*** xref:cli/fleet-cli/fleet_test.adoc[fleet test]
+*** xref:cli/fleet-controller/fleet-controller.adoc[fleet-controller]
+*** xref:cli/fleet-controller/fleet-controller_agentmanagement.adoc[agent management]
+*** xref:cli/fleet-controller/fleet-controller_cleanup.adoc[controller cleanup]
+*** xref:cli/fleet-controller/fleet-controller_gitjob.adoc[controller gitjob]
+
+** xref:ref-status-fields.adoc[Status Fields]
+** xref:ref-registration.adoc[Registration]
+** xref:ref-configuration.adoc[Configuration]
+** xref:ref-resources.adoc[Resources]
+** xref:ref-crds.adoc[CRDs]
+** xref:ref-fleet-yaml.adoc[Fleet YAML]
+** xref:ref-gitrepo.adoc[GitRepo]
+** xref:ref-bundle.adoc[Bundle]
+
+* xref:troubleshooting.adoc[Troubleshooting]
+
+* Changelog
+** xref:changelogs/next.adoc[Next]

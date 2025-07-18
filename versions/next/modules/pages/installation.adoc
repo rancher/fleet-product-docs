@@ -1,0 +1,439 @@
+= Installation Details
+
+The installation is broken up into two different use cases: single and multi-cluster.
+The single cluster install is for if you wish to use GitOps to manage a single cluster,
+in which case you do not need a centralized manager cluster. In the multi-cluster use case
+you will setup a centralized manager cluster to which you can register clusters.
+
+ifeval::["{build-type}" == "product"]
+If you are just learning <<_suse_rancher_prime_continous_delivery,{product_name}>> the single cluster install is the recommended starting point. After which you can move from single cluster to multi-cluster setup down the line.
+ 
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+If you are just learning <<_continous_delivery,{product_name}>> the single cluster install is the recommended starting point. After which you can move from single cluster to multi-cluster setup down the line.
+
+endif::[]
+
+
+image::/images/single-cluster.png[]
+
+Single-cluster is the default installation. The same cluster will run both the Fleet
+manager and the Fleet agent. The cluster will communicate with Git server to
+deploy resources to this local cluster. This is the simplest setup and very
+useful for dev/test and small scale setups.  This use case is supported as a valid
+use case for production.
+
+== Prerequisites
+
+[tabs]
+======
+Tab Helm 3::
++
+Fleet is distributed as a Helm chart. Helm 3 is a CLI, has no server side component, and is fairly straight forward. To install the Helm 3 CLI follow the https://helm.sh/docs/intro/install[official install instructions]. 
+
+Tab Kubernetes::
++
+Fleet is a controller running on a Kubernetes cluster so an existing cluster is required. For the single cluster use case you will install Fleet to the cluster which you intend to manage with GitOps. Any Kubernetes community supported version of Kubernetes will work, in practice this means {versions.next.kubernetes} or greater.
+======
+
+== Default Install
+
+Install the following two Helm charts.
+
+[tabs]
+======
+Tab Install::
++
+
+[CAUTION]
+
+ifeval::["{build-type}" == "product"]
+.<<_suse_rancher_prime_continous_delivery,{product_name}>> in Rancher Rancher has separate helm charts for Fleet and uses a different repository. 
+
+First add Fleet's Helm repository. 
+
+[,bash]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Second install the Fleet CRD. 
+[,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \\ fleet/fleet-crd
+----
+
+Third install the Fleet controllers
+[,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet \\ fleet/fleet
+----
+
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+.<<_continous_delivery,{product_name}>> in Rancher Rancher has separate helm charts for Fleet and uses a different repository. 
+
+First add Fleet's Helm repository. 
+
+[,bash]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/`
+----
+
+Second install the Fleet CRD. 
+[,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \\ fleet/fleet-crd
+----
+
+Third install the Fleet controllers
+[,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet \\ fleet/fleet
+----
+
+endif::[]
+
+====
+
+Tab Verify::
++
+Fleet should be ready to use now for single cluster. You can check the status of the Fleet controller pods by running the below commands. 
+[,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller kubectl -n cattle-fleet-system get pods -l app=fleet-controller 
+----
+To display:
+[,bash]
+----
+NAME READY STATUS RESTARTS AGE fleet-controller-64f49d756b-n57wq 1/1 Running 0 3m21s
+----
+
+======
+
+You can now xref:./gitrepo-add.adoc[register some git repos] in the `fleet-local` namespace to start deploying Kubernetes resources.
+
+== Tweaking your Fleet install
+
+=== Controller and agent replicas
+
+ifeval::["{build-type}" == "product"]
+Starting with v0.13, <<_suse_rancher_prime_continous_delivery,{product_name}>> charts expose new Helm values setting replica counts for each type of controller and the agent:
+
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+Starting with v0.13, <<_continous_delivery,{product_name}>> charts expose new Helm values setting replica counts for each type of controller and the agent:
+
+endif::[]
+
+* `controller.replicas` for the `fleet-controller` deployment reconciling bundles, bundle deployments, clusters and
+cluster groups
+* `gitjob.replicas` for the gitOps controller reconciling `GitRepo` resources
+* `helmops.replicas` for the experimental HelmOps controller
+* `agent.replicas` for the agent.
+
+Each of them defaults to 1.
+
+== Multi-controller install: sharding
+
+=== Deployment
+
+ifeval::["{build-type}" == "product"]
+From 0.10 onwards, <<_suse_rancher_prime_continous_delivery,{product_name}>> supports static sharding. Each shard is defined by its shard ID. Optionally, a shard can have a https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector[nodeselector], instructing <<_suse_rancher_prime_continous_delivery,{product_name}>> to create all controller pods and jobs for that shard on nodes matching that selector.
+
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+From 0.10 onwards, <<_continous_delivery,{product_name}>> supports static sharding. Each shard is defined by its shard ID. Optionally, a shard can have a https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector[nodeselector], instructing <<_continous_delivery,{product_name}>> to create all controller pods and jobs for that shard on nodes matching that selector.
+
+endif::[]
+
+
+The Fleet controller chart can be installed with the following arguments:
+
+* `--set shards[$index].id=$shard_id`
+* `--set shards[$index].nodeSelector.$key=$value`
+
+This will result in:
+
+* as many Fleet controller and gitjob deployments as specified unique shard IDs,
+* plus the usual unsharded Fleet controller pod. That latter pod will be the only one containing agent management and
+cleanup containers.
+
+For instance:
+
+[,bash]
+----
+$ helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet \
+  --set shards[0].id=foo \
+  --set shards[0].nodeSelector."kubernetes\.io/hostname"=k3d-upstream-server-0 \
+  --set shards[1].id=bar \
+  --set shards[1].nodeSelector."kubernetes\.io/hostname"=k3d-upstream-server-1 \
+  --set shards[2].id=baz \
+  --set shards[2].nodeSelector."kubernetes\.io/hostname"=k3d-upstream-server-2 \
+
+$ kubectl -n cattle-fleet-system get pods -l app=fleet-controller \
+    -o=custom-columns='Name:.metadata.name,Shard-ID:.metadata.labels.fleet\.cattle\.io/shard-id,Node:spec.nodeName'
+Name                                          Shard-ID   Node
+fleet-controller-b4c469c85-rj2q8                         k3d-upstream-server-2
+fleet-controller-shard-bar-5f5999958f-nt4bm   bar        k3d-upstream-server-1
+fleet-controller-shard-baz-75c8587898-2wkk9   baz        k3d-upstream-server-2
+fleet-controller-shard-foo-55478fb9d8-42q2f   foo        k3d-upstream-server-0
+
+$ kubectl -n cattle-fleet-system get pods -l app=gitjob \
+    -o=custom-columns='Name:.metadata.name,Shard-ID:.metadata.labels.fleet\.cattle\.io/shard-id,Node:spec.nodeName'
+Name                                Shard-ID   Node
+gitjob-8498c6d78b-mdhgh                        k3d-upstream-server-1
+gitjob-shard-bar-8659ffc945-9vtlx   bar        k3d-upstream-server-1
+gitjob-shard-baz-6d67f596dc-fsz9m   baz        k3d-upstream-server-2
+gitjob-shard-foo-8697bb7f67-wzsfj   foo        k3d-upstream-server-0
+----
+
+=== How it works
+
+With sharding in place, each Fleet controller will process resources bearing its own shard ID. This also holds for the
+unsharded controller, which has no set shard ID and will therefore process all unsharded resources.
+
+To deploy a GitRepo for a specific shard, simply add label `fleet.cattle.io/shard-ref` with your desired shard ID as a
+value.
+Here is an example:
+
+[,bash]
+----
+$ kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: sharding-test
+  labels:
+    fleet.cattle.io/shard-ref: foo
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm
+EOF
+----
+
+A GitRepo with a label ID for which a Fleet controller is deployed (eg. `foo` in the above example) will then be
+processed by that controller.
+
+On the other hand, a GitRepo with an unknown label ID (eg. `boo` in the above example) will _not_ be processed by any
+Fleet controller, hence no resources other than the GitRepo itself will be created.
+
+ifeval::["{build-type}" == "product"]
+Removing or adding supported shard IDs currently requires redeploying <<_suse_rancher_prime_continous_delivery,{product_name}>> with a new set of shard IDs.
+
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+Removing or adding supported shard IDs currently requires redeploying <<_continous_delivery,{product_name}>> with a new set of shard IDs.
+
+endif::[]
+
+== Configuration for Multi-Cluster
+====
+
+ifeval::["{build-type}" == "product"]
+Downstream clusters in Rancher are automatically registered in <<_suse_rancher_prime_continous_delivery,{product_name}>>. Users can access <<_suse_rancher_prime_continous_delivery,{product_name}>> under `Continuous Delivery` on Rancher.
+
+The multi-cluster install described below is *only* covered in standalone <<_suse_rancher_prime_continous_delivery,{product_name}>>, which is untested by Rancher QA.
+
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+Downstream clusters in Rancher are automatically registered in <<_continous_delivery,{product_name}>>. Users can access <<_continous_delivery,{product_name}>> under `Continuous Delivery` on Rancher.
+
+The multi-cluster install described below is *only* covered in standalone <<_continous_delivery,{product_name}>>, which is untested by Rancher QA.
+
+endif::[]
+:::
+
+[IMPORTANT]
+====
+The setup is the same as for a single cluster.
+After installing the Fleet manager, you will then need to register remote downstream clusters with the Fleet manager.
+
+However, to allow for xref:cluster-registration.adoc#manager-initiated[manager-initiated registration] of downstream clusters, a few extra settings are required. Without the API server URL and the CA, only xref:cluster-registration.adoc#agent-initiated[agent-initiated registration] of downstream clusters is possible.
+====
+
+
+=== API Server URL and CA certificate
+
+In order for your Fleet management installation to properly work it is important
+the correct API server URL and CA certificates are configured properly.  The Fleet agents
+will communicate to the Kubernetes API server URL. This means the Kubernetes
+API server must be accessible to the downstream clusters.  You will also need
+to obtain the CA certificate of the API server. The easiest way to obtain this information
+is typically from your kubeconfig file (`$HOME/.kube/config`). The `server`,
+`certificate-authority-data`, or `certificate-authority` fields will have these values.
+
+[,yaml]
+----
+yaml title="$HOME/.kube/config"
+apiVersion: v1
+clusters:
+
+* cluster:
+  certificate-authority-data: LS0tLS1CRUdJTi...
+  server: https://example.com:6443
+----
+
+==== Extract CA certificate
+
+Please note that the `certificate-authority-data` field is base64 encoded and will need to be
+decoded before you save it into a file. This can be done by saving the base64 encoded contents to
+a file and then running
+
+[,shell]
+----
+base64 -d encoded-file > ca.pem
+----
+
+Next, retrieve the CA certificate from your kubeconfig.
+
+[tabs]
+======
+Tab Extract First::
++
+If you have `jq` and `base64` available then this one-liners will pull all CA certificates from your `KUBECONFIG` and place then in a file named `ca.pem`. 
+[,sh]
+----
+kubectl config view -o json --raw | jq -r '.clusters[].cluster["certificate-authority-data"]' | base64 -d > ca.pem
+----
+
+Tab Multiple Entries::
++
+Or, if you have a multi-cluster setup, you can use this command: 
+[,sh]
+----
+# replace CLUSTERNAME with the name of the cluster according to your KUBECONFIG kubectl 
+config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem 
+----
+
+======
+
+==== Extract API Server
+
+If you have a multi-cluster setup, you can use this command:
+
+[,shell]
+----
+# replace CLUSTERNAME with the name of the cluster according to your KUBECONFIG
+API_SERVER_URL=$(kubectl config view -o json --raw  | jq -r '.clusters[] | select(.name=="CLUSTER").cluster["server"]')
+# Leave empty if your API server is signed by a well known CA
+API_SERVER_CA="ca.pem"
+----
+
+==== Validate
+
+First validate the server URL is correct.
+
+[,shell]
+----
+curl -fLk "$API_SERVER_URL/version"
+----
+
+The output of this command should be JSON with the version of the Kubernetes server or a `401 Unauthorized` error.
+If you do not get either of these results than please ensure you have the correct URL. The API server port is typically
+6443 for Kubernetes.
+
+Next validate that the CA certificate is proper by running the below command.  If your API server is signed by a
+well known CA then omit the `--cacert "$API_SERVER_CA"` part of the command.
+
+[,shell]
+----
+curl -fL --cacert "$API_SERVER_CA" "$API_SERVER_URL/version"
+----
+
+If you get a valid JSON response or an `401 Unauthorized` then it worked. The Unauthorized error is
+only because the curl command is not setting proper credentials, but this validates that the TLS
+connection work and the `ca.pem` is correct for this URL. If you get a `SSL certificate problem` then
+the `ca.pem` is not correct. The contents of the `$API_SERVER_CA` file should look similar to the below:
+
+[,pem,subs="-callouts"]
+.ca.pem
+----
+-----BEGIN CERTIFICATE-----
+MIIBVjCB/qADAgECAgEAMAoGCCqGSM49BAMCMCMxITAfBgNVBAMMGGszcy1zZXJ2
+ZXItY2FAMTU5ODM5MDQ0NzAeFw0yMDA4MjUyMTIwNDdaFw0zMDA4MjMyMTIwNDda
+MCMxITAfBgNVBAMMGGszcy1zZXJ2ZXItY2FAMTU5ODM5MDQ0NzBZMBMGByqGSM49
+AgEGCCqGSM49AwEHA0IABDXlQNkXnwUPdbSgGz5Rk6U9ldGFjF6y1YyF36cNGk4E
+0lMgNcVVD9gKuUSXEJk8tzHz3ra/+yTwSL5xQeLHBl+jIzAhMA4GA1UdDwEB/wQE
+AwICpDAPBgNVHRMBAf8EBTADAQH/MAoGCCqGSM49BAMCA0cAMEQCIFMtZ5gGDoDs
+ciRyve+T4xbRNVHES39tjjup/LuN4tAgAiAteeB3jgpTMpZyZcOOHl9gpZ8PgEcN
+KDs/pb3fnMTtpA==
+-----END CERTIFICATE-----
+----
+
+### Install for Multi-Cluster
+
+In the following example it will be assumed the API server URL from the `KUBECONFIG` which is `https://example.com:6443`
+and the CA certificate is in the file `ca.pem`. If your API server URL is signed by a well-known CA you can
+omit the `apiServerCA` parameter below or just create an empty `ca.pem` file (ie `touch ca.pem`).
+
+Setup the environment with your specific values, e.g.:
+
+[,sh]
+----
+API_SERVER_URL="https://example.com:6443"
+API_SERVER_CA="ca.pem"
+----
+
+Once you have validated the API server URL and API server CA parameters, install the following two
+Helm charts.
+
+[tabs]
+======
+Tab Install::
++
+First add Fleet's Helm repository. 
++
+[,bash]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/`
+----
++
+Second install the Fleet CRD. 
+[,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \\ fleet/fleet-crd
+----
++
+Third install the Fleet controllers
+[,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet \\ fleet/fleet
+----
++
+
+Tab Verify::
++
+
+ifeval::["{build-type}" == "product"]
+<<_suse_rancher_prime_continous_delivery,{product_name}>> should be ready to use. You can check the status of the Fleet controller pods by running the below commands. 
+
+endif::[]
+
+ifeval::["{build-type}" == "community"]
+<<_continous_delivery,{product_name}>> should be ready to use. You can check the status of the Fleet controller pods by running the below commands. 
+
+endif::[]
+
+[,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller kubectl -n cattle-fleet-system get pods -l app=fleet-controller
+----
+
+To display:
+
+[,bash]
+----
+NAME READY STATUS RESTARTS AGE fleet-controller-64f49d756b-n57wq 1/1 Running 0 3m21s
+----
+
+======
+
+At this point the Fleet manager should be ready. You can now xref:cluster-registration.adoc[register clusters] and xref:gitrepo-add.adoc#create-gitrepo-instance[git repos] with the Fleet manager.
