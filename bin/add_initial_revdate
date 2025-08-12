@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Frank's original scriptlet from https://suse.slack.com/archives/C02CX23RNMV/p1753279891722769
+# Frank's original scriptlet
 # for ADOC in $(find -type f -name "*.adoc"); do
 #   RDATE=$(git --no-pager log -1 --format="%cd" --date='format:%Y-%m-%d' $FILE)
 #   sed -i "0,/==*..*/ s/\(==*..*\)/\1\n:revdate: $RDATE\n/" $ADOC
