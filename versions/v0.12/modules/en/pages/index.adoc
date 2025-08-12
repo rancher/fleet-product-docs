@@ -1,4 +1,6 @@
 = Overview
+:revdate: 2025-04-02
+:page-revdate: {revdate}
 
 image::fleet-architecture.svg[Static, 600]
 

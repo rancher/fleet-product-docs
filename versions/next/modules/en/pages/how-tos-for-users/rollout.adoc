@@ -1,4 +1,6 @@
 = Rollout Strategy
+:revdate: 2025-07-01
+:page-revdate: {revdate}
 
 Fleet uses a rollout strategy to control how apps are deployed across clusters. You can define the order and grouping of cluster deployments using partitions, enabling controlled rollouts and safer updates.
 

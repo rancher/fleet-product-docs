@@ -1,4 +1,6 @@
 = Custom Resources Spec
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 :doctype: book
 
 == Resources

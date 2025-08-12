@@ -1,6 +1,8 @@
 :doctype: book
 
 = Creating a Deployment
+:revdate: 2025-04-02
+:page-revdate: {revdate}
 
 To deploy workloads onto downstream clusters, first create a Git repo, then create a GitRepo resource and apply it.
 

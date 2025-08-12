@@ -1,4 +1,6 @@
 = fleet.yaml
+:revdate: 2025-06-16
+:page-revdate: {revdate}
 :doctype: book
 
 The `fleet.yaml` file adds options to a bundle. Any directory with a

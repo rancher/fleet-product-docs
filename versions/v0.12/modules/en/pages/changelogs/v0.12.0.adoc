@@ -1,4 +1,6 @@
 = v0.12.0
+:revdate: 2025-04-07
+:page-revdate: {revdate}
 
 == Release Note
 

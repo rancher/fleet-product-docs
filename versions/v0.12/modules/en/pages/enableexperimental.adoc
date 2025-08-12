@@ -1,4 +1,6 @@
 = How to enable experimental features
+:revdate: 2025-04-02
+:page-revdate: {revdate}
 
 {product_name} supports experimental features that are disabled by default and that can be enabled by the user.
 

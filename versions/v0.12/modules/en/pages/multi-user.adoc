@@ -1,4 +1,6 @@
 = Setup Multi User
+:revdate: 2025-04-02
+:page-revdate: {revdate}
 
 {product_name} uses Kubernetes RBAC where possible.
 

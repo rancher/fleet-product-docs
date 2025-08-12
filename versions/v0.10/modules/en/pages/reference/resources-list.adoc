@@ -1,4 +1,6 @@
 == Resources List
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 The resources lists contain the deployed resources, categorized under `Bundles` and `GitRepos`.
 

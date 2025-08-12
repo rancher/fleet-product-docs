@@ -1,4 +1,6 @@
 = Bundle Lifecycle
+:revdate: 2025-06-16
+:page-revdate: {revdate}
 
 A bundle is an internal resource used for the orchestration of resources from git. When a GitRepo is scanned it will produce one or more bundles.
 

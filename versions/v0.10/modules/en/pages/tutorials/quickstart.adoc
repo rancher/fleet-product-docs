@@ -1,6 +1,8 @@
 :doctype: book
 
 = Quick Start
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 image::single-cluster.png[]
 

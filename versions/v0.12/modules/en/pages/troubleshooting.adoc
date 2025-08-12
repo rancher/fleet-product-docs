@@ -1,4 +1,6 @@
 = Troubleshooting
+:revdate: 2025-04-07
+:page-revdate: {revdate}
 
 This section contains commands and tips to troubleshoot{product_name}.
 

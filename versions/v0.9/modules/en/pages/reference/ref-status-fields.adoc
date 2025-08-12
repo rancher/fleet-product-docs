@@ -1,4 +1,6 @@
 = Cluster and Bundle States
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 Clusters and Bundles have different states in each phase of applying Bundles.
 

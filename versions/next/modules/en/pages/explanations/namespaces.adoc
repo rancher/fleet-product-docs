@@ -1,4 +1,6 @@
 = Namespaces
+:revdate: 2025-06-17
+:page-revdate: {revdate}
 :toc_max_heading_level: 4
 
 == Workload Namespaces
