@@ -1,4 +1,6 @@
 = Uninstall
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 {product_name} is packaged as two Helm charts so uninstall is accomplished by
 uninstalling the appropriate Helm charts. To uninstall {product_name} run the following

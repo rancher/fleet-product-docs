@@ -1,4 +1,6 @@
 = fleet cleanup clusterregistration
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 Clean up outdated cluster registrations
 

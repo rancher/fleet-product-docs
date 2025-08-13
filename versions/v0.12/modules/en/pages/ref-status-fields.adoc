@@ -1,4 +1,6 @@
 = Status Fields
+:revdate: 2025-04-07
+:page-revdate: {revdate}
 
 == Cluster and Bundle Display States
 

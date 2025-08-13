@@ -1,4 +1,6 @@
 = Using Webhooks Instead of Polling
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 By default, {product_name} utilizes polling (default: every 15 seconds) to pull from a Git repo. This is a convenient default that works reasonably well for a small number of repos (up to a few tens).
 

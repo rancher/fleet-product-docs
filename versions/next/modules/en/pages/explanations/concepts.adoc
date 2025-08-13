@@ -1,4 +1,6 @@
 = Core Concepts
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 {product_name} is fundamentally a set of Kubernetes custom resource definitions (CRDs) and controllers
 to manage GitOps for a single Kubernetes cluster or a large-scale deployment of Kubernetes clusters.

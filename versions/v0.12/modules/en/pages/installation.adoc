@@ -1,6 +1,8 @@
 :doctype: book
 
 = Installation Details
+:revdate: 2025-05-12
+:page-revdate: {revdate}
 
 The installation is broken up into two different use cases: single and multi-cluster. The single cluster install is for if you wish to use GitOps to manage a single cluster, in which case you do not need a centralized manager cluster. In the multi-cluster use case you will setup a centralized manager cluster to which you can register clusters.
 

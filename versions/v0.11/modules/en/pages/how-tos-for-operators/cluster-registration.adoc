@@ -1,6 +1,8 @@
 :doctype: book
 
 = Register Downstream Clusters
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 == Overview
 

@@ -1,4 +1,6 @@
 = v0.10.7
+:revdate: 2025-07-04
+:page-revdate: {revdate}
 :page-date: 2024-12-11 12:15:23 +0000 UTC
 
 *Released on 2024-12-11 12:15:23 +0000 UTC by `github-actions[bot]`.*

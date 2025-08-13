@@ -1,4 +1,6 @@
 = Namespaces
+:revdate: 2025-06-17
+:page-revdate: {revdate}
 
 All types in the {product_name} manager are namespaced.  The namespaces of the manager types do not correspond to the namespaces
 of the deployed resources in the downstream cluster. Understanding how namespaces are use in the {product_name} manager is

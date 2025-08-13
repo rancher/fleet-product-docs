@@ -1,4 +1,6 @@
 = Observability
+:revdate: 2025-04-07
+:page-revdate: {revdate}
 
 == Status Fields
 

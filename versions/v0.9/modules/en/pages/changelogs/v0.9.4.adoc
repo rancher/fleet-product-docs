@@ -1,4 +1,6 @@
 = v0.9.4
+:revdate: 2025-04-07
+:page-revdate: {revdate}
 :date: 2024-05-02 12:48:10 +0000 UTC
 
 * (rancherio-gh-m) released this 2024-05-02 12:48:10 +0000 UTC*

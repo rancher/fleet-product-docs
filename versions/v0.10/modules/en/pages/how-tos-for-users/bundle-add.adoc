@@ -1,4 +1,6 @@
 = Create a Bundle Resource
+:revdate: 2025-06-16
+:page-revdate: {revdate}
 
 Bundles are automatically created by {product_name} when a `GitRepo` is created. In most cases `Bundles` should not be created manually by the user. If you want to deploy resources from a git repository use a xref:how-tos-for-users/gitrepo-add.adoc[GitRepo] instead.
 

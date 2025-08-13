@@ -1,4 +1,6 @@
 = fleet target
+:revdate: 2025-04-08
+:page-revdate: {revdate}
 
 Print available targets for a bundle
 

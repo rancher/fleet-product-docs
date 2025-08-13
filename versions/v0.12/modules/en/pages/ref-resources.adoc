@@ -1,4 +1,6 @@
 = List of Deployed Resources
+:revdate: 2025-04-02
+:page-revdate: {revdate}
 
 After installing {product_name} in Rancher these resources are created in the upstream cluster.
 

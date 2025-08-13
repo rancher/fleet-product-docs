@@ -1,4 +1,6 @@
 = OCI Storage
+:revdate: 2025-04-04
+:page-revdate: {revdate}
 
 OCI storage is an experimental feature to store a bundle's resources in an OCI registry, instead of K8s resources.
 Fleet is not limited by https://etcd.io/docs/v3.4/dev-guide/limit/[`etcd` size limitations]. However,

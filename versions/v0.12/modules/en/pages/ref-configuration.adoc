@@ -1,4 +1,6 @@
 = Configuration
+:revdate: 2025-04-04
+:page-revdate: {revdate}
 
 A reference list of, mostly internal, configuration options.
 

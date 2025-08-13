@@ -1,4 +1,6 @@
 = GitRepo Resource
+:revdate: 2025-04-30
+:page-revdate: {revdate}
 
 The GitRepo resource describes git repositories, how to access them and where the bundles are located.
 

@@ -1,4 +1,6 @@
 = Cluster Registration Internals
+:revdate: 2025-06-16
+:page-revdate: {revdate}
 
 == How does cluster registration work?
 
