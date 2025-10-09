@@ -214,6 +214,31 @@ When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encryp
 - contents.fleet.cattle.io
 ----
 
+== Backing up and restoring
+
+When backing up and restoring Fleet with existing workloads, whether they are GitRepos or HelmOps, a few points must be considered.
+
+=== Kubernetes API server availability
+
+A Fleet agent running in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
+
+This means that during a restore operation, changes made in the upstream cluster might affect deployments in downstream clusters. These deployments could be updated or deleted based on incomplete state data from the upstream cluster.
+
+To prevent this, make the Kubernetes API server temporarily inaccessible to downstream clusters while the restore operation runs on the upstream cluster. Agents should not access the upstream cluster until all resources have been re-created.
+
+=== Pausing
+
+A xref:reference/ref-gitrepo.adoc[paused GitRepo] leads to paused bundles and bundle deployments. This means:
+
+* When deleting a bundle deployment that originates from a paused GitRepo, Fleet does not re-create the bundle deployment until the GitRepo is unpaused.
+* When deleting a bundle that originates from a paused GitRepo, Fleet deletes the bundle deployments associated with that bundle and does not re-create them until the GitRepo is unpaused.
+
+Pausing a GitRepo prevents bundles and bundle deployments from being created or updated for that GitRepo. In other words, it only affects **controller** operations, not **Fleet agent** operations.  
+
+To prevent user resources contained in a bundle from being deleted when a bundle deployment is removed, use xref:reference/ref-bundle.adoc[keepResources].
+
+
+
 **Troubleshooting**
 
 See {product_name} Troubleshooting section xref:troubleshooting.adoc[here].
