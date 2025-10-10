@@ -67,7 +67,7 @@ spec:
 == Targets
 
 The bundle can target multiple clusters. It uses the same xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[targeting as the GitRepo].
-Additional xref:reference/ref-fleet-yaml.adoc#supported_customizations[customization options] can be specified per target:
+Additional xref:reference/ref-fleet-yaml.adoc#_supported_customizations[customization options] can be specified per target:
 
 [,yaml]
 ----
