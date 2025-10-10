@@ -9,7 +9,7 @@
 
 === What's Changed
 
-* [v0.10] Fix apply defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3084[#3084]
+* Fix apply defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3084[#3084]
 * Fix status conflict between agent and fleetcontroller by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3005[#3005]
 * Backport of Adds predicate when webhook commit changes by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3006[#3006]
 * Update Go to 1.23 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3013[#3013]

@@ -93,11 +93,20 @@ In this case, Helm options would be similar to this:
 ----
 helm:
 repo: oci://foo.bar/baz
-chart: ''        # can be omitted
 version: '1.2.3' # optional
 ----
 
 When an OCI URL is provided in the ++repo++ field, a non-empty ++chart++ field will lead to an error in the HelmOps status, and no bundle being created.
+
+
+[NOTE]
+====
+In this case, Fleet will be downloading OCI artifacts. This means that:
+
+* the `version` field represents an OCI artifact's tag, which may be different from the actual version of the chart stored in the OCI artifact.
+* an OCI artifact may contain multiple Helm charts. This use case has only been validated with OCI artifacts containing a single Helm chart.
+====
+
 
 == Polling
 
@@ -132,8 +141,8 @@ The status of that bundle will evolve over time, as bundle deployments are creat
 
 Fleet propagates updates from the bundle status to the status of the HelmOp resource itself. This includes:
 
-* a display status with a summary, expected and ready cluster counts
-* conditions providing more information about the state of the resource, whether it is valid and its deployments are ready
-* resource counts by status
+* A display status with a summary, expected and ready cluster counts
+* Conditions providing more information about the state of the resource, whether it is valid and its deployments are ready
+* Resource counts by status
 
-See xref:reference\ref-status-fields.adoc[Status fields] for more details on resource counts and conditions.
+Refer to xref:reference/ref-status-fields.adoc[Status fields] for more details on resource counts and conditions.

@@ -36,6 +36,8 @@ The parameters are the same, but you have to add the `fleet.` prefix.
 --set-string fleet.extraEnv[0].value=true \
 ----
 
+Also refer to xref:ref-configuration#_configure-fleet-install-options-in-rancher[Configure Fleet Install Options in Rancher].
+
 == Available experimental features
 
 Right now {product_name} supports the following experimental features:
