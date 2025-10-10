@@ -112,7 +112,7 @@ See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Usi
 
 image::FleetValuesStages.svg[Static, 600]
 
-The targeting step can treat the values as a template and fill in information from the `clusters.fleet.cattle.io` resource. More information can be found in xref:reference/ref-fleet-yaml.adoc#Values Templating[Helm values templating].
+The targeting step can treat the values as a template and fill in information from the `clusters.fleet.cattle.io` resource. More information can be found in xref:reference/ref-fleet-yaml.adoc#_values Templating[Helm values templating].
 This can be turned off in `fleet.yaml`, by setting `disablePreProcess`, e.g. to avoid conflicts with other templating languages.
 
 [NOTE]
