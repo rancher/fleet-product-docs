@@ -10,7 +10,7 @@ If you want to deploy resources without a git repository follow this guide to cr
 
 [NOTE]
 ====
-If you want to deploy resources without running a Fleet controller. Refer to xref:../explanations/ref-bundle-stages#examining-the-bundle-lifecycle-with-the-cli[Fleet CLI bundle lifecycle].
+If you want to deploy resources without running a Fleet controller. Refer to xref:explanations/ref-bundle-stages.adoc#_examining_the_bundle_lifecycle_with_the_cli[Fleet CLI bundle lifecycle].
 
 ====
 
@@ -67,7 +67,7 @@ spec:
 == Targets
 
 The bundle can target multiple clusters. It uses the same xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[targeting as the GitRepo].
-Additional xref:reference/ref-fleet-yaml.adoc#supported_customizations[customization options] can be specified per target:
+Additional xref:reference/ref-fleet-yaml.adoc#_supported_customizations[customization options] can be specified per target:
 
 [,yaml]
 ----
