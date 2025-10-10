@@ -1,0 +1,251 @@
+= Rollout Strategy
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Fleet uses a rollout strategy to control how apps are deployed across clusters. You can define the order and grouping of cluster deployments using partitions, enabling controlled rollouts and safer updates.
+
+Fleet evaluates the ++Ready++ status of each ++BundleDeployment++ to determine when to proceed to the next partition. For more information, refer to the xref:reference\ref-status-fields.adoc[Status fields].
+
+During a rollout, the GitRepo status indicates deployment progress. This helps you understand when bundles become ++Ready++ before continuing:
+
+* For initial deployments:
+** One or more clusters may be in a ++NotReady++ state.
+** Remaining clusters are marked as ++Pending++, meaning deployment has not started.
+* For rollouts:
+** One or more clusters may be in a ++NotReady++ state.
+** Remaining clusters are marked ++OutOfSync++ until the deployment continues.
+
+The rollout configuration options are documented in the ++rolloutStrategy++ field of the xref:reference\ref-fleet-yaml.adoc[++fleet.yaml++].
+
+[NOTE]
+====
+If ++rolloutStrategy++ is not specified in ++fleet.yaml++, Fleet uses the default values.
+====
+
+== How Does Partitioning Work?
+
+Partitions are solely used for grouping and controlling the rollout of ++BundleDeployments++ across clusters. They do not affect deployment options.
+
+If targeted clusters are not part of a partition, they are not included in the rollout. If a cluster is part of a partition, it receives a ++BundleDeployment++ when the partition is processed.
+
+Partitions are ++NotReady++ if they have clusters that exceed the allowed number of ++NotReady++ clusters. Offline clusters are considered ++NotReady++ until they come back online and deploy the ++BundleDeployment++ successfully.
+
+Thresholds are controlled by:
+
+* Manual partitions: Use ++maxUnavailable++ inside each partition. If unspecified, ++rolloutStrategy.maxUnavailable++ is used.
+* Automatic partitions: Use ++rolloutStrategy.maxUnavailable++.
+
+Fleet proceeds only if the number of ++NotReady++ partitions is less than ++maxUnavailablePartitions++.
+
+[NOTE]
+====
+Fleet rolls out deployments in batches of up to 50 clusters per partition. After each batch, Fleet checks the ++maxUnavailable++ threshold. For example:
+
+* For a partition with 25 clusters and ++maxUnavailable: 5++, Fleet deploys to all 25 and then checks.
+* For a partition with 100 clusters, Fleet deploys to 50, checks, and then proceeds with the next 50.
+====
+
+image::flow-rollout-fleet.png[A visual asset displaying flow of rollout in Fleet.]
+
+Fleet rollout strategy options:
+
+[cols="1,2,1",options="header"]
+|===
+| Field | Description | Default
+| maxUnavailable | Max number or percentage of clusters that can be ++NotReady++. | 100%
+| maxUnavailablePartitions | Max number or percentage of ++NotReady++ partitions. | 0
+| autoPartitionSize | Number or percentage of clusters per auto-created partition. | 25%
+| partitions | Define manual partitions by cluster labels or groups. | –
+|===
+
+=== Automatic Partitioning
+
+Fleet automatically creates partitions using ++autoPartitionSize++. For 200 clusters with ++autoPartitionSize: 25%++, it creates 4 partitions of 50 clusters each.
+
+Rollout proceeds in batches of 50 clusters, checking ++maxUnavailable++ before continuing.
+
+=== Manual Partitioning
+
+Manual partitions are defined with the ++partitions++ option. This gives control over cluster selection and rollout order.
+
+[NOTE]
+====
+If you define ++partitions++, ++autoPartitionSize++ is ignored.
+====
+
+.Example
+[source,yaml]
+----
+
+rolloutStrategy:
+partitions:
+- name: demoRollout
+maxUnavailable: 10%
+clusterSelector:
+matchLabels:
+env: staging
+- name: stable
+maxUnavailable: 5%
+clusterSelector:
+matchLabels:
+env: prod
+----
+
+Fleet performs rollout as follows:
+
+. Selects clusters using ++clusterSelector++, ++clusterGroup++, or ++clusterGroupSelector++.
+. Starts rollout to the first partition.
+. Waits for readiness.
+. Proceeds to the next partition.
+
+image::deploy-targets-partition.png[A visual asset displaying the flow of partition rollout.]
+
+
+[NOTE]
+====
+# MaxNew is always 50. A bundle change stages up to 50 ++BundleDeployments++ at once.
+====
+
+image::partition-rollout-flow.png[A visual asset displaying the flow of deploying targets in a partition.]
+
+[NOTE]
+====
+* Label clusters to assign them to specific partitions.
+* Fleet processes partitions in the order they appear in the ++fleet.yaml++ file.
+====
+
+=== Single Partition
+
+If ++rolloutStrategy.partitions++ is not defined:
+
+* For <200 clusters: one partition.
+* For ≥200 clusters: partitions based on ++autoPartitionSize++.
+
+Example with 200 clusters and ++autoPartitionSize: 25%++:
+
+. Rolls out to first 50.
+. Evaluates readiness.
+. Proceeds if conditions are met.
+
+=== Multiple Partitions
+
+If multiple partitions are defined, Fleet uses ++maxUnavailablePartitions++ to control rollout.
+
+Rollout pauses if the number of ++NotReady++ partitions exceeds ++maxUnavailablePartitions++.
+
+== Preventing Image Pull Storms
+
+Each cluster pulls images during rollout. Hundreds of clusters pulling simultaneously can overload registries.
+
+Use:
+
+* ++autoPartitionSize++
+* ++partitions++
+* ++maxUnavailable++
+
+Fleet uses readiness checks to control rollout pace.
+
+.Example with 200 clusters (5 partitions of 40):
+
+* ++maxUnavailablePartitions++: 0
+* ++maxUnavailable++: 10%
+
+Rollout proceeds:
+
+. Deploys to 40 clusters.
+. Checks readiness.
+. If ≤4 clusters are ++NotReady++, proceed.
+. Else, pause until condition is met.
+
+Reduce cluster count per partition to slow rollout further.
+
+== Use Cases and Behavior
+
+If clusters don’t divide evenly, Fleet rounds down partition sizes.
+
+Example: 230 clusters with ++autoPartitionSize: 25%++
+
+* Four partitions of 57 clusters
+* One partition of 2 clusters
+
+=== Scenario: 50 Clusters
+
+[source,yaml]
+----
+rolloutStrategy:
+maxUnavailable: 10%
+----
+
+* One partition with all 50 clusters.
+* All deployed at once, then readiness is evaluated.
+
+image::deploy-50Clusters.png[50 clusters scenario]
+
+=== Scenario: 100 Clusters
+
+[source,yaml]
+----
+rolloutStrategy:
+maxUnavailable: 10%
+----
+
+* One partition with all 100 clusters.
+* Fleet deploys to 50, then evaluates readiness.
+* Waits if 10 or more clusters are ++NotReady++.
+
+=== Scenario: 200 Clusters (Auto)
+
+[source,yaml]
+----
+rolloutStrategy:
+maxUnavailablePartitions: 1
+autoPartitionSize: 10%
+----
+
+* 10 partitions of 20 clusters.
+* Fleet waits if 2 or more partitions are ++NotReady++.
+
+=== Scenario: 200 Clusters (Manual)
+
+[source,yaml]
+----
+rolloutStrategy:
+maxUnavailable: 0
+maxUnavailablePartitions: 0
+partitions:
+- name: demoRollout
+clusterSelector:
+matchLabels:
+stage: demoRollout
+- name: stable
+clusterSelector:
+matchLabels:
+stage: stable
+----
+
+* Fleet rolls out to ++demoRollout++.
+* Waits for readiness before moving to ++stable++.
+
+image::partition-fleet-rollout.png[Manual partitions scenario]
+
+== Rollout Strategy Defaults
+
+Defaults:
+
+* ++maxUnavailable++: 100%
+* ++maxUnavailablePartitions++: 0
+
+With 200 clusters and default config:
+
+* Four partitions of 50 clusters
+* All considered ++Ready++ immediately
+
+Fleet recommends:
+
+* Set ++maxUnavailable++: 10%
+* Set ++maxUnavailablePartitions++: 0 or more
+
+This ensures:
+
+* Readiness checks before proceeding
+* Paused rollout if too many partitions are ++NotReady++
