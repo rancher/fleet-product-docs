@@ -56,4 +56,4 @@
 ** xref:reference/ref-bundle.adoc[Bundle Resource]
 * xref:troubleshooting.adoc[Troubleshooting]
 * Changelog
-** xref:changelogs/next.adoc[Next]
+** xref:changelogs/v0.13.0.adoc[v0.13.0]

@@ -15,13 +15,13 @@
 
 == Additions
 
-* Fleet supports a new, user-driven bundle scan method for greater flexibility. The previous scan method remains supported. See xref:gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[documentation].  
+* Fleet supports a new, user-driven bundle scan method for greater flexibility. The previous scan method remains supported. See xref:../explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[documentation].  
   (Contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3480[#3480])
-* When using SSH to connect to a Git repository, Fleet checks host keys by default and rejects connections to unknown hosts. See xref:gitrepo-add.adoc#_known_hosts[documentation].  
+* When using SSH to connect to a Git repository, Fleet checks host keys by default and rejects connections to unknown hosts. See xref:../how-tos-for-users/gitrepo-add.adoc#_known_hosts[documentation].  
   (Contributed by @weyfonk, PR https://github.com/rancher/fleet/pull/3523[#3523])
-* Replica counts are now configurable for both controllers and agents. See xref:installation.adoc#_controller_and_agent_replicas[documentation].  
+* Replica counts are now configurable for both controllers and agents. See xref:../how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[documentation].  
   (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3457[#3457])
-* Fleet can now use a separate webhook secret for each GitRepo. See xref:webhook.adoc#_option_2_define_a_secret_for_each_gitrepo[documentation].  
+* Fleet can now use a separate webhook secret for each GitRepo. See xref:../how-tos-for-users/webhook.adoc#_option_2_define_a_secret_for_each_gitrepo[documentation].  
   (Contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3490[#3490])
 * Fleet charts now support additional labels and annotations, which propagate to controller deployments.  
   (Contributed by @0xavi0 and @p-se, PRs https://github.com/rancher/fleet/pull/3531[#3531] and https://github.com/rancher/fleet/pull/3664[#3664])
@@ -29,7 +29,7 @@
   (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3463[#3463])
 * The old service account migration has been removed. (Contributed by @weyfonk, PR https://github.com/rancher/fleet/pull/3601[#3601])
 * Fleet no longer computes resource keys in bundle statuses. (Contributed by @manno, PR https://github.com/rancher/fleet/pull/3681[#3681])
-* Fleet adds new GitJob metrics. See xref:observability.adoc#_metrics[documentation].  
+* Fleet adds new GitJob metrics. See xref:../how-tos-for-users/observability.adoc#_metrics[documentation].  
   (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3649[#3649])
 * Agents can now skip clusters using a label. (Contributed by @manno, PR https://github.com/rancher/fleet/pull/3744[#3744])
 
@@ -44,7 +44,7 @@ HelmOps is no longer experimental.
 * Installing Helm charts in strict TLS mode
 
 Metrics and cluster statuses now include HelmOps data.  
-See xref:helm-ops.adoc[Fleet documentation] for more details.
+See xref:../how-tos-for-users/helm-ops.adoc[Fleet documentation] for more details.
 
 === OCI Storage
 
@@ -58,7 +58,7 @@ It also adds:
 ** Secrets cloned by Fleet to downstream clusters are labeled.
 ** Fleet generates an event when deleting an OCI artifact fails.
 
-See xref:oci-storage.adoc[Fleet documentation] for more details.
+See xref:../how-tos-for-users/oci-storage.adoc[Fleet documentation] for more details.
 
 === Traceability improvements
 
