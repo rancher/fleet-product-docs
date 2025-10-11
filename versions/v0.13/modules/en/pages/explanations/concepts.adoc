@@ -8,9 +8,8 @@ to manage GitOps for a single Kubernetes cluster or a large-scale deployment of 
 [IMPORTANT]
 ====
 
-For more on the naming conventions of CRDs, click xref:troubleshooting.adoc#_naming_conventions_for_crds[here].
+For more on the naming conventions of CRDs, click xref:../troubleshooting.adoc#_naming_conventions_for_crds[Naming conventions for CRDs].
 ====
-
 
 Below are some of the concepts of {product_name} that will be useful throughout this documentation:
 
