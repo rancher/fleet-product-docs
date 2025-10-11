@@ -1,0 +1,95 @@
+:doctype: book
+
+= Quick Start
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+image::single-cluster.png[]
+
+Who needs documentation, lets just run this thing!
+
+== Install
+
+{product_name} is distributed as a Helm chart. Helm 3 is a CLI, has no server side component, and its use is fairly straightforward. To install the Helm 3 CLI follow the https://helm.sh/docs/intro/install[official install instructions].
+
+[CAUTION]
+.{product_name} in Rancher
+====
+Rancher has separate helm charts for {product_name} and uses a different repository.
+====
+
+
+[tabs]
+====
+Linux/Mac::
++
+[source,bash]
+----
+brew install helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Windows::
++
+[source,bash]
+----
+choco install kubernetes-helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+====
+
+Install the {product_name} Helm charts (there's two because we separate out CRDs for ultimate flexibility.)
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
+    fleet/fleet-crd
+helm -n cattle-fleet-system install --create-namespace --wait fleet \
+    fleet/fleet
+----
+
+== Add a Git Repo to Watch
+
+Change `spec.repo` to your git repo of choice.  Kubernetes manifest files that should
+be deployed should be in `/manifests` in your repo.
+
+[source,bash]
+----
+cat > example.yaml << "EOF"
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+  - simple
+EOF
+
+kubectl apply -f example.yaml
+----
+
+== Get Status
+
+Get status of what fleet is doing
+
+[source,shell]
+----
+kubectl -n fleet-local get fleet
+----
+
+You should see something like this get created in your cluster.
+
+----
+kubectl get deploy frontend
+----
+
+----
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+frontend   3/3     3            3           116m
+----
+
+Enjoy and read the xref:index.adoc[docs].
