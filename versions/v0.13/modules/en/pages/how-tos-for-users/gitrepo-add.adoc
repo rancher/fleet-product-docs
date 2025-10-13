@@ -250,7 +250,7 @@ Create a file named `secrets-path.yaml` that specifies credentials for each path
 * an exact path, which must match the full path to a bundle directory (a folder containing a `fleet.yaml` file). The path may have more segments than the entry under `paths:`.
 * a _glob_ matching one or more paths, useful when credentials need to be reused across multiple paths/bundles.
 
-See the xref:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
+Refer to link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
 
 [NOTE]
 ====

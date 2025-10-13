@@ -252,6 +252,7 @@ See xref:../explanations/gitrepo-content.adoc#using-helm-values[Using Helm Value
 
 For value processing stages, refer to https://fleet.rancher.io/ref-bundle-stages.
 
+[[values-templating]]
 === Values Templating
 
 Fleet supports Go template expressions for advanced templating needs.  

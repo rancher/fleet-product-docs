@@ -187,7 +187,7 @@ If disabled, manually update dependencies using:
 ====
 
 For field details, see xref:../reference/ref-fleet-yaml.adoc[{product_name} YAML Reference].   
-For private Helm repositories, see xref:../how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
+For private Helm repositories, see xref:../how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories].
 
 [[using-helm-values]]
 == Using Helm Values
@@ -251,8 +251,8 @@ You can use a Helm chart’s `values.yaml` file to:
 ====
 A Helm chart's `values.yaml` does not support templating. Any substitutions happen during chart rendering before Fleet applies the chart.
 
-* You cannot use shell-style variables (for example, `${var}`) inside this file.
-* If `${var}` appears, Helm treats it as plain text—you don’t need to escape it.
+* You cannot use shell-style variables (for example, ++${var}++) inside this file.
+* If ++${var}++ appears, Helm treats it as plain text—you don’t need to escape it.
 ====
 
 === Fleet valuesFiles referenced from fleet.yaml

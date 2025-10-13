@@ -155,7 +155,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 === Verify Agent and Controller Status
 
 Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
-For more information, see xref:../reference/ref-registration.adoc#fleet-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+For more information, see xref:../reference/ref-registration.adoc#registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
 
 If a bundle is not ready on a given cluster, check the following:
 
