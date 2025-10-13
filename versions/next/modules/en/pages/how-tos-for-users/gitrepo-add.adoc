@@ -39,6 +39,7 @@ It takes precendence over all other namespace definitions:
 
 Workload namespace definitions can be restricted with `allowedTargetNamespaces` in the `GitRepoRestriction` resource.
 
+[[adding-a-private-git-repository]]
 == Adding A Private Git Repository
 
 {product_name} supports the following authentication mechanisms for private repositories:
