@@ -28,6 +28,10 @@
 ** xref:how-tos-for-users/rollout.adoc[Rollout Strategy]
 ** xref:how-tos-for-users/helm-ops.adoc[Helm Ops]
 
+* Fleet CLI
+** xref:how-tos-for-users/install-use-fleetCLI.adoc[Install and Use Fleet CLI]
+** xref:./pages/how-tos-for-users/validate-fleetCLI.adoc[Validate Fleet CLI Deployment]
+
 * Reference
 ** CLI
 *** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]

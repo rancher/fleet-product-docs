@@ -23,6 +23,8 @@ image::FleetBundleStages.svg[Bundle Stages]
 
 Several fleet CLI commands help with debugging bundles.
 
+image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
+
 === fleet apply
 
 xref:reference/cli/fleet-cli/fleet_apply.adoc[Apply] renders a folder with Kubernetes resources, such as a Helm chart, manifests, or kustomize folders, into a {product_name} bundle resource.
@@ -46,8 +48,11 @@ xref:reference/cli/fleet-cli/fleet_deploy.adoc[Deploy] takes the output of `flee
 
 The deploy command can be used to bring bundles to air-gapped clusters.
 
-=== Lifecycle CLI Example
+=== Lifecycle CLI
 
+Fleet CLI commands help you debug and understand the bundle lifecycle. The following example uses the full bundle lifecycle using CLI:
+
+[source,bash]
 ----
 git clone https://github.com/rancher/fleet-test-data
 cd fleet-test-data
@@ -56,5 +61,5 @@ fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
 fleet deploy --input-file bd.yaml --dry-run
 ----
 
-For information about apply, refer to xref:how-tos-for-users/bundle-add.adoc[Create a Bundle Resource].
+For information about apply, refer to xref:../how-tos-for-users/bundle-add.adoc[Create a Bundle Resource].
 
