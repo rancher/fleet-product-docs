@@ -1,5 +1,5 @@
 = HelmOps
-:revdate: 2025-07-01
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 HelmOps is a simplified way of creating bundles by directly pointing to a Helm repository or to an OCI registry, without needing to set up a git repository.

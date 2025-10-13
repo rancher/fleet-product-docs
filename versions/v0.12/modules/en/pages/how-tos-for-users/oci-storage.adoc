@@ -1,5 +1,5 @@
 = OCI Storage
-:revdate: 2025-07-01
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Fleet stores Kubernetes bundle resources in etcd by default. However, etcd has strict size limits and is not optimized for large workloads. If your bundle resources exceed the etcd size limits in the target cluster, consider using an OCI registry as the storage backend.

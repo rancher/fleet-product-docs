@@ -35,6 +35,7 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users/bundle-add.adoc[section on bundles].
 
+[[fleet-target]]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Target] reads a bundle from a file and works with a live cluster to print out the `bundledeployment` & `content` resource, which fleetcontroller would create. It takes a namespace as an argument, so it can look in that namespace for e.g. cluster resources. It can also dump the data structure which is used during "targeting", so decisions taken regarding labels and cluster names can be checked.

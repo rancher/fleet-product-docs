@@ -1,5 +1,5 @@
 = Architecture
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 {product_name} has two primary components. The {product_name} controller and the cluster agents. These

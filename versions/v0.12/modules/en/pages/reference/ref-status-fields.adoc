@@ -1,4 +1,6 @@
 = Status Fields
+:revdate: 2025-07-23
+:page-revdate: {revdate}
 
 == Display States
 
@@ -87,9 +89,9 @@ From best to worst:
 * *Ready* — Bundles have been deployed, and all resources are ready. If not, the `message` field of the `Ready` condition contains an aggregation of BundleDeployment states.
 * *NotReady* — BundleDeployments have been deployed, but some resources aren’t ready (for example, container images are being pulled or services haven’t reported readiness).
 * *Pending* — Bundles are queued for processing by the Fleet controller.  
-  This may occur if rollout is paused (see xref:rollout.adoc[Rollout Strategy]).
+  This may occur if rollout is paused (Refer to xref:../how-tos-for-users/rollout.adoc[Rollout Strategy]).
 * *OutOfSync* — Bundles are synced from the Fleet controller, but updated BundleDeployments haven’t yet been created, so downstream agents can’t sync changes.  
-  This can also occur if rollout is paused (see xref:rollout.adoc[Rollout Strategy]).
+  This can also occur if rollout is paused (Refer to xref:../how-tos-for-users/rollout.adoc[Rollout Strategy]).
 * *Modified* — Bundles are deployed and resources are ready, but some deployed resources were modified externally and not from Git.
 * *WaitApplied* — Bundles are synced but waiting to deploy. Persistent display of this state may indicate an unreachable target cluster.
 * *ErrApplied* — Bundles synced successfully but encountered errors during deployment.

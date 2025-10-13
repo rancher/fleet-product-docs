@@ -1,5 +1,5 @@
 = fleet apply
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Create bundles from directories, and output them or apply them on a cluster

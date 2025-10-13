@@ -187,7 +187,7 @@ If disabled, manually update dependencies using:
 For field details, see xref:../reference/ref-fleet-yaml.adoc[{product_name} YAML Reference].   
 For private Helm repositories, see xref:../how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
-
+[[using-helm-values]]
 == Using Helm Values
 
 When applying changes to `values.yaml`:

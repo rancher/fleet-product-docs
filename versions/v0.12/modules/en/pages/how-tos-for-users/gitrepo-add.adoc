@@ -1,5 +1,5 @@
 = Create a GitRepo Resource
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 :doctype: book
 

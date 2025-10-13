@@ -1,5 +1,5 @@
 = Generating Diffs to Ignore Modified GitRepos
-:revdate: 2025-05-12
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Continuous Delivery in Rancher is powered by fleet. When a user adds a GitRepo CR, then Continuous Delivery creates the associated fleet bundles.

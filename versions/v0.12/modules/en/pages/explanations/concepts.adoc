@@ -1,5 +1,5 @@
 = Core Concepts
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 {product_name} is fundamentally a set of Kubernetes custom resource definitions (CRDs) and controllers
@@ -8,9 +8,8 @@ to manage GitOps for a single Kubernetes cluster or a large-scale deployment of 
 [IMPORTANT]
 ====
 
-For more on the naming conventions of CRDs, click xref:troubleshooting.adoc#_naming_conventions_for_crds[here].
+For more on the naming conventions of CRDs, click xref:../troubleshooting.adoc#_naming_conventions_for_crds[Naming conventions for CRDs].
 ====
-
 
 Below are some of the concepts of {product_name} that will be useful throughout this documentation:
 
