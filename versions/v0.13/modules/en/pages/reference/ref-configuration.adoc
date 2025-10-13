@@ -4,7 +4,7 @@
 
 A reference list of, mostly internal, configuration options.
 
-{{configure-install-options-in-rancher}}
+[[configure-install-options-in-rancher]]
 == Configure {product_name} Install Options In Rancher
 
 Rancher looks for Helm values in a ConfigMap called `rancher-config` in the `cattle-system` namespace.

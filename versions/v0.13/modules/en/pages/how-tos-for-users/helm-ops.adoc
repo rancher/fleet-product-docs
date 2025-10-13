@@ -83,7 +83,7 @@ version: '1.2.3'
 
 In this case, only the ++version++ field may be empty. If any of the ++chart++ or ++repo++ field is empty, {product_name} set an error in the HelmOp status and no bundle will be created.
 
-{{oci-registry}}
+[[oci-registry]]
 === OCI registry
 
 Helm supports OCI registries, which can be referenced in {product_name} using the ++repo++ field.

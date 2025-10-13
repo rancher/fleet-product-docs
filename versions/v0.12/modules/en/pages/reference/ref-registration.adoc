@@ -41,7 +41,7 @@ The new kubeconfig uses the "request" account. The "request" account can access 
 
 image::FleetRegistrationToken.svg[Static, 600]
 
-{{registered-watches-for-bundledeployments}}
+[[registered-watches-for-bundledeployments]]
 === {product_name} Agent is Registered, Watches for `BundleDeployments`
 
 At this point the agent is fully registered and will persist the "request" account into a `fleet-agent` secret.
