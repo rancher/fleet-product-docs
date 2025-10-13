@@ -79,7 +79,7 @@ You can configure https://kubernetes.io/docs/concepts/services-networking/ingres
 Go to your Git provider and configure the webhook callback URL.  
 The following image shows an example from GitHub.
 
-image::/img/webhook.png[]
+image:: ../../images/webhook.png[]
 
 Configuring a secret is optional.  
 The secret is used to validate the webhook payload since the payload shouldn’t be trusted by default.
@@ -143,6 +143,7 @@ kubectl create secret generic gitjob-webhook \
   --from-literal=azure-password=pass123
 ----
 
+[[option-2-configure-secret]]
 === Option 2: Configure a Secret per GitRepo
 
 You can define a unique webhook secret for each GitRepo.  

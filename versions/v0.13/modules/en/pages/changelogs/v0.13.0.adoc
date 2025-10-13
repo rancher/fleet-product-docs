@@ -20,7 +20,7 @@
   (Contributed by @weyfonk, PR https://github.com/rancher/fleet/pull/3523[#3523])
 * Replica counts are now configurable for both controllers and agents. See xref:../how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[documentation].  
   (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3457[#3457])
-* Fleet can now use a separate webhook secret for each GitRepo. See xref:../how-tos-for-users/webhook.adoc#_option_2_define_a_secret_for_each_gitrepo[documentation].  
+* Fleet can now use a separate webhook secret for each GitRepo. See xref:../how-tos-for-users/webhook.adoc#option-2-configure-secret[documentation].  
   (Contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3490[#3490])
 * Fleet charts now support additional labels and annotations, which propagate to controller deployments.  
   (Contributed by @0xavi0 and @p-se, PRs https://github.com/rancher/fleet/pull/3531[#3531] and https://github.com/rancher/fleet/pull/3664[#3664])

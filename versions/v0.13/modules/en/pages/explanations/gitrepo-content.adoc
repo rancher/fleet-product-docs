@@ -14,18 +14,35 @@ Currently, resources must **gzip to less than 1 MB**.
 
 == How Repositories Are Scanned
 
-Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:concepts.adoc[bundle] that {product_name} deploys and monitors.
+Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:./concepts.adoc[bundle] that {product_name} deploys and monitors.
 
 {product_name} looks for the following files to determine deployment behavior:
 
 [cols="1,2,3", options="header"]
 |===
-| File | Location | Meaning
-| `Chart.yaml` | Relative to `path` or custom path from `fleet.yaml` | Resources are deployed as a Helm chart. See `fleet.yaml` for options. |
-| `kustomization.yaml` | Relative to `path` or custom path from `fleet.yaml` | Resources are deployed using Kustomize. See `fleet.yaml` for options. |
-| `fleet.yaml` | Any subpath | Defines a new xref:concepts.adoc[bundle]. Enables mixing Helm, Kustomize, and raw YAML in the same repo. |
-| `*.yaml` | Any subpath | If no `Chart.yaml` or `kustomization.yaml` is found, YAML files are treated as Kubernetes manifests. |
-| `overlays/{name}` | Relative to `path` | Used for raw YAML deployments to apply environment-specific customizations. |
+| File
+| Location
+| Meaning
+
+| *Chart.yaml*
+| Relative to `path` or custom path from `fleet.yaml`
+| The resources are deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
+
+| *kustomization.yaml*
+| Relative to `path` or custom path from `fleet.yaml`
+| The resources are deployed using Kustomize. Refer to the `fleet.yaml` for more options.
+
+| *fleet.yaml*
+| Any subpath
+| If any `fleet.yaml` is found, a new xref:./concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
+
+| *\*.yaml*
+| Any subpath
+| If a `Chart.yaml` or `kustomization.yaml` isn’t found, any `.yaml` or `.yml` file is assumed to be a Kubernetes resource and is deployed.
+
+| *overlays/{name}*
+| Relative to `path`
+| When deploying using raw YAML (not Kustomize or Helm), `overlays` is a special directory for customizations.
 |===
 
 === Alternative Scan: Explicitly Defined by the User
@@ -155,7 +172,7 @@ Unsupported:
 
 `fleet.yaml` modifies how resources are deployed and customized.  
 It’s located at the root relative to the `GitRepo.path`.  
-If found in a subdirectory, it defines a new xref:concepts.adoc[bundle] configured independently.
+If found in a subdirectory, it defines a new xref:./concepts.adoc[bundle] configured independently.
 
 [NOTE]
 ====

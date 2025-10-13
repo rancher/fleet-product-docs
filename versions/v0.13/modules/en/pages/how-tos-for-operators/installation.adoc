@@ -320,5 +320,5 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
 At this point, the Fleet manager should be ready.  
-You can now xref:cluster-registration.adoc[register clusters] and xref:../how-tos-for-users/gitrepo-add.adoc#create-gitrepo-instance[add Git repositories].
+You can now xref:./cluster-registration.adoc[register clusters] and xref:../how-tos-for-users/gitrepo-add.adoc#_create-gitrepo-instance[add Git repositories].
 
