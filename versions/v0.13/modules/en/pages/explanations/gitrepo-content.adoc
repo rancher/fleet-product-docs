@@ -8,6 +8,8 @@ Each bundle is created from paths in a `GitRepo` and modified based on the disco
 Bundle lifecycles are tracked between releases using the Helm `releaseName` field.  
 If `releaseName` is not specified in `fleet.yaml`, it’s automatically generated as `GitRepo.name + path`. Long names are truncated and appended with a `-<hash>` suffix.
 
+By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
+
 **The Git repository has no required structure.**  
 All scanned resources are stored as Kubernetes resources, so ensure scanned directories do not contain large files.  
 Currently, resources must **gzip to less than 1 MB**.
@@ -207,7 +209,7 @@ If charts generate credentials or certificates, override these values to prevent
 Secrets loaded from downstream clusters using `valuesFrom` are encrypted if [data encryption](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) is enabled.  
 However, credentials stored in Git (`values:` or `valuesFiles:`) are not.
 ====
-
+[[using-valuesfrom]]
 == Using `valuesFrom`
 
 Example ConfigMap:

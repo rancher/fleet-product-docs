@@ -16,8 +16,7 @@
 == Additions
 
 * Fleet supports a new, user-driven bundle scan method for greater flexibility. The previous scan method remains supported. See xref:../explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[documentation] ,contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3480[#3480].
-* When using SSH to connect to a Git repository, Fleet checks host keys by default and rejects connections to unknown hosts. See xref:../how-tos-for-users/gitrepo-add.adoc#_known_hosts[documentation].  
-  (Contributed by @weyfonk, PR https://github.com/rancher/fleet/pull/3523[#3523])
+* When using SSH to point to a Git repository, Fleet checks host keys by default, rejecting connection attempts to unknown hosts xref: ../how-tos-for-users/gitrepo-add.adoc [Known hosts] by https://github.com/weyfonk[@weyfonk] in xref:https://github.com/rancher/fleet/issues/3523[PR#3523].
 * Replica counts are now configurable for both controllers and agents. See xref:../how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[documentation].  
   (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3457[#3457])
 * Fleet can now use a separate webhook secret for each GitRepo. See xref:../how-tos-for-users/webhook.adoc#option-2-configure-secret[documentation].  
@@ -42,20 +41,13 @@ HelmOps is no longer experimental.
 * Preventing bundle naming collisions between GitOps and HelmOps bundles
 * Installing Helm charts in strict TLS mode
 
-Metrics and cluster statuses now include HelmOps data.  
-See xref:../how-tos-for-users/helm-ops.adoc[Fleet documentation] for more details.
+Metrics and cluster statuses now include HelmOps data. For more information, refer to xref:../how-tos-for-users/helm-ops.adoc[Fleet documentation].
 
 === OCI Storage
 
-OCI storage is now stable and enabled by default (though bundles don’t use it by default).  
-You can disable it by setting `OCI_STORAGE=false` in `extraEnv` during installation.
+OCI storage is no longer experimental, and is enabled by default, although bundles will not use it by default. It can still be disabled by setting `OCI_STORAGE=false` in `extraEnv`` when installing Fleet.
 
-It also adds:
-
-* Garbage collection (best-effort)
-* Improved traceability for secrets involved in OCI storage:
-** Secrets cloned by Fleet to downstream clusters are labeled.
-** Fleet generates an event when deleting an OCI artifact fails.
+It also supports garbage collection on a best-effort basis, as well as improved traceability of secrets used in OCI storage. This includes labeling the secrets that Fleet clones to downstream clusters and generating an event if deleting an OCI artifact results in an error.
 
 See xref:../how-tos-for-users/oci-storage.adoc[Fleet documentation] for more details.
 
