@@ -67,6 +67,7 @@ flowchart TB
 
 The `status.display` field provides a summary of the state. States are ranked, and the worst possible state is used as the `state` in the `status.display` field.
 
+[[state-ranking]]
 ==== State Ranking
 
 This is the ranking in which states are displayed. If a Bundle has BundleDeployments in different states, the worst state is used in the `status.display.state` field.  
@@ -86,57 +87,57 @@ From best to worst:
 
 === Bundle Statuses
 
-* *Ready* — Bundles have been deployed, and all resources are ready. If not, the `message` field of the `Ready` condition contains an aggregation of BundleDeployment states.
-* *NotReady* — BundleDeployments have been deployed, but some resources aren’t ready (for example, container images are being pulled or services haven’t reported readiness).
-* *Pending* — Bundles are queued for processing by the Fleet controller.  
+* *Ready* : Bundles have been deployed, and all resources are ready. If not, the `message` field of the `Ready` condition contains an aggregation of BundleDeployment states.
+* *NotReady* : BundleDeployments have been deployed, but some resources aren’t ready (for example, container images are being pulled or services haven’t reported readiness).
+* *Pending* : Bundles are queued for processing by the Fleet controller.  
   This may occur if rollout is paused (Refer to xref:../how-tos-for-users/rollout.adoc[Rollout Strategy]).
-* *OutOfSync* — Bundles are synced from the Fleet controller, but updated BundleDeployments haven’t yet been created, so downstream agents can’t sync changes.  
+* *OutOfSync* : Bundles are synced from the Fleet controller, but updated BundleDeployments haven’t yet been created, so downstream agents can’t sync changes.  
   This can also occur if rollout is paused (Refer to xref:../how-tos-for-users/rollout.adoc[Rollout Strategy]).
-* *Modified* — Bundles are deployed and resources are ready, but some deployed resources were modified externally and not from Git.
-* *WaitApplied* — Bundles are synced but waiting to deploy. Persistent display of this state may indicate an unreachable target cluster.
-* *ErrApplied* — Bundles synced successfully but encountered errors during deployment.
+* *Modified* : Bundles are deployed and resources are ready, but some deployed resources were modified externally and not from Git.
+* *WaitApplied* : Bundles are synced but waiting to deploy. Persistent display of this state may indicate an unreachable target cluster.
+* *ErrApplied* : Bundles synced successfully but encountered errors during deployment.
 
 == Clusters
 
 === Cluster-Specific States
 
-* *WaitCheckIn* — Waiting for the agent to report registration info and cluster status.
+* *WaitCheckIn* : Waiting for the agent to report registration info and cluster status.
 
 === States from Bundles
 
-* *Ready* — All Bundles in this cluster are deployed, and resources are ready.
-* *NotReady* — Some Bundles in this cluster are not ready.
-* *Pending* — Some Bundles are pending.
-* *OutOfSync* — Some Bundles are out of sync.
-* *Modified* — Some Bundles are modified.
-* *WaitApplied* — Some Bundles are waiting to be applied.
-* *ErrApplied* — Some Bundles have errors.
+* *Ready* : All Bundles in this cluster are deployed, and resources are ready.
+* *NotReady* : Some Bundles in this cluster are not ready.
+* *Pending* : Some Bundles are pending.
+* *OutOfSync* : Some Bundles are out of sync.
+* *Modified* : Some Bundles are modified.
+* *WaitApplied* : Some Bundles are waiting to be applied.
+* *ErrApplied* : Some Bundles have errors.
 
 == GitRepo
 
-* *Ready* — `True` if desired and current states match. If `False`, the message contains:
+* *Ready* : `True` if desired and current states match. If `False`, the message contains:
 ** an error from the GitJob controller,
 ** an error from the Bundle (for example, templating failure), or
 ** an aggregated list of Bundles not in `Ready`.
-* *GitPolling* — Indicates whether polling or initial cloning is in progress. `True` if polling is successful or disabled.
-* *Reconciling* — The controller is currently reconciling changes.
-* *Stalled* — The controller encountered an error or failed to make progress.
-* *Accepted* — GitRepo restrictions were applied and external Helm secrets exist.
+* *GitPolling* : Indicates whether polling or initial cloning is in progress. `True` if polling is successful or disabled.
+* *Reconciling* : The controller is currently reconciling changes.
+* *Stalled* : The controller encountered an error or failed to make progress.
+* *Accepted* : GitRepo restrictions were applied and external Helm secrets exist.
 
 == HelmOp Conditions
 
-* *Ready* — `True` if all BundleDeployments were deployed successfully; `False` if any are not ready.
-* *Accepted* — `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
-* *Polled* — `True` if polling succeeded. `False` otherwise, with an error message.
+* *Ready* : `True` if all BundleDeployments were deployed successfully; `False` if any are not ready.
+* *Accepted* : `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
+* *Polled* : `True` if polling succeeded. `False` otherwise, with an error message.
 
 == `status.display`
 
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
 
-* `readyBundleDeployments` — A string in the form `%d/%d` showing the number of ready versus total bundle deployments.
-* `state` — Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the <<state-ranking,State Ranking>>. If `Ready`, it’s set to an empty value.
-* `message` — Contains relevant deployment condition messages.
-* `error` — `true` if an error message exists.
+* `readyBundleDeployments` : A string in the form `%d/%d` showing the number of ready versus total bundle deployments.
+* `state` : Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the <<state-ranking,State Ranking>>. If `Ready`, it’s set to an empty value.
+* `message` : Contains relevant deployment condition messages.
+* `error` : `true` if an error message exists.
 
 == Resources List
 
