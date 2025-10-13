@@ -206,7 +206,7 @@ image::FleetValuesStages.svg[Static, 600]
 
 === Templating
 
-The targeting step can treat the values as a template and fill in information from the `clusters.fleet.cattle.io` resource. For more information, refer to xref:../reference/ref-fleet-yaml.adoc#_values-templating[[Helm values templating]].
+The targeting step can treat the values as a template and fill in information from the `clusters.fleet.cattle.io` resource. For more information, refer to xref:../reference/ref-fleet-yaml.adoc#values-templating[[Helm values templating]].
 
 You can turn this off in `fleet.yaml`, by setting `disablePreProcess`. This is useful to avoid conflicts with other templating languages.
 
