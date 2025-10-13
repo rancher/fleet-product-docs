@@ -40,7 +40,7 @@ Multiple paths can be defined for a `GitRepo`. Each path is scanned independentl
 | Any subpath
 | If a `Chart.yaml` or `kustomization.yaml` isn’t found, any `.yaml` or `.yml` file is assumed to be a Kubernetes resource and is deployed.
 
-| *overlays/{name}*
+| *overlays/\{name}*
 | Relative to `path`
 | When deploying using raw YAML (not Kustomize or Helm), `overlays` is a special directory for customizations.
 |===
