@@ -9,7 +9,7 @@ You can adjust this behavior in two ways:
 * Ignore conditions in `fleet.yaml`
 * Customize error mappings with environment variables
 
-image::../static/img/fine-tune-error-flow.svg[A visual flow of fine tuning error detections]
+image::fine-tune-error-flow.svg[A visual flow of fine tuning error detections]
 
 NOTE: 
 You should rarely need to configure readiness detection in {product_name} with environment variables. If you do, open an issue or submit a pull request to help improve the default readiness detection.
@@ -38,7 +38,7 @@ ignore:
 
 This method is useful when a custom resource or controller sets conditions that cause {product_name} to mark a Bundle as failed, even though the resource is healthy.
 
-image::../static/img/fine-tune-error-ingore.svg[A visual flow of ignore condition during fine tuning error detection]
+image::fine-tune-error-ingore.svg[A visual flow of ignore condition during fine tuning error detection]
 
 == Configure error mapping with environment variables
 

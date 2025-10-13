@@ -89,7 +89,7 @@ You can use it in these scenarios:
 ** Use with a target to debug selectors and verify which downstream clusters are targeted.
 ** `fleet deploy --dry-run` to print resources that would be deployed, without applying them.
 
-image::../static/img/fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
+image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
 
 == Deploy a Sample Bundle Using Fleet CLI
 
