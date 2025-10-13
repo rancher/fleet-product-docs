@@ -1,0 +1,245 @@
+= Status Fields
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Display States
+
+GitRepos, HelmOps, Clusters, and Bundles have different states in each phase of applying Bundles.
+
+Since the states from the BundleDeployments are propagated to the Bundle, GitRepo, Cluster, and ClusterGroup, you’ll find them displayed in the same way. The difference lies in the perspective on the resources.
+
+By looking at the GitRepo, the states of all resources related to the GitRepo are displayed there. When looking at the Cluster, the states of all Bundles in that Cluster are displayed, which may span across many GitRepos. When looking at the Bundle, the states of all BundleDeployments in that Bundle are displayed.
+
+=== Ready Condition
+
+The `Ready` condition is used to determine if the BundleDeployments are in a `Ready` state.  
+The `Ready` condition is set to `True` if all BundleDeployments are in the `Ready` state.  
+If at least one BundleDeployment isn’t in the `Ready` state, the `Ready` condition is set to `False`.
+
+All BundleDeployment states are aggregated into the `message` field of the `Ready` status condition. To prevent the message from becoming too long, only the first ten states are shown. The `message` field contains the number of BundleDeployments in each state, followed by the Cluster name where the BundleDeployment is located. `Ready` statuses are excluded from the `message` field.
+
+For example:
+
+[source,yaml]
+----
+status:
+  conditions:
+  - lastUpdateTime: "2025-06-25T14:59:35Z"
+    message: WaitApplied(1) [Cluster fleet-default/downstream4]
+    status: "False"
+    type: Ready
+----
+
+==== Ready Status Determination
+
+Fleet uses the `kstatus` package of the `sigs.k8s.io/cli-utils` module to determine the Ready status of BundleDeployments based on the status of their resources.  
+For details, see the link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` package README].
+
+==== Propagation of Ready Status
+
+[mermaid]
+....
+flowchart TB
+  subgraph Upstream Cluster
+    gr[GitRepo]
+    c[Cluster]
+    cg[ClusterGroup]
+    b[Bundle]
+    bd[BundleDeployment]
+  end
+  
+  subgraph Downstream Clusters
+    a[Agent]
+  end
+  gr -->|triggers creation or update| b
+  b  -->|triggers creation or update| bd
+  bd -->|triggers deployment| a
+  a  -->|updates status| bd
+  bd -->|triggers status update| b
+  bd -->|triggers status update| c
+  b  -->|triggers status update| gr
+  c  -->|triggers status update| cg
+  linkStyle 0,1,2 stroke:#0000AA,stroke-width:2px;
+  linkStyle 3,4,5,6,7 stroke:#00AA00,stroke-width:2px;
+....
+
+=== Display State
+
+The `status.display` field provides a summary of the state. States are ranked, and the worst possible state is used as the `state` in the `status.display` field.
+
+[[state-ranking]]
+==== State Ranking
+
+This is the ranking in which states are displayed. If a Bundle has BundleDeployments in different states, the worst state is used in the `status.display.state` field.  
+This state is also propagated from the Bundles to other Fleet resources (GitRepos, Clusters, ClusterGroups).
+
+From best to worst:
+
+* Ready
+* NotReady
+* Pending
+* OutOfSync
+* Modified
+* WaitApplied
+* ErrApplied
+
+== Bundles
+
+=== Bundle Statuses
+
+* *Ready* : Bundles have been deployed, and all resources are ready. If not, the `message` field of the `Ready` condition contains an aggregation of BundleDeployment states.
+* *NotReady* : BundleDeployments have been deployed, but some resources aren’t ready (for example, container images are being pulled or services haven’t reported readiness).
+* *Pending* : Bundles are queued for processing by the Fleet controller.  
+  This may occur if rollout is paused (Refer to xref:../how-tos-for-users/rollout.adoc[Rollout Strategy]).
+* *OutOfSync* : Bundles are synced from the Fleet controller, but updated BundleDeployments haven’t yet been created, so downstream agents can’t sync changes.  
+  This can also occur if rollout is paused (Refer to xref:../how-tos-for-users/rollout.adoc[Rollout Strategy]).
+* *Modified* : Bundles are deployed and resources are ready, but some deployed resources were modified externally and not from Git.
+* *WaitApplied* : Bundles are synced but waiting to deploy. Persistent display of this state may indicate an unreachable target cluster.
+* *ErrApplied* : Bundles synced successfully but encountered errors during deployment.
+
+== Clusters
+
+=== Cluster-Specific States
+
+* *WaitCheckIn* : Waiting for the agent to report registration info and cluster status.
+
+=== States from Bundles
+
+* *Ready* : All Bundles in this cluster are deployed, and resources are ready.
+* *NotReady* : Some Bundles in this cluster are not ready.
+* *Pending* : Some Bundles are pending.
+* *OutOfSync* : Some Bundles are out of sync.
+* *Modified* : Some Bundles are modified.
+* *WaitApplied* : Some Bundles are waiting to be applied.
+* *ErrApplied* : Some Bundles have errors.
+
+== GitRepo
+
+* *Ready* : `True` if desired and current states match. If `False`, the message contains:
+** an error from the GitJob controller,
+** an error from the Bundle (for example, templating failure), or
+** an aggregated list of Bundles not in `Ready`.
+* *GitPolling* : Indicates whether polling or initial cloning is in progress. `True` if polling is successful or disabled.
+* *Reconciling* : The controller is currently reconciling changes.
+* *Stalled* : The controller encountered an error or failed to make progress.
+* *Accepted* : GitRepo restrictions were applied and external Helm secrets exist.
+
+== HelmOp Conditions
+
+* *Ready* : `True` if all BundleDeployments were deployed successfully; `False` if any are not ready.
+* *Accepted* : `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
+* *Polled* : `True` if polling succeeded. `False` otherwise, with an error message.
+
+== `status.display`
+
+The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
+
+* `readyBundleDeployments` : A string in the form `%d/%d` showing the number of ready versus total bundle deployments.
+* `state` : Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the <<state-ranking,State Ranking>>. If `Ready`, it’s set to an empty value.
+* `message` : Contains relevant deployment condition messages.
+* `error` : `true` if an error message exists.
+
+== Resources List
+
+Resources deployed to target clusters are categorized under `GitRepos` and `HelmOps`.
+
+=== GitRepos
+
+The deployed resources are listed under `GitRepos` in `status.Resources`, derived from `bundleDeployments`.
+
+=== HelmOps
+
+Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
+
+== Resource Counts
+
+This shows how resource counts propagate between resources.
+
+=== GitRepos
+
+The `status.ResourceCounts` list for GitRepos is derived from `bundleDeployments`.
+
+=== HelmOps
+
+The `status.ResourceCounts` list for HelmOps is derived from `bundleDeployments`.
+
+=== Clusters
+
+In Clusters, `status.ResourceCounts` is derived from GitRepos.
+
+=== ClusterGroups
+
+In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.
+
+== Class Diagram
+
+[mermaid]
+....
+classDiagram
+    direction TB
+    class HelmOp {
+        HelmOpStatus Status
+    }
+    class GitRepo {
+        GitRepoStatus Status
+    }
+    class HelmOpStatus {
+        StatusBase
+        metav1.Time LastPollingTime
+        string Version
+    }
+    class GitRepoStatus {
+        StatusBase
+        int64 ObservedGeneration
+        int64 UpdateGeneration
+        string Commit
+        string WebhookCommit
+        string GitJobStatus
+        metav1.Time LastSyncedImageScanTime
+        metav1.Time LastPollingTime
+    }
+    class StatusBase {
+        int ReadyClusters
+        int DesiredReadyClusters
+        BundleSummary Summary
+        StatusDisplay Display
+        []genericcondition.GenericCondition Conditions
+        []Resource Resources
+        ResourceCounts ResourceCounts
+        map[string]*ResourceCounts PerClusterResourceCounts
+    }
+    class StatusDisplay {
+        string ReadyBundleDeployments
+        string State
+        string Message
+        bool Error
+    }
+    class BundleSummary {
+        int NotReady
+        int WaitApplied
+        int ErrApplied
+        int OutOfSync
+        int Modified
+        int Ready
+        int Pending
+        int DesiredReady
+        NonReadyResource[] NonReadyResources
+    }
+    class ResourceCounts {
+        int Ready
+        int DesiredReady
+        int WaitApplied
+        int Modified
+        int Orphaned
+        int Missing
+        int Unknown
+        int NotReady
+    }
+    HelmOp "1" --> "1" HelmOpStatus : Status
+    GitRepo "1" --> "1" GitRepoStatus : Status
+    HelmOpStatus "1" --|> "1" StatusBase : embeds StatusBase
+    GitRepoStatus "1" --|> "1" StatusBase : embeds StatusBase
+    StatusBase "1" --> "1" StatusDisplay : Display
+    StatusBase "1" --> "1" BundleSummary : Summary
+    StatusBase "1" --> "1" ResourceCounts : ResourceCounts
+....

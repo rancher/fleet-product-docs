@@ -1,0 +1,120 @@
+= v0.13.0
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+:page-date: 2025-07-23 15:09:14 +0000 UTC
+
+*Released on 2025-07-23 15:09:14 +0000 UTC by `github-actions[bot]`.*
+
+== Description
+
+== Notable changes
+
+* HelmOps and OCI storage are now fully supported and no longer experimental.
+* Improved traceability for built images.
+* More accurate and lightweight resource status updates.
+
+== Additions
+
+* Fleet supports a new, user-driven bundle scan method for greater flexibility. The previous scan method remains supported. See xref:../explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[documentation] ,contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3480[#3480].
+* When using SSH to connect to a Git repository, Fleet checks host keys by default and rejects connections to unknown hosts. See xref:../how-tos-for-users/gitrepo-add.adoc#_known_hosts[documentation].  
+  (Contributed by @weyfonk, PR https://github.com/rancher/fleet/pull/3523[#3523])
+* Replica counts are now configurable for both controllers and agents. See xref:../how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[documentation].  
+  (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3457[#3457])
+* Fleet can now use a separate webhook secret for each GitRepo. See xref:../how-tos-for-users/webhook.adoc#option-2-configure-secret[documentation].  
+  (Contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3490[#3490])
+* Fleet charts now support additional labels and annotations, which propagate to controller deployments.  
+  (Contributed by @0xavi0 and @p-se, PRs https://github.com/rancher/fleet/pull/3531[#3531] and https://github.com/rancher/fleet/pull/3664[#3664])
+* Agent leader election is now configurable. See the https://github.com/rancher/fleet/blob/main/charts/fleet/values.yaml#L135-L138[example].  
+  (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3463[#3463])
+* The old service account migration has been removed. (Contributed by @weyfonk, PR https://github.com/rancher/fleet/pull/3601[#3601])
+* Fleet no longer computes resource keys in bundle statuses. (Contributed by @manno, PR https://github.com/rancher/fleet/pull/3681[#3681])
+* Fleet adds new GitJob metrics. See xref:../how-tos-for-users/observability.adoc#_metrics[documentation].  
+  (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3649[#3649])
+* Agents can now skip clusters using a label. (Contributed by @manno, PR https://github.com/rancher/fleet/pull/3744[#3744])
+
+=== HelmOps
+
+HelmOps is no longer experimental.  
+`HelmOp` resources (renamed from `HelmApp`) now support:
+
+* Polling Helm repositories
+* Semantic versioning constraints (see https://github.com/rancher/fleet/issues/3862[this known issue] for OCI charts)
+* Preventing bundle naming collisions between GitOps and HelmOps bundles
+* Installing Helm charts in strict TLS mode
+
+Metrics and cluster statuses now include HelmOps data.  
+See xref:../how-tos-for-users/helm-ops.adoc[Fleet documentation] for more details.
+
+=== OCI Storage
+
+OCI storage is now stable and enabled by default (though bundles don’t use it by default).  
+You can disable it by setting `OCI_STORAGE=false` in `extraEnv` during installation.
+
+It also adds:
+
+* Garbage collection (best-effort)
+* Improved traceability for secrets involved in OCI storage:
+** Secrets cloned by Fleet to downstream clusters are labeled.
+** Fleet generates an event when deleting an OCI artifact fails.
+
+See xref:../how-tos-for-users/oci-storage.adoc[Fleet documentation] for more details.
+
+=== Traceability improvements
+
+Fleet now attests provenance of Docker manifests.  
+(Patch by @thardeck, PR https://github.com/rancher/fleet/pull/3846[#3846])
+
+== Bug fixes
+
+Status updates and lifecycle handling received major improvements:
+
+* GitRepo statuses are now more stable when multiple bundles are not ready.  
+  (Contributed by @rbreddy, PR https://github.com/rancher/fleet/pull/3485[#3485])
+* GitRepo status updates are optimized.  
+  (PR https://github.com/rancher/fleet/pull/3604[#3604])
+* GitRepo reconciliations now delay updates to improve performance during rapid changes.  
+  (PR https://github.com/rancher/fleet/pull/3558[#3558])
+* BundleDeployment status updates are optimized.  
+  (PR https://github.com/rancher/fleet/pull/3887[#3887])
+* Drift detection no longer updates resources with empty diffs.  
+  (PR https://github.com/rancher/fleet/pull/3555[#3555])
+* Fleet uses the latest Wrangler readiness detection improvements.  
+  (PR https://github.com/rancher/fleet/pull/3853[#3853])
+* Downstream agents correctly report statuses upstream again.  
+  (PR https://github.com/rancher/fleet/pull/3702[#3702])
+
+=== Lifecycle improvements
+
+* Cluster event filters reduce unnecessary bundle deployment creation.  
+  (PR https://github.com/rancher/fleet/pull/3796[#3796])
+* Fleet now deletes obsolete bundle deployments:
+** No longer targeted.
+** GitRepo or Bundle targets changed.  
+  (PRs https://github.com/rancher/fleet/pull/3509[#3509] and https://github.com/rancher/fleet/pull/3438[#3438])
+
+=== CLI improvements
+
+* Fleet CLI now provides clearer error messages in git jobs.  
+  (PR https://github.com/rancher/fleet/pull/3559[#3559])
+* CLI uses the `controller-runtime` client.  
+  (PR https://github.com/rancher/fleet/pull/3670[#3670])
+
+=== Configuration improvements
+
+* Config updates now trigger cluster imports selectively:
+** Only when relevant fields change.
+** Only when a valid `apiServerURL` exists.  
+  (PRs https://github.com/rancher/fleet/pull/3551[#3551] and https://github.com/rancher/fleet/pull/3837[#3837])
+* Fixed panic caused by `options.Helm`.  
+  (PR https://github.com/rancher/fleet/pull/3567[#3567])
+* Creating a GitRepo with an empty repo URL is no longer allowed.  
+  (PR https://github.com/rancher/fleet/pull/3582[#3582])
+* Empty ignore options in BundleDeployments and HelmOps are now omitted.  
+  (PR https://github.com/rancher/fleet/pull/3842[#3842])
+
+=== Other improvements
+
+* More informative errors for failed chart downloads.  
+  (PR https://github.com/rancher/fleet/pull/3593[#3593])
+* SSH key authentication for Helm chart downloads works again.  
+  (PR https://github.com/rancher/fleet/pull/3670[#3670])
