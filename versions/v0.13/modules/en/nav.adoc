@@ -57,5 +57,11 @@
 ** xref:reference/ref-gitrepo.adoc[GitRepo Resource]
 ** xref:reference/ref-bundle.adoc[Bundle Resource]
 * xref:troubleshooting.adoc[Troubleshooting]
+
+* Experimental Features
+** xref:./pages/how-tos-for-users/enableexperimental.adoc[Troubleshooting]
+** xref:./pages/how-tos-for-users/scheduling.adoc[Scheduling]
+** xref:./pages/reference/ref-schedule.adoc[Schedule Resource reference]
+
 * Changelog
 ** xref:changelogs/v0.13.0.adoc[v0.13.0]
