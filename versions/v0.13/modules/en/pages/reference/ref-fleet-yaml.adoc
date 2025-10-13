@@ -365,22 +365,22 @@ These options let you customize deployments for specific clusters or cluster gro
 
 === Supported Customizations
 
-* xref:./ref-crds.adoc#bundledeploymentoptions[DefaultNamespace]
-* xref:./ref-crds.adoc#bundledeploymentoptions[ForceSyncGeneration]
-* xref:./ref-crds.adoc#bundledeploymentoptions[KeepResources]
-* xref:./ref-crds.adoc#bundledeploymentoptions[ServiceAccount]
-* xref:./ref-crds.adoc#bundledeploymentoptions[TargetNamespace]
-* xref:./ref-crds.adoc#helmoptions[Helm.Atomic]
-* xref:./ref-crds.adoc#helmoptions[Helm.Chart]
-* xref:./ref-crds.adoc#helmoptions[Helm.DisablePreProcess]
-* xref:./ref-crds.adoc#helmoptions[Helm.Force]
-* xref:./ref-crds.adoc#helmoptions[Helm.ReleaseName]
-* xref:./ref-crds.adoc#helmoptions[Helm.Repo]
-* xref:./ref-crds.adoc#helmoptions[Helm.TakeOwnership]
-* xref:./ref-crds.adoc#helmoptions[Helm.TimeoutSeconds]
-* xref:./ref-crds.adoc#helmoptions[Helm.ValuesFrom]
-* xref:./ref-crds.adoc#helmoptions[Helm.Values]
-* xref:./ref-crds.adoc#helmoptions[Helm.Version]
+* xref:./ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]
+* xref:./ref-crds.adoc#_bundledeploymentoptions[ForceSyncGeneration]
+* xref:./ref-crds.adoc#_bundledeploymentoptions[KeepResources]
+* xref:./ref-crds.adoc#_bundledeploymentoptions[ServiceAccount]
+* xref:./ref-crds.adoc#_bundledeploymentoptions[TargetNamespace]
+* xref:./ref-crds.adoc#_helmoptions[Helm.Atomic]
+* xref:./ref-crds.adoc#_helmoptions[Helm.Chart]
+* xref:./ref-crds.adoc#_helmoptions[Helm.DisablePreProcess]
+* xref:./ref-crds.adoc#_helmoptions[Helm.Force]
+* xref:./ref-crds.adoc#_helmoptions[Helm.ReleaseName]
+* xref:./ref-crds.adoc#_helmoptions[Helm.Repo]
+* xref:./ref-crds.adoc#_helmoptions[Helm.TakeOwnership]
+* xref:./ref-crds.adoc#_helmoptions[Helm.TimeoutSeconds]
+* xref:./ref-crds.adoc#_helmoptions[Helm.ValuesFrom]
+* xref:./ref-crds.adoc#_helmoptions[Helm.Values]
+* xref:./ref-crds.adoc#_helmoptions[Helm.Version]
 
 [WARNING]
 ====
@@ -389,7 +389,7 @@ Because Fleet stores bundles in etcd, this may exceed etcd’s blob size limit.
 Refer to https://github.com/rancher/fleet/issues/1650[fleet#1650] for details.
 ====
 
-* xref:./ref-crds.adoc#helmoptions[Helm.WaitForJobs]
-* xref:./ref-crds.adoc#kustomizeoptions[Kustomize.Dir]
-* xref:./ref-crds.adoc#yamloptions[YAML.Overlays]
-* xref:./ref-crds.adoc#diffoptions[Diff.ComparePatches]
+* xref:./ref-crds.adoc#_helmoptions[Helm.WaitForJobs]
+* xref:./ref-crds.adoc#_kustomizeoptions[Kustomize.Dir]
+* xref:./ref-crds.adoc#_yamloptions[YAML.Overlays]
+* xref:./ref-crds.adoc#_diffoptions[Diff.ComparePatches]
