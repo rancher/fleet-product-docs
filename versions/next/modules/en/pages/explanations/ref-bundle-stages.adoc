@@ -19,6 +19,7 @@ This diagram shows the different rendering stages a bundle goes through until de
 
 image::FleetBundleStages.svg[Bundle Stages]
 
+{{examining-the-bundle-lifecycle-with-the-cli}}
 == Examining the Bundle Lifecycle With the CLI
 
 Several fleet CLI commands help with debugging bundles.
