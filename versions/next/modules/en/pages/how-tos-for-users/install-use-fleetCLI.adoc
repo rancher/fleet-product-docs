@@ -18,7 +18,7 @@ For more information, see xref:../how-tos-for-operators/installation.adoc[Instal
 
 == Install Fleet CLI
 
-Fleet CLI is a stand-alone binary that you can download from the xref:https://github.com/rancher/fleet/releases[Fleet GitHub releases page].
+Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases[Fleet GitHub releases page].
 
 === Linux/macOS
 
@@ -93,7 +93,7 @@ image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key comman
 
 == Deploy a Sample Bundle Using Fleet CLI
 
-You can deploy workloads without using GitRepos by applying them locally with the CLI. For example, use the xref:https://github.com/rancher/fleet-examples[Fleet examples repository]:
+You can deploy workloads without using GitRepos by applying them locally with the CLI. For example, use the link:https://github.com/rancher/fleet-examples[Fleet examples repository]:
 
 [source,bash]
 ----

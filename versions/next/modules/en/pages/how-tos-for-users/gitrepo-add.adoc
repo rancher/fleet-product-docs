@@ -250,7 +250,7 @@ Create a file named `secrets-path.yaml` that specifies credentials for each path
 * an exact path, which must match the full path to a bundle directory (a folder containing a `fleet.yaml` file). The path may have more segments than the entry under `paths:`.
 * a _glob_ matching one or more paths, useful when credentials need to be reused across multiple paths/bundles.
 
-See the xref:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
+See the link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
 
 [NOTE]
 ====
@@ -371,7 +371,7 @@ As a workaround, tools like SOPS can encrypt credentials.
 Instead, reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles, do this in the manifests, e.g., by link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].  
 Helm-style bundles can use xref:../explanations/gitrepo-content.adoc#using-valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
-When using Kubernetes xref:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several Fleet CRDs in the encryption resource list:
+When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several Fleet CRDs in the encryption resource list:
 
 [source]
 ----

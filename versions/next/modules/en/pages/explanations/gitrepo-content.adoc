@@ -216,7 +216,7 @@ It is not necessary to reference a chart's own `values.yaml` via `valuesFiles:`.
 ====
 If the chart generates certificates or passwords in its templates, these values must be overridden. Otherwise, the chart could be continuously deployed as these values change.
 
-Credentials loaded from the downstream cluster with `valuesFrom` are, by default, encrypted at rest when xref:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[data encryption] is enabled in Kubernetes. Credentials contained in the default `values.yaml` file, or defined via `values:` or `valuesFiles`, are not encrypted, as they are loaded from the repository when the bundle is created.
+Credentials loaded from the downstream cluster with `valuesFrom` are, by default, encrypted at rest when link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[data encryption] is enabled in Kubernetes. Credentials contained in the default `values.yaml` file, or defined via `values:` or `valuesFiles`, are not encrypted, as they are loaded from the repository when the bundle is created.
 
 Hardened clusters should add the Fleet CRDs to the xref:../how-tos-for-users/gitrepo-add.adoc#storing-credentials-in-git[resources encrypted at rest list] on the upstream cluster when storing credentials in the bundles.
 ====
