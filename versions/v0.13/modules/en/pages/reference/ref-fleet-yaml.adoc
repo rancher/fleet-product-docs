@@ -8,7 +8,7 @@ For more information about customizing bundles using `fleet.yaml`, see xref:../e
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
-which contains the xref:./ref-crds.adoc#bundlespec[BundleSpec].
+which contains the xref:./ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Full Example
 
@@ -243,7 +243,7 @@ Options for customizing Helm chart values.
 
 It is not necessary to specify a chart’s own `values.yaml`. It is always used by default.
 
-See xref:../explanations/gitrepo-content.adoc#_using-helm-values[Using Helm Values] for more information.
+See xref:../explanations/gitrepo-content.adoc#using-helm-values[Using Helm Values] for more information.
 
 For value processing stages, refer to https://fleet.rancher.io/ref-bundle-stages.
 
@@ -257,7 +257,7 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI. For more information, refer to xref:../explanations/ref-bundle-stages.adoc#_fleet-target[fleet-target].
+You can test values templating with the CLI. For more information, refer to xref:../explanations/ref-bundle-stages.adoc#fleet-target[fleet-target].
 
 Template context keys:
 
