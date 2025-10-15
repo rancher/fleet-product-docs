@@ -138,7 +138,7 @@ When polling is enabled, {product_name} does the following at the configured int
 
 This works the same way as it does for gitOps, by referencing a Helm access secret through field `helmSecretName`.
 
-For more information, refer to xref:./gitrepo-add.adoc#using-private-helm-repositories[Private Helm repo].
+For more information, refer to xref:gitrepo-add.adoc#using-private-helm-repositories[Private Helm repo].
 
 The part on using separate credentials for each path is not relevant though, since unlike a GitRepo, a HelmOp resource only references a single Helm chart.
 

@@ -11,7 +11,7 @@ Using OCI registries for Helm charts helps you:
 * Push and pull charts using standard OCI commands, making them easy to distribute across environments.
 * Manage charts in registries designed for high availability and global distribution.
 
-For more information about HelmOps with OCI registry, refer to xref:./helm-ops.adoc#oci-registry[HelmOps].
+For more information about HelmOps with OCI registry, refer to xref:helm-ops.adoc#oci-registry[HelmOps].
 
 image::fetch-Helm-from-OCI.svg[A visual asset displaying flow of fetching Helm charts from an OCI registry]
 
@@ -43,4 +43,4 @@ Fleet pulls the chart from the OCI registry and deploys it to the targeted clust
 
 If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. Fleet uses this secret to pull the chart and deploy it to the targeted clusters.
 
-For more information, refer to xref:./gitrepo-add.adoc#using-private-helm-repositories[fleet.yaml with authentication].
+For more information, refer to xref:gitrepo-add.adoc#using-private-helm-repositories[fleet.yaml with authentication].

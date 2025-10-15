@@ -4,7 +4,7 @@
 
 The `Schedule` resource defines time windows during which Fleet accepts changes to `Clusters`.
 
-For more information on how to use the `Schedule` resource, refer to xref:../how-tos-for-users/scheduling.adoc[Scheduling].
+For more information on how to use the `Schedule` resource, refer to xref:how-tos-for-users/scheduling.adoc[Scheduling].
 
 [source,yaml]
 ----

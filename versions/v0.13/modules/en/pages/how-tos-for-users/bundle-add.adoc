@@ -10,7 +10,7 @@ If you want to deploy resources without a git repository follow this guide to cr
 
 [NOTE]
 ====
-If you want to deploy resources without running a Fleet controller. Refer to xref:../explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Fleet CLI bundle lifecycle].
+If you want to deploy resources without running a Fleet controller. Refer to xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Fleet CLI bundle lifecycle].
 
 ====
 

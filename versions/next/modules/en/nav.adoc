@@ -32,7 +32,7 @@
 
 * Fleet CLI
 ** xref:how-tos-for-users/install-use-fleetCLI.adoc[Install and Use Fleet CLI]
-** xref:./pages/how-tos-for-users/validate-fleetCLI.adoc[Validate Fleet CLI Deployment]
+** xref:how-tos-for-users/validate-fleetCLI.adoc[Validate Fleet CLI Deployment]
 
 * Reference
 ** CLI
@@ -63,9 +63,9 @@
 * xref:troubleshooting.adoc[Troubleshooting]
 
 * Experimental Features
-** xref:./pages/how-tos-for-users/enableexperimental.adoc[Troubleshooting]
-** xref:./pages/how-tos-for-users/scheduling.adoc[Scheduling]
-** xref:./pages/reference/ref-schedule.adoc[Schedule Resource reference]
+** xref:how-tos-for-users/enableexperimental.adoc[Troubleshooting]
+** xref:how-tos-for-users/scheduling.adoc[Scheduling]
+** xref:reference/ref-schedule.adoc[Schedule Resource reference]
 
 * Changelog
 ** xref:changelogs/next.adoc[Changelogs]

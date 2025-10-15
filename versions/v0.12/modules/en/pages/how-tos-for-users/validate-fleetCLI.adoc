@@ -64,4 +64,4 @@ You can also verify the corresponding `BundleDeployment` object, since each `Bun
 kubectl get bundledeployments.fleet.cattle.io -A
 ----
 
-For more information, see xref:../reference/ref-status-fields.adoc[Status Fields].
+For more information, see xref:reference/ref-status-fields.adoc[Status Fields].
