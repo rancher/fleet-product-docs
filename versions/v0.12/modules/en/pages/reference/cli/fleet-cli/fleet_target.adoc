@@ -25,4 +25,4 @@ fleet target [flags]
 
 == SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 - Manage Fleet operations
+* xref:fleet.adoc[fleet]	 - Manage Fleet operations

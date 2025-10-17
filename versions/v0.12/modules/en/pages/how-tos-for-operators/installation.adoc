@@ -79,7 +79,7 @@ NAME                                READY   STATUS    RESTARTS   AGE
 fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
-You can now xref:../how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
+You can now xref:how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
 
 == Tweaking Your Fleet Installation
 
@@ -320,5 +320,5 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
 At this point, the Fleet manager should be ready.  
-You can now xref:./cluster-registration.adoc[register clusters] and xref:../how-tos-for-users/gitrepo-add.adoc[add Git repositories].
+You can now xref:cluster-registration.adoc[register clusters] and xref:how-tos-for-users/gitrepo-add.adoc[add Git repositories].
 

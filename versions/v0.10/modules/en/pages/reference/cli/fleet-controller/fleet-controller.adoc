@@ -27,5 +27,5 @@ fleet-controller [flags]
 
 == SEE ALSO
 
-* xref:./fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]	 - Configure Fleet agent management
-* xref:./fleet-controller_cleanup.adoc[fleet-controller cleanup]	 - Clean up outdated controller resources
+* xref:fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]	 - Configure Fleet agent management
+* xref:fleet-controller_cleanup.adoc[fleet-controller cleanup]	 - Clean up outdated controller resources
