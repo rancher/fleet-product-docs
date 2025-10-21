@@ -11,8 +11,7 @@ For more information, refer to Configure xref:reference/ref-configuration.adoc#c
 == Available experimental features
 
 Fleet currently supports the following experimental features:
-
-* xref:scheduling.adoc[Scheduling]
+* xref:how-tos-for-users/scheduling.adoc[Scheduling]
 
 == Enabling an experimental feature
 

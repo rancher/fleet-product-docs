@@ -9,7 +9,6 @@ Git repositories are registered by creating a `GitRepo` resource in Kubernetes. 
 to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for examples.
 
 xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
-
 The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
 
 [NOTE]

@@ -37,7 +37,7 @@ A downstream cluster is registered by installing an agent via helm and using the
 
 [IMPORTANT]
 ====
-It's not necessary to configure the fleet manager for xref:installation#_configuration_for_multi_cluster[multi cluster], as the downstream agent we install via Helm will connect to the Kubernetes API of the upstream cluster directly.
+It's not necessary to configure the fleet manager for xref:how-tos-for-operators\installation.adoc#_configuration_for_multi_cluster[multi cluster], as the downstream agent we install via Helm will connect to the Kubernetes API of the upstream cluster directly.
 
 Agent-initiated registration is normally not used with Rancher.
 ====
@@ -348,7 +348,7 @@ The manager-initiated registration flow is accomplished by creating a
 
 [IMPORTANT]
 ====
-If you are using {product_name} standalone _without Rancher_, it must be installed as described in xref:installation#_configuration_for_multi_cluster[installation details].
+If you are using {product_name} standalone _without Rancher_, it must be installed as described in xref:how-tos-for-operators\installation.adoc#_configuration_for_multi_cluster[installation details].
 
 The manager-initiated registration is used when you add a cluster from the Rancher dashboard.
 ====

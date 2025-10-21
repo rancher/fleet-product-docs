@@ -16,7 +16,7 @@ Currently, resources must **gzip to less than 1 MB**.
 
 == How Repositories Are Scanned
 
-Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:concepts.adoc[bundle] that {product_name} deploys and monitors.
+Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:explanations/concepts.adoc[bundle] that {product_name} deploys and monitors.
 
 {product_name} looks for the following files to determine deployment behavior:
 
@@ -36,7 +36,7 @@ Multiple paths can be defined for a `GitRepo`. Each path is scanned independentl
 
 | *fleet.yaml*
 | Any subpath
-| If any `fleet.yaml` is found, a new xref:concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
+| If any `fleet.yaml` is found, a new xref:explanations/explanations/concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
 
 | *\*.yaml*
 | Any subpath
@@ -174,7 +174,7 @@ Unsupported:
 
 `fleet.yaml` modifies how resources are deployed and customized.  
 It’s located at the root relative to the `GitRepo.path`.  
-If found in a subdirectory, it defines a new xref:concepts.adoc[bundle] configured independently.
+If found in a subdirectory, it defines a new xref:explanations/concepts.adoc[bundle] configured independently.
 
 [NOTE]
 ====
@@ -187,7 +187,7 @@ If disabled, manually update dependencies using:
 ====
 
 For field details, see xref:reference/ref-fleet-yaml.adoc[{product_name} YAML Reference].   
-For private Helm repositories, see xref:how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories].
+For private Helm repositories, see xref:../how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 [[using-helm-values]]
 == Using Helm Values

@@ -16,7 +16,7 @@ Currently, resources must **gzip to less than 1 MB**.
 
 == How Repositories Are Scanned
 
-Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:concepts.adoc[bundle] that {product_name} deploys and monitors.
+Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:explanations/concepts.adoc[bundle] that {product_name} deploys and monitors.
 
 {product_name} looks for the following files to determine deployment behavior:
 
@@ -36,7 +36,7 @@ Multiple paths can be defined for a `GitRepo`. Each path is scanned independentl
 
 | *fleet.yaml*
 | Any subpath
-| If any `fleet.yaml` is found, a new xref:concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
+| If any `fleet.yaml` is found, a new xref:explanations/concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
 
 | *\*.yaml*
 | Any subpath
@@ -174,7 +174,7 @@ Unsupported:
 
 `fleet.yaml` modifies how resources are deployed and customized.  
 It’s located at the root relative to the `GitRepo.path`.  
-If found in a subdirectory, it defines a new xref:concepts.adoc[bundle] configured independently.
+If found in a subdirectory, it defines a new xref:explanations/concepts.adoc[bundle] configured independently.
 
 [NOTE]
 ====
