@@ -6,7 +6,7 @@ For more information about customizing bundles using `fleet.yaml`, see xref:expl
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
-which contains the xref:reference\ref-crds.adoc#bundlespec[BundleSpec].
+which contains the xref:reference\ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Full Example
 
@@ -367,22 +367,22 @@ These options let you customize deployments for specific clusters or cluster gro
 |===
 
 === Supported Customizations
-* xref:reference\ref-crds.adoc#bundledeploymentoptions[DefaultNamespace]
-* xref:reference\ref-crds.adoc#bundledeploymentoptions[ForceSyncGeneration]
-* xref:reference\ref-crds.adoc#bundledeploymentoptions[KeepResources]
-* xref:reference\ref-crds.adoc#bundledeploymentoptions[ServiceAccount]
-* xref:reference\ref-crds.adoc#bundledeploymentoptions[TargetNamespace]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.Atomic]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.Chart]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.DisablePreProcess]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.Force]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.ReleaseName]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.Repo]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.TakeOwnership]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.TimeoutSeconds]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.ValuesFrom]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.Values]
-* xref:reference\ref-crds.adoc#helmoptions[Helm.Version]
+* xref:reference\ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]
+* xref:reference\ref-crds.adoc#_bundledeploymentoptions[ForceSyncGeneration]
+* xref:reference\ref-crds.adoc#_bundledeploymentoptions[KeepResources]
+* xref:reference\ref-crds.adoc#_bundledeploymentoptions[ServiceAccount]
+* xref:reference\ref-crds.adoc#_bundledeploymentoptions[TargetNamespace]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.Atomic]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.Chart]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.DisablePreProcess]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.Force]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.ReleaseName]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.Repo]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.TakeOwnership]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.TimeoutSeconds]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.ValuesFrom]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.Values]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.Version]
 
 [WARNING]
 ====
@@ -391,7 +391,7 @@ Because Fleet stores bundles in etcd, this may exceed etcd’s blob size limit.
 Refer to https://github.com/rancher/fleet/issues/1650[fleet#1650] for details.
 ====
 
-* xref:reference\ref-crds.adoc#helmoptions[Helm.WaitForJobs]
-* xref:reference\ref-crds.adoc#kustomizeoptions[Kustomize.Dir]
-* xref:reference\ref-crds.adoc#yamloptions[YAML.Overlays]
-* xref:reference\ref-crds.adoc#diffoptions[Diff.ComparePatches]
+* xref:reference\ref-crds.adoc#_helmoptions[Helm.WaitForJobs]
+* xref:reference\ref-crds.adoc#_kustomizeoptions[Kustomize.Dir]
+* xref:reference\ref-crds.adoc#_yamloptions[YAML.Overlays]
+* xref:reference\ref-crds.adoc#_diffoptions[Diff.ComparePatches]
