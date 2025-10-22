@@ -42,4 +42,4 @@ Fleet pulls the chart from the OCI registry and deploys it to the targeted clust
 
 If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. Fleet uses this secret to pull the chart and deploy it to the targeted clusters.
 
-For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml with authentication].
+For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#use_private_helm_repositories[fleet.yaml with authentication].
