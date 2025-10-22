@@ -133,6 +133,7 @@ Just like with SSH, reference the secret in your GitRepo resource via `clientSec
    branch: main
    clientSecretName: basic-auth-secret
 
+[[using-private-helm-repositories]]
 == Using Private Helm Repositories
 
 [CAUTION]

@@ -147,6 +147,7 @@ https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installatio
 Fleet will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 ====
 
+[[using-private-helm-repositories]]
 
 == Using Private Helm Repositories
 

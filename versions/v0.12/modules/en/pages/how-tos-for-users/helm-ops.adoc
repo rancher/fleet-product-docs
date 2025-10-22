@@ -83,6 +83,7 @@ version: '1.2.3'
 
 In this case, only the ++version++ field may be empty. If any of the ++chart++ or ++repo++ field is empty, Fleet will set an error in the HelmOp status and no bundle will be created.
 
+[[oci-registry]]
 === OCI registry
 
 Helm supports OCI registries, which can be referenced in Fleet using the ++repo++ field.
