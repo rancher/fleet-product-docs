@@ -100,7 +100,7 @@ When testing {product_name} with private git repositories, you will notice that 
 
 === {product_name} fails with bad response code: 403
 
-If your GitJob returns the error below, the problem may be that {product_name} cannot access the Helm repo you specified in your xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]:
+If your GitJob returns the error below, the problem may be that {product_name} cannot access the Helm repo you specified in your xref:reference\ref-fleet-yaml.adoc[`fleet.yaml`]:
 
 ----
 time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
@@ -178,7 +178,7 @@ Based on the above log, you can add the following entry to remove the operation:
 
 *Modified* means that there is a mismatch between the actual state and the desired state, the source of truth, which lives in the git repository.
 
-. Check the xref:how-tos-for-users/bundle-diffs.adoc[bundle diffs documentation] for more information.
+. Check the xref:how-tos-for-users\bundle-diffs.adoc[bundle diffs documentation] for more information.
 . You can also force update the `gitrepo` to perform a manual resync. Select *GitRepo* on the left navigation bar, then select *Force Update*.
 
 === Bundle has a Horizontal Pod Autoscaler (HPA) in modified state

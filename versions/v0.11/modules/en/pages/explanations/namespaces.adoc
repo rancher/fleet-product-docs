@@ -18,8 +18,8 @@ definitions in workload resources. In some cases, setting namespaces using some
 options may result in errors if the resources to be deployed contain
 non-namespaced resources. To get a better understanding of how these options
 interact, refer to the diagram below. For more details on a specific option,
-please refer to the xref:reference/ref-gitrepo.adoc[GitRepo] or
-xref:reference/ref-fleet-yaml.adoc[fleet.yaml] reference.
+please refer to the xref:reference\ref-gitrepo.adoc[GitRepo] or
+xref:reference\ref-fleet-yaml.adoc[fleet.yaml] reference.
 
 image::FleetWorkloadNamespaces.png[Configuring Workload Namespaces]
 
@@ -137,10 +137,10 @@ Deleting the workspace, cluster registration namespace, will delete all the clus
 This will uninstall all deployed bundles, except for the fleet agent, from the deleted clusters.
 ====
 
-If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace
+If you are using {product_name} in a xref:explanations\concepts.adoc[single cluster] style, the namespace
 will always be *fleet-local*. Refer to the <<_cluster_registration_namespace_fleet_local,`fleet-local` namespaces section>> for more information.
 
-For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct
+For a xref:explanations\concepts.adoc[multi-cluster] style, please ensure you use the correct
 repo that will map to the right target clusters.
 
 === Internal Namespaces

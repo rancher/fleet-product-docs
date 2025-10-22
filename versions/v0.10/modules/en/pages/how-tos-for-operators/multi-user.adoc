@@ -4,7 +4,7 @@
 
 {product_name} uses Kubernetes RBAC where possible.
 
-One addition on top of RBAC is the xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
+One addition on top of RBAC is the xref:explanations\namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
 
 A multi-user fleet setup looks like this:
 
@@ -138,7 +138,7 @@ In order to have a well organized environment, each workspace should have its ow
 
 This assumes all GitRepos created by 'fleetuser' have the `team: one` label. Different labels could be used, to select different cluster namespaces.
 
-In each of the user's namespaces, as an admin create a xref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`].
+In each of the user's namespaces, as an admin create a xref:explanations\namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`].
 
 [,yaml]
 ....
@@ -165,7 +165,7 @@ namespaceSelector:
     #workspace: prod
 ....
 
-The xref:how-tos-for-users/gitrepo-targets.adoc[`target` section] in the GitRepo resource can be used to deploy only to a subset of the matched clusters.
+The xref:how-tos-for-users\gitrepo-targets.adoc[`target` section] in the GitRepo resource can be used to deploy only to a subset of the matched clusters.
 
 == Restricting Access to Downstream Clusters
 

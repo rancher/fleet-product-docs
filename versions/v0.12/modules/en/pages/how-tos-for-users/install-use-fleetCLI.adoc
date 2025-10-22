@@ -13,7 +13,7 @@
 ====
 You can use `fleet apply` without installing {product_name} in your clusters. However, for cluster interaction (for example, `fleet target`, `fleet deploy`), {product_name} must be installed.
 
-For more information, see xref:how-tos-for-operators/installation.adoc[Install Fleet].
+For more information, see xref:how-tos-for-operators\installation.adoc[Install Fleet].
 ====
 
 == Install Fleet CLI
@@ -85,7 +85,7 @@ fleet target my-bundle ./manifests
 * `fleet deploy`: Takes the output of `fleet target`, or a dumped `bundledeployment`/content resource, and deploys it to a cluster—just like `fleet-agent` would.
 +
 You can use it in these scenarios:
-** `fleet apply -o - name ./folder` to check the YAML of the bundle before creating it. For more information, see xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Examining the Bundle Lifecycle with the CLI].
+** `fleet apply -o - name ./folder` to check the YAML of the bundle before creating it. For more information, see xref:explanations\ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Examining the Bundle Lifecycle with the CLI].
 ** Use with a target to debug selectors and verify which downstream clusters are targeted.
 ** `fleet deploy --dry-run` to print resources that would be deployed, without applying them.
 
@@ -155,7 +155,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 === Verify Agent and Controller Status
 
 Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
-For more information, see xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+For more information, see xref:reference\ref-registration.adoc#registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
 
 If a bundle is not ready on a given cluster, check the following:
 

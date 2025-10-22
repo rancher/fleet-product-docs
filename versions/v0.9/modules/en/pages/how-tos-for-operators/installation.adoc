@@ -84,7 +84,7 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 ======
 
-You can now xref:how-tos-for-users/gitrepo-add.adoc[register some git repos] in the `fleet-local` namespace to start deploying Kubernetes resources.
+You can now xref:how-tos-for-users\gitrepo-add.adoc[register some git repos] in the `fleet-local` namespace to start deploying Kubernetes resources.
 
 == Configuration for Multi-Cluster
 
@@ -268,4 +268,4 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 --
 ====
 
-At this point the {product_name} manager should be ready. You can now xref:how-tos-for-operators/cluster-registration.adoc[register clusters] and xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[git repos] with the {product_name} manager.
+At this point the {product_name} manager should be ready. You can now xref:how-tos-for-operators\cluster-registration.adoc[register clusters] and xref:how-tos-for-users\gitrepo-add.adoc#_create_gitrepo_instance[git repos] with the {product_name} manager.

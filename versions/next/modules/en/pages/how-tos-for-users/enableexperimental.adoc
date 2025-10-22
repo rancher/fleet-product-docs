@@ -6,13 +6,13 @@
 
 Enabling or disabling experimental features is done using extra environment variables that are available when deploying `rancher/fleet`.
 
-For more information, refer to Configure xref:reference/ref-configuration.adoc#_configure-fleet-install-options-in-rancher[{product_name} install options in Rancher]
+For more information, refer to Configure xref:reference\ref-configuration.adoc#_configure-fleet-install-options-in-rancher[{product_name} install options in Rancher]
 
 == Available experimental features
 
 Fleet currently supports the following experimental features:
 
-* xref:how-tos-for-users/scheduling.adoc[Scheduling]
+* xref:how-tos-for-users\scheduling.adoc[Scheduling]
 
 == Enabling an experimental feature
 

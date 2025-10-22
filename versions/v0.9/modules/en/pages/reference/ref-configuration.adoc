@@ -58,7 +58,7 @@ Annotations used by fleet:
 == {product_name} agent configuration
 
 Tolerations, affinity and resources can be customized for the {product_name} agent. These fields can be provided when creating a
-xref:reference/ref-crds.adoc#_clusterspec[Cluster], see xref:how-tos-for-operators/cluster-registration.adoc[Registering Downstream Cluster] for more info on how to create
+xref:reference\ref-crds.adoc#_clusterspec[Cluster], see xref:how-tos-for-operators\cluster-registration.adoc[Registering Downstream Cluster] for more info on how to create
 Clusters. Default configuration will be used if these fields are not provided.
 
 If you change the resources limits, make sure the limits allow the fleet-agent to work normally.
