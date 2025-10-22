@@ -4,13 +4,13 @@
 
 Bundles are automatically created by {product_name} when a `GitRepo` is created. In most cases `Bundles` should not be created
 manually by the user. If you want to deploy resources from a git repository use a
-xref:how-tos-for-users\gitrepo-add.adoc[GitRepo] instead.
+xref:how-tos-for-users/gitrepo-add.adoc[GitRepo] instead.
 
 If you want to deploy resources without a git repository follow this guide to create a `Bundle`.
 
 [NOTE]
 ====
-If you want to deploy resources without running a Fleet controller. Refer to xref:explanations\ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Fleet CLI bundle lifecycle].
+If you want to deploy resources without running a Fleet controller. Refer to xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Fleet CLI bundle lifecycle].
 
 ====
 
@@ -20,7 +20,7 @@ Resources can be compressed with gz. See https://github.com/rancher/rancher/blob
 an example of how Rancher uses compression in go code.
 
 If you would like to deploy in downstream clusters, you need to define targets. Targets work similarly to targets in `GitRepo`.
-See xref:how-tos-for-users\gitrepo-targets.adoc#_defining_targets[Mapping to Downstream Clusters].
+See xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[Mapping to Downstream Clusters].
 
 The following example creates a nginx `Deployment` in the local cluster:
 
@@ -66,8 +66,8 @@ spec:
 
 == Targets
 
-The bundle can target multiple clusters. It uses the same xref:how-tos-for-users\gitrepo-targets.adoc#_target_matching[targeting as the GitRepo].
-Additional xref:reference\ref-fleet-yaml.adoc#_supported_customizations[customization options] can be specified per target:
+The bundle can target multiple clusters. It uses the same xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[targeting as the GitRepo].
+Additional xref:reference/ref-fleet-yaml.adoc#_supported_customizations[customization options] can be specified per target:
 
 [,yaml]
 ----

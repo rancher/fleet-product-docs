@@ -145,4 +145,4 @@ Fleet propagates updates from the bundle status to the status of the HelmOp reso
 * Conditions providing more information about the state of the resource, whether it is valid and its deployments are ready
 * Resource counts by status
 
-Refer to xref:reference\ref-status-fields.adoc[Status fields] for more details on resource counts and conditions.
+Refer to xref:reference/ref-status-fields.adoc[Status fields] for more details on resource counts and conditions.

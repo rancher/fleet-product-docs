@@ -6,8 +6,8 @@ A bundle is an internal resource used for the orchestration of resources from gi
 
 To demonstrate the life cycle of a {product_name} bundle, we will use https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[multi-cluster/helm] as a case study.
 
-. User will create a xref:how-tos-for-users\gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] that points to the multi-cluster/helm repository.
-. The `gitjob-controller` will sync changes from the GitRepo and detect changes from the polling or xref:how-tos-for-users\webhook.adoc[webhook event]. With every commit change, the `gitjob-controller` will create a job that clones the git repository, reads content from the repo such as `fleet.yaml` and other manifests, and creates the {product_name} xref:reference\ref-status-fields.adoc#_bundles[bundle].
+. User will create a xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] that points to the multi-cluster/helm repository.
+. The `gitjob-controller` will sync changes from the GitRepo and detect changes from the polling or xref:how-tos-for-users/webhook.adoc[webhook event]. With every commit change, the `gitjob-controller` will create a job that clones the git repository, reads content from the repo such as `fleet.yaml` and other manifests, and creates the {product_name} xref:reference/ref-status-fields.adoc#_bundles[bundle].
 
 NOTE: The job pod with the image name `rancher/tekton-utils` will be under the same namespace as the GitRepo.
 
@@ -28,7 +28,7 @@ image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key comman
 
 === fleet apply
 
-xref:reference\cli\fleet-cli\fleet_apply.adoc[Apply] renders a folder with Kubernetes resources, such as a Helm chart, manifests, or kustomize folders, into a {product_name} bundle resource.
+xref:reference/cli/fleet-cli/fleet_apply.adoc[Apply] renders a folder with Kubernetes resources, such as a Helm chart, manifests, or kustomize folders, into a {product_name} bundle resource.
 
 ----
 git clone https://github.com/rancher/fleet-test-data
@@ -36,16 +36,16 @@ cd fleet-test-data
 fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 ----
 
-More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users\bundle-add.adoc[section on bundles].
+More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users/bundle-add.adoc[section on bundles].
 
 [[fleet-target]]
 === fleet target
 
-xref:reference\cli\fleet-cli\fleet_target.adoc[Target] reads a bundle from a file and works with a live cluster to print out the `bundledeployment` & `content` resource, which fleetcontroller would create. It takes a namespace as an argument, so it can look in that namespace for e.g. cluster resources. It can also dump the data structure which is used during "targeting", so decisions taken regarding labels and cluster names can be checked.
+xref:reference/cli/fleet-cli/fleet_target.adoc[Target] reads a bundle from a file and works with a live cluster to print out the `bundledeployment` & `content` resource, which fleetcontroller would create. It takes a namespace as an argument, so it can look in that namespace for e.g. cluster resources. It can also dump the data structure which is used during "targeting", so decisions taken regarding labels and cluster names can be checked.
 
 === fleet deploy
 
-xref:reference\cli\fleet-cli\fleet_deploy.adoc[Deploy] takes the output of `fleet target`, or a dumped bundledeployment/content resource and deploys it to a cluster, just like fleet-agent would. It supports a dry run mode, to print out the resources which would be created, instead of installing them with helm. Since the command doesn't create the input resources, a running fleet-agent would likely garbage collect the deployment.
+xref:reference/cli/fleet-cli/fleet_deploy.adoc[Deploy] takes the output of `fleet target`, or a dumped bundledeployment/content resource and deploys it to a cluster, just like fleet-agent would. It supports a dry run mode, to print out the resources which would be created, instead of installing them with helm. Since the command doesn't create the input resources, a running fleet-agent would likely garbage collect the deployment.
 
 The deploy command can be used to bring bundles to air-gapped clusters.
 
@@ -62,5 +62,5 @@ fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
 fleet deploy --input-file bd.yaml --dry-run
 ----
 
-For information about apply, refer to xref:how-tos-for-users\bundle-add.adoc[Create a Bundle Resource].
+For information about apply, refer to xref:how-tos-for-users/bundle-add.adoc[Create a Bundle Resource].
 

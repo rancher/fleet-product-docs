@@ -78,6 +78,6 @@ spec:
 In this case, the `Schedule` allows updates to `Clusters` labeled with *env=dev* **every 3 hours**, for a **duration of 1 hour**.
 
 The way you define target `Clusters` is **identical** to how targets are defined for `GitRepo` resources.
-For more information, refer to xref:how-tos-for-users\gitrepo-targets.adoc[GitRepo targets]. Which also applies to `Schedule` targets.
+For more information, refer to xref:how-tos-for-users/gitrepo-targets.adoc[GitRepo targets]. Which also applies to `Schedule` targets.
 
-You can view the full CRD for xref:reference\ref-schedule.adoc[Schedule]
+You can view the full CRD for xref:reference/ref-schedule.adoc[Schedule]

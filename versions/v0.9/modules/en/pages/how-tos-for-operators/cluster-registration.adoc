@@ -47,7 +47,7 @@ Agent-initiated registration is normally not used with Rancher.
 
 The *cluster registration token* is a credential that will authorize the downstream cluster agent to be
 able to initiate the registration process. This is required.
-The xref:explanations\architecture.adoc#_security[cluster registration token] is manifested as a `values.yaml` file that will be passed to the `helm install` process.
+The xref:explanations/architecture.adoc#_security[cluster registration token] is manifested as a `values.yaml` file that will be passed to the `helm install` process.
 Alternatively one can pass the token directly to the helm install command via `--set token="$token"`.
 
 There are two styles of registering an agent. You can have the cluster for this agent dynamically created, in which
@@ -149,7 +149,7 @@ kubectl -n cattle-fleet-system get pods -l app=fleet-agent
 The agent should now be deployed.
 
 Additionally you should see a new cluster registered in the {product_name} manager.  Below is an example of checking that a new cluster
-was registered in the `clusters` xref:explanations\namespaces.adoc[namespace].  Please ensure your `+${HOME}/.kube/config+` is pointed to the Fleet
+was registered in the `clusters` xref:explanations/namespaces.adoc[namespace].  Please ensure your `+${HOME}/.kube/config+` is pointed to the Fleet
 manager to run this command.
 
 [,shell]
@@ -252,7 +252,7 @@ kubectl -n cattle-fleet-system get pods -l app=fleet-agent
 The agent should now be deployed.
 
 Additionally you should see a new cluster registered in the {product_name} manager.  Below is an example of checking that a new cluster
-was registered in the `clusters` xref:explanations\namespaces.adoc[namespace].  Please ensure your `+${HOME}/.kube/config+` is pointed to the Fleet
+was registered in the `clusters` xref:explanations/namespaces.adoc[namespace].  Please ensure your `+${HOME}/.kube/config+` is pointed to the Fleet
 manager to run this command.
 
 [,shell]
@@ -276,7 +276,7 @@ not need to be manually created and obtained.
 ====
 
 
-For an agent-initiated registration the downstream cluster must have a xref:explanations\architecture.adoc#_security[cluster registration token].
+For an agent-initiated registration the downstream cluster must have a xref:explanations/architecture.adoc#_security[cluster registration token].
 Cluster registration tokens are used to establish a new identity for a cluster. Internally
 cluster registration tokens are managed by creating Kubernetes service accounts that have the
 permissions to create `ClusterRegistrationRequests` within a specific namespace.  Once the
@@ -299,7 +299,7 @@ such that it will expire after a specific time.
 
 The `ClusterRegistationToken` is a namespaced type and should be created in the same namespace
 in which you will create `GitRepo` and `ClusterGroup` resources. For in depth details on how namespaces
-are used in {product_name} refer to the documentation on xref:explanations\namespaces.adoc[namespaces].  Create a new
+are used in {product_name} refer to the documentation on xref:explanations/namespaces.adoc[namespaces].  Create a new
 token with the below YAML.
 
 [,yaml]

@@ -139,7 +139,7 @@ When polling is enabled, {product_name} does the following at the configured int
 
 This works the same way as it does for gitOps, by referencing a Helm access secret through field `helmSecretName`.
 
-For more information, refer to xref:how-tos-for-users\gitrepo-add.adoc#using-private-helm-repositories[Private Helm repo].
+For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Private Helm repo].
 
 The part on using separate credentials for each path is not relevant though, since unlike a GitRepo, a HelmOp resource only references a single Helm chart.
 
@@ -155,4 +155,4 @@ The status of that bundle will evolve over time, as bundle deployments are creat
 * Conditions providing more information about the state of the resource, whether it is valid and its deployments are ready
 * Resource counts by status
 
-Refer to xref:reference\ref-status-fields.adoc[Status fields] for more details on resource counts and conditions.
+Refer to xref:reference/ref-status-fields.adoc[Status fields] for more details on resource counts and conditions.

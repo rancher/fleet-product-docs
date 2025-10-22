@@ -6,11 +6,11 @@
 == Create GitRepo Instance
 
 Git repositories are registered by creating a `GitRepo` resource in Kubernetes. Refer
-to the xref:tutorials\tut-deployment.adoc[creating a deployment tutorial] for examples.
+to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for examples.
 
-xref:explanations\gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
+xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
 
-The available fields of the GitRepo custom resource are documented in the xref:reference\ref-gitrepo.adoc[GitRepo resource reference]
+The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
 
 === Proper Namespace
 
@@ -19,9 +19,9 @@ Git repos are added to the {product_name} manager using the `GitRepo` custom res
 * `fleet-default` will contain all the downstream clusters that are already registered through Rancher.
 * `fleet-local` will contain the local cluster by default.
 
-If you are using {product_name} in a xref:explanations\concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations\namespaces.adoc#_cluster_registration_namespace_fleet_local[here] for more on the `fleet-local` namespace.
+If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[here] for more on the `fleet-local` namespace.
 
-For a xref:explanations\concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
+For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
 == Override Workload's Namespace
 
@@ -202,7 +202,7 @@ It's recommended not to store credentials in Git. Even if the repository is prop
 As a workaround tools like SOPS can be used to encrypt the credentials.
 
 Instead it is recommended to reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles this must be done in the manifests, e.g. by https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].
-Helm-style bundles can use xref:explanations\gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
+Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
 When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, it is recommended to configure the upstream cluster to include several {product_name} CRDs in encryption resource list:
 
@@ -228,14 +228,14 @@ To prevent this, make the Kubernetes API server temporarily inaccessible to down
 
 === Pausing
 
-A xref:reference\ref-gitrepo.adoc[paused GitRepo] leads to paused bundles and bundle deployments. This means:
+A xref:reference/ref-gitrepo.adoc[paused GitRepo] leads to paused bundles and bundle deployments. This means:
 
 * When deleting a bundle deployment that originates from a paused GitRepo, Fleet does not re-create the bundle deployment until the GitRepo is unpaused.
 * When deleting a bundle that originates from a paused GitRepo, Fleet deletes the bundle deployments associated with that bundle and does not re-create them until the GitRepo is unpaused.
 
 Pausing a GitRepo prevents bundles and bundle deployments from being created or updated for that GitRepo. In other words, it only affects **controller** operations, not **Fleet agent** operations.  
 
-To prevent user resources contained in a bundle from being deleted when a bundle deployment is removed, use xref:reference\ref-bundle.adoc[keepResources].
+To prevent user resources contained in a bundle from being deleted when a bundle deployment is removed, use xref:reference/ref-bundle.adoc[keepResources].
 
 
 

@@ -7,11 +7,11 @@ The `fleet.yaml` file adds options to a bundle. Any directory with a
 `fleet.yaml` is automatically turned into bundle.
 
 For more information on how to use the `fleet.yaml` to customize bundles see
-xref:explanations\gitrepo-content.adoc[Git Repository Contents].
+xref:explanations/gitrepo-content.adoc[Git Repository Contents].
 
 The content of the fleet.yaml corresponds to the `FleetYAML` struct at
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go],
-which contains the xref:reference\ref-crds.adoc#_bundlespec[BundleSpec].
+which contains the xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Reference
 
@@ -392,7 +392,7 @@ Options for the downloaded Helm chart.
 
 == Values
 
-Values are processed in different stages of the xref:explanations\ref-bundle-stages.adoc[Bundle lifecycle]
+Values are processed in different stages of the xref:explanations/ref-bundle-stages.adoc[Bundle lifecycle]
 
 * fleet.yaml `values:` and `valuesFile:` are added to the bundle's values when it is created.
 * Helm values templating, e.g. with `${ }`, happens when the bundle is targeted at a cluster, with cluster labels filled in, etc.

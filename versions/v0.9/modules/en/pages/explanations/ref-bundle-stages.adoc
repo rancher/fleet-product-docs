@@ -6,8 +6,8 @@ A bundle is an internal resource used for the orchestration of resources from gi
 
 To demonstrate the life cycle of a {product_name} bundle, we will use https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[multi-cluster/helm] as a case study.
 
-. User will create a xref:how-tos-for-users\gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] that points to the multi-cluster/helm repository.
-. The `gitjob-controller` will sync changes from the GitRepo and detect changes from the polling or xref:how-tos-for-users\webhook.adoc[webhook event]. With every commit change, the `gitjob-controller` will create a job that clones the git repository, reads content from the repo such as `fleet.yaml` and other manifests, and creates the {product_name} xref:reference\ref-status-fields.adoc#_bundles[bundle].
+. User will create a xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] that points to the multi-cluster/helm repository.
+. The `gitjob-controller` will sync changes from the GitRepo and detect changes from the polling or xref:how-tos-for-users/webhook.adoc[webhook event]. With every commit change, the `gitjob-controller` will create a job that clones the git repository, reads content from the repo such as `fleet.yaml` and other manifests, and creates the {product_name} xref:reference/ref-status-fields.adoc#_bundles[bundle].
 
 NOTE: The job pod with the image name `rancher/tekton-utils` will be under the same namespace as the GitRepo.
 
