@@ -24,4 +24,4 @@ fleet cleanup clusterregistration [flags]
 
 == SEE ALSO
 
-* xref:reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources
+* xref:/reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources
