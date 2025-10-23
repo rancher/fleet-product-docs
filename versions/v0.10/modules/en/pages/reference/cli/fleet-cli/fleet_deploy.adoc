@@ -26,4 +26,4 @@ fleet deploy [flags]
 
 == SEE ALSO
 
-* xref:reference\cli\fleet-cli [fleet]	 - Manage Fleet operations
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations

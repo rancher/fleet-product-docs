@@ -13,7 +13,8 @@ The available fields of the GitRepo custom resource are documented in the xref:r
 
 [NOTE]
 ====
-Fleet does not support SSH proxy server authentication when cloning <<adding-a-private-git-repository,adding-a-private-git-repository>>or <<using-private-helm-repositories,using-private-helm-repositories>> using. Use HTTPS authentication with a username and password or a personal access token.
+Fleet does not support SSH proxy server authentication when cloning <<adding-a-private-git-repository,adding-a-private-git-repository>>or <<using-private-helm-repositories,Using Private Helm Repositories>>
+ using. Use HTTPS authentication with a username and password or a personal access token.
 ====
 
 
