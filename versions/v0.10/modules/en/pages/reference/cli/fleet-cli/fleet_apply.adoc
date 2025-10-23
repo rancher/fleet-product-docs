@@ -41,4 +41,4 @@ fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
 == SEE ALSO
-* xref:reference\cli\fleet-cli\fleet.adoc[fleet]	 - Manage Fleet operations
+* xref:./fleet.adoc[fleet]	 - Manage Fleet operations

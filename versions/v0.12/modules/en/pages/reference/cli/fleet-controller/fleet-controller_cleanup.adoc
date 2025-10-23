@@ -25,4 +25,4 @@ fleet-controller cleanup [flags]
 
 == SEE ALSO
 
-* xref:reference\cli\fleet-controller\fleet-controller.adoc[fleet-controller]	 - Manage the Fleet controller that communicates with the Fleet agent
+* xref:./fleet-controller.adoc[fleet-controller]	 - Manage the Fleet controller that communicates with the Fleet agent
