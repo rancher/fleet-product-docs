@@ -11,10 +11,10 @@ to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for ex
 xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
 
 The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
-
+Adding A Private Git Repository
 [NOTE]
 ====
-Fleet does not support SSH proxy server authentication when cloning <<adding_a_private_git_repository,adding-a-private-git-repository>>or <<_using_private_helm_repositories,Using Private Helm Repositories>>
+Fleet does not support SSH proxy server authentication when cloning <<_adding_a_private_git_repository,adding-a-private-git-repository>>or <<_using_private_helm_repositories,Using Private Helm Repositories>>
 . Use HTTPS authentication with a username and password or a personal access token.
 ====
 
