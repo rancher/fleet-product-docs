@@ -135,7 +135,6 @@ When polling is enabled, {product_name} does the following at the configured int
 *** with ++false++ with an error if a failure happened
 ** updating the ++Last Polling Time++ field to the starting time of the last polling attempt, even if it failed.
 
-[[using-private-helm-repositories]]
 == Using private Helm repositories
 
 This works the same way as it does for gitOps, by referencing a Helm access secret through field `helmSecretName`.
