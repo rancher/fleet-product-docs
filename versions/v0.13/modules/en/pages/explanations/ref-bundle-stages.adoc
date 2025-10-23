@@ -19,9 +19,12 @@ This diagram shows the different rendering stages a bundle goes through until de
 
 image::FleetBundleStages.svg[Bundle Stages]
 
+[[examining-the-bundle-lifecycle-with-the-cli]]
 == Examining the Bundle Lifecycle With the CLI
 
 Several fleet CLI commands help with debugging bundles.
+
+image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
 
 === fleet apply
 
@@ -46,8 +49,11 @@ xref:reference/cli/fleet-cli/fleet_deploy.adoc[Deploy] takes the output of `flee
 
 The deploy command can be used to bring bundles to air-gapped clusters.
 
-=== Lifecycle CLI Example
+=== Lifecycle CLI
 
+Fleet CLI commands help you debug and understand the bundle lifecycle. The following example uses the full bundle lifecycle using CLI:
+
+[source,bash]
 ----
 git clone https://github.com/rancher/fleet-test-data
 cd fleet-test-data

@@ -25,6 +25,5 @@ fleet-agent [flags]
 ----
 
 == SEE ALSO
-
 * xref:./fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]	 - Continuously report resource status to the upstream cluster
-* xref:./fleet-agent_register.adoc[fleet-agent register]	 - Register agent with an upstream cluster
+* xref:./fleet-agent_register.adoc[fleet-agent register] - Register agent with an upstream cluster

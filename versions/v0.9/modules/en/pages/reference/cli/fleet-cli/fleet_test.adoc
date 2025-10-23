@@ -35,4 +35,4 @@ fleet test [flags]
 
 == SEE ALSO
 
-* xref:./fleet.adoc[fleet]	 - Manage Fleet operations
+* xref:reference\cli\fleet-cli\ [fleet]	 - Manage Fleet operations
