@@ -136,7 +136,7 @@ kubectl apply -f eso-bundle.yaml
 
 Make sure you use a cluster selector in `targets.yaml` that matches all clusters you want to deploy to.
 
-For more information, refer to xref;https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster Deployment with the Help of External Secrets].
+For more information, refer to xref:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster Deployment with the Help of External Secrets].
 
 == Troubleshooting
 
