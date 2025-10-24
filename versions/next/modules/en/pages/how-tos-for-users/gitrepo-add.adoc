@@ -1,5 +1,5 @@
 = Create a GitRepo Resource
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 :doctype: book
 
@@ -9,14 +9,19 @@ Git repositories are registered by creating a `GitRepo` resource in Kubernetes. 
 to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for examples.
 
 xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
-
 The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
+
+[NOTE]
+====
+Fleet does not support SSH proxy server authentication when cloning <<adding-a-private-git-repository,adding-a-private-git-repository>>or <<using-private-helm-repositories,using Private Helm Repositories>>. Use HTTPS authentication with a username and password or a personal access token.
+====
+
 
 === Proper Namespace
 
-Git repos are added to the {product_name} manager using the `GitRepo` custom resource type. The `GitRepo` type is namespaced. By default, Rancher will create two {product_name} workspaces: *fleet-default* and *fleet-local*.
+Git repos are added to the {product_name} manager using the `GitRepo` custom resource type. The `GitRepo` type is namespaced. By default, Rancher will create two {product_name} workspaces: 
 
-* `fleet-default` will contain all the downstream clusters that are already registered through Rancher.
+* `fleet-default` contains all the downstream clusters that are already registered through Rancher.
 * `fleet-local` will contain the local cluster by default.
 
 If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[here] for more on the `fleet-local` namespace.
@@ -33,29 +38,39 @@ It takes precendence over all other namespace definitions:
 
 Workload namespace definitions can be restricted with `allowedTargetNamespaces` in the `GitRepoRestriction` resource.
 
+[[adding-a-private-git-repository]]
 == Adding A Private Git Repository
 
-{product_name} supports both HTTP and SSH auth keys for private repositories. To use this, you have to create a secret in the GitRepo's namespace.
+{product_name} supports the following authentication mechanisms for private repositories:
+* HTTP basic auth
+* SSH auth keys
+* Github Apps
+
+To use any of them, you have to create a secret in the ++GitRepo's++ namespace.
 
 For example, to generate a private SSH key:
 
-[,text]
+[source,bash]
 ----
 ssh-keygen -t rsa -b 4096 -m pem -C "user@email.com"
 ----
 
-NOTE: The private key format has to be in `EC PRIVATE KEY`, `RSA PRIVATE KEY` or `PRIVATE KEY` and should not contain a passphase.
+
+[NOTE]
+====
+The private key format has to be in `EC PRIVATE KEY`, `RSA PRIVATE KEY` or `PRIVATE KEY` and should not contain a passphase.
+====
 
 Put your private key into secret, use the namespace the GitRepo is in:
 
-[,text]
+[source,bash]
 ----
-kubectl create secret generic ssh-key -n fleet-default --from-file=ssh-privatekey=/file/to/private/key  --type=kubernetes.io/ssh-auth
+kubectl create secret generic basic-auth-secret -n namespace-of-your-gitrepo --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
 ----
 
 Now the `clientSecretName` must be specified in the repo definition:
 
-[,text]
+[source,yaml]
 ----
 apiVersion: fleet.cattle.io/v1alpha1
 kind: GitRepo
@@ -89,25 +104,18 @@ The key has to be in PEM format.
 
 === Known hosts
 
-[CAUTION]
-====
-
-If you don't add one or more public keys into the secret, any server's public key will be trusted and added. (`ssh -o stricthostkeychecking=accept-new` will be used)
-====
-
-
 {product_name} supports putting `known_hosts` into ssh secret. Here is an example of how to add it:
 
 Fetch the public key hash(take github as an example)
 
-[,text]
+[source,bash]
 ----
 ssh-keyscan -H github.com
 ----
 
 And add it into secret:
 
-[,text]
+[source,yaml]
 ----
 apiVersion: v1
 kind: Secret
@@ -124,14 +132,62 @@ stringData:
 
 Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:troubleshooting.adoc#_http_secrets_in_github[HTTP secrets in Github].
 
- kubectl create secret generic basic-auth-secret -n fleet-default --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
+[source,bash]
+----
+kubectl create secret generic basic-auth-secret -n namespace-of-your-gitrepo --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
+----
+
 
 Just like with SSH, reference the secret in your GitRepo resource via `clientSecretName`.
 
+
+[source,yaml]
+----
  spec:
    repo: https://github.com/fleetrepoci/gitjob-private.git
    branch: main
    clientSecretName: basic-auth-secret
+----
+
+[CAUTION]
+====
+When using BitBucket and access tokens, the username must be `x-token-auth`.
+====
+
+=== Using a GitHub App
+
+The following fields are needed to enable Fleet to authenticate to GitHub using a GitHub App:
+
+[options="header"]
+|===
+| Name | Secret field name | Where to find it
+
+| app ID
+| `github_app_id`
+| On your app's settings page, under `App ID` (numeric value).
+
+| app installation ID
+| `github_app_installation_id`
+| In the URL of the installation page for the app. For instance, if you have installed the app on a `foo/bar` repo, navigate to that repo's **settings → _Integrations_ → _Applications_**, open the page for the app; its URL will look like `https://github.com/settings/installations/<digits>`: those digits are your app installation ID.
+
+| private key
+| `github_app_private_key`
+| Generated when creating the GitHub App, or from the app settings page, where a `Generate a private key` button is available.
+|===
+
+See https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app[GitHub documentation] for more details on creating a GitHub App.
+
+With the necessary data at hand, create a secret containing those fields:
+
+[source,bash]
+----
+kubectl -n namespace-of-your-gitrepo create secret generic github-app-secret \
+    --from-literal=github_app_id=<app-id> \
+    --from-literal=github_app_installation_id=<installation-id> \
+    --from-file=github_app_private_key=<path-to-private-key-file>
+----
+
+Ensure you reference that secret in your GitRepo resource via `clientSecretName`.
 
 === Using Custom CA Bundles
 
@@ -146,7 +202,6 @@ and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
 Fleet will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 ====
-
 
 == Using Private Helm Repositories
 
@@ -181,58 +236,143 @@ After secret is created, specify the secret to `gitRepo.spec.helmSecretName`. Ma
 
 === Use different helm credentials for each path
 
+{product_name} allows you to define unique credentials for each Helm chart path in a Git repository using the helmSecretNameForPaths field.
+
+
 [IMPORTANT]
 ====
 `gitRepo.spec.helmSecretName` will be ignored if `gitRepo.spec.helmSecretNameForPaths` is provided
 ====
 
+Create a file named `secrets-path.yaml` that specifies credentials for each path in your `GitRepo`. Each key can be either:
 
-Create a file `secrets-path.yaml` that contains credentials for each path defined in a `GitRepo`. Credentials will not be used
-for paths that are not present in this file.
-The path is the actual path to the bundle (ie to a folder containing a `fleet.yaml` file) within the git repository, which might have more segments than the entry under `paths:`.
+* an exact path, which must match the full path to a bundle directory (a folder containing a `fleet.yaml` file). The path may have more segments than the entry under `paths:`.
+* a _glob_ matching one or more paths, useful when credentials need to be reused across multiple paths/bundles.
 
-Example:
+See the link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
 
-[,yaml]
+[NOTE]
+====
+If more than one glob matches a given path in a Git repository, Fleet will order globs lexically and use credentials
+from the first match.
+
+_Example_: For repository path `world-domination/ui_charts` and a secret containing the following keys, credentials under the _second_ glob will be used:
+
+[source,yaml]
+----
+world-domination/*_charts: # will not be used
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+world-domination/*: # will be used, as `/*` will be sorted before `/*_charts`
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+====
+
+If a path listed in the GitRepo is not included in this file, whether through exact paths or glob matching, Fleet does not use credentials for it.
+
+[NOTE]
+====
+The file should be named `secrets-path.yaml`; otherwise Fleet will not be able to use it.
+====
+
+.Example `GitRepo` resource
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: gitrepo
+  namespace: fleet-local
+spec:
+  helmSecretNameForPaths: test-multipasswd
+  repo: https://github.com/0xavi0/fleet-examples
+  branch: helm-multi-passwd
+  paths:
+  - single-cluster/test-multipasswd
+----
+
+.Example `secrets-path.yaml`
+[source,yaml]
+----
+single-cluster/test-multipasswd/passwd:
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+
+.Another example with two distinct paths
+[source,yaml]
 ----
 path-one: # path path-one must exist in the repository
   username: user
   password: pass
-path-two: # path path-one must exist in the repository
+path-two: # path path-two must exist in the repository
   username: user2
   password: pass2
-  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCiAgICBNSUlEblRDQ0FvV2dBd0lCQWdJVUNwMHB2SVJTb2c0eHJKN2Q1SUI2ME1ka0k1WXdEUVlKS29aSWh2Y05BUUVMCiAgICBCUUF3WGpFTE1Ba0dBMVVFQmhNQ1FWVXhFekFSQmdOVkJBZ01DbE52YldVdFUzUmhkR1V4SVRBZkJnTlZCQW9NCiAgICBHRWx1ZEdWeWJtVjBJRmRwWkdkcGRITWdVSFI1SUV4MFpERVhNQlVHQTFVRUF3d09jbUZ1WTJobGNpNXRlUzV2CiAgICBjbWN3SGhjTk1qTXdOREkzTVRVd056VXpXaGNOTWpnd05ESTFNVFV3TnpVeldqQmVNUXN3Q1FZRFZRUUdFd0pCCiAgICBWVEVUTUJFR0ExVUVDQXdLVTI5dFpTMVRkR0YwWlRFaE1COEdBMVVFQ2d3WVNXNTBaWEp1WlhRZ1YybGtaMmwwCiAgICBjeUJRZEhrZ1RIUmtNUmN3RlFZRFZRUUREQTV5WVc1amFHVnlMbTE1TG05eVp6Q0NBU0l3RFFZSktvWklodmNOCiAgICBBUUVCQlFBRGdnRVBBRENDQVFvQ2dnRUJBTXBvZE5TMDB6NDc1dnVSc2ZZcTFRYTFHQVl3QU92anV4MERKTHY5CiAgICBrZFhwT091dGdjMU8yWUdqNUlCVGQzVmpISmFJYUg3SDR2Rm84RlBaMG9zcU9YaFg3eUM4STdBS3ZhOEE5VmVmCiAgICBJVXp6Vlo1cCs1elNxRjdtZTlOaUNiL0pVSkZLT0ZsTkF4cjZCcXhoMEIyN1VZTlpjaUIvL1V0L0I2eHJuVE55CiAgICBoRzJiNzk4bjg4bFZqY3EzbEE0djFyM3VzWGYxVG5aS2t2UEN4ZnFHYk5OdTlpTjdFZnZHOWoyekdHcWJvcDRYCiAgICBXY3VSa3N3QkgxZlRNS0ZrbGcrR1VsZkZPMGFzL3phalVOdmdweTlpdVBMZUtqZTVWcDBiMlBLd09qUENpV2d4CiAgICBabDJlVDlNRnJjV0F3NTg3emE5NDBlT1Era2pkdmVvUE5sU2k3eVJMMW96YlRka0NBd0VBQWFOVE1GRXdIUVlECiAgICBWUjBPQkJZRUZEQkNkYjE4M1hsU0tWYzBxNmJSTCt0dVNTV3lNQjhHQTFVZEl3UVlNQmFBRkRCQ2RiMTgzWGxTCiAgICBLVmMwcTZiUkwrdHVTU1d5TUE4R0ExVWRFd0VCL3dRRk1BTUJBZjh3RFFZSktvWklodmNOQVFFTEJRQURnZ0VCCiAgICBBQ1BCVERkZ0dCVDVDRVoxd1pnQmhKdm9GZTk2MUJqVCtMU2RxSlpsSmNRZnlnS0hyNks5ZmZaY1ZlWlBoMVU0CiAgICB3czBuWGNOZiszZGJlTjl4dVBiY0VqUWlQaFJCcnRzalE1T1JiVHdYWEdBdzlYbDZYTkl6YjN4ZDF6RWFzQXZPCiAgICBJMjM2ZHZXQ1A0dWoycWZqR0FkQjJnaXU2b2xHK01CWHlneUZKMElzRENraldLZysyWEdmU3lyci9KZU1vZlFBCiAgICB1VU9wcFVGdERYd0lrUW1VTGNVVUxWcTdtUVNQb0lzVkNNM2hKNVQzczdUSWtHUDZVcGVSSjgzdU9LbURYMkRHCiAgICBwVWVQVHBuVWVLOVMzUEVKTi9XcmJSSVd3WU1OR29qdDRKWitaK1N6VE1aVkh0SlBzaGpjL1hYOWZNU1ZXQmlzCiAgICBQRW5MU256MDQ4OGFUQm5SUFlnVXFsdz0KICAgIC0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0=
-  sshPrivateKey: ICAgIC0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQogICAgTUlJRFF6Q0NBaXNDRkgxTm5YUWI5SlV6anNBR3FSc3RCYncwRlFpak1BMEdDU3FHU0liM0RRRUJDd1VBTUY0eAogICAgQ3pBSkJnTlZCQVlUQWtGVk1STXdFUVlEVlFRSURBcFRiMjFsTFZOMFlYUmxNU0V3SHdZRFZRUUtEQmhKYm5SbAogICAgY201bGRDQlhhV1JuYVhSeklGQjBlU0JNZEdReEZ6QVZCZ05WQkFNTURuSmhibU5vWlhJdWJYa3ViM0puTUI0WAogICAgRFRJek1EUXlOekUxTVRBMU5Gb1hEVEkwTURReU5qRTFNVEExTkZvd1hqRUxNQWtHQTFVRUJoTUNRVlV4RXpBUgogICAgQmdOVkJBZ01DbE52YldVdFUzUmhkR1V4SVRBZkJnTlZCQW9NR0VsdWRHVnlibVYwSUZkcFpHZHBkSE1nVUhSNQogICAgSUV4MFpERVhNQlVHQTFVRUF3d09jbUZ1WTJobGNpNXRlUzV2Y21jd2dnRWlNQTBHQ1NxR1NJYjNEUUVCQVFVQQogICAgQTRJQkR3QXdnZ0VLQW9JQkFRRGd6UUJJTW8xQVFHNnFtYmozbFlYUTFnZjhYcURTbjdyM2lGcVZZZldDVWZOSwogICAgaGZwampTRGpOMmRWWEV2UXA3R0t3akFHUElFbXR5RmxyUW5rUGtnTGFSaU9jSDdNN0p2c3ZIa0Ewd0g0dzJ2QgogICAgUEp6aVlINWh2MUE2WS9NcFM5bVkvQUVxVm80TUJkdnNZQzc3MFpCbzVBMitIUEtMd1YzMVZyYlhhTytWeUJtNAogICAgSmJhZHlNUk40N3BKRWdPMjJaYVRXL3Y3S1dKdjNydGJTMlZVSkNlU0piWlpsN09ocHhLRTVocStmK0RWaU1mcQogICAgTWx4ODNEV2pVSlVkV3lqVUZYVlk0bEdVaUtrRWVtSlVuSlVyY1ErOXE1SzVaWmhyRjhoRXhKRjhiZTZjemVzeAogICAga1VWN3dKb1RjWkd2bUhYSk1FNmtrQXh4Mmh3bU8wSFcyQWdDdTJZekFnTUJBQUV3RFFZSktvWklodmNOQVFFTAogICAgQlFBRGdnRUJBS1BpTWdXc1dCTnJvRkY2aWpYL2xMM3FxaWc4TjlkR1VPWDIyRVJDU1RTekNONjM0ZTFkZUhsdQogICAgbTc5OU11Q3hvWSsyZWluNlV1cFMvTEV6cnpvU2dDVWllQzQrT3ZralF5eGJpTFR6bW1OWEFnd09TM3RvTHRGWAogICAgbytmWWpSMU9xcHVPS29kMkhiYjliczRWcXdaNHEvMlVKbXE2Q01pYjZKZUE2VFJvK2Rkc0pUM2dDOFhWL1Z1MAogICAgNnkwdjJxdTM0bm1MYjFxOHFTS1RwZXYyQmwzQUJGY3NyS0JvNHFieUM2bnBTbnpZenNYcS90SlFLclplNE4vMgogICAgUXIzd1dxQ0pDVWUrMWVsT3A2b0JVcXNWSnc3aHk3YzRLc1Fna09ERDJkc2NuNEF1NGJhWlY2QmpySm1USVY0aQogICAgeXJ1dk9oZ2lINklGUVdDWmVQM2s0MU5obWRzRTNHQT0KICAgIC0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCiAgICBNSUlEblRDQ0FvV2dBd0lCQWdJVUNwMHB2...
+  sshPrivateKey: ICAgIC0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQogICAgTUlJRFF6Q0NBaXNDRkgxTm5Y...
 ----
 
-Create the secret
+Supported fields per path:
 
+[cols="1,1",options="header"]
+|===
+|Field |Description
+
+|`username`
+|Registry or repository username
+
+|`password`
+|Registry or repository password
+
+|`caBundle`
+|Base64-encoded CA certificate bundle
+
+|`sshPrivateKey`
+|Base64-encoded SSH private key
+
+|`insecureSkipVerify`
+|Boolean value to skip TLS verification
+|===
+
+.To create the secret, run:
+[source,bash]
 ----
-kubectl create secret generic path-auth-secret -n fleet-default --from-file=secrets-path.yaml
+kubectl create secret generic test-multipasswd -n fleet-local --from-file=secrets-path.yaml
 ----
-
-In the previous example credentials for username `user` will be used for the path `path-one` and credentials for username
-`user2` will be used for the path `path-two`.
-
-`caBundle` and `sshPrivateKey` must be base64 encoded.
 
 [NOTE]
 ====
-If you are using https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html["rancher-backups"] and want this secret to be included the backup, please add the label `resources.cattle.io/backup: true` to the secret. In that case, make sure to encrypt the backup to protect sensitive credentials.
+The secret must be created in the same namespace as the `GitRepo` resource.
 ====
 
-
-== Storing Credentials in Git
-
-It's recommended not to store credentials in Git. Even if the repository is properly protected, the secrets are at risk when cloning, etc.
-As a workaround tools like SOPS can be used to encrypt the credentials.
-
-Instead it is recommended to reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles this must be done in the manifests, e.g. by https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].
-Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
-
-When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, it is recommended to configure the upstream cluster to include several {product_name} CRDs in encryption resource list:
+If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
 [source,bash]
+----
+kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=true
+----
+
+[NOTE]
+====
+Ensure the backup is encrypted to protect sensitive credentials.
+====
+
+[[storing-credentials-in-git]]
+== Storing Credentials in Git
+
+It's recommended not to store credentials in Git. Even if the repository is properly protected, secrets are at risk during cloning, etc.  
+As a workaround, tools like SOPS can encrypt credentials.
+
+Instead, reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles, do this in the manifests, e.g., by link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].  
+Helm-style bundles can use xref:explanations/gitrepo-content.adoc#using-valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
+
+When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several Fleet CRDs in the encryption resource list:
+
+[source]
 ----
 - secrets
 - bundles.fleet.cattle.io
@@ -242,28 +382,25 @@ When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encryp
 
 == Backing up and restoring
 
-When backing up and restoring Fleet with existing workloads, whether they are GitRepos or HelmOps, a few points must be considered.
+When backing up and restoring Fleet with existing workloads, be they GitRepos or HelmOps, consider:
 
 === Kubernetes API server availability
 
-A Fleet agent running in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
+A Fleet agent in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
+During a restore operation, changes made in the upstream cluster may affect deployments in downstream clusters, which could be updated or deleted based on incomplete state from upstream.
 
-This means that during a restore operation, changes made in the upstream cluster might affect deployments in downstream clusters. These deployments could be updated or deleted based on incomplete state data from the upstream cluster.
-
-To prevent this, make the Kubernetes API server temporarily inaccessible to downstream clusters while the restore operation runs on the upstream cluster. Agents should not access the upstream cluster until all resources have been re-created.
+To prevent this, make the Kubernetes API server inaccessible to downstream clusters while a restore is running. Agents should not access the upstream cluster until all resources are re-created.
 
 === Pausing
 
-A xref:reference/ref-gitrepo.adoc[paused GitRepo] leads to paused bundles and bundle deployments. This means:
+A xref:reference/ref-gitrepo.adoc[paused] GitRepo will pause bundles and bundle deployments. This means:
 
-* When deleting a bundle deployment that originates from a paused GitRepo, Fleet does not re-create the bundle deployment until the GitRepo is unpaused.
-* When deleting a bundle that originates from a paused GitRepo, Fleet deletes the bundle deployments associated with that bundle and does not re-create them until the GitRepo is unpaused.
+* Deleting a bundle deployment from a paused GitRepo: Fleet will not re-create the bundle deployment until the GitRepo is unpaused.
+* Deleting a bundle from a paused GitRepo: Fleet will delete the bundle deployments coming from that bundle, and will not re-create the bundle (nor bundle-deployments) until the GitRepo is unpaused.
 
-Pausing a GitRepo prevents bundles and bundle deployments from being created or updated for that GitRepo. In other words, it only affects **controller** operations, not **Fleet agent** operations.  
+Pausing a GitRepo only prevents bundles and bundle deployments from being created or updated. It only affects _controller_ operations, not Fleet _agent_ operations.  
+To prevent user resources in a bundle from being deleted when deleting a bundle deployment, use xref:reference/ref-bundle.adoc[keepResources].
 
-To prevent user resources contained in a bundle from being deleted when a bundle deployment is removed, use xref:reference/ref-bundle.adoc[keepResources].
+== Troubleshooting
 
-
-**Troubleshooting**
-
-See {product_name} Troubleshooting section xref:troubleshooting.adoc[here].
+See the Fleet Troubleshooting section xref:troubleshooting.adoc[Troubleshooting docs].

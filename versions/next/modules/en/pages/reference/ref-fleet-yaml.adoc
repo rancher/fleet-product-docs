@@ -2,11 +2,11 @@
 
 The `fleet.yaml` file adds options to a bundle. Any directory with a `fleet.yaml` file is automatically turned into a bundle.
 
-For more information about customizing bundles using `fleet.yaml`, see xref:gitrepo-content.adoc[Git Repository Contents].
+For more information about customizing bundles using `fleet.yaml`, see xref:explanations/gitrepo-content.adoc[Git Repository Contents].
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
-which contains the xref:ref-crds.adoc#bundlespec[BundleSpec].
+which contains the xref:reference\ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Full Example
 
@@ -38,6 +38,11 @@ namespaceLabels:
 # created by Fleet.
 namespaceAnnotations:
   key: value
+
+# Name of the bundle. If not specified, the bundle name will be computed based
+# on the GitRepo's name, and the path from which the bundle is created.
+# Default: ""
+name: my-great-bundle
 
 # Optional map of labels, that are set at the bundle and can be used in a
 # dependsOn.selector
@@ -241,7 +246,7 @@ Options for customizing Helm chart values.
 
 It is not necessary to specify a chart’s own `values.yaml`. It is always used by default.
 
-See xref:gitrepo-content.adoc#using-helm-values[Using Helm Values] for more information.
+See xref:explanations/gitrepo-content.adoc#using-helm-values[Using Helm Values] for more information.
 
 For value processing stages, refer to https://fleet.rancher.io/ref-bundle-stages.
 
@@ -255,7 +260,7 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI, refer to xref:ref-bundle-stages.adoc#fleet-target[fleet-target].
+You can test values templating with the CLI, refer to xref:reference/ref-bundle-stages.adoc#fleet-target[fleet-target].
 
 Template context keys:
 
@@ -363,22 +368,22 @@ These options let you customize deployments for specific clusters or cluster gro
 
 === Supported Customizations
 
-* xref:ref-crds.adoc#bundledeploymentoptions[DefaultNamespace]
-* xref:ref-crds.adoc#bundledeploymentoptions[ForceSyncGeneration]
-* xref:ref-crds.adoc#bundledeploymentoptions[KeepResources]
-* xref:ref-crds.adoc#bundledeploymentoptions[ServiceAccount]
-* xref:ref-crds.adoc#bundledeploymentoptions[TargetNamespace]
-* xref:ref-crds.adoc#helmoptions[Helm.Atomic]
-* xref:ref-crds.adoc#helmoptions[Helm.Chart]
-* xref:ref-crds.adoc#helmoptions[Helm.DisablePreProcess]
-* xref:ref-crds.adoc#helmoptions[Helm.Force]
-* xref:ref-crds.adoc#helmoptions[Helm.ReleaseName]
-* xref:ref-crds.adoc#helmoptions[Helm.Repo]
-* xref:ref-crds.adoc#helmoptions[Helm.TakeOwnership]
-* xref:ref-crds.adoc#helmoptions[Helm.TimeoutSeconds]
-* xref:ref-crds.adoc#helmoptions[Helm.ValuesFrom]
-* xref:ref-crds.adoc#helmoptions[Helm.Values]
-* xref:ref-crds.adoc#helmoptions[Helm.Version]
+* xref:/reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]
+* xref:/reference/ref-crds.adoc#_bundledeploymentoptions[ForceSyncGeneration]
+* xref:/reference/ref-crds.adoc#_bundledeploymentoptions[KeepResources]
+* xref:/reference/ref-crds.adoc#_bundledeploymentoptions[ServiceAccount]
+* xref:/reference/ref-crds.adoc#_bundledeploymentoptions[TargetNamespace]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.Atomic]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.Chart]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.DisablePreProcess]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.Force]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.ReleaseName]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.Repo]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.TakeOwnership]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.TimeoutSeconds]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.ValuesFrom]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.Values]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.Version]
 
 [WARNING]
 ====
@@ -387,7 +392,7 @@ Because Fleet stores bundles in etcd, this may exceed etcd’s blob size limit.
 Refer to https://github.com/rancher/fleet/issues/1650[fleet#1650] for details.
 ====
 
-* xref:ref-crds.adoc#helmoptions[Helm.WaitForJobs]
-* xref:ref-crds.adoc#kustomizeoptions[Kustomize.Dir]
-* xref:ref-crds.adoc#yamloptions[YAML.Overlays]
-* xref:ref-crds.adoc#diffoptions[Diff.ComparePatches]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.WaitForJobs]
+* xref:/reference/ref-crds.adoc#_kustomizeoptions[Kustomize.Dir]
+* xref:/reference/ref-crds.adoc#_yamloptions[YAML.Overlays]
+* xref:/reference/ref-crds.adoc#_diffoptions[Diff.ComparePatches]
