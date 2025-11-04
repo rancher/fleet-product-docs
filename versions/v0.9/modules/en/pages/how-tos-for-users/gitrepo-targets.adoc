@@ -2,7 +2,7 @@
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 
-https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/[{product_name} in Rancher] allows users to manage clusters easily as if they were one cluster. Users can deploy bundles, which can be comprised of deployment manifests or any other Kubernetes resource, across clusters using grouping configuration.
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} in Rancher] allows users to manage clusters easily as if they were one cluster. Users can deploy bundles, which can be comprised of deployment manifests or any other Kubernetes resource, across clusters using grouping configuration.
 
 [IMPORTANT]
 ====

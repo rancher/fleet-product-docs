@@ -94,7 +94,7 @@ configured differently from the parent bundle.
 ====
 
 *Helm chart dependencies*:
-It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
+It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
 ====
 
 
