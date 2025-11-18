@@ -73,8 +73,8 @@ or https://github.com/rancher/rancher[Rancher].
 | The `redeployAgentGeneration` field on the `ClusterSpec` **can be incremented to force redeployment** of the agent by the Fleet Controller.
 
 | **Agent Adoption Post-Registration**
-| After initial registration using the token, the agent is adopted into the standard management lifecycle via bundles created by the `manageagent` controller (as noted in conversation history).
-| Once the agent is deployed, the `manageagent` controller explicitly creates a bundle to **adopt the existing deployment**, ensuring management continues through the Fleet system.
+| After initial registration using the token, the agent is adopted into the standard management lifecycle via bundles created by the `manageagent` controller.
+| 
 
 | **Rancher Context**
 | This method is **not commonly used** when registering clusters through the Rancher dashboard.

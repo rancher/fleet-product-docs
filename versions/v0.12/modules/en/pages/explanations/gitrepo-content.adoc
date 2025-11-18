@@ -4,15 +4,19 @@
 
 {product_name} creates bundles from a git repository. This happens either explicitly by specifying paths, or when a `fleet.yaml` is found.
 
-Each bundle is created from paths in a `GitRepo` and modified based on the discovered `fleet.yaml`.  
-Bundle lifecycles are tracked between releases using the Helm `releaseName` field.  
-If `releaseName` is not specified in `fleet.yaml`, it’s automatically generated as `GitRepo.name + path`. Long names are truncated and appended with a `-<hash>` suffix.
+The folder could contain a Helm chart, or reference one. It could be a plain Kubernetes manifest, or a Kustomize folder. Each bundle is converted to a single Helm chart for deployment.
 
-**The Git repository has no required structure.**  
-All scanned resources are stored as Kubernetes resources, so ensure scanned directories do not contain large files.  
-Currently, resources must **gzip to less than 1 MB**.
+The `fleet.yaml` file contains all the options for the deployment.
+
+== Bundle Names
+
+By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
+
+Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml`` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
 
 == How Repositories Are Scanned
+
+**The Git repository has no required structure.** All scanned resources are stored as Kubernetes resources, so ensure scanned directories do not contain large files. Currently, resources must **gzip to less than 1 MB**.
 
 Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:explanations/concepts.adoc[bundle] that {product_name} deploys and monitors.
 
