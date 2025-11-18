@@ -16,7 +16,7 @@
 == Additions
 
 * Fleet supports a new, user-driven bundle scan method for greater flexibility. The previous scan method remains supported. See xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[documentation] ,contributed by @0xavi0, PR https://github.com/rancher/fleet/pull/3480[#3480].
-* When using SSH to point to a Git repository, Fleet checks host keys by default, rejecting connection attempts to unknown hosts xref: ../how-tos-for-users/gitrepo-add.adoc [Known hosts] by https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/issues/3523[PR#3523].
+* When using SSH to point to a Git repository, Fleet checks host keys by default, rejecting connection attempts to unknown hosts xref:/how-tos-for-users/gitrepo-add.adoc[Known hosts] by https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/issues/3523[PR#3523].
 * Replica counts are now configurable for both controllers and agents. See xref:how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[documentation].  
   (Contributed by @p-se, PR https://github.com/rancher/fleet/pull/3457[#3457])
 * Fleet can now use a separate webhook secret for each GitRepo. See xref:how-tos-for-users/webhook.adoc#option-2-configure-secret[documentation].  

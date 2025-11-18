@@ -223,7 +223,7 @@ Refer to Rancher's {product_name} docs for more information.
 
 The available fields are documented in the xref::/reference/ref-fleet-yaml.adoc[fleet.yaml reference].
 For a private Helm repo, users can reference a secret from the git repo resource.
-See xref:/how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories].
+See xref:/how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 == Using Helm Values
 
@@ -234,7 +234,7 @@ __How changes are applied to `values.yaml`__:
 
 image::/img/FleetValuesStages.svg[]
 
-The targeting step can treat values as templates using cluster info. More info: xref:/reference/ref-fleet-yaml.adoc#templating[templates in fleet.yaml].
+The targeting step can treat values as templates using cluster info. More info: xref:/reference/ref-fleet-yaml.adoc#_values_templating[templates in fleet.yaml].
 
 You can disable this using `disablePreProcess`.
 
@@ -336,7 +336,7 @@ targetCustomizations:
 - name: prod
   clusterName: fleetname
 ----
-See xref:/how-tos-for-users/gitrepo-targets.adoc#customization-per-cluster[customization per cluster].
+See xref:/how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customization per cluster].
 
 == Raw YAML Resource Customization
 

@@ -423,7 +423,6 @@ See xref:explanations/gitrepo-content.adoc#using-helm-values[Using Helm Values] 
 
 For value processing stages, refer to xref:explanations/ref-bundle-stages.adoc[Bundle lifecycle].
 
-[[values-templating]]
 === Values Templating
 
 Fleet supports Go template expressions for advanced templating needs.  

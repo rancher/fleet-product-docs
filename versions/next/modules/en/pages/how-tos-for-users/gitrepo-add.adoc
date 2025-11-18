@@ -373,7 +373,7 @@ It's recommended not to store credentials in Git. Even if the repository is prop
 As a workaround, tools like SOPS can encrypt credentials.
 
 Instead, reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles, do this in the manifests, e.g., by link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].  
-Helm-style bundles can use xref:explanations/gitrepo-content.adoc#using-valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
+Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
 When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several Fleet CRDs in the encryption resource list:
 

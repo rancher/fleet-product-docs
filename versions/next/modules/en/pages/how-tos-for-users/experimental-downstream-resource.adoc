@@ -10,7 +10,7 @@ This is an experimental feature.
 From Fleet v0.14.0 onwards, Fleet supports propagating external resources to downstream clusters.
 
 This simplifies dealing with dependencies of charts, such as values coming from external resources.
-See also xref:gitrepo-content.adoc#using-valuesfrom[valuesFrom].
+See also xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
 
 == How it works
 
@@ -45,7 +45,7 @@ remain on the upstream cluster, though.
 
 [NOTE]
 ====
-If resources referenced through `downstreamResources` should stay on downstream clusters even after they are no longer targeted, xref:ref-bundle.adoc[keepResources] should be set to `true` on the HelmOp.
+If resources referenced through `downstreamResources` should stay on downstream clusters even after they are no longer targeted, xref:/reference/ref-bundle.adoc[keepResources] should be set to `true` on the HelmOp.
 ====
 
 == Limitations
