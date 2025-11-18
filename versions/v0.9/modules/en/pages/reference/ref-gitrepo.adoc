@@ -7,7 +7,7 @@ The GitRepo resource describes git repositories, how to access them and where th
 The content of the resource corresponds to the xref:reference/ref-crds.adoc#_gitrepospec[GitRepoSpec].
 For more information on how to use GitRepo resource, e.g. how to watch private repositories, see xref:how-tos-for-users/gitrepo-add.adoc[Create a GitRepo Resource].
 
-[,yaml]
+[source,yaml]
 ----
 kind: GitRepo
 apiVersion: fleet.cattle.io/v1alpha1

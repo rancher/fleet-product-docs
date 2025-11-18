@@ -237,4 +237,4 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * https://github.com/rancher/fleet/releases/download/v0.10.0/fleet-linux-arm64[fleet-linux-arm64]
 * https://github.com/rancher/fleet/releases/download/v0.10.0/fleet-linux-amd64[fleet-linux-amd64]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.0[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.0[{product_name} v0.10.0]_

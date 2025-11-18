@@ -173,4 +173,4 @@ If you are using https://ranchermanager.docs.rancher.com/how-to-guides/new-user-
 
 **Troubleshooting**
 
-See {product_name} Troubleshooting section xref:troubleshooting.adoc[here].
+See {product_name} xref:troubleshooting.adoc[troubleshooting] section.

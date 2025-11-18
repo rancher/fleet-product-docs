@@ -31,8 +31,8 @@
 ** xref:how-tos-for-users/fine-tune-error.adoc[Fine Tuning Error Detection]
 
 * Fleet CLI
-** xref:how-tos-for-users/install-use-fleetCLI.adoc[Install and Use Fleet CLI]
-** xref:how-tos-for-users/validate-fleetCLI.adoc[Validate Fleet CLI Deployment]
+** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
+** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
 
 * Reference
 ** CLI
@@ -65,6 +65,7 @@
 * Experimental Features
 ** xref:how-tos-for-users/enableexperimental.adoc[Troubleshooting]
 ** xref:how-tos-for-users/scheduling.adoc[Scheduling]
+** xref:how-tos-for-users/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
 ** xref:reference/ref-schedule.adoc[Schedule Resource reference]
 
 * Changelog

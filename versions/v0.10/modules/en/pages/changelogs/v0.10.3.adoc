@@ -33,4 +33,4 @@ Upgrading to the chart via the Rancher UI will not set new  Helm values, so `mig
 * https://github.com/rancher/fleet/releases/download/v0.10.3/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
 * https://github.com/rancher/fleet/releases/download/v0.10.3/fleet-linux-amd64[fleet-linux-amd64]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.3[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.3[{product_name} v0.10.3]_

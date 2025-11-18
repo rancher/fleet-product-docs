@@ -35,4 +35,4 @@ This is a bugfix release with a few dependency updates.
 * https://github.com/rancher/fleet/releases/download/v0.12.5/fleetagent-linux-amd64[`fleetagent-linux-amd64`]
 * https://github.com/rancher/fleet/releases/download/v0.12.5/fleet-windows-amd64.exe[`fleet-windows-amd64.exe`]
 
-**Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.5[here].**
+**Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.5[{product_name} v0.12.5].**

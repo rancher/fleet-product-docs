@@ -15,7 +15,7 @@ HelmOps is the concept. A ++HelmOp++ is a custom Kubernetes resource managed by 
 The Fleet HelmOps controller will create lightweight bundles, pointing to referenced Helm charts, without downloading them. However, it will resolve chart versions to ensure that the same, and latest, version of a chart is deployed to all targeted downstream clusters. This applies to the following cases:
 
 * a wildcard or empty version is specified
-* a https://semver.org/semantic[https://semver.org/semantic] versioning constraint is specified, such as ++0.1.x++, ++< 2.0.0++. More information on supported constraints https://github.com/Masterminds/semver?tab=readme-ov-file#checking-version-constraints[here].
+* a https://semver.org/semantic[https://semver.org/semantic] versioning constraint is specified, such as ++0.1.x++, ++< 2.0.0++. More information on supported constraints https://github.com/Masterminds/semver?tab=readme-ov-file#checking-version-constraints[checking version constraints].
 
 When constraints are invalid or no matching version can be found, Fleet will display a descriptive error message.
 

@@ -24,7 +24,7 @@ Git repos are added to the {product_name} manager using the `GitRepo` custom res
 * `fleet-default` contains all the downstream clusters that are already registered through Rancher.
 * `fleet-local` will contain the local cluster by default.
 
-If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[here] for more on the `fleet-local` namespace.
+If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[cluster registration] for more on the `fleet-local` namespace.
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
@@ -184,8 +184,13 @@ With the necessary data at hand, create a secret containing those fields:
 kubectl -n namespace-of-your-gitrepo create secret generic github-app-secret \
     --from-literal=github_app_id=<app-id> \
     --from-literal=github_app_installation_id=<installation-id> \
-    --from-file=github_app_private_key=<path-to-private-key-file>
+    --from-literal=github_app_private_key="<private-key>"
 ----
+
+Using a literal instead of a file for the private key can help prevent PEM decoding errors at execution time.
+Before creating the secret, the private key can be sourced from a file exporting environment variable, to prevent the key itself from appearing in shell history.
+
+Surrounding the value, or the environment variable name (e.g. `--from-literal=github_app_private_key="$MY_VAR"`) with double quotes ensures that its full contents are taken into account, including possible line breaks.
 
 Ensure you reference that secret in your GitRepo resource via `clientSecretName`.
 
@@ -368,7 +373,7 @@ It's recommended not to store credentials in Git. Even if the repository is prop
 As a workaround, tools like SOPS can encrypt credentials.
 
 Instead, reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles, do this in the manifests, e.g., by link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].  
-Helm-style bundles can use xref:explanations/gitrepo-content.adoc#using-valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
+Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
 When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several Fleet CRDs in the encryption resource list:
 
