@@ -32,4 +32,4 @@
 * https://github.com/rancher/fleet/releases/download/v0.9.4/fleetagent-linux-arm64[fleetagent-linux-arm64]
 * https://github.com/rancher/fleet/releases/download/v0.9.4/fleet-linux-arm64[fleet-linux-arm64]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.4[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.4[{product_name} v0.9.4]_

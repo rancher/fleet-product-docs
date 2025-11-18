@@ -31,8 +31,8 @@
 ** xref:how-tos-for-users/fine-tune-error.adoc[Fine Tuning Error Detection]
 
 * Fleet CLI
-** xref:how-tos-for-users/install-use-fleetCLI.adoc[Install and Use Fleet CLI]
-** xref:how-tos-for-users/validate-fleetCLI.adoc[Validate Fleet CLI Deployment]
+** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
+** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
 
 * Reference
 ** CLI

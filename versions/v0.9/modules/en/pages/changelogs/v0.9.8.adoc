@@ -28,4 +28,4 @@
 * https://github.com/rancher/fleet/releases/download/v0.9.8/fleet-linux-amd64[fleet-linux-amd64]
 * https://github.com/rancher/fleet/releases/download/v0.9.8/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.8[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.8[{product_name} v.0.9.8]_

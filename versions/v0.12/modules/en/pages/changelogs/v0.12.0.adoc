@@ -100,4 +100,4 @@ Resources in Status Fields:
 * https://github.com/rancher/fleet/releases/download/v0.12.0/fleetagent-linux-arm64[fleetagent-linux-arm64]
 * https://github.com/rancher/fleet/releases/download/v0.12.0/fleetagent-linux-amd64[fleetagent-linux-amd64]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.0[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.0[{product_name} v0.12.0]_

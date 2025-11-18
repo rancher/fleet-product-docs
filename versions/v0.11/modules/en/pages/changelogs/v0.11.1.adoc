@@ -7,9 +7,9 @@
 
 == Release Note
 
-Fleet v0.11.1 improves several log and status messages. It reduces the amount of reconciles done by the controllers for resource changes.
+{product_name} v0.11.1 improves several log and status messages. It reduces the amount of reconciles done by the controllers for resource changes.
 
-This release adds k8s events for the GitRepo resource. Fleet will generate a k8s event that users can subscribe to, for the following events:
+This release adds k8s events for the GitRepo resource. {product_name} generates a k8s event that users can subscribe to, for the following events:
 
 * Created - a new git cloning job was created
 * GotNewCommit - a git repository has a new commit
@@ -124,4 +124,4 @@ There are a few known issues with this 0.11.1 release:
 * https://github.com/rancher/fleet/releases/download/v0.11.1/fleetagent-linux-arm64[fleetagent-linux-arm64]
 * https://github.com/rancher/fleet/releases/download/v0.11.1/fleetagent-linux-amd64[fleetagent-linux-amd64]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.1[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.1[{product_name} v0.11.1]_

@@ -84,4 +84,4 @@
 * https://github.com/rancher/fleet/releases/download/v0.9.0/fleetagent-linux-s390x[fleetagent-linux-s390x]
 * https://github.com/rancher/fleet/releases/download/v0.9.0/fleet-linux-s390x[fleet-linux-s390x]
 
-_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.0[here]_
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.0[{product_name} v0.9.0]_
