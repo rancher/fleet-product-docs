@@ -1,12 +1,12 @@
 site:
-  title: Continous Delivery
+  title: Fleet
   url: /
-  start_page: v0.13@continuous-delivery:en:index.adoc
+  start_page: next@fleet::index.adoc
 
 content:
   sources:
     - url: ./
-      start_paths: [versions/v0.13, versions/v0.12, versions/v0.11, versions/v0.10, versions/v0.9]
+      start_paths: [versions/v0.13, versions/v0.12]
       branches: HEAD
 
 # Description: SUSE UI bundle
@@ -19,6 +19,7 @@ ui:
 asciidoc:
   attributes:
     page-pagination: ''
+    build-type: community
     page-toclevels: 4@
   extensions:
     - '@asciidoctor/tabs'
@@ -26,9 +27,6 @@ antora:
   extensions:
   - require: '@antora/lunr-extension'
   - require: '@springio/antora-xref-extension'
-  - require: ./product-docs-common/extensions/dynamic-loading-attributes/load-global-site-attributes.js
-    attributefile: ./product-docs-common/global-attributes.yml
-    enabled: true
 
 output:
-  dir: build/site
+  dir: build/site-community

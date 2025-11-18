@@ -1,0 +1,12 @@
+name: fleet
+title: Fleet
+version: next
+display_version: 'Next'
+start_page: index.adoc
+asciidoc:
+  attributes:
+    product_name: Fleet
+    build-type: community
+nav:
+  - modules/nav.adoc
+
