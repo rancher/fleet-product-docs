@@ -19,7 +19,7 @@ This is a simple, production-supported setup ideal for development, testing, and
 
 === Helm 3
 
-Fleet is distributed as a Helm chart. Helm 3 is a client-only CLI with no server-side component.  
+{product_name} is distributed as a Helm chart. Helm 3 is a client-only CLI with no server-side component.  
 To install Helm 3, follow the official instructions at https://helm.sh/docs/intro/install[Helm installation guide].
 
 === Kubernetes

@@ -31,5 +31,5 @@ https://github.com/rancher/fleet/releases/download/v0.11.9/fleetcontroller-linux
 
 [NOTE]
 ====
-Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.9[Fleet release v0.11.9]
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.9[{product_name} release v0.11.9]
 ====

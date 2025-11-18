@@ -227,7 +227,7 @@ customized per target cluster. If you are using raw YAML then the following simp
 be used.  The `overlays/` folder in the git repo is treated specially as folder containing folders that
 can be selected to overlay on top per target cluster. The resource overlay content
 uses a file name based approach.  This is different from kustomize which uses a resource based approach.  In kustomize
-the resource Group, Kind, Version, Name, and Namespace identify resources and are then merged or patched.  For Fleet
+the resource Group, Kind, Version, Name, and Namespace identify resources and are then merged or patched.  For {product_name}
 the overlay resources will override or patch content with a matching file name.
 
 [,shell]

@@ -8,7 +8,7 @@ Removing the CRDs will remove all deployed workloads.
 ====
 
 
-== {product_name} (Fleet) Standalone
+== {product_name} Standalone
 
 {product_name} is packaged as two Helm charts so uninstallation is accomplished by uninstalling the appropriate Helm charts.
 
@@ -40,7 +40,7 @@ kubectl delete crd gitrepos.fleet.cattle.io bundles.fleet.cattle.io contents.fle
   clusterregistrations.fleet.cattle.io clusterregistrationtokens.fleet.cattle.io
 ----
 
-Then, to uninstall Fleet, run the following commands:
+Then, to uninstall {product_name}, run the following commands:
 
 [,shell]
 ----
@@ -54,7 +54,7 @@ If uninstall gets stuck it is likely due to finalizers. Resource status fields, 
 ====
 
 
-Afterwards one can also remove Fleet-related namespaces and their content:
+Afterwards one can also remove {product_name}-related namespaces and their content:
 
 [source,shell]
 ----

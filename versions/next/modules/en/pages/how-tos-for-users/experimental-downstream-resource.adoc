@@ -7,7 +7,7 @@
 This is an experimental feature.
 ====
 
-From Fleet v0.14.0 onwards, Fleet supports propagating external resources to downstream clusters.
+From {product_name} v0.14.0 onwards, {product_name} supports propagating external resources to downstream clusters.
 
 This simplifies dealing with dependencies of charts, such as values coming from external resources.
 See also xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
@@ -50,5 +50,5 @@ If resources referenced through `downstreamResources` should stay on downstream 
 
 == Limitations
 
-Fleet does not monitor resources referenced by `downstreamResources` for changes.
+{product_name} does not monitor resources referenced by `downstreamResources` for changes.
 This means that changes to secrets and config maps referenced for downstream copy will only be applied when a HelmOp is updated.

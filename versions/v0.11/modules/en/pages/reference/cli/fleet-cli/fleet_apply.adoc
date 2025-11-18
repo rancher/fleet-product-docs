@@ -16,7 +16,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --commit string                          Commit to assign to the bundle
   -c, --compress                               Force all resources to be compress
       --context string                         kubeconfig context for authentication
-      --correct-drift                          Rollback any change made from outside of Fleet
+      --correct-drift                          Rollback any change made from outside of {product_name}
       --correct-drift-force                    Use --force when correcting drift. Resources can be deleted and recreated
       --correct-drift-keep-fail-history        Keep helm history for failed rollbacks
       --debug                                  Turn on debug logging
@@ -42,4 +42,4 @@ fleet apply [flags] BUNDLE_NAME PATH...
 
 == SEE ALSO
 
-* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage Fleet operations
+* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

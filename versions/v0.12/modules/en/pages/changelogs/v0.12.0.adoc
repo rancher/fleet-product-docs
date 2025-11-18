@@ -42,7 +42,7 @@ The agent has been switched from a StatefulSet to a Deployment. This change allo
 * Make max concurrent reconciles configurable for agent and remaining controllers by @weyfonk in https://github.com/rancher/fleet/pull/3094
 * Use a delaying enqueue handler for drift detection  by @aruiz14 in https://github.com/rancher/fleet/pull/3401
 * Support ignoring resources in bundle diffs by @weyfonk in https://github.com/rancher/fleet/pull/3425
-* Fleet apply retries bundle creation on conflicts by @0xavi0 in https://github.com/rancher/fleet/pull/3407 
+* {product_name} apply retries bundle creation on conflicts by @0xavi0 in https://github.com/rancher/fleet/pull/3407 
 
 Logging and Status Conditions:
 

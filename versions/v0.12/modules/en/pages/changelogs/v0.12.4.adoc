@@ -33,5 +33,5 @@
 
 [NOTE]
 ====
-Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.4[Fleet release v0.12.4]
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.4[{product_name} release v0.12.4]
 ====

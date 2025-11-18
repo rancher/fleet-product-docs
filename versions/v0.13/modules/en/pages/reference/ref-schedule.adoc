@@ -2,7 +2,7 @@
 :revdate: 2025-10-10
 :page-revdate: {revdate}
 
-The `Schedule` resource defines time windows during which Fleet accepts changes to `Clusters`.
+The `Schedule` resource defines time windows during which {product_name} accepts changes to `Clusters`.
 
 For more information on how to use the `Schedule` resource, refer to xref:how-tos-for-users/scheduling.adoc[Scheduling].
 

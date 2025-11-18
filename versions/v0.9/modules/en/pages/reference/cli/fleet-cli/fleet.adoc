@@ -2,7 +2,7 @@
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 
-Manage Fleet operations
+Manage {product_name} operations
 
 ----
 fleet [flags]

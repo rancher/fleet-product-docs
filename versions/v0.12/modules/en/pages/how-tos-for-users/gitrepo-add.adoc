@@ -92,7 +92,7 @@ The key has to be in PEM format.
 [CAUTION]
 ====
 
-If you don't add one or more public keys into the secret, any server's public key will be trusted and added. (`ssh -o stricthostkeychecking=no` will be used), unless you install Fleet with chart value `insecureSkipHostKeyChecks` set to `false`.
+If you don't add one or more public keys into the secret, any server's public key will be trusted and added. (`ssh -o stricthostkeychecking=no` will be used), unless you install {product_name} with chart value `insecureSkipHostKeyChecks` set to `false`.
 ====
 
 
@@ -140,11 +140,11 @@ Validating a repository using a certificate signed by a custom Certificate Autho
 
 [IMPORTANT]
 ====
-Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see the respective pages on
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
-Fleet will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 ====
 
 == Using Private Helm Repositories
@@ -163,11 +163,11 @@ For a private Helm repo, users can reference a secret with the following keys:
 
 [IMPORTANT]
 ====
-Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see the respective pages on
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
-Fleet will use those CA bundles if no CA bundle is specified in the Helm secret.
+{product_name} will use those CA bundles if no CA bundle is specified in the Helm secret.
 ====
 
 . `ssh-privatekey` for ssh private key if repo is using ssh protocol. Private key with passphase is not supported currently.
@@ -241,7 +241,7 @@ When using Kubernetes https://kubernetes.io/docs/tasks/administer-cluster/encryp
 
 == Backing up and restoring
 
-When backing up and restoring Fleet with existing workloads, whether they are GitRepos or HelmOps, a few points must be considered.
+When backing up and restoring {product_name} with existing workloads, whether they are GitRepos or HelmOps, a few points must be considered.
 
 === Kubernetes API server availability
 
@@ -255,8 +255,8 @@ To prevent this, make the Kubernetes API server temporarily inaccessible to down
 
 A xref:reference/ref-gitrepo.adoc[paused GitRepo] leads to paused bundles and bundle deployments. This means:
 
-* When deleting a bundle deployment that originates from a paused GitRepo, Fleet does not re-create the bundle deployment until the GitRepo is unpaused.
-* When deleting a bundle that originates from a paused GitRepo, Fleet deletes the bundle deployments associated with that bundle and does not re-create them until the GitRepo is unpaused.
+* When deleting a bundle deployment that originates from a paused GitRepo, {product_name} does not re-create the bundle deployment until the GitRepo is unpaused.
+* When deleting a bundle that originates from a paused GitRepo, {product_name} deletes the bundle deployments associated with that bundle and does not re-create them until the GitRepo is unpaused.
 
 Pausing a GitRepo prevents bundles and bundle deployments from being created or updated for that GitRepo. In other words, it only affects **controller** operations, not **Fleet agent** operations.  
 

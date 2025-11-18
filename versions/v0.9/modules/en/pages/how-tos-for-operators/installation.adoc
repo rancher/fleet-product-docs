@@ -92,7 +92,7 @@ You can now xref:how-tos-for-users/gitrepo-add.adoc[register some git repos] in 
 ====
 Downstream clusters in Rancher are automatically registered in{product_name}. Users can access {product_name} under `Continuous Delivery` on Rancher.
 
-The multi-cluster install described below is *only* covered in standalone Fleet, which is untested by Rancher QA.
+The multi-cluster install described below is *only* covered in standalone {product_name}, which is untested by Rancher QA.
 ====
 
 [IMPORTANT]

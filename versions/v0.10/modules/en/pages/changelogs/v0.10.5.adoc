@@ -32,4 +32,4 @@
 * https://github.com/rancher/fleet/releases/download/v0.10.5/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
 * https://github.com/rancher/fleet/releases/download/v0.10.5/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
 
-**Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.5[Fleet v0.10.5]**
+**Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.10.5[{product_name} v0.10.5]**

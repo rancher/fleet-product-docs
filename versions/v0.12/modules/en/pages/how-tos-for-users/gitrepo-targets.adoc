@@ -109,7 +109,7 @@ The `targets:` in the `GitRepo` resource select clusters to deploy on. The `targ
 ====
 
 
-To demonstrate how to deploy Kubernetes manifests across different clusters with customization using Fleet, we will use https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
+To demonstrate how to deploy Kubernetes manifests across different clusters with customization using {product_name}, we will use https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
 
 *Situation:* User has three clusters with three different labels: `env=dev`, `env=test`, and `env=prod`. User wants to deploy a frontend application with a backend database across these clusters.
 
@@ -119,7 +119,7 @@ To demonstrate how to deploy Kubernetes manifests across different clusters with
 * After deploying to the `test` cluster, database replication is enabled.
 * After deploying to the `prod` cluster, database replication is enabled and Load balancer services are exposed.
 
-*Advantage of Fleet:*
+*Advantage of {product_name}:*
 
 Instead of deploying the app on each cluster, {product_name} allows you to deploy across all clusters following these steps:
 
