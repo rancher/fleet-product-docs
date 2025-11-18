@@ -232,7 +232,7 @@ __How changes are applied to `values.yaml`__:
 - The most recently applied changes override previous values.
 - Merge order: `helm.values` → `helm.valuesFiles` → `helm.valuesFrom`
 
-image::/img/FleetValuesStages.svg[]
+image::/images/FleetValuesStages.svg[]
 
 The targeting step can treat values as templates using cluster info. More info: xref:/reference/ref-fleet-yaml.adoc#_values_templating[templates in fleet.yaml].
 

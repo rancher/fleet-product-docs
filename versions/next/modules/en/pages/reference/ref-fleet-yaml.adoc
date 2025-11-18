@@ -419,7 +419,7 @@ Options for customizing Helm chart values.
 
 It is not necessary to specify a chart’s own `values.yaml`. It is always used by default.
 
-See xref:explanations/gitrepo-content.adoc#using-helm-values[Using Helm Values] for more information.
+See xref:/explanations/gitrepo-content.adoc#_using_helm_values[Using Helm Values] for more information.
 
 For value processing stages, refer to xref:explanations/ref-bundle-stages.adoc[Bundle lifecycle].
 
