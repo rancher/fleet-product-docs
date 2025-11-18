@@ -2,6 +2,11 @@
 :revdate: 2025-10-10
 :page-revdate: {revdate}
 
+[WARNING]
+====
+This is an experimental feature.
+====
+
 {product_name} supports (starting from version 0.13 and in experimental mode) the definition of **scheduled intervals** during which new updates to existing deployments are allowed.
 
 This enables users to control **when changes are applied**, independently of when updates are pushed to the Git repository—if desired.

@@ -10,8 +10,10 @@ For more information, refer to Configure xref:reference/ref-configuration.adoc#c
 
 == Available experimental features
 
-Fleet currently supports the following experimental features:
+Fleet currently supports the following experimental features, toggled through their respective environment variables:
+
 * xref:how-tos-for-users/scheduling.adoc[Scheduling]
+* xref: how-tos-for-users/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
 
 == Enabling an experimental feature
 

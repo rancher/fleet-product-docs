@@ -65,6 +65,7 @@
 * Experimental Features
 ** xref:how-tos-for-users/enableexperimental.adoc[Troubleshooting]
 ** xref:how-tos-for-users/scheduling.adoc[Scheduling]
+** xref:how-tos-for-users/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
 ** xref:reference/ref-schedule.adoc[Schedule Resource reference]
 
 * Changelog

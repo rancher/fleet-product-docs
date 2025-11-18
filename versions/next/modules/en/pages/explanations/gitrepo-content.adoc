@@ -252,6 +252,18 @@ Credentials loaded via `valuesFrom` are encrypted at rest if Kubernetes encrypti
 
 === Using ValuesFrom
 
+These examples showcase the style and format for using `valuesFrom`.
+
+[Note]
+====
+**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in *downstream clusters*.
+
+However, from Fleet v0.14.0 onwards, they can also be referenced through a HelmOp's `downstreamResources` field to be
+automatically propagated to targeted downstream clusters.
+
+Refer to xref:/how-tos-for-users/experimental-downstream-resource.adoc[experimental downstream resources] for more information.
+====
+
 Example ConfigMap:
 
 [source,yaml]
