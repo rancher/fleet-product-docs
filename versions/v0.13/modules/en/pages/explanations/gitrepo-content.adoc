@@ -21,9 +21,8 @@ to realize the scanned resources will be saved as a resource in Kubernetes so
 you want to make sure the directories you are scanning in git do not contain
 arbitrarily large resources. Right now there is a limitation that the resources
 deployed must *gzip to less than 1MB*.
-
 Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
-Internally each scanned path will become a xref:concepts.adoc[bundle] that {product_name} will manage,
+Internally each scanned path will become a xref:/explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
 The following files are looked for to determine the how the resources will be deployed.
@@ -33,7 +32,7 @@ The following files are looked for to determine the how the resources will be de
 | File | Location | Meaning
 | *Chart.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
 | *kustomization.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
-| *fleet.yaml* | Any subpath | If any fleet.yaml is found a new xref:concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
+| *fleet.yaml* | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
 | *.yaml* | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
 | *overlays/{name}* | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
@@ -206,7 +205,7 @@ Unsupported:
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
 the resources are deployed and customized. The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
-and if a subdirectory is found with a `fleet.yaml` a new xref:concepts.adoc[bundle] is defined that will then be
+and if a subdirectory is found with a `fleet.yaml` a new xref::/explanations/concepts.adoc[bundle] is defined that will then be
 configured differently from the parent bundle.
 
 [CAUTION]
@@ -222,10 +221,9 @@ If automatic dependencies updates are disabled, you must manually run:
 Refer to Rancher's {product_name} docs for more information.
 ====
 
-The available fields are documented in the xref:ref-fleet-yaml.adoc[fleet.yaml reference].
-
+The available fields are documented in the xref::/reference/ref-fleet-yaml.adoc[fleet.yaml reference].
 For a private Helm repo, users can reference a secret from the git repo resource.
-See xref:gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories].
+See xref:/how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories].
 
 == Using Helm Values
 
@@ -236,7 +234,7 @@ __How changes are applied to `values.yaml`__:
 
 image::/img/FleetValuesStages.svg[]
 
-The targeting step can treat values as templates using cluster info. More info: xref:ref-fleet-yaml.adoc#templating[].
+The targeting step can treat values as templates using cluster info. More info: xref:/reference/ref-fleet-yaml.adoc#templating[templates in fleet.yaml].
 
 You can disable this using `disablePreProcess`.
 
@@ -338,8 +336,7 @@ targetCustomizations:
 - name: prod
   clusterName: fleetname
 ----
-
-See xref:gitrepo-targets.adoc#customization-per-cluster[].
+See xref:/how-tos-for-users/gitrepo-targets.adoc#customization-per-cluster[customization per cluster].
 
 == Raw YAML Resource Customization
 
@@ -362,7 +359,7 @@ Rules:
 
 == Cluster and Bundle State
 
-See xref:ref-status-fields.adoc[].
+See xref:/reference/ref-status-fields.adoc[status fields].
 
 == Nested GitRepo CRs
 
