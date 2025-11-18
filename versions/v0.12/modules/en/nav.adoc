@@ -29,12 +29,12 @@
 ** xref:how-tos-for-users/helm-ops.adoc[Helm Ops]
 
 * Fleet CLI
-** xref:how-tos-for-users/install-use-fleetCLI.adoc[Install and Use Fleet CLI]
-** xref:how-tos-for-users/validate-fleetCLI.adoc[Validate Fleet CLI Deployment]
+** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
+** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
 
 * Reference
 ** CLI
-*** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
+*** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-a gent]
 *** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
 *** xref:reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register]
 *** xref:reference/cli/fleet-cli/fleet.adoc[fleet]
