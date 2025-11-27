@@ -1,4 +1,4 @@
-# Continous Delivery (Fleet) Product Documentation
+# SUSE® Rancher Prime Continuous Delivery (Fleet) Product Documentation
 
 ## Build the Documentation site
 

@@ -1,12 +1,12 @@
 site:
   title: Fleet
   url: /
-  start_page: next@fleet::index.adoc
+  start_page: v0.13@fleet:en:index.adoc
 
 content:
   sources:
     - url: ./
-      start_paths: [versions/v0.13, versions/v0.12]
+      start_paths: [versions/v0.13, versions/v0.12,versions/v0.11, versions/v0.10,versions/v0.9]
       branches: HEAD
 
 # Description: SUSE UI bundle
@@ -19,7 +19,6 @@ ui:
 asciidoc:
   attributes:
     page-pagination: ''
-    build-type: community
     page-toclevels: 4@
   extensions:
     - '@asciidoctor/tabs'
