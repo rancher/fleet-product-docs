@@ -1,7 +1,7 @@
 name: continuous-delivery
 title: Continuous Delivery
-version: v0.13
-display_version: '0.13'
+version: v0.9
+display_version: '0.9'
 start_page: en:index.adoc
 asciidoc:
   attributes:
