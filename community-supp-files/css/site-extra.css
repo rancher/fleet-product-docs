@@ -172,21 +172,22 @@ div#topbar-nav :hover {
   border-bottom-color: #0C322C;
 }*/
 
-/* Brand border color */
 .navbar-brand {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #0c322c;
+  display: flex;
+  align-items: center;
 }
 
 #search-input {
   width: 300px;
 }
 
-/* navbar background color */
+/* navbar background + full-width bottom border */
 .navbar {
   background-color: #ffffff;
+  border-bottom: 2px solid #0c322c;
+  min-height: 2.75rem;     /* reduces bar height */
 }
+
 
 /* margin hack: we need this margin to prevent logo from covering
  bottom navbar border on lower resolutions screens */
@@ -197,10 +198,27 @@ a.navbar-logo {
 .navbar__title {
   font-size: 1.15rem;
   font-weight: 600;
-  margin-left: 10px;
+  margin-left: 4px;           /* was 10px – this controls the gap */
   display: inline-flex;
-  align-items: left;
-  color: #2a2f45; /* matches Fleet docs tone */
+  align-items: center;
+  color: #2a2f45;
+}
+
+navbar-item,
+.navbar-link {
+  padding-top: 0.25rem;    /* reduces vertical padding */
+  padding-bottom: 0.25rem;
+  font-size: 0.95rem;     /* slightly smaller text */
+}
+
+.navbar .icon {
+  width: 1rem;            /* smaller icons */
+  height: 1rem;
+}
+
+.navbar-burger {
+  height: 2.75rem;        /* aligns burger menu to new height */
+  width: 2.75rem;
 }
 
 /* Tool bar */
@@ -319,13 +337,10 @@ a:hover {
 }
 
 .logo {
-  width: 171px;
-  height: 57px;
-  top: 0;
-  left: 0;
-  position: sticky;
+  height: 40px;      /* or 32px if you want smaller */
+  width: auto;
+  position: static;
   padding: 0;
-  z-index: 12;
 }
 
 /* Heading colors in article */
@@ -1331,3 +1346,98 @@ nav.pagination a {
   font-size: larger;
   align-self: anchor-center;
 }
+
+/* === Mobile navbar fix === */
+@media screen and (max-width: 768px) {
+  /* Compact bar */
+  .navbar {
+    min-height: 2.4rem;
+    padding: 0 0.5rem;
+  }
+
+  /* Logo + title */
+  .logo {
+    height: 30px;
+    width: auto;
+    position: static !important;
+  }
+
+  .navbar__title {
+    font-size: 1rem;
+    margin-left: 4px;
+  }
+
+  .navbar-brand .navbar-item {
+    padding-top: 0.15rem;
+    padding-bottom: 0.15rem;
+  }
+
+  /* Remove the green tile background from all nav items */
+  .navbar .navbar-item,
+  .navbar .navbar-link {
+    background: transparent !important;
+    box-shadow: none !important;
+    margin: 0 !important;
+    padding-top: 0.25rem !important;
+    padding-bottom: 0.25rem !important;
+  }
+
+  /* Hide the right-side dropdown/icon items on phones
+     (version, GitHub, Slack, language) so they can't overlap */
+  .navbar-end .has-dropdown,
+  .navbar-end .navbar-item {
+    display: none !important;
+  }
+
+  /* Keep search visible */
+  .navbar-end .navbar-item.search,
+  .navbar-end .navbar-item.search * {
+    display: block !important;
+  }
+
+  #search-input {
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  /* TOC should scroll with the page */
+  .toc.sidebar .toc-menu {
+    position: static !important;
+  }
+
+  .doc {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+/* === FORCE NAVBAR ICONS TO BE CLICKABLE ON MOBILE === */
+@media screen and (max-width: 768px) {
+  /* Base: navbar is the stacking context */
+  .navbar {
+    position: relative;
+  }
+
+  /* All brand icons (burger, home, logo, etc.) sit on top */
+  .navbar-brand,
+  .navbar-brand * {
+    position: relative;
+    z-index: 50;          /* higher than anything else in the bar */
+    pointer-events: auto; /* ensure they accept clicks */
+  }
+
+  /* Anything on the right (search / version / etc.) sits below */
+  .navbar-end,
+  .navbar-end *,
+  .navbar-menu,
+  .navbar-menu * {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Keep search below the icons, not on top of them */
+  #search-input {
+    display: block;
+    margin-top: 0.25rem;
+  }
+}
+

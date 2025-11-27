@@ -1,4 +1,4 @@
-name: Rancher Turtles documentation - publish to GitHub Pages with Lunr Search Extension
+name: Rancher continous delivery documentation - publish to GitHub Pages with Lunr Search Extension
 on:
   # Runs whenever a change is pushed to the main branch
   push:
@@ -28,7 +28,7 @@ jobs:
         node-version: '18'
     - name: Install Dependencies
       run: make environment
-      # Generate site using 'make local' which uses turtles-local-playbook.yml with draft preview enabled
+      # Generate site using 'make local' which uses fleet-local-playbook.yml with draft preview enabled
     - name: Generate Site
       run: make local-community
     - name: Upload Artifacts

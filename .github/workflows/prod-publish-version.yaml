@@ -39,10 +39,10 @@ jobs:
           cp -r versions/next/* versions/${TAG}
       - name: Update site.start_page with new tag
         run: |
-          sed -i "s|start_page:.*|start_page: ${TAG}@turtles:en:index.adoc|" turtles-local-community-playbook.yml
+          sed -i "s|start_page:.*|start_page: ${TAG}@fleet:en:index.adoc|" fleet-local-community-playbook.yml
       - name: Prepend new tag to start_paths
         run: |
-          sed -i "s|start_paths: \[|start_paths: [versions/${TAG}, |" turtles-local-community-playbook.yml
+          sed -i "s|start_paths: \[|start_paths: [versions/${TAG}, |" fleet-local-community-playbook.yml
       - name: Change version in antora.yml
         run: |
           sed -i "s/^version: .*/version: $TAG/" versions/${TAG}/antora.yml
@@ -64,6 +64,6 @@ jobs:
           git push origin release-${{ env.TRIMMED_TAG }}
           tag=${{ env.TRIMMED_TAG }}
           [[ $tag =~ [0-9]+\.[0-9]+\.[0-9]+ ]] || tag+=.0
-          echo -e "Update docs version v${tag}\\n\\nChangelog: https://github.com/rancher/turtles/releases/tag/v${tag}\\n\\ncc @rancher/highlander" > body
+          echo -e "Update docs version v${tag}\\n\\nChangelog: https://github.com/rancher/fleet/releases/tag/v${tag}\\n\\ncc @rancher/highlander" > body
           export body=$(cat body)
-          gh pr create --title 'turtles-docs release for turtles v${{ env.TRIMMED_TAG }}' --body "$body" --label "area/documentation"
+          gh pr create --title 'fleet-docs release for fleet v${{ env.TRIMMED_TAG }}' --body "$body" --label "area/documentation"
