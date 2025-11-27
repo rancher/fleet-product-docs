@@ -2,7 +2,7 @@ name: continuous-delivery
 title: Continuous Delivery
 version: next
 display_version: 'Next'
-start_page: index.adoc
+start_page: en:index.adoc
 asciidoc:
   attributes:
     product_name: SUSE® Rancher Prime Continuous Delivery 
