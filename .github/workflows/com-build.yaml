@@ -9,17 +9,18 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
-
-      - name: setup Node.js
-        uses: actions/setup-node@v4
+      - name: Checkout repository (with submodules)
+        uses: actions/checkout@v4
         with:
-          node-version-file: '.nvmrc'
-          cache: yarn
+          submodules: recursive
 
-      - name: Build website
-        run: |
-          yarn install --frozen-lockfile
-          yarn build
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        
+      - name: Prepare Antora environment
+        run: make environment
 
+      - name: Build Antora community docs
+        run: make local-community

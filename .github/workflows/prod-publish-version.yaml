@@ -64,6 +64,6 @@ jobs:
           git push origin release-${{ env.TRIMMED_TAG }}
           tag=${{ env.TRIMMED_TAG }}
           [[ $tag =~ [0-9]+\.[0-9]+\.[0-9]+ ]] || tag+=.0
-          echo -e "Update docs version v${tag}\\n\\nChangelog: https://github.com/rancher/fleet/releases/tag/v${tag}\\n\\ncc @rancher/highlander" > body
+          echo -e "Update docs version v${tag}\\n\\nChangelog: https://github.com/rancher/fleet/releases/tag/v${tag}\\n\\ncc @rancher/fleet" > body
           export body=$(cat body)
-          gh pr create --title 'fleet-docs release for fleet v${{ env.TRIMMED_TAG }}' --body "$body" --label "area/documentation"
+          gh pr create --title 'fleet-docs release for fleet v${{ env.TRIMMED_TAG }}' --body "$body""
