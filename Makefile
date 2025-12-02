@@ -1,14 +1,12 @@
 ANTORA       = npx antora
 ANTORA_OPTS  = --stacktrace --log-format=pretty --log-level=info
 
-# Playbooks
 FLEET_COMMUNITY_PLAYBOOK = fleet-community-local-playbook.yml
 FLEET_PRODUCT_PLAYBOOK   = fleet-product-local-playbook.yml
 
-FLEET_COMMUNITY_REMOTE_PLAYBOOK = playbook-remote-fleet-community.yml
-FLEET_PRODUCT_REMOTE_PLAYBOOK   = playbook-remote-fleet-product.yml
+FLEET_COMMUNITY_REMOTE_PLAYBOOK = fleet-community-remote-playbook.yml
+FLEET_PRODUCT_REMOTE_PLAYBOOK   = fleet-product-remote-playbook.yml
 
-# Output dirs for single-source repo
 BUILD_DIR          = build
 FLEET_COMMUNITY_OUT = $(BUILD_DIR)/site-community
 FLEET_PRODUCT_OUT   = $(BUILD_DIR)/site

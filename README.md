@@ -55,7 +55,7 @@ npm install
 As a local example, run the command below to build the product site:
 
 ```console
-npx antora --fetch fleet-product-playbook.yml
+npx antora --fetch fleet-product-local-playbook.yml
 ```
 
 Navigate to the `./build/site` directory and open the index.html file in your browser to view and navigate the documentation site.
@@ -69,7 +69,7 @@ make preview
 To build the community site, run:
 
 ```console
-npx antora --fetch fleet-community-playbook.yml
+npx antora --fetch fleet-community-local-playbook.yml
 ```
 
 Navigate to the `./build/site-community` directory and open the index.html file in your browser to view and navigate the documentation site.
@@ -77,20 +77,20 @@ Navigate to the `./build/site-community` directory and open the index.html file 
 
 ### Run Antora to build the static website using the local documentation content
 
-The command provided in the previous section fetches documentation content of the products from their respective remote GitHub repositories. If you want the playbook to use the documentation content from your local machine instead you can do so with `product-docs-playbook-local.yml`.
+The command provided in the previous section fetches documentation content of the products from their respective remote GitHub repositories. If you want the playbook to use the documentation content from your local machine instead you can do so with `fleet-product-local-playbook.yml`.
 
 Clone all the individual product documentation Github repositories one level above the current playbook repository.
 
-As an example, run the command below to use the product `fleet-product-playbook.yml` file.
+As an example, run the command below to use the product `fleet-product-local-playbook.yml` file.
 
 ```console
-npx antora --fetch fleet-local-playbook.yml
+npx antora --fetch fleet-product-local-playbook.yml
 ```
 
 To use community file, run:
 
 ```console
-npx antora --fetch fleet-community-playbook.yml
+npx antora --fetch fleet-community-local-playbook.yml
 ```
 
 ### Makefile
