@@ -2,7 +2,14 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} in Rancher] allows users to manage clusters easily as if they were one cluster. Users can deploy bundles, which can be comprised of deployment manifests or any other Kubernetes resource, across clusters using grouping configuration.
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} in Rancher] allows users to manage clusters easily as if they were one cluster. Users can deploy bundles, which can be comprised of deployment manifests or any other Kubernetes resource, across clusters using grouping configuration.
+endif::[]
 
 [IMPORTANT]
 ====

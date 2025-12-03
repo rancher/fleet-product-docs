@@ -19,6 +19,7 @@ asciidoc:
   attributes:
     page-pagination: ''
     page-toclevels: 4@
+    product: fleet
   extensions:
     - '@asciidoctor/tabs'
 antora:

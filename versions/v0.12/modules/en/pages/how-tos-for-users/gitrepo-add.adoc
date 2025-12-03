@@ -140,11 +140,21 @@ Validating a repository using a certificate signed by a custom Certificate Autho
 
 [IMPORTANT]
 ====
+ifeval::["{product}" == "fleet"]
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Using a Private CA Signed Certificate]
+and
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[Additional Trusted CA's]),
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
 Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
 {product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
 ====
 
 == Using Private Helm Repositories
@@ -163,11 +173,21 @@ For a private Helm repo, users can reference a secret with the following keys:
 
 [IMPORTANT]
 ====
+ifeval::["{product}" == "fleet"]
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Using a Private CA Signed Certificate]
+and
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[Additional Trusted CA's]),
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
 Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
-{product_name} will use those CA bundles if no CA bundle is specified in the Helm secret.
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
 ====
 
 . `ssh-privatekey` for ssh private key if repo is using ssh protocol. Private key with passphase is not supported currently.
@@ -217,7 +237,16 @@ In the previous example credentials for username `user` will be used for the pat
 
 [NOTE]
 ====
-If you are using https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html["rancher-backups"] and want this secret to be included the backup, please add the label `resources.cattle.io/backup: true` to the secret. In that case, make sure to encrypt the backup to protect sensitive credentials.
+
+ifeval::["{product}" == "fleet"]
+If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+If you use link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
+
+endif::[]
 ====
 
 

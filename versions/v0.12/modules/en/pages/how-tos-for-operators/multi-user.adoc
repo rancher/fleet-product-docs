@@ -69,7 +69,13 @@ For a user to see and deploy fleet resources in a specific workspace, they need 
 
 Let's grant permissions to deploy fleet resources in the `project1` and `project2` fleet workspaces:
 
+ifeval::["{product}" == "fleet"]
 * To create the `project1` and `project2` fleet workspaces, you can either do it in the https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#accessing-fleet-in-the-rancher-ui[Rancher UI] or use the following YAML resources:
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+* To create the `project1` and `project2` fleet workspaces, you can either do it in the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_accessing_suse_rancher_prime_continuous_delivery_in_the_rancher_ui[Rancher UI] or use the following YAML resources:
 
 [,yaml]
 ----
@@ -132,8 +138,15 @@ rules:
       - '*'
 ----
 
-Assign the `GlobalRole` to users or groups, more info can be found in the https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher docs]
 
+ifeval::["{product}" == "fleet"]
+Assign the `GlobalRole` to users or groups, more info can be found in the https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher docs]
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+Assign the `GlobalRole` to users or groups, more info can be found in the https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher docs]
+endif::[]
 The user now has access to the `Continuous Delivery` tab in Rancher and can deploy resources to both the `project1` and `project2` workspaces.
 
 In order to have a well organized environment, each workspace should have its own related `GlobalRole` to help with the separation of duties and isolation required by the customer. This way, each user can be assigned to one or more `GlobalRoles`, depending on the needs.

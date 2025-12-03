@@ -193,7 +193,15 @@ In the previous example credentials for username `user` will be used for the pat
 
 [NOTE]
 ====
-If you are using https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher["rancher-backups"] and want this secret to be included the backup, please add the label `resources.cattle.io/backup: true` to the secret. In that case, make sure to encrypt the backup to protect sensitive credentials.
+ifeval::["{product}" == "fleet"]
+If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+If you use link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
+
+endif::[]
 ====
 
 == Backing up and restoring

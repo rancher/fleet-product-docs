@@ -68,4 +68,10 @@ kubectl delete ns -l "fleet.cattle.io/managed=true"
 {product_name} in Rancher cannot be uninstalled, without uninstalling Rancher. However, the GitOps feature can be disabled.
 When disabled, the gitjob deployment is no longer deployed into the Rancher server's local cluster, and continuous-delivery is not shown in the Rancher UI.
 
+ifeval::["{product}" == "fleet"]
+More information can be found in the Rancher docs: https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-experimental-features/continuous-delivery.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
 More information can be found in the Rancher docs: https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/experimental-features/continuous-delivery.html.
+endif::[]

@@ -20,6 +20,7 @@ asciidoc:
   attributes:
     page-pagination: ''
     page-toclevels: 4@
+    product: continuous-delivery
   extensions:
     - '@asciidoctor/tabs'
 antora:

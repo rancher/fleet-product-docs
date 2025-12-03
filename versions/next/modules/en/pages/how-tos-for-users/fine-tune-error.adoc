@@ -20,7 +20,7 @@ Use the `ignore.conditions` setting in the `fleet.yaml` file to tell {product_na
 
 [source,yaml]
 ----
-# from https://fleet.rancher.io/ref-fleet-yaml
+# from ref-fleet-yaml
 
 # Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
 # some conditions in Custom Resources makes the Bundle to be in an error state

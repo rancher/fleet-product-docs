@@ -122,7 +122,15 @@ Available in Rancher v2.6.3 ({product_name} v0.3.8), the ability to enable debug
 When testing {product_name} with private git repositories, you will notice that HTTP secrets are no longer supported in Github. To work around this issue, follow these steps:
 
 . Create a https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[personal access token] in Github.
-. In Rancher, create an HTTP https://rancher.com/docs/rancher/v2.6/en/k8s-in-rancher/secrets/[secret] with your GitHub personal access token. Your username is optional.
++
+ifeval::["{product}" == "fleet"]
+. In Rancher, create an HTTP https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/secrets[secret] with your Github personal access token. Your username is optional.
+endif::[]
++
+ifeval::["{product}" == "continuous-delivery"]
+. In Rancher, create an HTTP https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/security/secrets-hub.html[secret] with your Github personal access token. Your username is optional.
+endif::[]
++
 . Use your token as the secret.
 
 === {product_name} fails with bad response code: 403
@@ -243,7 +251,15 @@ You will need to re-import and restart the registration process: Select *Cluster
 ====
 
 *WaitCheckIn status for Rancher v2.5*:
-The cluster will show in `WaitCheckIn` status because the `fleet-controller` is attempting to communicate with {product_name} using the Rancher service IP. However, {product_name} must communicate directly with Rancher via the Kubernetes service DNS using service discovery, not through the proxy. For more, see the https://rancher.com/docs/rancher/v2.5/en/installation/other-installation-methods/behind-proxy/install-rancher/#install-rancher[Rancher docs].
+
+ifeval::["{product}" == "fleet"]
+The cluster will show in `WaitCheckIn` status because the `fleet-controller` is attempting to communicate with {product_name} using the Rancher service IP. However, {product_name} must communicate directly with Rancher via the Kubernetes service DNS using service discovery, not through the proxy. For more, see the https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/rancher-behind-an-http-proxy/install-rancher[Rancher docs].
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+The cluster will show in `WaitCheckIn` status because the `fleet-controller` is attempting to communicate with {product_name} using the Rancher service IP. However, {product_name} must communicate directly with Rancher via the Kubernetes service DNS using service discovery, not through the proxy. For more, see the https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/installation-and-upgrade/other-installation-methods/http-proxy/install-rancher.html [Rancher docs].
+endif::[]
 ====
 
 
