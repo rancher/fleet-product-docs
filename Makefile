@@ -11,19 +11,19 @@ BUILD_DIR          = build
 FLEET_COMMUNITY_OUT = $(BUILD_DIR)/site-community
 FLEET_PRODUCT_OUT   = $(BUILD_DIR)/site
 
-.PHONY: local local-fleet local-product remote remote-fleet remote-product clean environment preview-community preview-product
+.PHONY: local local-community local-product remote remote-fleet remote-product clean environment preview-community preview-product
 
 ## ---- Local builds (no npm ci) -----------------------------------------
 
-local: local-fleet local-product
+local: local-community local-product
 
-local-fleet:
+local-community:
 	mkdir -p tmp
 	$(ANTORA) --version
 	$(ANTORA) $(ANTORA_OPTS) \
 		--to-dir $(FLEET_COMMUNITY_OUT) \
 		$(FLEET_COMMUNITY_PLAYBOOK) \
-		2>&1 | tee tmp/local-fleet-build.log 2>&1
+		2>&1 | tee tmp/local-community-build.log 2>&1
 
 local-product:
 	mkdir -p tmp

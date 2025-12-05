@@ -1,0 +1,152 @@
+name: Publish new docs version
+
+on:
+  push:
+    tags:
+    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
+
+env:
+  TAG: ${{ github.ref_name }}
+  PR_BRANCH_PREFIX: publish-version
+
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        base_branch: [ "main", "dsc-single-source" ]
+    # run once per base_branch value
+    steps:
+      - name: Show context
+        run: |
+          echo "Tag: $TAG"
+          echo "Target base branch: ${{ matrix.base_branch }}"
+
+      - name: Checkout target base branch
+        uses: actions/checkout@v4
+        with:
+          ref: refs/heads/${{ matrix.base_branch }}
+          fetch-depth: 0
+          persist-credentials: true
+          path: repo
+
+      - name: Prepare the tag values
+        run: |
+          echo "TRIMMED_TAG=${TAG#v}" >> $GITHUB_ENV
+          echo "TAG=${TAG%.*}" >> $GITHUB_ENV
+
+      - name: Update example versions in documentation
+        run: |
+          set -euo pipefail
+          cd repo
+          go run tools/setexampleversion/main.go -version=v${{ env.TRIMMED_TAG }} \
+            versions/next/modules/en/pages/user/clusterclass.adoc \
+            versions/next/modules/en/pages/operator/certificationsuite.adoc \
+            versions/next/modules/en/pages/operator/manual.adoc \
+            versions/next/modules/en/pages/tutorials/quickstart.adoc \
+            versions/next/modules/en/pages/user/clusters.adoc
+
+      - name: Copy docs directory for new version
+        run: |
+          set -euo pipefail
+          cd repo
+          mkdir -p versions/${TAG}
+          cp -r versions/next/* versions/${TAG}
+
+      - name: Update Antora metadata for new version
+        run: |
+          set -euo pipefail
+          cd repo
+          sed -i "s/^version: .*/version: ${TAG}/" versions/${TAG}/antora.yml
+          sed -i '/prerelease/d' versions/${TAG}/antora.yml || true
+          sed -i "s/^display_version: .*/display_version: '${TAG}'/" versions/${TAG}/antora.yml
+          # Update playbook start_page and start_paths only if playbook exists in repo root
+          if [ -f fleet-local-community-playbook.yml ]; then
+            sed -i "s|start_page:.*|start_page: ${TAG}@fleet:en:index.adoc|" fleet-local-community-playbook.yml
+            sed -i "s|start_paths: \[|start_paths: [versions/${TAG}, |" fleet-local-community-playbook.yml
+          fi
+
+      - name: Show git changes (debug)
+        run: |
+          cd repo
+          git --no-pager status --porcelain || true
+          git --no-pager diff --name-only || true
+
+      - name: Commit changes to branch and push
+        id: commit_push
+        env:
+          TRIM: ${{ env.TRIMMED_TAG }}
+          BASE: ${{ matrix.base_branch }}
+          PR_BASE: ${{ env.PR_BRANCH_PREFIX }}
+        run: |
+          set -euo pipefail
+          cd repo
+
+          # Compose branch name including base branch short name to avoid collisions
+          BR_NAME="${PR_BASE}-${TRIM}-${BASE}"
+          # Normalize to remove slashes if any
+          BR_NAME="${BR_NAME//\//-}"
+
+          # If branch exists remotely or locally, append timestamp
+          if git ls-remote --exit-code --heads origin "${BR_NAME}" >/dev/null 2>&1 || git show-ref --verify --quiet "refs/heads/${BR_NAME}"; then
+            BR_NAME="${BR_NAME}-$(date +%s)"
+          fi
+
+          # Ensure we are on the intended base branch
+          git fetch origin "${BASE}:${BASE}" || true
+          git checkout --force "${BASE}"
+
+          # Stage changes and exit early if nothing changed
+          git add -A || true
+          if git diff --cached --quiet --exit-code && git diff --quiet --exit-code; then
+            echo "changed=false" >> $GITHUB_OUTPUT
+            echo "No changes to commit for base branch ${BASE}."
+            echo "branch=${BR_NAME}" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          git checkout -b "${BR_NAME}"
+          git commit -m "Add docs version v${TRIM} for ${BASE} [ci skip]" || true
+          git push --set-upstream origin "${BR_NAME}"
+
+          echo "changed=true" >> $GITHUB_OUTPUT
+          echo "branch=${BR_NAME}" >> $GITHUB_OUTPUT
+
+      - name: Create Pull Request via REST API (when changes)
+        if: steps.commit_push.outputs.changed == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ matrix.base_branch }}
+        run: |
+          set -euo pipefail
+          # read branch name from previous step output
+          BRANCH=$(jq -r '.branch' <<< "${{ steps.commit_push.outputs }}" 2>/dev/null || echo "${{ steps.commit_push.outputs.branch }}")
+          if [ -z "$BRANCH" ]; then
+            echo "No branch found; exiting"
+            exit 1
+          fi
+
+          TITLE="Publish docs: v${{ env.TRIMMED_TAG }} (target ${BASE})"
+          # Ensure semver-like tag for changelog link
+          tag="${{ env.TRIMMED_TAG }}"
+          if [[ ! "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            tag="${tag}.0"
+          fi
+          BODY="Update docs version v${tag}\n\nChangelog: https://github.com/${REPO}/releases/tag/v${tag}\n\ncc @rancher/fleet"
+
+          PAYLOAD=$(jq -n --arg title "$TITLE" --arg head "$BRANCH" --arg base "$BASE" --arg body "$BODY" \
+            '{title:$title, head:$head, base:$base, body:$body}')
+
+          curl -sS -X POST "https://api.github.com/repos/${REPO}/pulls" \
+            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+            -H "Accept: application/vnd.github+json" \
+            -d "${PAYLOAD}" \
+            | jq .
+
+      - name: Done
+        run: echo "Publish job for base ${matrix.base_branch} completed."

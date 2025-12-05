@@ -28,11 +28,40 @@
               path: fleet
           - name: Update API docs
             run: ./fleet-product-docs/.github/scripts/update-api.sh
-          - name: Create Pull Request
-            uses: peter-evans/create-pull-request@v5
-            with:
-              title: "Update API docs"
-              commit-message: "Update API docs"
-              branch: update-api-branch
-              body: "Automated update of the API docs."
-              path: ./fleet-product-docs/
+          - name: Configure git user
+            if: steps.repo_changes.outputs.changed == 'true'
+            run: |
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          - name: Create branch, commit and push
+            if: steps.repo_changes.outputs.changed == 'true'
+            env:
+              PR_BRANCH: update-api-branch
+            run: |
+              cd fleet-product-docs
+              git checkout -b "${PR_BRANCH}"
+              git add -A
+              git commit -m "Update API docs [ci skip]" || { echo "No changes to commit" }
+              git push --set-upstream origin "${PR_BRANCH}"
+          - name: Create Pull Request via REST API
+            if: steps.repo_changes.outputs.changed == 'true'
+            env:
+              PR_BRANCH: update-api-branch
+              REPO: fleet-product-docs
+              GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+            run: |
+              API_URL="https://api.github.com/repos/${REPO}/pulls"
+              TITLE="Update API docs"
+              BODY="Automated update of the API docs."
+              PAYLOAD=$(jq -n \
+                --arg title "${TITLE}" \
+                --arg head "${PR_BRANCH}" \
+                --arg base "${TARGET_BRANCH}" \
+                --arg body "${BODY}" \
+                '{title:$title, head:$head, base:$base, body:$body}')
+              # Create PR
+              response=$(curl -sS -X POST "${API_URL}" \
+                -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                -H "Accept: application/vnd.github+json" \
+                -d "${PAYLOAD}")
+              echo "$response" | jq .

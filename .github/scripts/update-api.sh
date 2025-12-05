@@ -4,6 +4,10 @@ set -euxo pipefail
 BINARY_URL="https://github.com/clamoriniere/crd-to-markdown/releases/download/v0.0.3/crd-to-markdown_Linux_x86_64"
 BINARY_CHECKSUM="2552e9bb3ee2c80e952961ae0de1a7d88aa1c2d859a3ba85e4b88cd6874ea13c"
 
+ASCIIDOC_CONVERTOR="../asciidoc-convertor/convert.py"
+
+REVDATE=$(date +"%Y-%m-%d")
+
 RELEVANT_CRD_FILES=(
     "pkg/apis/fleet.cattle.io/v1alpha1/bundle_types.go"
     "pkg/apis/fleet.cattle.io/v1alpha1/bundledeployment_types.go"
@@ -31,11 +35,11 @@ download_binary() {
 }
 
 create_markdown() {
-    local ref_crd_path="$1"
+    local output_md="$1"
     local crd_files=""
 
     for file_path in "${RELEVANT_CRD_FILES[@]}"; do
-        [ -f "$file_path" ] && crd_files="$crd_files -f $file_path"
+        [[ -f "$file_path" ]] && crd_files="$crd_files -f $file_path"
     done
 
     # shellcheck disable=SC2086
@@ -46,31 +50,44 @@ create_markdown() {
         | sed -e '1 s/### Custom Resources/# Custom Resources Spec/; t' -e '1,// s//# Custom Resources Spec/' \
         | sed -e '1 s/### Sub Resources/# Sub Resources/; t' -e '1,// s//# Sub Resources/' \
         | sed -e 's/(#custom-resources)/(#custom-resources-spec)/g' \
-        | sed 's/\\n/\
-/g' \
+        | sed 's/\\n/\n/g' \
         | tail -n +2 \
-        > "$ref_crd_path"
+        > "$output_md"
 }
 
-generate_markdown_files() {
+convert_md_to_adoc() {
+    local md_file="$1"
+    local adoc_file="$2"
+
+    python3 "$ASCIIDOC_CONVERTOR" "$md_file" "$adoc_file"
+
+    sed -i "1i :revdate: ${REVDATE}\n:page-revdate: {revdate}\n" "$adoc_file"
+}
+
+generate_all() {
     pushd fleet || exit
     git checkout main
-    create_markdown "../fleet-product-docs/docs/ref-crds.md"
-    popd || exit
-
-    for directory in ./fleet-product-docs/versioned_docs/*; do
-        # The old doc versions did not have a ref-crds.md file yet (0.4 and 0.5)
-        # or the according api files did not provide a description
-        [[ "$directory" =~ \./fleet-product-docs/versioned_docs/version-0\.[4-8] ]] && continue
+    # ---------- versioned docs ----------
+    for directory in ./fleet-product-docs/versions/*; do
+        [[ "$directory" =~ version-0\.[4-8] ]] && continue
 
         pushd fleet || exit
         version="${directory##*/}"
         version="${version#version-}"
-        git checkout "release/v$version"
-        create_markdown "../fleet-product-docs/versioned_docs/version-$version/ref-crds.md"
+
+        git checkout "release/v${version}"
+
+        local tmp_md="../fleet-product-docs/versions/version-$version/ref-crds.md"
+        local out_adoc="../fleet-product-docs/versions/version-$version/ref-crds.adoc"
+
+        create_markdown "$tmp_md"
+        convert_md_to_adoc "$tmp_md" "$out_adoc"
+        rm -f "$tmp_md"
+
         popd || exit
     done
 }
 
+# ---------- Run ----------
 download_binary
-generate_markdown_files
+generate_all

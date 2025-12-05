@@ -1,0 +1,23 @@
+---
+policies:
+  # The following policies are designed to work from GitHub action workflows.
+  # This means that before running any Updatecli command, we need the two following environment variables set:
+  #
+  #   GITHUB_TOKEN: Set to a personal access token
+  #   GITHUB_ACTOR: Set to the username associated with the GITHUB_TOKEN
+  #
+  # Instruction to retrieve your PAT is documented on https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens
+  - name: Handle docusaurus versioning
+    policy: ghcr.io/olblak/rancherlabs-policies/docusaurus/versioning:0.2.0@sha256:47f5704c49384ab6aee972a8097d252f95b22a00eba91123dbc2a184c85fbb5f
+    values:
+      - updatecli/values.d/scm.yaml
+      - updatecli/values.d/fleet.yaml
+  - name: Handle releasepost
+    policy: ghcr.io/olblak/rancherlabs-policies/docusaurus/releasepost:0.6.0@sha256:e73728d960743ea5ff19def234e14d1c59bfd4f5d812a1a5755d1ff80d80e73d
+    values:
+      - updatecli/values.d/scm.yaml
+      - updatecli/values.d/fleet.yaml
+  - name: Handle Updatecli policies
+    policy: ghcr.io/updatecli/policies/autodiscovery/updatecli:0.9.0@sha256:2ae4e1ba471b996e58356a7b12ad8cf283b079ace8eac833d437d1e1ccb85bbb
+    values:
+      - updatecli/values.d/scm-2.yaml
