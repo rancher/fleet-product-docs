@@ -9,5 +9,3 @@ asciidoc:
     build-type: product
 nav:
   - modules/en/nav.adoc
-
-
