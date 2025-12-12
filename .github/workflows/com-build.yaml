@@ -1,4 +1,3 @@
----
 name: Build
 
 on:
@@ -18,9 +17,15 @@ jobs:
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
-        
+
       - name: Prepare Antora environment
-        run: make environment
+        shell: bash
+        run: |
+          set -euo pipefail
+          make environment
 
       - name: Build Antora community docs
-        run: make local-community
+        shell: bash
+        run: |
+          set -euo pipefail
+          make local-community

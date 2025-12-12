@@ -4,20 +4,23 @@ set -euo pipefail
 log() { printf '[%s] %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$*"; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"   # expect .github/scripts under repo root
-FLEET_DIR="${REPO_ROOT}/../fleet-product-docs"                # sibling repo; CI should checkout fleet here
-CONVERTER_DIR="${SCRIPT_DIR}/asciidoc-convertor" # local clone inside .github/scripts/
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"   
+FLEET_DIR="${REPO_ROOT}/../fleet"                
+CONVERTER_DIR="${SCRIPT_DIR}/asciidoc-convertor" 
 CONVERTER_SCRIPT="${CONVERTER_DIR}/convert.sh"
 
 CRD_BIN="${SCRIPT_DIR}/crd-to-markdown"
 BINARY_URL="https://github.com/clamoriniere/crd-to-markdown/releases/download/v0.0.3/crd-to-markdown_Linux_x86_64"
 BINARY_CHECKSUM="2552e9bb3ee2c80e952961ae0de1a7d88aa1c2d859a3ba85e4b88cd6874ea13c"
 
+# Where the script  writes temp files
 TMP_ROOT="$(mktemp -d)"
 MD_WORKDIR="${TMP_ROOT}/md"
 ADOC_WORKDIR="${TMP_ROOT}/adoc"
 
+# Antora target base inside this repo
 VERSIONS_DIR="${REPO_ROOT}/versions" # e.g. versions/v0.13/... and versions/next/...
+# Each version file path: versions/<version>/modules/en/pages/reference/ref-crds.adoc
 PAGE_REL_PATH="modules/en/pages/reference/ref-crds.adoc"
 
 RELEVANT_CRD_FILES=(
@@ -45,13 +48,20 @@ ANTORA_HEADER_TEMPLATE='= Custom Resources Spec
 :page-revdate: {REVDATE}
 
 '
-
 cleanup() {
   rc=$?
-  if [ -d "${TMP_ROOT:-}" ]; then rm -rf "${TMP_ROOT}" || true; fi
+
+  if [ -n "${CRD_BIN:-}" ] && [ -f "${CRD_BIN}" ]; then
+    log "Removing temporary crd-to-markdown binary"
+    rm -f "${CRD_BIN}" || true
+  fi
+
+  if [ -d "${TMP_ROOT:-}" ]; then
+    rm -rf "${TMP_ROOT}" || true
+  fi
+
   exit $rc
 }
-trap cleanup EXIT
 
 download_crd_bin() {
   if [ -x "${CRD_BIN}" ]; then
@@ -64,6 +74,7 @@ download_crd_bin() {
   chmod +x "${CRD_BIN}"
 }
 
+# create a markdown file from available CRD Go files in the fleet checkout
 create_markdown() {
   local out_md="$1"
   shift
@@ -72,6 +83,7 @@ create_markdown() {
     log "create_markdown: no input files"
     return 1
   fi
+  # only include files that actually exist
   local crd_args=()
   for f in "${files[@]}"; do
     if [ -f "$f" ]; then
@@ -85,6 +97,7 @@ create_markdown() {
 
   log "Running crd-to-markdown to produce $out_md"
   mkdir -p "$(dirname "$out_md")"
+  # run the binary with names; preserves exit code using bash -c + pipefail
   bash -c "set -o pipefail; ${CRD_BIN} ${crd_args[*]} -n Bundle -n BundleDeployment -n GitRepo -n GitRepoRestriction -n BundleNamespaceMapping -n Content -n Cluster -n ClusterRegistration -n ClusterRegistrationToken -n ClusterGroup -n ImageScan 2>&1" \
     | sed -e 's/\[\]\[/\\[\\]\[/' \
           -e '1 s/### Custom Resources/# Custom Resources Spec/; t' -e '1,// s//# Custom Resources Spec/' \
@@ -97,9 +110,11 @@ create_markdown() {
   return 0
 }
 
+
 convert_with_local_converter() {
   if [ -x "$CONVERTER_SCRIPT" ]; then
     log "Running local asciidoc-convertor: ${CONVERTER_SCRIPT} ${MD_WORKDIR}"
+    # Many convert.sh implementations expect the workspace root; adapt if yours differs.
     if bash "${CONVERTER_SCRIPT}" "${MD_WORKDIR}"; then
       log "Local converter succeeded"
       return 0
@@ -146,12 +161,13 @@ write_adoc_with_header() {
   log "Wrote $dest"
 }
 
-# ========= Main flow =========
 main() {
   log "Starting update-api.sh"
+  # dynamic revdate in YYYY-MM-DD (UTC)
   REVDATE=$(date -u +%F)
   log "Revdate set to ${REVDATE}"
 
+  # confirm expected locations
   if [ ! -d "${REPO_ROOT}" ]; then
     log "ERROR: repo root ${REPO_ROOT} not found. Run script from repo root."
     exit 1
@@ -173,11 +189,14 @@ main() {
   for version_path in "${VERSIONS_DIR}"/*; do
     [ -d "$version_path" ] || continue
     version_base="$(basename "$version_path")"   # v0.13 or next
+    # Normalize version string (for release branch naming)
     if [ "$version_base" = "next" ]; then
       fleet_branch="main"
       out_md="${MD_WORKDIR}/next-ref-crds.md"
       out_adoc="${ADOC_WORKDIR}/next-ref-crds.adoc"
     else
+      # accept both v0.13 and version-0.13 if needed; user said versions are v0.9..v0.13
+      # strip leading 'v' if present for branch naming
       stripped="${version_base#v}"
       fleet_branch="release/v${stripped}"
       out_md="${MD_WORKDIR}/${stripped}-ref-crds.md"
@@ -203,12 +222,14 @@ main() {
     fi
     popd >/dev/null
 
+    # Build list of absolute CRD file paths to pass to crd-to-markdown
     crd_paths=()
     for f in "${RELEVANT_CRD_FILES[@]}"; do
       abs="${FLEET_DIR}/${f}"
       crd_paths+=( "$abs" )
     done
 
+    # create markdown file
     create_markdown "${out_md}" "${crd_paths[@]}"
     rc=$?
     if [ $rc -ne 0 ]; then
@@ -222,6 +243,7 @@ main() {
     fi
 
     # Convert to adoc using converter/pandoc/sed
+    # We place MDs in MD_WORKDIR and expect ADOCs in ADOC_WORKDIR
     rm -rf "${ADOC_WORKDIR:?}"/* || true
     if convert_with_local_converter; then
       :
@@ -232,6 +254,7 @@ main() {
     fi
 
     # locate the converted adoc file
+    # prefer matching name: e.g. next-ref-crds.adoc or 0.13-ref-crds.adoc
     candidate="$(find "${ADOC_WORKDIR}" -maxdepth 1 -type f -name "*ref-crds*.adoc" -print -quit || true)"
     if [ -z "$candidate" ]; then
       log "No converted adoc found for ${version_base}; attempting pandoc per-file"
@@ -253,3 +276,4 @@ main() {
 }
 
 main "$@"
+  

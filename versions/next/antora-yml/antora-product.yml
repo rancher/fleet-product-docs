@@ -8,6 +8,6 @@ asciidoc:
     product_name: SUSE® Rancher Prime Continuous Delivery 
     build-type: product
 nav:
-  - modules/nav.adoc
+  - modules/en/nav.adoc
 
 
