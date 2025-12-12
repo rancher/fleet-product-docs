@@ -1,24 +1,25 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
-if [ -n "${DEBUG:-}" ]; then set -x; fi
 
-BINARY_URL="https://github.com/clamoriniere/crd-to-markdown/releases/download/v0.0.3/crd-to-markdown_Linux_x86_64"
-BINARY_CHECKSUM="2552e9bb3ee2c80e952961ae0de1a7d88aa1c2d859a3ba85e4b88cd6874ea13c"
-CRD_BIN="./crd-to-markdown"
+log() { printf '[%s] %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$*"; }
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CONVERTER_DIR="${SCRIPT_DIR}/asciidoc-convertor"
+REPO_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"   # expect .github/scripts under repo root
+FLEET_DIR="${REPO_ROOT}/../fleet-product-docs"                # sibling repo; CI should checkout fleet here
+CONVERTER_DIR="${SCRIPT_DIR}/asciidoc-convertor" # local clone inside .github/scripts/
 CONVERTER_SCRIPT="${CONVERTER_DIR}/convert.sh"
 
-# Temporary working dirs 
-TMP_DIR="$(mktemp -d)"
-MD_WORKDIR="${TMP_DIR}/md"
-ADOC_WORKDIR="${TMP_DIR}/adoc"
+CRD_BIN="${SCRIPT_DIR}/crd-to-markdown"
+BINARY_URL="https://github.com/clamoriniere/crd-to-markdown/releases/download/v0.0.3/crd-to-markdown_Linux_x86_64"
+BINARY_CHECKSUM="2552e9bb3ee2c80e952961ae0de1a7d88aa1c2d859a3ba85e4b88cd6874ea13c"
 
-# The location of ref-crds.adoc files in fleet-product-docs repo
-FLEET_DOCS_VERSIONS_DIR="./fleet-product-docs/versions"
+TMP_ROOT="$(mktemp -d)"
+MD_WORKDIR="${TMP_ROOT}/md"
+ADOC_WORKDIR="${TMP_ROOT}/adoc"
 
-# CRD source files in fleet repository (keep in sync)
+VERSIONS_DIR="${REPO_ROOT}/versions" # e.g. versions/v0.13/... and versions/next/...
+PAGE_REL_PATH="modules/en/pages/reference/ref-crds.adoc"
+
 RELEVANT_CRD_FILES=(
   "pkg/apis/fleet.cattle.io/v1alpha1/bundle_types.go"
   "pkg/apis/fleet.cattle.io/v1alpha1/bundledeployment_types.go"
@@ -45,45 +46,45 @@ ANTORA_HEADER_TEMPLATE='= Custom Resources Spec
 
 '
 
-# Logging helper
-log() { printf '[%s] %s\n' "$(date -u +'%Y-%m-%dT%H:%M:%SZ')" "$*"; }
-
-# cleanup temp on exit
 cleanup() {
   rc=$?
-  if [ -d "$TMP_DIR" ]; then rm -rf "$TMP_DIR" || true; fi
-  return $rc
+  if [ -d "${TMP_ROOT:-}" ]; then rm -rf "${TMP_ROOT}" || true; fi
+  exit $rc
 }
 trap cleanup EXIT
 
-# crd binary download
-download_crd_binary() {
-  if [ -x "$CRD_BIN" ]; then
-    log "Using existing $CRD_BIN"
+download_crd_bin() {
+  if [ -x "${CRD_BIN}" ]; then
+    log "Using existing ${CRD_BIN}"
     return 0
   fi
-  log "Downloading crd-to-markdown..."
-  curl --fail -L -o "$CRD_BIN" "$BINARY_URL"
-  echo "$BINARY_CHECKSUM  $CRD_BIN" | sha256sum --check --status
-  chmod +x "$CRD_BIN"
+  log "Downloading crd-to-markdown to ${CRD_BIN}..."
+  curl --fail -L -o "${CRD_BIN}" "${BINARY_URL}"
+  echo "${BINARY_CHECKSUM}  ${CRD_BIN}" | sha256sum --check --status
+  chmod +x "${CRD_BIN}"
 }
 
-# create markdown from CRD source files
 create_markdown() {
   local out_md="$1"
+  shift
+  local -a files=("$@") # absolute paths
+  if [ ${#files[@]} -eq 0 ]; then
+    log "create_markdown: no input files"
+    return 1
+  fi
   local crd_args=()
-  for f in "${RELEVANT_CRD_FILES[@]}"; do
-    [ -f "$f" ] && crd_args+=( -f "$f" )
+  for f in "${files[@]}"; do
+    if [ -f "$f" ]; then
+      crd_args+=( -f "$f" )
+    fi
   done
-
   if [ ${#crd_args[@]} -eq 0 ]; then
-    log "No CRD source files found; skipping $out_md"
-    return 0
+    log "No CRD source files found for this fleet checkout. Skipping -> $out_md"
+    return 2
   fi
 
-  log "Generating CRD markdown -> $out_md"
+  log "Running crd-to-markdown to produce $out_md"
   mkdir -p "$(dirname "$out_md")"
-  # run crd-to-markdown and apply minimal fixes
   bash -c "set -o pipefail; ${CRD_BIN} ${crd_args[*]} -n Bundle -n BundleDeployment -n GitRepo -n GitRepoRestriction -n BundleNamespaceMapping -n Content -n Cluster -n ClusterRegistration -n ClusterRegistrationToken -n ClusterGroup -n ImageScan 2>&1" \
     | sed -e 's/\[\]\[/\\[\\]\[/' \
           -e '1 s/### Custom Resources/# Custom Resources Spec/; t' -e '1,// s//# Custom Resources Spec/' \
@@ -91,16 +92,15 @@ create_markdown() {
           -e 's/(#custom-resources)/(#custom-resources-spec)/g' \
           -e 's/\\n/\
 /g' \
-    | tail -n +2 > "$out_md"
+    | tail -n +2 \
+    > "$out_md"
+  return 0
 }
 
-# Try local asciidoc-convertor (preferred)
 convert_with_local_converter() {
   if [ -x "$CONVERTER_SCRIPT" ]; then
-    log "Running local asciidoc-convertor at: $CONVERTER_SCRIPT"
-    mkdir -p "$ADOC_WORKDIR"
-    # The converter may expect a workspace; call it with input dir MD_WORKDIR
-    if bash "$CONVERTER_SCRIPT" "$MD_WORKDIR"; then
+    log "Running local asciidoc-convertor: ${CONVERTER_SCRIPT} ${MD_WORKDIR}"
+    if bash "${CONVERTER_SCRIPT}" "${MD_WORKDIR}"; then
       log "Local converter succeeded"
       return 0
     else
@@ -111,14 +111,13 @@ convert_with_local_converter() {
   return 1
 }
 
-# Try pandoc fallback (good conversion if available)
 convert_with_pandoc() {
   if command -v pandoc >/dev/null 2>&1; then
-    log "Converting md -> adoc with pandoc"
-    mkdir -p "$ADOC_WORKDIR"
-    for md in "$MD_WORKDIR"/*.md; do
+    log "Converting markdown -> adoc using pandoc"
+    mkdir -p "${ADOC_WORKDIR}"
+    for md in "${MD_WORKDIR}"/*.md; do
       [ -f "$md" ] || continue
-      out="$ADOC_WORKDIR/$(basename "${md%.md}.adoc")"
+      out="${ADOC_WORKDIR}/$(basename "${md%.md}.adoc")"
       pandoc -f markdown -t asciidoc -o "$out" "$md"
     done
     return 0
@@ -126,179 +125,131 @@ convert_with_pandoc() {
   return 1
 }
 
-# Conservative sed fallback (limited)
-convert_with_sed_fallback() {
-  log "Converting md -> adoc with conservative sed fallback"
-  mkdir -p "$ADOC_WORKDIR"
-  for md in "$MD_WORKDIR"/*.md; do
+convert_with_sed() {
+  log "Falling back to sed-based md->adoc (limited)"
+  mkdir -p "${ADOC_WORKDIR}"
+  for md in "${MD_WORKDIR}"/*.md; do
     [ -f "$md" ] || continue
-    out="$ADOC_WORKDIR/$(basename "${md%.md}.adoc")"
-    sed -E \
-      -e 's/^### (.*)/== \1/' \
-      -e 's/^## (.*)/= \1/' \
-      -e 's/^\# (.*)/= \1/' \
-      -e 's/\[\]\[/\\[\\]\[/' \
-      -e 's/(#custom-resources)/(#custom-resources-spec)/g' \
-      "$md" > "$out"
+    out="${ADOC_WORKDIR}/$(basename "${md%.md}.adoc")"
+    sed -E -e 's/^### (.*)/== \1/' -e 's/^## (.*)/= \1/' -e 's/^\# (.*)/= \1/' -e 's/\[\]\[/\\[\\]\[/' "$md" > "$out"
   done
+  return 0
 }
 
-# Prepend Antora header and write out atomically
 write_adoc_with_header() {
-  local src="$1"
-  local dest="$2"
-  local revdate="$3"
+  local src="$1"; local dest="$2"; local rev="$3"
   mkdir -p "$(dirname "$dest")"
-  header=$(printf "%s" "$ANTORA_HEADER_TEMPLATE" | sed "s/{REVDATE}/$revdate/g")
-  tmp="${dest}.new"
-  printf "%s\n" "$header" > "$tmp"
-  cat "$src" >> "$tmp"
-  mv "$tmp" "$dest"
+  tmp="${dest}.tmp"
+  printf "%s" "${ANTORA_HEADER_TEMPLATE//\{REVDATE\}/$rev}" > "${tmp}"
+  cat "$src" >> "${tmp}"
+  mv "${tmp}" "${dest}"
   log "Wrote $dest"
 }
 
-# Helper: find candidate reference page dir for a versions/<name>
-# returns first matching reference directory under the version dir, or empty
-find_reference_dir_for_version() {
-  local version_dir="$1"   # e.g. ./fleet-product-docs/versions/v0.13
-  # common Antora module page locations; try to detect the correct one:
-  # try modules/*/pages/*/reference
-  local cand
-  for cand in "$version_dir"/modules/*/pages/*/reference "$version_dir"/modules/*/pages/reference; do
-    # expand glob - check if exists
-    for d in $cand; do
-      if [ -d "$d" ]; then
-        echo "$d"
-        return 0
-      fi
-    done
-  done
-  # fallback: try old structure: versions/<name>/reference or versions/<name>/modules/pages/reference
-  if [ -d "$version_dir/reference" ]; then
-    echo "$version_dir/reference"
-    return 0
-  fi
-  return 1
-}
-
+# ========= Main flow =========
 main() {
-  # dynamic revdate in YYYY-MM-DD (UTC)
+  log "Starting update-api.sh"
   REVDATE=$(date -u +%F)
-  log "Using revdate: $REVDATE"
+  log "Revdate set to ${REVDATE}"
 
-  download_crd_binary
+  if [ ! -d "${REPO_ROOT}" ]; then
+    log "ERROR: repo root ${REPO_ROOT} not found. Run script from repo root."
+    exit 1
+  fi
+  if [ ! -d "${VERSIONS_DIR}" ]; then
+    log "ERROR: versions dir ${VERSIONS_DIR} not found under repo root."
+    exit 1
+  fi
+  if [ ! -d "${FLEET_DIR}" ]; then
+    log "ERROR: fleet repo not found at ${FLEET_DIR}. CI must checkout rancher/fleet into this path."
+    exit 1
+  fi
 
-  mkdir -p "$MD_WORKDIR" "$ADOC_WORKDIR"
+  download_crd_bin
 
-  # Generate top-level ref-crds (next)
-  create_markdown "${MD_WORKDIR}/ref-crds.md"
+  mkdir -p "${MD_WORKDIR}" "${ADOC_WORKDIR}"
 
-  # Generate per-version markdown: iterate through existing version directories under fleet-product-docs/versions
-  if [ -d "$FLEET_DOCS_VERSIONS_DIR" ]; then
-    for version_dir in "${FLEET_DOCS_VERSIONS_DIR}"/*; do
-      [ -d "$version_dir" ] || continue
-      version_name="$(basename "$version_dir")"   # e.g. v0.13 or next
-      # Skip older versions that shouldn't be generated if desired:
-      if [[ "$version_name" =~ ^version-0\.[4-8]$ ]] ; then
-        log "Skipping $version_name per configured rule"
+  # Iterate versions/* and "next"
+  for version_path in "${VERSIONS_DIR}"/*; do
+    [ -d "$version_path" ] || continue
+    version_base="$(basename "$version_path")"   # v0.13 or next
+    if [ "$version_base" = "next" ]; then
+      fleet_branch="main"
+      out_md="${MD_WORKDIR}/next-ref-crds.md"
+      out_adoc="${ADOC_WORKDIR}/next-ref-crds.adoc"
+    else
+      stripped="${version_base#v}"
+      fleet_branch="release/v${stripped}"
+      out_md="${MD_WORKDIR}/${stripped}-ref-crds.md"
+      out_adoc="${ADOC_WORKDIR}/${stripped}-ref-crds.adoc"
+    fi
+
+    log "Processing version ${version_base} -> fleet branch ${fleet_branch}"
+
+    # checkout appropriate branch inside fleet repo so the CRDGo files match that release
+    pushd "${FLEET_DIR}" >/dev/null
+    if git show-ref --verify --quiet "refs/heads/${fleet_branch}"; then
+      git checkout --force "${fleet_branch}"
+    else
+      # try to fetch remote branch if not present locally
+      if git ls-remote --exit-code --heads origin "${fleet_branch}" >/dev/null 2>&1; then
+        git fetch origin "${fleet_branch}:${fleet_branch}"
+        git checkout --force "${fleet_branch}"
+      else
+        log "Fleet branch ${fleet_branch} not found; skipping ${version_base}"
+        popd >/dev/null
         continue
       fi
-      # make a dedicated md output dir
-      mkdir -p "${MD_WORKDIR}/version-${version_name}"
-      # Try to derive numeric version (strip non-digits)
-      ver_num="$(echo "$version_name" | sed -E 's/[^0-9.]*([0-9.]+).*/\1/')"
-      if [ -n "$ver_num" ]; then
-        pushd fleet >/dev/null 2>&1 || true
-        # prefer branch release/v<ver_num> if it exists
-        if git show-ref --verify --quiet "refs/heads/release/v${ver_num}"; then
-          git checkout "release/v${ver_num}" || true
-        else
-          if git ls-remote --exit-code --heads origin "release/v${ver_num}" >/dev/null 2>&1; then
-            git fetch origin "release/v${ver_num}:release/v${ver_num}" || true
-            git checkout "release/v${ver_num}" || true
-          else
-            log "No fleet branch for version ${version_name}; using current fleet branch"
-          fi
-        fi
-        popd >/dev/null 2>&1 || true
-      fi
+    fi
+    popd >/dev/null
 
-      create_markdown "${MD_WORKDIR}/version-${version_name}/ref-crds.md"
+    crd_paths=()
+    for f in "${RELEVANT_CRD_FILES[@]}"; do
+      abs="${FLEET_DIR}/${f}"
+      crd_paths+=( "$abs" )
     done
-  else
-    log "Warning: ${FLEET_DOCS_VERSIONS_DIR} does not exist - no version directories found"
-  fi
 
-  # Conversion strategy: try local converter -> pandoc -> sed fallback
-  if convert_with_local_converter; then
-    log "Converted Markdown -> AsciiDoc using local converter"
-  elif convert_with_pandoc; then
-    log "Converted Markdown -> AsciiDoc using pandoc"
-  else
-    convert_with_sed_fallback
-    log "Converted Markdown -> AsciiDoc using sed fallback"
-  fi
-
-  # final: find generated adoc files and write them with header to target version dirs
-  # Prefer output from converter (ADOC_WORKDIR); if none, try converting existing md files directly
-  found_any=0
-  mapfile -t generated_adocs < <(find "${ADOC_WORKDIR}" -type f -name "ref-crds*.adoc" 2>/dev/null || true)
-  if [ ${#generated_adocs[@]} -eq 0 ]; then
-    # maybe converter wrote adoc files next to md (rare) — check MD_WORKDIR for .adoc fallback
-    mapfile -t generated_adocs < <(find "${MD_WORKDIR}" -type f -name "*.adoc" 2>/dev/null || true)
-  fi
-
-  # If still empty, try converting md files on-the-fly for target placement
-  if [ ${#generated_adocs[@]} -eq 0 ]; then
-    log "No adoc output found from converter; attempting to convert individual md files via pandoc/sed"
-    for md in "${MD_WORKDIR}"/*.md "${MD_WORKDIR}"/version-*/*.md; do
-      [ -f "$md" ] || continue
-      dst_adoc="${ADOC_WORKDIR}/$(basename "${md%.md}.adoc")"
-      if command -v pandoc >/dev/null 2>&1; then
-        pandoc -f markdown -t asciidoc -o "$dst_adoc" "$md"
+    create_markdown "${out_md}" "${crd_paths[@]}"
+    rc=$?
+    if [ $rc -ne 0 ]; then
+      if [ $rc -eq 2 ]; then
+        log "No markdown generated for ${version_base}; skipping"
+        continue
       else
-        sed -e 's/^### /== /' -e 's/^## /= /' "$md" > "$dst_adoc"
+        log "create_markdown failed for ${version_base} (exit $rc)"
+        continue
       fi
-      generated_adocs+=("$dst_adoc")
-    done
-  fi
+    fi
 
-  # Iterate through generated adoc files and map them to version destination dirs
-  for adoc in "${generated_adocs[@]}"; do
-    [ -f "$adoc" ] || continue
-    base="$(basename "$adoc")"
-    # determine source version: look for version-<name> in path or filename
-    if [[ "$adoc" =~ version-([0-9A-Za-z_.-]+) ]]; then
-      ver="${BASH_REMATCH[1]}"
+    # Convert to adoc using converter/pandoc/sed
+    rm -rf "${ADOC_WORKDIR:?}"/* || true
+    if convert_with_local_converter; then
+      :
+    elif convert_with_pandoc; then
+      :
     else
-      # default to 'next'
-      ver="next"
+      convert_with_sed
     fi
 
-    # find the target reference directory for this version
-    version_dir="${FLEET_DOCS_VERSIONS_DIR}/${ver}"
-    if [ ! -d "$version_dir" ]; then
-      # try without prefixing (maybe versions are 'v0.13' not 'version-v0.13')
-      version_dir="$(find ${FLEET_DOCS_VERSIONS_DIR} -maxdepth 1 -type d -iname "*${ver}*" | head -n1 || true)"
-      [ -z "$version_dir" ] && version_dir="${FLEET_DOCS_VERSIONS_DIR}/${ver}"
+    # locate the converted adoc file
+    candidate="$(find "${ADOC_WORKDIR}" -maxdepth 1 -type f -name "*ref-crds*.adoc" -print -quit || true)"
+    if [ -z "$candidate" ]; then
+      log "No converted adoc found for ${version_base}; attempting pandoc per-file"
+      if command -v pandoc >/dev/null 2>&1; then
+        pandoc -f markdown -t asciidoc -o "${out_adoc}" "${out_md}"
+        candidate="${out_adoc}"
+      else
+        log "No conversion available; skipping ${version_base}"
+        continue
+      fi
     fi
 
-    ref_dir="$(find_reference_dir_for_version "$version_dir" || true)"
-    if [ -z "$ref_dir" ]; then
-      log "ERROR: could not find reference directory for version '$ver' (checked ${version_dir}); skipping $adoc"
-      continue
-    fi
-
-    dest="${ref_dir}/ref-crds.adoc"
-    write_adoc_with_header "$adoc" "$dest" "$REVDATE"
-    found_any=1
+    # write final adoc into the versions/<version>/modules/en/pages/reference/ref-crds.adoc
+    dest="${version_path}/${PAGE_REL_PATH}"
+    write_adoc_with_header "$candidate" "$dest" "${REVDATE}"
   done
 
-  if [ "$found_any" -eq 0 ]; then
-    log "No ref-crds.adoc files written (nothing to do)."
-  else
-    log "Done: ref-crds.adoc files updated."
-  fi
+  log "All done; temporary dir ${TMP_ROOT} will be removed by trap"
 }
 
 main "$@"
