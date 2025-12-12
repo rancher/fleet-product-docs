@@ -29,7 +29,7 @@ jobs:
       # ------------------------------------------------------------------
       - name: Switch to community documentation context
         run: |
-          chmod +x switch-prod-comm
+          chmod +x bin/switch-prod-comm
           bin/switch-prod-comm community
 
       - name: Build community site
