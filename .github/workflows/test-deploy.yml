@@ -14,6 +14,8 @@ jobs:
       - name: Checkout repository (with submodules)
         uses: actions/checkout@v4
         with:
+          ref: dsc-single-source
+          fetch-depth: 0
           submodules: recursive
 
       - name: Set up Node.js
