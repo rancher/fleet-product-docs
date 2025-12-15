@@ -29,8 +29,8 @@ jobs:
       # ------------------------------------------------------------------
       - name: Switch to community documentation context
         run: |
-          chmod +x bin/switch-prod-comm
-          bin/switch-prod-comm community
+          chmod +x ./bin/switch-prod-comm
+          ./bin/switch-prod-comm community
 
       - name: Build community site
         run: |
@@ -65,8 +65,8 @@ jobs:
       # ------------------------------------------------------------------
       - name: Switch to product documentation context
         run: |
-          chmod +x bin/switch-prod-comm
-          bin/switch-prod-comm product
+          chmod +x ./bin/switch-prod-comm
+          ./bin/switch-prod-comm product
 
       - name: Build product site
         run: |

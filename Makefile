@@ -20,7 +20,7 @@ local: local-community local-product
 local-community:
 	mkdir -p tmp
 	$(ANTORA) --version
-	bin/switch-prod-comm community
+	./bin/switch-prod-comm community
 	$(ANTORA) $(ANTORA_OPTS) \
 		--to-dir $(FLEET_COMMUNITY_OUT) \
 		$(FLEET_COMMUNITY_PLAYBOOK) \
