@@ -29,7 +29,7 @@ local-community:
 local-product:
 	mkdir -p tmp
 	$(ANTORA) --version
-	bin/switch-prod-comm product
+	./bin/switch-prod-comm product
 	$(ANTORA) $(ANTORA_OPTS) \
 		--to-dir $(FLEET_PRODUCT_OUT) \
 		$(FLEET_PRODUCT_PLAYBOOK) \
@@ -43,7 +43,7 @@ remote-fleet:
 	mkdir -p tmp
 	npm ci
 	$(ANTORA) --version
-	bin/switch-prod-comm community
+	./bin/switch-prod-comm community
 	$(ANTORA) $(ANTORA_OPTS) \
 		--to-dir $(FLEET_COMMUNITY_OUT) \
 		$(FLEET_COMMUNITY_REMOTE_PLAYBOOK) \
@@ -53,7 +53,7 @@ remote-product:
 	mkdir -p tmp
 	npm ci
 	$(ANTORA) --version
-	bin/switch-prod-comm product
+	./bin/switch-prod-comm product
 	$(ANTORA) $(ANTORA_OPTS) \
 		--to-dir $(FLEET_PRODUCT_OUT) \
 		$(FLEET_PRODUCT_REMOTE_PLAYBOOK) \
