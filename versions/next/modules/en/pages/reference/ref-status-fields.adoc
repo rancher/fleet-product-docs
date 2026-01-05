@@ -30,7 +30,7 @@ status:
 
 ==== Ready Status Determination
 
-Fleet uses the `kstatus` package of the `sigs.k8s.io/cli-utils` module to determine the Ready status of BundleDeployments based on the status of their resources.  
+{product_name} uses the `kstatus` package of the `sigs.k8s.io/cli-utils` module to determine the Ready status of BundleDeployments based on the status of their resources.  
 For details, see the link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` package README].
 
 ==== Propagation of Ready Status
@@ -69,7 +69,7 @@ The `status.display` field provides a summary of the state. States are ranked, a
 ==== State Ranking
 
 This is the ranking in which states are displayed. If a Bundle has BundleDeployments in different states, the worst state is used in the `status.display.state` field.  
-This state is also propagated from the Bundles to other Fleet resources (GitRepos, Clusters, ClusterGroups).
+This state is also propagated from the Bundles to other {product_name} resources (GitRepos, Clusters, ClusterGroups).
 
 From best to worst:
 

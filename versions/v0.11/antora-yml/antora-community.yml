@@ -1,0 +1,12 @@
+name: fleet
+title: Fleet
+version: v0.11
+display_version: 'v0.11'
+start_page: en:index.adoc
+asciidoc:
+  attributes:
+    product_name: Fleet
+    build-type: community
+nav:
+  - modules/en/nav.adoc
+

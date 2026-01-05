@@ -2,7 +2,7 @@
 :revdate: 2025-09-01
 :page-revdate: {revdate}
 
-Fleet supports pulling Helm charts stored in OCI registries. OCI registries are commonly used to store and distribute container images. By using them for Helm charts, you can apply the same packaging, authentication, and distribution methods you already use for container images.
+{product_name} supports pulling Helm charts stored in OCI registries. OCI registries are commonly used to store and distribute container images. By using them for Helm charts, you can apply the same packaging, authentication, and distribution methods you already use for container images.
 
 Using OCI registries for Helm charts helps you:
 
@@ -14,7 +14,7 @@ For more information about HelmOps with OCI registry, refer to xref:how-tos-for-
 
 image::fetch-Helm-from-OCI.svg[A visual asset displaying flow of fetching Helm charts from an OCI registry]
 
-For example, if you manage multiple clusters with Fleet, developers can push Helm charts to an internal OCI registry. Fleet then pulls the charts directly from the registry and deploys them to downstream clusters.  
+For example, if you manage multiple clusters with {product_name}, developers can push Helm charts to an internal OCI registry. {product_name} then pulls the charts directly from the registry and deploys them to downstream clusters.  
 This approach avoids maintaining a separate chart repository and reuses your existing registry infrastructure.
 
 == Helm chart in fleet.yaml
@@ -36,10 +36,10 @@ helm:
   version: 0.1.0
 ----
 
-Fleet pulls the chart from the OCI registry and deploys it to the targeted clusters.
+{product_name} pulls the chart from the OCI registry and deploys it to the targeted clusters.
 
 == Using authenticated registries
 
-If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. Fleet uses this secret to pull the chart and deploy it to the targeted clusters.
+If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. Fl{product_name}eet uses this secret to pull the chart and deploy it to the targeted clusters.
 
 For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#use_private_helm_repositories[fleet.yaml with authentication].

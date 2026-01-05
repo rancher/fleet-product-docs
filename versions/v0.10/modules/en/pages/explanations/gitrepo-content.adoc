@@ -94,9 +94,16 @@ configured differently from the parent bundle.
 ====
 
 *Helm chart dependencies*:
-It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
-====
 
+ifeval::["{product}" == "fleet"]
+It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_helm_chart_dependencies[{product_name} docs] in Rancher for more information.
+endif::[]
+
+====
 
 The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fleet.yaml reference]
 
@@ -217,7 +224,7 @@ customized per target cluster. If you are using raw YAML then the following simp
 be used.  The `overlays/` folder in the git repo is treated specially as folder containing folders that
 can be selected to overlay on top per target cluster. The resource overlay content
 uses a file name based approach.  This is different from kustomize which uses a resource based approach.  In kustomize
-the resource Group, Kind, Version, Name, and Namespace identify resources and are then merged or patched.  For Fleet
+the resource Group, Kind, Version, Name, and Namespace identify resources and are then merged or patched.  For {product_name}
 the overlay resources will override or patch content with a matching file name.
 
 [,shell]

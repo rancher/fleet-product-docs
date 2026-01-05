@@ -7,39 +7,92 @@ on:
     types: [opened, edited, synchronize, reopened]
 
 jobs:
-  test-deploy:
-    name: Test deployment
+  # ============================================================
+  # Community docs build
+  # ============================================================
+  test-community:
+    name: Test community docs
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: recursive
-      - uses: actions/setup-node@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
         with:
           node-version: 18
+
       - name: Install Antora and dependencies
         run: make environment
-      - name: Generate Site
+
+      - name: Switch to community documentation context
         run: |
+          chmod +x bin/switch-prod-comm
+          bin/switch-prod-comm community
+
+      - name: Build community site
+        run: |
+          set -o pipefail
           npx antora --stacktrace \
-            --log-file local-build.log \
             --log-format=pretty \
             --log-level=info \
             --log-failure-level=warn \
-            fleet-local-playbook.yml 2>&1 | tee local-build.log 2>&1
-            BUILD_STATUS=${PIPESTATUS[0]}
-            if grep "INFO (asciidoctor)" local-build.log; then
-              BUILD_STATUS=1
-            fi
-            echo "BUILD_STATUS=$BUILD_STATUS" >> $GITHUB_ENV
-      - name: Check files for missing nav entries
-        run: bin/files-missing-nav
-      - name: Check for build errors
-        run: |
-          echo ${{ env.BUILD_STATUS }}
-          if [ ${{ env.BUILD_STATUS }} -eq "0" ]; then
-            exit 0
-          else
-            cat local-build.log
+            fleet-community-local-playbook.yml \
+            2>&1 | tee community-build.log
+
+          if grep -q "INFO (asciidoctor)" community-build.log; then
+            echo "Asciidoctor warnings found"
             exit 1
           fi
+
+      - name: Check community nav entries
+        run: bin/files-missing-nav
+
+  # ============================================================
+  # Product docs build
+  # ============================================================
+  test-product:
+    name: Test product docs
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          submodules: recursive
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Antora and dependencies
+        run: make environment
+
+      - name: Switch to product documentation context
+        run: |
+          chmod +x bin/switch-prod-comm
+          bin/switch-prod-comm product
+
+      - name: Build product site
+        run: |
+          set -o pipefail
+          npx antora --stacktrace \
+            --log-format=pretty \
+            --log-level=info \
+            --log-failure-level=warn \
+            fleet-product-local-playbook.yml \
+            2>&1 | tee product-build.log
+
+          if grep -q "INFO (asciidoctor)" product-build.log; then
+            echo "Asciidoctor warnings found"
+            exit 1
+          fi
+
+      - name: Check product nav entries
+        run: bin/files-missing-nav

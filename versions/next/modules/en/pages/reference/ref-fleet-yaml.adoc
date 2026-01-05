@@ -346,8 +346,8 @@ These options control the Kubernetes namespace where resources will be deployed.
 
 | `defaultNamespace` | Default namespace for resources that don’t specify one. | All
 | `namespace` | Assigns all resources in the bundle to this namespace. Fails if any cluster-scoped resources exist. | All
-| `namespaceLabels` | Labels to be added to the namespace created by Fleet. | All
-| `namespaceAnnotations` | Annotations to be added to the namespace created by Fleet. | All
+| `namespaceLabels` | Labels to be added to the namespace created by {product_name}. | All
+| `namespaceAnnotations` | Annotations to be added to the namespace created by {product_name}. | All
 |===
 
 == Helm Bundle Configuration
@@ -385,7 +385,7 @@ If a secret for the SSH key was defined via `helmSecretName`, it is injected aut
 [NOTE]
 ====
 If the `fleet.yaml` file is located outside the embedded chart’s directory, it must explicitly reference the chart using `helm.chart`.  
-Otherwise, Fleet won’t install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
+Otherwise, {product_name} won’t install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
 ====
 
 [WARNING]
@@ -402,7 +402,7 @@ Determines which chart to download from OCI registries.
 [NOTE]
 ====
 OCI registries do not support the `+` character in semver tags. Helm replaces `+` with `_` automatically when pushing charts.  
-Use the `+` version in `fleet.yaml`; Fleet performs the same replacement internally.
+Use the `+` version in `fleet.yaml`; {product_name} performs the same replacement internally.
 ====
 
 === Values
@@ -425,7 +425,7 @@ For value processing stages, refer to xref:explanations/ref-bundle-stages.adoc[B
 
 === Values Templating
 
-Fleet supports Go template expressions for advanced templating needs.  
+{product_name} supports Go template expressions for advanced templating needs.  
 See the https://masterminds.github.io/sprig/[Sprig template functions] for available functions.
 
 [WARNING]
@@ -450,7 +450,7 @@ Example:
 ${ get .ClusterLabels "management.cattle.io/cluster-display-name" }
 ----
 
-Fleet templating uses `${ }` delimiters (not Helm’s `{{ }}`). Escape them using backticks:
+{product_name} templating uses `${ }` delimiters (not Helm’s `{{ }}`). Escape them using backticks:
 
 [source,yaml]
 ----
@@ -561,7 +561,7 @@ These options let you customize deployments for specific clusters or cluster gro
 [WARNING]
 ====
 Overriding Helm chart versions in target customizations can increase bundle sizes.  
-Because Fleet stores bundles in etcd, this may exceed etcd’s blob size limit.  
+Because {product_name} stores bundles in etcd, this may exceed etcd’s blob size limit.  
 Refer to https://github.com/rancher/fleet/issues/1650[fleet#1650] for details.
 ====
 

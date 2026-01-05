@@ -1,0 +1,54 @@
+name: Rancher continous delivery documentation - publish to GitHub Pages with Lunr Search Extension
+on:
+  # Runs whenever a change is pushed to the main branch
+  push:
+    branches: [main]
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v5
+      with:
+          submodules: recursive
+    - name: Configure Pages
+      uses: actions/configure-pages@v5
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+    - name: Install Dependencies
+      run: make environment
+      # Generate site using 'make local' which uses fleet-local-playbook.yml with draft preview enabled
+    - name: Generate Site
+      run: make local-community
+    - name: Upload Artifacts
+      uses: actions/upload-pages-artifact@v4
+      with:
+        path: build/site-community
+  deploy:
+    name: Deploy to GitHub Pages
+    needs: build
+
+    permissions:
+      pages: write
+      id-token: write
+    
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

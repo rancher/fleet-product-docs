@@ -14,7 +14,7 @@ The available fields of the GitRepo custom resource are documented in the xref:r
 Adding A Private Git Repository
 [NOTE]
 ====
-Fleet does not support SSH proxy server authentication when cloning <<_adding_a_private_git_repository,adding-a-private-git-repository>>or <<_using_private_helm_repositories,Using Private Helm Repositories>>
+{product_name} does not support SSH proxy server authentication when cloning <<_adding_a_private_git_repository,adding-a-private-git-repository>>or <<_using_private_helm_repositories,Using Private Helm Repositories>>
 . Use HTTPS authentication with a username and password or a personal access token.
 ====
 
@@ -157,7 +157,7 @@ When using BitBucket and access tokens, the username must be `x-token-auth`.
 
 === Using a GitHub App
 
-The following fields are needed to enable Fleet to authenticate to GitHub using a GitHub App:
+The following fields are needed to enable {product_name} to authenticate to GitHub using a GitHub App:
 
 [options="header"]
 |===
@@ -202,11 +202,21 @@ Validating a repository using a certificate signed by a custom Certificate Autho
 
 [IMPORTANT]
 ====
-Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see the respective pages on
+ifeval::["{product}" == "fleet"]
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Using a Private CA Signed Certificate]
+and
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[Additional Trusted CA's]),
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
-Fleet will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
 ====
 
 == Using Private Helm Repositories
@@ -225,11 +235,21 @@ For a private Helm repo, users can reference a secret with the following keys:
 
 [IMPORTANT]
 ====
-Note that if secrets specifying CA bundles exist, for instance if Fleet is installed with Rancher (see the respective pages on
+ifeval::["{product}" == "fleet"]
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Using a Private CA Signed Certificate]
+and
+https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[Additional Trusted CA's]),
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
-Fleet will use those CA bundles if no CA bundle is specified in the Helm secret.
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
+endif::[]
 ====
 
 . `ssh-privatekey` for ssh private key if repo is using ssh protocol. Private key with passphase is not supported currently.
@@ -259,7 +279,7 @@ Refer to link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documenta
 
 [NOTE]
 ====
-If more than one glob matches a given path in a Git repository, Fleet will order globs lexically and use credentials
+If more than one glob matches a given path in a Git repository, {product_name} will order globs lexically and use credentials
 from the first match.
 
 _Example_: For repository path `world-domination/ui_charts` and a secret containing the following keys, credentials under the _second_ glob will be used:
@@ -277,11 +297,11 @@ world-domination/*: # will be used, as `/*` will be sorted before `/*_charts`
 ----
 ====
 
-If a path listed in the GitRepo is not included in this file, whether through exact paths or glob matching, Fleet does not use credentials for it.
+If a path listed in the GitRepo is not included in this file, whether through exact paths or glob matching, {product_name} does not use credentials for it.
 
 [NOTE]
 ====
-The file should be named `secrets-path.yaml`; otherwise Fleet will not be able to use it.
+The file should be named `secrets-path.yaml`; otherwise {product_name} will not be able to use it.
 ====
 
 .Example `GitRepo` resource
@@ -355,8 +375,15 @@ kubectl create secret generic test-multipasswd -n fleet-local --from-file=secret
 The secret must be created in the same namespace as the `GitRepo` resource.
 ====
 
+ifeval::["{product}" == "fleet"]
 If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+If you use link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
+
+endif::[]
 [source,bash]
 ----
 kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=true
@@ -376,7 +403,7 @@ As a workaround, tools like SOPS can encrypt credentials.
 Instead, reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles, do this in the manifests, e.g., by link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].  
 Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
-When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several Fleet CRDs in the encryption resource list:
+When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several {product_name} CRDs in the encryption resource list:
 
 [source]
 ----
@@ -388,11 +415,11 @@ When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/e
 
 == Backing up and restoring
 
-When backing up and restoring Fleet with existing workloads, be they GitRepos or HelmOps, consider:
+When backing up and restoring {product_name} with existing workloads, be they GitRepos or HelmOps, consider:
 
 === Kubernetes API server availability
 
-A Fleet agent in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
+A {product_name} agent in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
 During a restore operation, changes made in the upstream cluster may affect deployments in downstream clusters, which could be updated or deleted based on incomplete state from upstream.
 
 To prevent this, make the Kubernetes API server inaccessible to downstream clusters while a restore is running. Agents should not access the upstream cluster until all resources are re-created.
@@ -401,12 +428,12 @@ To prevent this, make the Kubernetes API server inaccessible to downstream clust
 
 A xref:reference/ref-gitrepo.adoc[paused] GitRepo will pause bundles and bundle deployments. This means:
 
-* Deleting a bundle deployment from a paused GitRepo: Fleet will not re-create the bundle deployment until the GitRepo is unpaused.
-* Deleting a bundle from a paused GitRepo: Fleet will delete the bundle deployments coming from that bundle, and will not re-create the bundle (nor bundle-deployments) until the GitRepo is unpaused.
+* Deleting a bundle deployment from a paused GitRepo: {product_name} will not re-create the bundle deployment until the GitRepo is unpaused.
+* Deleting a bundle from a paused GitRepo: {product_name} will delete the bundle deployments coming from that bundle, and will not re-create the bundle (nor bundle-deployments) until the GitRepo is unpaused.
 
-Pausing a GitRepo only prevents bundles and bundle deployments from being created or updated. It only affects _controller_ operations, not Fleet _agent_ operations.  
+Pausing a GitRepo only prevents bundles and bundle deployments from being created or updated. It only affects _controller_ operations, not {product_name} _agent_ operations.  
 To prevent user resources in a bundle from being deleted when deleting a bundle deployment, use xref:reference/ref-bundle.adoc[keepResources].
 
 == Troubleshooting
 
-See the Fleet Troubleshooting section xref:troubleshooting.adoc[Troubleshooting docs].
+See the {product_name} Troubleshooting section xref:troubleshooting.adoc[Troubleshooting docs].

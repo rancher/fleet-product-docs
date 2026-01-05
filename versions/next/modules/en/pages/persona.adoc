@@ -7,7 +7,7 @@
 |Persona |Responsibilities |Key Benefits
 
 |Platform Engineers
-a|* Set up and manage Fleet installation across clusters.
+a|* Set up and manage {product_name} installation across clusters.
 * Define and enforce multi-cluster application and policy deployments.
 * Manage GitRepo and `fleet.yaml` configurations.
 * Perform cluster-wide updates and rollbacks.

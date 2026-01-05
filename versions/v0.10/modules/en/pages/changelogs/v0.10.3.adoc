@@ -8,7 +8,7 @@
 == Release Note
 
 The cronjob to clean up outdated git cloning jobs, is using the wrong service account. `serviceAccountName` in the job template needs to be switched to the "gitjob" service account. Doing this edit in the Rancher UI didn't work while testing.
-Upgrading to the chart via the Rancher UI will not set new  Helm values, so `migrations.gitrepoJobsCleanup` will not be enabled. Customizing the Fleet installation options via the `rancher-config` configmap will work.
+Upgrading to the chart via the Rancher UI will not set new  Helm values, so `migrations.gitrepoJobsCleanup` will not be enabled. Customizing the {product_name} installation options via the `rancher-config` configmap will work.
 
 === What's Changed
 

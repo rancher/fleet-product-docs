@@ -30,4 +30,4 @@ fleet cleanup [flags]
 
 == SEE ALSO
 
-* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage Fleet operations
+* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

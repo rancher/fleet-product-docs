@@ -1,4 +1,4 @@
-# Fleet Product Documentation
+# SUSE® Rancher Prime Continuous Delivery (Fleet) Product Documentation
 
 ## Build the Documentation site
 
@@ -40,6 +40,8 @@ This playbook repository uses a [git submodule](https://git-scm.com/book/en/v2/G
 git submodule update --init
 ```
 
+This repository uses the `main` branch for community updates and the `dsc-single-source` branch for product documentation updates in the playbooks.
+
 ### Install node modules
 
 Open a terminal at the root of the git repository. Run the command below.
@@ -50,10 +52,10 @@ npm install
 
 ### Run Antora to build the static website
 
-As a local example, run the command below to build the site:
+As a local example, run the command below to build the product site:
 
 ```console
-npx antora --fetch fleet-local-playbook.yml
+npx antora --fetch fleet-product-local-playbook.yml
 ```
 
 Navigate to the `./build/site` directory and open the index.html file in your browser to view and navigate the documentation site.
@@ -64,16 +66,31 @@ Alternatively, run the below command first and then open `http://127.0.0.1:8080/
 make preview
 ```
 
+To build the community site, run:
+
+```console
+npx antora --fetch fleet-community-local-playbook.yml
+```
+
+Navigate to the `./build/site-community` directory and open the index.html file in your browser to view and navigate the documentation site.
+
+
 ### Run Antora to build the static website using the local documentation content
 
-The command provided in the previous section fetches documentation content of the products from their respective remote GitHub repositories. If you want the playbook to use the documentation content from your local machine instead you can do so with `product-docs-playbook-local.yml`.
+The command provided in the previous section fetches documentation content of the products from their respective remote GitHub repositories. If you want the playbook to use the documentation content from your local machine instead you can do so with `fleet-product-local-playbook.yml`.
 
 Clone all the individual product documentation Github repositories one level above the current playbook repository.
 
-As an example, run the command below to use the local `fleet-local-playbook.yml` file.
+As an example, run the command below to use the product `fleet-product-local-playbook.yml` file.
 
 ```console
-npx antora --fetch fleet-local-playbook.yml
+npx antora --fetch fleet-product-local-playbook.yml
+```
+
+To use community file, run:
+
+```console
+npx antora --fetch fleet-community-local-playbook.yml
 ```
 
 ### Makefile

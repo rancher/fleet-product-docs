@@ -1,0 +1,31 @@
+site:
+  title: Fleet
+  url: /
+  start_page: v0.13@fleet:en:index.adoc
+
+content:
+  sources:
+    - url: ./
+      start_paths: [versions/v0.13, versions/v0.12,versions/v0.11, versions/v0.10,versions/v0.9]
+      branches: HEAD
+
+ui:
+  bundle:
+    url: https://github.com/SUSEdoc/dsc-style-bundle/blob/main/default-ui/ui-bundle.zip?raw=true
+    snapshot: true
+  supplemental_files: ./community-supp-files
+
+asciidoc:
+  attributes:
+    page-pagination: ''
+    page-toclevels: 4@
+    product: fleet
+  extensions:
+    - '@asciidoctor/tabs'
+antora:
+  extensions:
+  - require: '@antora/lunr-extension'
+  - require: '@springio/antora-xref-extension'
+
+output:
+  dir: build/site-community

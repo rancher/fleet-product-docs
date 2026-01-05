@@ -69,7 +69,7 @@ If a non-empty repo, or a non-empty version is specified in this case, an error 
 
 A Helm chart can also be referenced through its repository and chart name, with an optional version, which may be a static version or a version constraint.
 
-In this case, polling can make sense, because referencing the chart using a repository allows Fleet to check the repository's ++index.yaml++ for available versions matching the ++version++ field.
+In this case, polling can make sense, because referencing the chart using a repository allows {product_name} to check the repository's ++index.yaml++ for available versions matching the ++version++ field.
 
 Example:
 

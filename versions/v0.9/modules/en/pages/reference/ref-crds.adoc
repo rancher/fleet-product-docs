@@ -82,7 +82,7 @@
 
 Bundle contains the resources of an application and its deployment options. It will be deployed as a Helm chart to target clusters.
 
-When a GitRepo is scanned it will produce one or more bundles. Bundles are a collection of resources that get deployed to one or more cluster(s). Bundle is the fundamental deployment unit used in Fleet. The contents of a Bundle may be Kubernetes manifests, Kustomize configuration, or Helm charts. Regardless of the source the contents are dynamically rendered into a Helm chart by the agent and installed into the downstream cluster as a Helm release.
+When a GitRepo is scanned it will produce one or more bundles. Bundles are a collection of resources that get deployed to one or more cluster(s). Bundle is the fundamental deployment unit used in {product_name}. The contents of a Bundle may be Kubernetes manifests, Kustomize configuration, or Helm charts. Regardless of the source the contents are dynamically rendered into a Helm chart by the agent and installed into the downstream cluster as a Helm release.
 
 |===
 | Field | Description | Scheme | Required
@@ -699,12 +699,12 @@ BundleDeployment is used internally by {product_name} and should not be used dir
 | false
 
 | namespaceLabels
-| NamespaceLabels are labels that will be appended to the namespace created by Fleet.
+| NamespaceLabels are labels that will be appended to the namespace created by {product_name}.
 | *map[string]string
 | false
 
 | namespaceAnnotations
-| NamespaceAnnotations are annotations that will be appended to the namespace created by Fleet.
+| NamespaceAnnotations are annotations that will be appended to the namespace created by {product_name}.
 | *map[string]string
 | false
 
@@ -1853,7 +1853,7 @@ CommitSpec specifies how to commit changes to the git repository
 
 === GitRepo
 
-GitRepo describes a git repository that is watched by Fleet. The resource contains the necessary information to deploy the repo, or parts of it, to target clusters.
+GitRepo describes a git repository that is watched by {product_name}. The resource contains the necessary information to deploy the repo, or parts of it, to target clusters.
 
 |===
 | Field | Description | Scheme | Required

@@ -41,5 +41,5 @@ Prevent empty Patch updates from Drift reconciler by https://github.com/aruiz14[
 
 [NOTE]
 ====
-Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.3[Fleet release v0.12.3]
+Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.12.3[{product_name} release v0.12.3]
 ====
