@@ -68,7 +68,7 @@ environment:
 	npm ci
 
 preview-community:
-	npx http-server $(FLEET_COMMUNITY_OUT)/site -c-1
+	npx http-server $(FLEET_COMMUNITY_OUT) -c-1
 
 preview-product:
-	npx http-server $(FLEET_PRODUCT_OUT)/site -c-1
+	npx http-server $(FLEET_PRODUCT_OUT) -c-1
