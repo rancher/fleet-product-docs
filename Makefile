@@ -22,7 +22,6 @@ local-community:
 	$(ANTORA) --version
 	./bin/switch-prod-comm community
 	$(ANTORA) $(ANTORA_OPTS) \
-		--to-dir $(FLEET_COMMUNITY_OUT) \
 		$(FLEET_COMMUNITY_PLAYBOOK) \
 		2>&1 | tee tmp/local-community-build.log 2>&1
 
@@ -31,7 +30,6 @@ local-product:
 	$(ANTORA) --version
 	./bin/switch-prod-comm product
 	$(ANTORA) $(ANTORA_OPTS) \
-		--to-dir $(FLEET_PRODUCT_OUT) \
 		$(FLEET_PRODUCT_PLAYBOOK) \
 		2>&1 | tee tmp/local-product-build.log 2>&1
 
@@ -45,7 +43,6 @@ remote-fleet:
 	$(ANTORA) --version
 	./bin/switch-prod-comm community
 	$(ANTORA) $(ANTORA_OPTS) \
-		--to-dir $(FLEET_COMMUNITY_OUT) \
 		$(FLEET_COMMUNITY_REMOTE_PLAYBOOK) \
 		2>&1 | tee tmp/remote-fleet-build.log 2>&1
 
@@ -55,7 +52,6 @@ remote-product:
 	$(ANTORA) --version
 	./bin/switch-prod-comm product
 	$(ANTORA) $(ANTORA_OPTS) \
-		--to-dir $(FLEET_PRODUCT_OUT) \
 		$(FLEET_PRODUCT_REMOTE_PLAYBOOK) \
 		2>&1 | tee tmp/remote-product-build.log 2>&1
 
