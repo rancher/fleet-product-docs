@@ -1,7 +1,7 @@
 site:
   title: Fleet
   url: /
-  start_page: v0.13@fleet:en:index.adoc
+  start_page: 0.13@fleet:en:index.adoc
 
 content:
   sources:
