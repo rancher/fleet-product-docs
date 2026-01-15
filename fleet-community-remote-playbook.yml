@@ -9,6 +9,9 @@ content:
       start_paths: [versions/v0.13, versions/v0.12,versions/v0.11, versions/v0.10,versions/v0.9]
       branches: HEAD
 
+urls:
+  html_extension_style: drop
+
 ui:
   bundle:
     url: https://github.com/SUSEdoc/dsc-style-bundle/blob/main/default-ui/ui-bundle.zip?raw=true
