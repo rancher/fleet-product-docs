@@ -11,7 +11,7 @@ BUILD_DIR          = build
 FLEET_COMMUNITY_OUT = $(BUILD_DIR)/site-community
 FLEET_PRODUCT_OUT   = $(BUILD_DIR)/site
 
-.PHONY: local local-community local-product remote remote-fleet remote-product clean environment preview-community preview-product
+.PHONY: local local-community local-product remote remote-community remote-product clean environment preview-community preview-product
 
 ## ---- Local builds (no npm ci) -----------------------------------------
 
@@ -20,7 +20,6 @@ local: local-community local-product
 local-community:
 	mkdir -p tmp
 	$(ANTORA) --version
-	./bin/switch-prod-comm community
 	$(ANTORA) $(ANTORA_OPTS) \
 		$(FLEET_COMMUNITY_PLAYBOOK) \
 		2>&1 | tee tmp/local-community-build.log 2>&1
@@ -28,7 +27,6 @@ local-community:
 local-product:
 	mkdir -p tmp
 	$(ANTORA) --version
-	./bin/switch-prod-comm product
 	$(ANTORA) $(ANTORA_OPTS) \
 		$(FLEET_PRODUCT_PLAYBOOK) \
 		2>&1 | tee tmp/local-product-build.log 2>&1
@@ -37,11 +35,10 @@ local-product:
 
 remote: remote-fleet remote-product
 
-remote-fleet:
+remote-community:
 	mkdir -p tmp
 	npm ci
 	$(ANTORA) --version
-	./bin/switch-prod-comm community
 	$(ANTORA) $(ANTORA_OPTS) \
 		$(FLEET_COMMUNITY_REMOTE_PLAYBOOK) \
 		2>&1 | tee tmp/remote-fleet-build.log 2>&1
@@ -50,7 +47,6 @@ remote-product:
 	mkdir -p tmp
 	npm ci
 	$(ANTORA) --version
-	./bin/switch-prod-comm product
 	$(ANTORA) $(ANTORA_OPTS) \
 		$(FLEET_PRODUCT_REMOTE_PLAYBOOK) \
 		2>&1 | tee tmp/remote-product-build.log 2>&1

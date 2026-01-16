@@ -29,11 +29,6 @@ jobs:
       - name: Install Antora and dependencies
         run: make environment
 
-      - name: Switch to community documentation context
-        run: |
-          chmod +x bin/switch-prod-comm
-          bin/switch-prod-comm community
-
       - name: Build community site
         run: |
           set -o pipefail
@@ -73,11 +68,6 @@ jobs:
 
       - name: Install Antora and dependencies
         run: make environment
-
-      - name: Switch to product documentation context
-        run: |
-          chmod +x bin/switch-prod-comm
-          bin/switch-prod-comm product
 
       - name: Build product site
         run: |
