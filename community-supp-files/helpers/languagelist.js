@@ -1,8 +1,11 @@
 'use strict'
 
 const modules = new Set()
-const extractModuleFromURL = (url) => url.split('/')[3] || null
-
+const extractModuleFromURL = (url, componentName) => {
+  const position = (componentName === 'ROOT') ? 2 : 3
+  const value = url.split('/')[position] || null
+  return value
+}
 const languagesList = [
   { id: 'en', image: 'engFlag.svg', class: 'english', label: 'English' },
   { id: 'zh', image: 'china.svg', class: 'china', label: '中文' },
