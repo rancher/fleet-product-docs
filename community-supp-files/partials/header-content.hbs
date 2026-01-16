@@ -48,20 +48,19 @@
                class="slack-icon" />
         </a>
         <a href="https://rancher-users.slack.com/channels/fleet" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-slack-link" aria-label="Slack Channel"></a>
+        <!-- DISABLE LANGUAGESELECTOR - SINGLE LANGUAGE PROJECT
         <div class="navbar-item has-dropdown is-hoverable">
           <div class="navbar-link"><img src="{{uiRootPath}}/img/language.png" class="langIcon Language" alt="Language"
               title="Language"></div>
           <div class="navbar-dropdown">
-            <!--  </div><div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
             {{#each (languagelist page.navigation uiRootPath)}}
               <a role="button" class="navbar-item" id="{{./id}}" onclick="selectLanguage(this.id)">
-                <!--<img src="{{./uiRootPath}}/img/{{./image}}" class="langIcon {{./class}}">-->
                 &nbsp;{{./label}}
               </a>
             {{/each}}
-            <!-- LANGUAGESELECTOR -->
           </div>
         </div>
+        -->
         <!--
         <div class="navbar-item">
           <a href="https://twitter.com/SUSE">
