@@ -1441,3 +1441,23 @@ nav.pagination a {
   }
 }
 
+/* Normalize icon sizing */
+.header-icon {
+  width: 22px;
+  height: 22px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Center icons vertically in navbar */
+.header-icon-container {
+  display: flex !important;
+  align-items: center;
+  height: 100%;
+}
+
+/* Remove Bulma offset from dropdown link */
+.navbar-link.header-icon-container {
+  padding-top: 0;
+  padding-bottom: 0;
+}
