@@ -1,12 +1,12 @@
 site:
   title: Fleet
   url: /
-  start_page: 0.13@ROOT:ROOT:index.adoc
+  start_page: 0.13@fleet:en:index.adoc
 
 content:
   sources:
     - url: ./
-      start_paths: [community-docs/v0.13, community-docs/v0.12,community-docs/v0.11, community-docs/v0.10,community-docs/v0.9]
+      start_paths: [versions/v0.13, versions/v0.12,versions/v0.11, versions/v0.10,versions/v0.9]
       branches: HEAD
 
 urls:

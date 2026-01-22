@@ -27,48 +27,41 @@
       </button>
     </div>
     <div class="navbar-end">
-      <div class="navbar-item has-dropdown is-hoverable header-icon-container">
-        <div class="navbar-link header-icon-container">
-          <img src="{{uiRootPath}}/img/github_logo.svg"
-               alt="Resources"
-               title="Resources"
-               class="header-icon github-icon">
+        <div class="navbar-item has-dropdown is-hoverable">
+          <div class="navbar-link">
+            <img src="{{uiRootPath}}/img/github_logo.svg" class="langIcon Resurces" alt="Resources" title="Resources">
+          </div>
+          <div class="navbar-dropdown">
+            <a class="navbar-item" href="https://github.com/rancher/fleet"><i
+                class="fab fa-github"></i>&nbsp;Fleet&nbsp;<i class="fas fa-external-link-alt"></i></a>
+            <a class="navbar-item" href="https://github.com/rancher/fleet-product-docs"><i
+                class="fab fa-github"></i>&nbsp;Fleet docs&nbsp;<i class="fas fa-external-link-alt"></i></a>
+          </div>
         </div>
-      
-        <div class="navbar-dropdown">
-          <a class="navbar-item" href="https://github.com/rancher/fleet">
-            <i class="fab fa-github"></i>&nbsp;Fleet&nbsp;<i class="fas fa-external-link-alt"></i>
-          </a>
-          <a class="navbar-item" href="https://github.com/rancher/fleet-product-docs">
-            <i class="fab fa-github"></i>&nbsp;Fleet docs&nbsp;<i class="fas fa-external-link-alt"></i>
-          </a>
-        </div>
-      </div>
-      
-      <a href="https://rancher-users.slack.com/channels/fleet"
-         target="_blank"
-         rel="noopener noreferrer"
-         class="navbar-item header-icon-container"
-         aria-label="Slack Channel">
-        <img src="{{uiRootPath}}/img/slack.svg"
-             alt="Slack"
-             class="header-icon slack-icon" />
-      </a>
-
+        <a href="https://rancher-users.slack.com/channels/fleet"
+           target="_blank"
+           rel="noopener noreferrer"
+           class="navbar-item header-slack-link"
+           aria-label="Slack Channel">
+          <img src="{{uiRootPath}}/img/slack.svg"
+               alt="Slack"
+               class="slack-icon" />
+        </a>
         <a href="https://rancher-users.slack.com/channels/fleet" target="_blank" rel="noopener noreferrer" class="navbar__item navbar__link header-slack-link" aria-label="Slack Channel"></a>
-         <!-- DISABLE LANGUAGESELECTOR - SINGLE LANGUAGE PROJECT
         <div class="navbar-item has-dropdown is-hoverable">
           <div class="navbar-link"><img src="{{uiRootPath}}/img/language.png" class="langIcon Language" alt="Language"
               title="Language"></div>
           <div class="navbar-dropdown">
+            <!--  </div><div>Icons made by <a href="https://www.flaticon.com/authors/freepik" title="Freepik">Freepik</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div> -->
             {{#each (languagelist page.navigation uiRootPath)}}
               <a role="button" class="navbar-item" id="{{./id}}" onclick="selectLanguage(this.id)">
+                <!--<img src="{{./uiRootPath}}/img/{{./image}}" class="langIcon {{./class}}">-->
                 &nbsp;{{./label}}
               </a>
             {{/each}}
+            <!-- LANGUAGESELECTOR -->
           </div>
         </div>
-        -->
         <!--
         <div class="navbar-item">
           <a href="https://twitter.com/SUSE">
@@ -76,20 +69,9 @@
           </a>
         </div>
         -->
-        <div class="navbar-item has-dropdown is-hoverable">
-          <div class="navbar-link"><img src="{{uiRootPath}}/img/language.png" class="langIcon Language" alt="Language"
-              title="Language"></div>
-          <div class="navbar-dropdown">
-            {{#each (languagelist page.navigation uiRootPath)}}
-              <a role="button" class="navbar-item" id="{{./id}}" onclick="selectLanguage(this.id)">
-                <!--<img src="{{./uiRootPath}}/img/{{./image}}" class="langIcon {{./class}}">-->
-                &nbsp;{{./label}}
-              </a>
-            {{/each}}
-          </div>
-        </div>
       </div>
     </div>
+
     <!--   <div id="topbar-nav" class="navbar-menu">
       <div class="navbar-end">
 
@@ -111,6 +93,6 @@
           </span>
         </div>
       </div> -->
- </div>
+    </div>
   </nav>
 </header>
