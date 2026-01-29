@@ -2,7 +2,23 @@
 
 ## Build the Documentation site
 
-The repository uses [Antora Playbooks](https://docs.antora.org/antora/latest/) to locally or remotely build the AsciiDoc content into a static website.
+The repository uses [Antora Playbooks](https://docs.antora.org/antora/latest/) to locally or remotely build the AsciiDoc content into a static website. 
+
+This repository contains both community and product documentation.
+
+* `main` branch contains community documentation.
++
+--
+* Source files: `community-docs/`
+* Generated site: `site-community/`
+--
+
+* `product-docs` contains product documentation.
++
+--
+* Source files: `versions/`
+* Generated site: `site/` in `main` branch.
+--
 
 ### Prerequisites
 
@@ -40,7 +56,7 @@ This playbook repository uses a [git submodule](https://git-scm.com/book/en/v2/G
 git submodule update --init
 ```
 
-This repository uses the `main` branch for community updates and the `dsc-single-source` branch for product documentation updates in the playbooks.
+This repository uses the `main` branch for community updates and the `product-docs` branch for product documentation updates in the playbooks.
 
 ### Install node modules
 
