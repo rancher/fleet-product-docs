@@ -2,7 +2,16 @@
 
 ## Build the Documentation site
 
-The repository uses [Antora Playbooks](https://docs.antora.org/antora/latest/) to locally or remotely build the AsciiDoc content into a static website.
+The repository uses [Antora Playbooks](https://docs.antora.org/antora/latest/) to locally or remotely build the AsciiDoc content into a static website. 
+
+This repository contains both community and product documentation.
+
+* `main` branch contains community documentation.
+    * Source files: `community-docs/`
+    * Generated site: `build/site-community/`
+* `product-docs` contains product documentation.
+    * Source files: `versions/`
+    * Generated site: `build/site/`
 
 ### Prerequisites
 
@@ -40,14 +49,14 @@ This playbook repository uses a [git submodule](https://git-scm.com/book/en/v2/G
 git submodule update --init
 ```
 
-This repository uses the `main` branch for community updates and the `dsc-single-source` branch for product documentation updates in the playbooks.
+This repository uses the `main` branch for community updates and the `product-docs` branch for product documentation updates in the playbooks.
 
 ### Install node modules
 
 Open a terminal at the root of the git repository. Run the command below.
 
 ```console
-npm install
+make environment
 ```
 
 ### Run Antora to build the static website
@@ -55,7 +64,7 @@ npm install
 As a local example, run the command below to build the product site:
 
 ```console
-npx antora --fetch fleet-product-local-playbook.yml
+make remote-product
 ```
 
 Navigate to the `./build/site` directory and open the index.html file in your browser to view and navigate the documentation site.
@@ -69,7 +78,7 @@ make preview
 To build the community site, run:
 
 ```console
-npx antora --fetch fleet-community-local-playbook.yml
+make remote-community
 ```
 
 Navigate to the `./build/site-community` directory and open the index.html file in your browser to view and navigate the documentation site.
@@ -84,13 +93,13 @@ Clone all the individual product documentation Github repositories one level abo
 As an example, run the command below to use the product `fleet-product-local-playbook.yml` file.
 
 ```console
-npx antora --fetch fleet-product-local-playbook.yml
+make local-product
 ```
 
 To use community file, run:
 
 ```console
-npx antora --fetch fleet-community-local-playbook.yml
+make local-community
 ```
 
 ### Makefile
