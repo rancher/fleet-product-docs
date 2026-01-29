@@ -1,0 +1,12 @@
+name: ROOT
+title: Fleet
+version: '0.10'
+display_version: '0.10'
+start_page: index.adoc
+asciidoc:
+  attributes:
+    product_name: Fleet
+    build-type: community
+nav:
+  - modules/ROOT/nav.adoc
+
