@@ -1,0 +1,168 @@
+= Install and Use Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+{product_name} CLI is a command-line interface (CLI) that allows you to interact directly with {product_name} from your local machine. It enables you to create, apply, and inspect `bundles` without requiring a `GitRepo`. Typical use cases include:
+
+* Testing and previewing bundle contents.
+* Creating bundles directly from Helm charts, Kubernetes manifests, and `fleet.yaml` files.
+* Checking which clusters a bundle would target.
+* Validating deployments without installing {product_name} in the cluster.
+
+[NOTE]
+====
+You can use `fleet apply` without installing {product_name} in your clusters. However, for cluster interaction (for example, `fleet target`, `fleet deploy`), {product_name} must be installed.
+
+For more information, see xref:how-tos-for-operators/installation.adoc[Install Fleet].
+====
+
+== Install Fleet CLI
+
+Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases[Fleet GitHub releases page].
+
+=== Linux/macOS
+
+[source,bash]
+----
+curl -L -o fleet https://github.com/rancher/fleet/releases/latest/download/fleet-linux-amd64
+
+# Make it executable and move to PATH
+chmod +x fleet
+sudo mv fleet /usr/local/bin/
+----
+
+=== Windows (PowerShell)
+
+[source,powershell]
+----
+Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
+----
+
+=== Verify installation
+
+[source,bash]
+----
+fleet --version
+----
+
+== Prerequisites
+
+Make sure you have the following tools installed and configured:
+
+* A working Kubernetes cluster (for example, k3s, kind, or a cloud provider).
+* `kubectl` is configured for your cluster.
+* Helm is installed.
+* Fleet CLI is installed and accessible in your terminal.
+
+=== Verify prerequisites
+
+[source,bash]
+----
+kubectl get nodes
+helm version
+fleet --version
+----
+
+== Key Commands
+
+{product_name} provides several CLI commands to create, preview, and deploy bundles. These commands are useful for debugging and understanding the bundle lifecycle.
+
+* `fleet apply`: Creates or previews a bundle from local files, such as a Helm chart, Kubernetes manifests, or kustomize folders.  
+This command does not require access to a cluster, so it works even without {product_name} or `kubectl` installed.
++
+Example:
+[source,bash]
+----
+fleet apply my-bundle ./manifests
+----
+* `fleet target`: Reads a bundle file and evaluates which clusters would receive it, based on selectors and targeting rules such as `targets`, `targetOverrides`, `clusterGroups`, and label selectors.
++
+Example:
+[source,bash]
+----
+fleet target my-bundle ./manifests
+----
+* `fleet deploy`: Takes the output of `fleet target`, or a dumped `bundledeployment`/content resource, and deploys it to a cluster—just like `fleet-agent` would.
++
+You can use it in these scenarios:
+** `fleet apply -o - name ./folder` to check the YAML of the bundle before creating it. For more information, see xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Examining the Bundle Lifecycle with the CLI].
+** Use with a target to debug selectors and verify which downstream clusters are targeted.
+** `fleet deploy --dry-run` to print resources that would be deployed, without applying them.
+
+image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
+
+== Deploy a Sample Bundle Using Fleet CLI
+
+You can deploy workloads without using GitRepos by applying them locally with the CLI. For example, use the link:https://github.com/rancher/fleet-examples[{product_name} examples repository]:
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-examples
+cd fleet-examples/single-cluster
+----
+
+Apply it to the current cluster:
+
+[source,bash]
+----
+fleet apply -o my-cool-bundle manifests
+----
+
+This command creates a `Bundle` resource in the namespace.
+
+== Convert a Helm Chart into a Bundle
+
+You can use Fleet CLI to convert a Helm chart into a bundle. For example, to convert the *external-secrets* operator chart:
+
+[source,bash]
+----
+cat > targets.yaml <<EOF
+targets:
+- clusterSelector: {}
+EOF
+
+mkdir app
+cat > app/fleet.yaml <<EOF
+defaultNamespace: external-secrets
+helm:
+  repo: https://charts.external-secrets.io
+  chart: external-secrets
+EOF
+
+fleet apply --compress --targets-file=targets.yaml -n fleet-default -o - external-secrets app > eso-bundle.yaml
+
+kubectl apply -f eso-bundle.yaml
+----
+
+Make sure you use a cluster selector in `targets.yaml` that matches all clusters you want to deploy to.
+
+For more information, refer to link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[{product_name}: Multi-Cluster Deployment with the Help of External Secrets].
+
+== Troubleshooting
+
+If the bundle is not ready:
+
+* Check if `fleet-controller` and `fleet-agent` pods are running.
+* Make sure the `fleet-local` cluster is registered.
+* Inspect the bundle for error messages:
++
+[source,bash]
+----
+kubectl describe bundle -n fleet-local <bundle-name>
+----
+* Delete and reapply the bundle if you encounter Helm ownership conflicts.
+
+=== Verify Agent and Controller Status
+
+Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
+For more information, see xref:reference/ref-registration.adoc#fleet-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+
+If a bundle is not ready on a given cluster, check the following:
+
+* On the management cluster:
+** Verify that the `fleet-controller` and `gitjob` pods (or `helmops`, depending on your setup) are running.
+** Ensure the cluster status shows *Ready*.
+** Check the status of the bundle—it should contain an error message if deployment failed.
+* On the target cluster where the bundle isn’t ready:
+** Verify that this target cluster is registered and has a running `fleet-agent` pod.
+** As a last resort, check the logs of the `fleet-agent` pod.

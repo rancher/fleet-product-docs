@@ -1,0 +1,30 @@
+= Key Personas and Their Roles
+:revdate: 2025-05-30
+:page-revdate: {revdate}
+
+[cols="1,2,2", options="header"]
+|===
+|Persona |Responsibilities |Key Benefits
+
+|Platform Engineers
+a|* Set up and manage {product_name} installation across clusters.
+* Define and enforce multi-cluster application and policy deployments.
+* Manage GitRepo and `fleet.yaml` configurations.
+* Perform cluster-wide updates and rollbacks.
+a|* Centralized control across clusters.
+* Improved standardization and compliance.
+
+|Application Developers
+a|* Structure application Helm charts or manifests in Git.
+* Define deployment targets and environments in `fleet.yaml`.
+* Monitor deployment status via UI or CLI.
+a|* GitOps-based workflows.
+* Faster, automated, and consistent deployments across environments.
+
+|Security Administrators
+a|* Define and enforce security policies as code.
+* Deploy security tools and configurations.
+* Audit and manage security posture across clusters.
+a|* Reduced risk and centralized compliance management.
+* Automated, consistent security configuration.
+|===

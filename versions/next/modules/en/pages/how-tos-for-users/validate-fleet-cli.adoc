@@ -1,0 +1,67 @@
+= Validate Fleet CLI Deployment
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+After applying a bundle using Fleet CLI, you can validate the deployment by inspecting the `Bundle` and its associated `BundleDeployments`.
+
+Each {product_name}-managed cluster lists:
+
+* Which bundles are deployed to it.  
+* Their readiness status.  
+* Any errors or synchronization issues.
+
+To validate whether your `fleet apply` created a bundle and whether it was deployed to the correct number of targets, run:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -A
+----
+
+image::validate-deployment-ss.png[A screenshot showing validation of the {product_name} deployment]
+
+You’ll see the following fields:
+
+* `BUNDLEDEPLOYMENTS-READY` — Shows how many targets are ready out of the total.  
+* `STATUS` — May show *Ready*, *Modified*, or other conditions based on the rollout.
+
+[NOTE]
+====
+If `BUNDLEDEPLOYMENTS-READY` shows `1/1`, the bundle is successfully deployed to one cluster.
+====
+
+To get a detailed view of how the bundle was rendered and applied, run:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -n fleet-local my-nginx-bundle -o yaml
+----
+
+Look for the following fields in the `status` section:
+
+[source,yaml]
+----
+status:
+  display:
+    readyClusters: 1/1
+  summary:
+    desiredReady: 1
+    ready: 1
+  conditions:
+    type: Ready
+    status: "True"
+----
+
+This indicates that:
+
+* The bundle was scheduled for one cluster.  
+* The target cluster acknowledged and applied the resources.  
+* The controller marked the deployment as ready.
+
+You can also verify the corresponding `BundleDeployment` object, since each `BundleDeployment` corresponds to a target cluster:
+
+[source,bash]
+----
+kubectl get bundledeployments.fleet.cattle.io -A
+----
+
+For more information, see xref:reference/ref-status-fields.adoc[Status Fields].
