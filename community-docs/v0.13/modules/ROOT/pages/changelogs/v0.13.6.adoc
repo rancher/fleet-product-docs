@@ -1,0 +1,61 @@
+= v0.13.6
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:page-date: 2025-12-12 14:47:18 +0000 UTC
+
+
+_(github-actions[bot]) released this 2025-12-12 14:47:18 +0000 UTC_
+
+
+== What's Changed
+* Webhooks in azure devops should support spaces and old URL formats in https://github.com/rancher/fleet/pull/4308
+* Add configurable concurrent bundle creation routines to fleet apply by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/4382
+* Reuse transports with same settings for Fleet CLI by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/4411
+* Update k8s dependencies to v0.33.7 (release/v0.13) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4422
+* Update dependency go to v1.24.11 (release/v0.13) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4403
+* Update golang.org/x/crypto to v0.45.0 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4417
+
+_Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.5...v0.13.6[v0.13.5...v0.13.6]
+
+
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-0.13.6.tgz[fleet-0.13.6.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-agent-0.13.6.tgz[fleet-agent-0.13.6.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-crd-0.13.6.tgz[fleet-crd-0.13.6.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet_0.13.6_checksums.txt[fleet_0.13.6_checksums.txt]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-benchmark-darwin-arm64[fleet-benchmark-darwin-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-benchmark-linux-amd64[fleet-benchmark-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-benchmark-windows-amd64.exe[fleet-benchmark-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-darwin-arm64[fleet-darwin-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-benchmark-linux-arm64[fleet-benchmark-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.13.6/fleet-linux-arm64[fleet-linux-arm64]
+
+
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.13.6[{product_name} v0.13.6]_
+
