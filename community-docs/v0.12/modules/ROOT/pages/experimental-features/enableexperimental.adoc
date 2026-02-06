@@ -12,7 +12,7 @@ Currently, {product_name} has OCI storage as an experimental feature.
 
 === Enabling when installing {product_name} stand-alone
 
-All you need to do is to pass something like:
+When installing {product_name}, pass something similar to the following to your helm install or update command:
 
 [,bash]
 ----
