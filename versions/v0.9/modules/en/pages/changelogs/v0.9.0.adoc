@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :date: 2023-11-07 12:30:45 +0000 UTC
 
-* (rancherio-gh-m) released this 2023-11-07 12:30:45 +0000 UTC*
+*(rancherio-gh-m) released this 2023-11-07 12:30:45 +0000 UTC*
 
 == Release Note
 

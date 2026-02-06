@@ -1,0 +1,42 @@
+= v0.9.15
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:date: 2025-02-20 13:13:14 +0000 UTC
+
+*(github-actions[bot]) released this 2025-02-20 13:13:14 +0000 UTC*
+
+== What's Changed
+* Bump gitjob to v0.9.21 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3378
+
+_Full Changelog_: https://github.com/rancher/fleet/compare/v0.9.14-rc.1...v0.9.15[v0.9.14\...v0.9.15]
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-agent-0.9.15.tgz[fleet-agent-0.9.15.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-crd-0.9.15.tgz[fleet-crd-0.9.15.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-0.9.15.tgz[fleet-0.9.15.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet_0.9.15_checksums.txt[fleet_0.9.15_checksums.txt]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-linux-arm64[fleet-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.15/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.15[{product_name} v0.9.15]_
+

@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :date: 2024-11-15 15:19:27 +0000 UTC
 
-* (github-actions[bot]) released this 2024-11-15 15:19:27 +0000 UTC*
+*(github-actions[bot]) released this 2024-11-15 15:19:27 +0000 UTC*
 
 == Release Note
 

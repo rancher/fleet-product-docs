@@ -1,0 +1,122 @@
+---
+title: "v0.14.0"
+date: "2025-11-18 14:56:48 +0000 UTC"
+---
+
+
+_(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
+
+
+== Notable changes
+
+* Auth through Github Apps is now supported xref:how-tos-for-users/gitrepo-add.adoc#_using_a_github_app[Add a GitRepo], courtesy of https://github.com/hmrks[@hmrks] in #3809
+* The agent supports Priority Classes and Pod Disruption Budgets (support for this in Rancher is underway),  by https://github.com/p-se[@p-se] in #4057
+* Experimental features:
+    * GitOps deployments can be scheduled, through a new `Schedule` CRD xref:experimental-features/scheduling.adoc[Scheduling] by https://github.com/0xavi0[@0xavi0] in #4184
+    * Config maps and secrets can be created once, and copied to all downstream clusters through a new `downstreamResources` field xref:experimental-features/experimental-downstream-resource.adoc[Experimental downstream resources] by https://github.com/weyfonk[@weyfonk] in #4236
+
+== Additions
+
+- Use a scheduler for gitops polling, making it more robust, no longer relying on an implementation detail of the `controller-runtime` queue, by https://github.com/0xavi0[@0xavi0] in #4257
+- Support graceful agent shutdown by https://github.com/weyfonk[@weyfonk] in #3918
+
+=== Helm and Git Authentication
+- Support globbing in HelmSecretForPaths by https://github.com/weyfonk[@weyfonk] xref:how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Add a GitRepo] in #3815 and #4158
+- Adds InsecureTLS and BasicHTTP to helm secret by https://github.com/0xavi0[@0xavi0] in #3872
+- Support git auth with access token (username is now optional) by https://github.com/weyfonk[@weyfonk] in #4139
+
+=== Configuration
+- CLI arguments to disable leader election by https://github.com/p-se[@p-se] in #3891
+- Add affinity arg to helm chart values by https://github.com/manno[@manno] in #4145
+- Add resources constraints section to helm chart values by https://github.com/manno[@manno] in #4170
+
+=== Traceability of created resources
+- Add userID to log messages by https://github.com/thardeck[@thardeck] in #4202
+
+== Bugfixes
+
+- Webhooks in azure devops now support spaces and older URL formats, courtesy of https://github.com/matteotumiati[@matteotumiati] in #4060
+- `not logged in` auth errors should now be history thanks to https://github.com/0xavi0[@0xavi0] in #3938
+- Inconsistencies in GitRepo status resources have been fixed by https://github.com/p-se[@p-se] in #3890
+
+=== HelmOps
+- Fix support for `v*` Helm versions by https://github.com/0xavi0[@0xavi0] in #3955
+- Support semver constraints with OCI polling in HelmOps by https://github.com/weyfonk[@weyfonk] in #3963
+- Adds basicHTTP to HelmOps when using OCI registries by https://github.com/0xavi0[@0xavi0] in #3990
+
+=== Optimising bundle contents
+- Fleet config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning (see warning block xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
+- Harden values files exclusion from bundle resources by https://github.com/weyfonk[@weyfonk] in #3960
+
+=== Errors and reporting
+- Improve bundle and GitRepo status error reporting by https://github.com/weyfonk[@weyfonk] in #4167
+- Bundle controller continues when one bundledeployment cannot be created by https://github.com/manno[@manno] in #4074
+- Remove HTML response body from HelmOps errors by https://github.com/weyfonk[@weyfonk] in #4129
+- Add erroneous resource to perClusterState by https://github.com/p-se[@p-se] in #4116
+- Improve Bundle Value Secret Logging by https://github.com/manno[@manno] in #4026
+- Don't add same field multiple times to logger by https://github.com/manno[@manno] in #4156
+
+=== Better management of Fleet resources
+- Deletes the cluster's namespace on Cluster deletion by https://github.com/0xavi0[@0xavi0] in #4224
+- Track UID of existing bundle deployment to prevent orphaning on failure by https://github.com/thardeck[@thardeck] in #4276
+- Avoids returning an error when deleting OCI artifacts by https://github.com/0xavi0[@0xavi0] in #4221
+- Limit PerClusterState to less than 1mb by https://github.com/manno[@manno] in #4160
+- Explicitly delete bundle secrets on bundle deletion by https://github.com/manno[@manno] in #4146
+- Fleet apply refuses to update bundle scheduled for deletion by https://github.com/manno[@manno] in #4075
+- Don't requeue for missing resources by https://github.com/manno[@manno] in #4172
+- Prevent bundle reconciles triggered by bundle status updates by https://github.com/weyfonk[@weyfonk] in #4171
+- Stuck helm release in pending-install are replaced (SURE-10627) by https://github.com/manno[@manno] in #4051
+- Fix copying of helm secrets to downstream clusters by https://github.com/0xavi0[@0xavi0] in #3983
+- Fix hash mismatch error in bundles by https://github.com/0xavi0[@0xavi0] in #3917
+
+== What's Changed
+
+_Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.5...v0.14.0[v0.13.5...v0.14.0]
+
+== New Contributors
+
+- https://github.com/matteotumiati[@matteotumiati] made their first contribution in #4060
+- https://github.com/hmrks[@hmrks] made their first contribution in #3809
+
+
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-agent-0.14.0.tgz[fleet-agent-0.14.0.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-crd-0.14.0.tgz[fleet-crd-0.14.0.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-0.14.0.tgz[fleet-0.14.0.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet_0.14.0_checksums.txt[fleet_0.14.0_checksums.txt]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-benchmark-linux-amd64[fleet-benchmark-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-benchmark-linux-arm64[fleet-benchmark-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-benchmark-darwin-arm64[fleet-benchmark-darwin-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-linux-arm64[fleet-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-darwin-arm64[fleet-darwin-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.14.0/fleet-benchmark-windows-amd64.exe[fleet-benchmark-windows-amd64.exe]
+
+
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.14.0[{product_name} v0.14.0]_
+
