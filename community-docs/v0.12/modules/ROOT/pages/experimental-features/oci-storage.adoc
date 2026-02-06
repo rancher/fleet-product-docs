@@ -12,7 +12,8 @@ When using this feature the bundle resources are stored once, in the configured 
 
 This may be helpful for users who need to store big `Bundles`, and could also be seen as the first step for an `OCIOps` feature in the future.
 
-Once the OCI registry is enabled, {product_name} will use it as the source for storing `Bundle` resources. 
+Once the OCI registry is enabled, {product_name} will use it as the source for storing `Bundle` resources.
+ 
 When {product_name} can't access the OCI registry, it won't fall back to default `etcd` storage. Instead, it will log errors so they can be fixed.
 
 == Configuring the OCI registry
