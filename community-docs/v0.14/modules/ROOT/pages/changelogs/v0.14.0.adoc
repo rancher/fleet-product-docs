@@ -13,7 +13,7 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 * The agent supports Priority Classes and Pod Disruption Budgets (support for this in Rancher is underway),  by https://github.com/p-se[@p-se] in #4057
 * Experimental features:
     * GitOps deployments can be scheduled, through a new `Schedule` CRD xref:experimental-features/scheduling.adoc[Scheduling] by https://github.com/0xavi0[@0xavi0] in #4184
-    * Config maps and secrets can be created once, and copied to all downstream clusters through a new `downstreamResources` field xref:experimental-features/experimental-downstream-resources.adoc[Experimental downstream resources] by https://github.com/weyfonk[@weyfonk] in #4236
+    * Config maps and secrets can be created once, and copied to all downstream clusters through a new `downstreamResources` field xref:experimental-features/experimental-downstream-resource.adoc[Experimental downstream resources] by https://github.com/weyfonk[@weyfonk] in #4236
 
 == Additions
 
