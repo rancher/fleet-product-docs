@@ -2,7 +2,6 @@ name: ROOT
 title: Fleet
 version: '0.14'
 display_version: '0.14'
-prerelease: -dev
 start_page: index.adoc
 asciidoc:
   attributes:
