@@ -223,7 +223,7 @@ Refer to Rancher's {product_name} docs for more information.
 
 The available fields are documented in the xref::/reference/ref-fleet-yaml.adoc[fleet.yaml reference].
 For a private Helm repo, users can reference a secret from the git repo resource.
-See xref:/how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
+See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 == Using Helm Values
 
@@ -336,7 +336,7 @@ targetCustomizations:
 - name: prod
   clusterName: fleetname
 ----
-See xref:/how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customization per cluster].
+See xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customization per cluster].
 
 == Raw YAML Resource Customization
 

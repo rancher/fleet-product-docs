@@ -1,0 +1,47 @@
+= v0.9.18
+:revdate: 2025-04-07
+:page-revdate: {revdate}
+:date: 2025-05-16 12:14:19 +0000 UTC
+
+
+*(github-actions[bot]) released this 2025-05-16 12:14:19 +0000 UTC*
+
+
+== What's Changed
+* Bump go mods by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3674
+
+
+_Full Changelog_: https://github.com/rancher/fleet/compare/v0.9.17...v0.9.18[v0.9.17\...v0.9.18]
+
+
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-agent-0.9.18.tgz[fleet-agent-0.9.18.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-0.9.18.tgz[fleet-0.9.18.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-crd-0.9.18.tgz[fleet-crd-0.9.18.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet_0.9.18_checksums.txt[fleet_0.9.18_checksums.txt]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-linux-arm64[fleet-linux-arm64]
+
+
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.18[{product_name} v0.9.18]_
+

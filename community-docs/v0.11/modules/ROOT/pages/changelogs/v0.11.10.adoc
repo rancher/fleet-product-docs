@@ -1,0 +1,47 @@
+= v0.11.10
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:page-date: 2025-08-22 12:43:07 +0000 UTC
+
+*Released on 2025-08-22 12:43:07 +0000 UTC by `github-actions[bot]`.*
+
+== What's Changed
+* Harden values files exclusion from bundle resources by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3962
+* Update dependency go to v1.23.12 (release/v0.11) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3969
+* chore(deps): update gomod-k8s-dependencies to v0.31.12 (release/v0.11) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3996
+* chore(deps): update module k8s.io/kubernetes to v1.31.12 (release/v0.11) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4005
+
+
+_Full Changelog_: https://github.com/rancher/fleet/compare/v0.11.9...v0.11.10[v0.11.9...v0.11.10]
+
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet-0.11.10.tgz[fleet-0.11.10.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet-agent-0.11.10.tgz[fleet-agent-0.11.10.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet-crd-0.11.10.tgz[fleet-crd-0.11.10.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet_0.11.10_checksums.txt[fleet_0.11.10_checksums.txt]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet-linux-arm64[fleet-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.11.10/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.11.10[{product_name} release v0.11.10]_
+
