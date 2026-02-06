@@ -17,7 +17,7 @@ _(github-actions[bot]) released this 2025-07-23 15:09:14 +0000 UTC_
 
 == Additions
 
-* Fleet now supports a new, user-driven bundle scan method, for more flexibility. The usual scanning method is still supported xref:how-tos-for-users/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alterate scan]), by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3480
+* Fleet now supports a new, user-driven bundle scan method, for more flexibility. The usual scanning method is still supported xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alterate scan], by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3480
 * Replica counts are now configurable, for controllers as well as agents xref:how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[Controller and agent replicas], by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3457
 * Fleet can now handle a separate webhook secret for each GitRepo xref:how-tos-for-users/webhook.adoc#option-2-configure-secret[Define a secret for each GitRepo], by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3490
 * Fleet charts support extra labels and annotations, propagating them to controller deployments by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3531 and by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3664
