@@ -40,6 +40,6 @@ The parameters are the same, but you have to add the `fleet.` prefix.
 
 == Available experimental features
 
-Right now {product_name} supports the following experimental features:
+Currently, {product_name} supports the following experimental features:
 
 * xref:experimental-features/oci-storage.adoc[`EXPERIMENTAL_OCI_STORAGE`]
