@@ -69,4 +69,4 @@
 ** xref:reference/ref-schedule.adoc[Schedule Resource reference]
 
 * Changelog
-** xref:changelogs/v0.13.0.adoc[v0.13.0]
+** xref:changelogs/v0.14.0.adoc[v0.14.0]
