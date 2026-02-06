@@ -260,6 +260,7 @@ However, from {product_name} v0.14.0 onwards, they can also be referenced throug
 automatically propagated to targeted downstream clusters.
 
 Refer to xref:/experimental-features/experimental-downstream-resource.adoc[experimental downstream resources] for more information.
+====
 
 Example ConfigMap:
 
