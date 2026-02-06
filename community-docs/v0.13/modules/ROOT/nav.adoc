@@ -65,8 +65,8 @@
 * Experimental Features
 ** xref:experimental-features/enableexperimental.adoc[Enable Experimental Features]
 ** xref:experimental-features/scheduling.adoc[Scheduling]
-** xref:experimental-features/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
-** xref:reference/ref-schedule.adoc[Schedule Resource reference]
+** xref:experimental-features/experimental-downstream-resource.adoc[Automated Propagation of Resources to Downstream Clusters]
+** xref:reference/ref-schedule.adoc[Schedule Resource Reference]
 
 * Changelog
 ** xref:changelogs/v0.13.0.adoc[v0.13.0]
