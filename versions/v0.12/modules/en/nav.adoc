@@ -72,9 +72,7 @@
 ** xref:changelogs/v0.12.8.adoc[v0.12.8]
 ** xref:changelogs/v0.12.9.adoc[v0.12.9]
 ** xref:changelogs/v0.12.10.adoc[v0.12.10]
-** xref:changelogs/v0.12.11.adoc[v0.12.11]
-** xref:changelogs/v0.12.12.adoc[v0.12.12 (latest)]
-
+** xref:changelogs/v0.12.11.adoc[v0.12.11 (latest)]
 
 * Experimental Features
 ** xref:experimental-features/enableexperimental.adoc[How to Enable Experimental Features]
