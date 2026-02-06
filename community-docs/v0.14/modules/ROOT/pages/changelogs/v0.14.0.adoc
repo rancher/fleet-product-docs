@@ -9,10 +9,10 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 
 == Notable changes
 
-* Auth through Github Apps is now supported xref:how-tos-for-users/gitrepo-add.adoc#using-a-github-app[Add a GitRepo], courtesy of https://github.com/hmrks[@hmrks] in #3809
+* Auth through Github Apps is now supported xref:how-tos-for-users/gitrepo-add.adoc#_using_a_github_app[Add a GitRepo], courtesy of https://github.com/hmrks[@hmrks] in #3809
 * The agent supports Priority Classes and Pod Disruption Budgets (support for this in Rancher is underway),  by https://github.com/p-se[@p-se] in #4057
 * Experimental features:
-    * GitOps deployments can be scheduled, through a new `Schedule` CRD xref:how-tos-for-users/scheduling.adoc[Scheduling] by https://github.com/0xavi0[@0xavi0] in #4184
+    * GitOps deployments can be scheduled, through a new `Schedule` CRD xref:experimental-features/scheduling.adoc[Scheduling] by https://github.com/0xavi0[@0xavi0] in #4184
     * Config maps and secrets can be created once, and copied to all downstream clusters through a new `downstreamResources` field https://fleet.rancher.io/experimental-downstream-resources[docs]) by https://github.com/weyfonk[@weyfonk] in #4236
 
 == Additions
@@ -21,7 +21,7 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 - Support graceful agent shutdown by https://github.com/weyfonk[@weyfonk] in #3918
 
 === Helm and Git Authentication
-- Support globbing in HelmSecretForPaths by https://github.com/weyfonk[@weyfonk] xref:how-tos-for-users/gitrepo-add.adoc#use-different-helm-credentials-for-each-path[Add a GitRepo] in #3815 and #4158
+- Support globbing in HelmSecretForPaths by https://github.com/weyfonk[@weyfonk] xref:how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Add a GitRepo] in #3815 and #4158
 - Adds InsecureTLS and BasicHTTP to helm secret by https://github.com/0xavi0[@0xavi0] in #3872
 - Support git auth with access token (username is now optional) by https://github.com/weyfonk[@weyfonk] in #4139
 
@@ -45,7 +45,7 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 - Adds basicHTTP to HelmOps when using OCI registries by https://github.com/0xavi0[@0xavi0] in #3990
 
 === Optimising bundle contents
-- Fleet config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning (see warning block xref:explanations/gitrepo-content.adoc#alternative-scan-explicitly-defined-by-the-user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
+- Fleet config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning (see warning block xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
 - Harden values files exclusion from bundle resources by https://github.com/weyfonk[@weyfonk] in #3960
 
 === Errors and reporting
