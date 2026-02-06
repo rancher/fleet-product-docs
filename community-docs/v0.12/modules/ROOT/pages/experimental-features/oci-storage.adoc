@@ -4,7 +4,7 @@
 
 == Summary
 
-{product_name} stores by default the bundle resources in etcd twice. This is done via the k8s API and there is a size limit, depending on the etcd configuration.
+By default, {product_name} stores the bundle resources in etcd twice. This is done via the k8s API and there is a size limit, depending on the etcd configuration.
 
 This feature will allow users to choose an OCI registry as storage for bundle resources. The bundle resource will have an empty resource list and a reference to the OCI repository server. The bundledeployment will not point to a content resource, but to an OCI repository server instead.
 
