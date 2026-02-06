@@ -21,7 +21,10 @@ When installing {product_name}, pass something similar to the following to your 
 ----
 
 
-Please note you have to use `--set-string` because otherwise the boolean value won't work as expected.
+[NOTE]
+====
+You must use `--set-string`, otherwise the boolean value does not work as expected.
+====
 
 === Enabling when installing {product_name} with Rancher
 
