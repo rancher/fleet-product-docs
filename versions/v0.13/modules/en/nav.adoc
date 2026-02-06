@@ -63,10 +63,18 @@
 * xref:troubleshooting.adoc[Troubleshooting]
 
 * Experimental Features
-** xref:how-tos-for-users/enableexperimental.adoc[Enable Experimental Features]
-** xref:how-tos-for-users/scheduling.adoc[Scheduling]
-** xref:how-tos-for-users/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
-** xref:reference/ref-schedule.adoc[Schedule Resource reference]
+** xref:experimental-features/enableexperimental.adoc[Enable Experimental Features]
+** xref:experimental-features/scheduling.adoc[Scheduling]
+** xref:experimental-features/experimental-downstream-resource.adoc[Automated Propagation of Resources to Downstream Clusters]
+** xref:reference/ref-schedule.adoc[Schedule Resource Reference]
 
 * Changelog
 ** xref:changelogs/v0.13.0.adoc[v0.13.0]
+** xref:changelogs/v0.13.1.adoc[v0.13.1]
+** xref:changelogs/v0.13.2.adoc[v0.13.2]
+** xref:changelogs/v0.13.3.adoc[v0.13.3]
+** xref:changelogs/v0.13.4.adoc[v0.13.4]
+** xref:changelogs/v0.13.5.adoc[v0.13.5]
+** xref:changelogs/v0.13.6.adoc[v0.13.6]
+** xref:changelogs/v0.13.7.adoc[v0.13.7 (latest)]
+

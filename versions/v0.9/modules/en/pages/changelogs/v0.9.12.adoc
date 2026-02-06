@@ -1,0 +1,47 @@
+= v0.9.12
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:date: 2024-11-04 06:02:50 +0000 UTC
+
+*(github-actions[bot]) released this 2024-12-11 10:08:36 +0000 UTC*
+
+== Release Note
+
+=== What's Changed
+* Update Kubernetes libraries to v1.28.12 v0.29.7 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3107
+* Update gitjob version to 0.9.18 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3106
+
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.11...v0.9.12[v0.9.11\...v0.9.12]
+
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet-0.9.12.tgz[fleet-0.9.12.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet-agent-0.9.12.tgz[fleet-agent-0.9.12.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet-crd-0.9.12.tgz[fleet-crd-0.9.12.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet_0.9.12_checksums.txt[fleet_0.9.12_checksums.txt]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet-linux-arm64[fleet-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.9.12/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.9.12[{product_name} v0.9.12]_
+

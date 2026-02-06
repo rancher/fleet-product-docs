@@ -57,7 +57,12 @@
 ** xref:changelogs/v0.11.6.adoc[v0.11.6]
 ** xref:changelogs/v0.11.7.adoc[v0.11.7]
 ** xref:changelogs/v0.11.8.adoc[v0.11.8]
-** xref:changelogs/v0.11.9.adoc[v0.11.9 (latest)]
+** xref:changelogs/v0.11.9.adoc[v0.11.9 ]
+** xref:changelogs/v0.11.10.adoc[v0.11.10]
+** xref:changelogs/v0.11.11.adoc[v0.11.11]
+** xref:changelogs/v0.11.12.adoc[v0.11.12 (latest)]
+
+
 * Experimental Features
 ** xref:experimental-features/enableexperimental.adoc[How to enable experimental features]
 ** xref:experimental-features/oci-storage.adoc[OCI Storage]
