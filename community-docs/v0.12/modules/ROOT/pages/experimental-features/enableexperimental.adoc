@@ -20,7 +20,6 @@ All you need to do is to pass something like:
 --set-string extraEnv[0].value=true \
 ----
 
-to your helm install or update command. 
 
 Please note you have to use `--set-string` because otherwise the boolean value won't work as expected.
 
