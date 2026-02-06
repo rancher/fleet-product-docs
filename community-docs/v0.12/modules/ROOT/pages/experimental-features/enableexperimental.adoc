@@ -8,7 +8,7 @@ Enabling/disabling experimental features is done using extra environment variabl
 
 == Enabling an experimental feature
 
-At the moment we're writing this document, {product_name} has OCI storage as an experimental feature.
+Currently, {product_name} has OCI storage as an experimental feature.
 
 === Enabling when installing {product_name} stand-alone
 
