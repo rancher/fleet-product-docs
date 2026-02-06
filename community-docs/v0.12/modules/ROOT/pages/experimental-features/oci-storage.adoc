@@ -20,7 +20,7 @@ When {product_name} can't access the OCI registry, it won't fall back to default
 
 OCI registry values should be configured as an extra section in the `GitRepo` yaml.
 
-There are the fields involved:
+These are the fields involved:
 
 [,bash]
 ----
