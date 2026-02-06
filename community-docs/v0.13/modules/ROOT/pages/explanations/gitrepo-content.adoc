@@ -259,8 +259,7 @@ These examples showcase the style and format for using `valuesFrom`.
 However, from {product_name} v0.14.0 onwards, they can also be referenced through a HelmOp's `downstreamResources` field to be
 automatically propagated to targeted downstream clusters.
 
-Refer to xref:how-tos-for-users/experimental-downstream-resource.adoc[experimental downstream resources] for more information.
-====
+Refer to xref:/experimental-features/experimental-downstream-resource.adoc[experimental downstream resources] for more information.
 
 Example ConfigMap:
 
