@@ -13,7 +13,7 @@ For more information, refer to Configure xref:reference/ref-configuration.adoc#c
 {product_name} currently supports the following experimental features, toggled through their respective environment variables:
 
 * xref:experimental-features/scheduling.adoc[Scheduling]
-* xref: experimental-features/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
+* xref:experimental-features/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
 
 == Enabling an experimental feature
 
