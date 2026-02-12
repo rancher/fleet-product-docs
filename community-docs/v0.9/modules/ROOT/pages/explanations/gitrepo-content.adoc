@@ -20,7 +20,7 @@ Multiple paths can be defined for a `GitRepo` and each path is scanned independe
 Internally each scanned path will become a xref:explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
-Fleet looks for the following files to determine how resources will be deployed.
+{product_name} looks for the following files to determine how resources will be deployed.
 
 |===
 | File | Location | Meaning
