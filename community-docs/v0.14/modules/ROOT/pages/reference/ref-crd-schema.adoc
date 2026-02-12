@@ -1,0 +1,78 @@
+= Fleet CRD Schema Summary
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+This table summarizes the Custom Resource Definitions (CRDs) used in *Fleet*, including their purpose and top-level schema properties. Each CRD defines how Fleet manages applications, deployments, and cluster configurations.
+
+[cols="1,4,2,2", options="header"]
+|===
+| CRD | Description | Top-level Properties | Reference
+
+| *Bundle v1alpha1*
+| Bundle contains the resources of an application and its deployment options. It is deployed as a Helm chart to target clusters. When a GitRepo is scanned, it produces one or more bundles. Bundles are collections of resources deployed to one or more clusters and represent the fundamental deployment unit used in Fleet. The contents of a Bundle may include Kubernetes manifests, Kustomize configuration, or Helm charts. Regardless of the source, the contents are dynamically rendered into a Helm chart by the agent and installed into the downstream cluster as a Helm release.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/bundle_v1alpha1.json[Bundle v1alpha1]
+
+| *BundleDeployment v1alpha1*
+| BundleDeployment is used internally by Fleet and should not be used directly. When a Bundle is deployed to a cluster, an instance of a Bundle is called a BundleDeployment. It represents the state of that Bundle on a specific cluster with cluster-specific customizations. The Fleet agent is aware only of BundleDeployment resources created for the cluster it manages.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/bundledeployment_v1alpha1.json[BundleDeployment v1alpha1]
+
+| *BundleNamespaceMapping v1alpha1*
+| BundleNamespaceMapping maps bundles to clusters in other namespaces.
+| `apiVersion, bundleSelector, kind, metadata, namespaceSelector`
+| xref:./crds/bundlenamespacemapping_v1alpha1.json[BundleNamespaceMapping v1alpha1]
+
+| *Cluster v1alpha1*
+| Cluster corresponds to a Kubernetes cluster. Fleet deploys bundles to targeted clusters, referred to as downstream clusters. In a single-cluster deployment, the Fleet cluster acts as both manager and downstream cluster.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/cluster_v1alpha1.json[Cluster v1alpha1]
+
+| *ClusterGroup v1alpha1*
+| ClusterGroup is a reusable selector used to target a group of clusters.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/clustergroup_v1alpha1.json[ClusterGroup v1alpha1]
+
+| *ClusterRegistration v1alpha1*
+| ClusterRegistration is used internally by Fleet and should not be used directly.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/clusterregistration_v1alpha1.json[ClusterRegistration v1alpha1]
+
+| *ClusterRegistrationToken v1alpha1*
+| ClusterRegistrationToken is used by agents to register a new cluster.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/clusterregistrationtoken_v1alpha1.json[ClusterRegistrationToken v1alpha1]
+
+| *Content v1alpha1*
+| Content is used internally by Fleet and should not be used directly. It contains the resources from a bundle for a specific target cluster.
+| `apiVersion, content, kind, metadata, sha256sum`
+| xref:./crds/content_v1alpha1.json[Content v1alpha1]
+
+| *GitRepo v1alpha1*
+| GitRepo describes a Git repository watched by Fleet. The resource contains the necessary information to deploy the repository, or parts of it, to target clusters.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/gitreporestriction_v1alpha1.json[GitRepo v1alpha1]
+
+| *GitRepoRestriction v1alpha1*
+| GitRepoRestriction optionally restricts GitRepo options within the same namespace.
+| `allowedClientSecretNames, allowedRepoPatterns, allowedServiceAccounts, allowedTargetNamespaces, apiVersion, defaultClientSecretName, defaultServiceAccount, kind, metadata`
+| xref:./crds/gitreporestriction_v1alpha1.json[GitRepoRestriction v1alpha1]
+
+| *HelmOp v1alpha1*
+| HelmOp describes Helm chart information required to deploy a chart to target clusters.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/helmop_v1alpha1.json[HelmOp v1alpha1]
+
+| *ImageScan v1alpha1*
+| JSON schema for ImageScan (v1alpha1) in group `fleet.cattle.io`.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/imagescan_v1alpha1.json[ImageScan v1alpha1]
+
+| *Schedule v1alpha1*
+| Schedule represents a deployment schedule that determines when deployments are allowed or restricted.
+| `apiVersion, kind, metadata, spec, status`
+| xref:./crds/schedule_v1alpha1.json[Schedule v1alpha1]
+
+|===
+
+For more information, refer to https://github.com/rancher/fleet/blob/main/charts/fleet-crd/templates/crds.yaml[fleet-crds.yaml].

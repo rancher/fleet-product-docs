@@ -21,6 +21,8 @@ If the issue is specific to a target cluster, users should check the Fleet agent
 
 The next section explains how to run all these checks.
 
+Some of them can be automated through xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor] and xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze].
+
 == *How Do I...*
 
 === Fetch the log from `fleet-controller`?

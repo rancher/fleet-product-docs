@@ -80,7 +80,12 @@ targets:
       replicas: 1
 ----
 
-== Limitations
+== Monitoring
+
+[Note]
+====
+From version `v0.14.0` onwards, Fleet monitors changes made to secrets and configmaps that are listed in `DownstreamResources`. It also checks whether a secret or configmap was created after the Bundle was created.
+====
 
 Helm options related to downloading the helm chart will be ignored. The helm chart is downloaded by the fleet-cli, which creates the bundles. The bundle has to contain all the resources from the chart. Therefore the bundle will ignore:
 

@@ -1,13 +1,13 @@
 = fleet.yaml
-:revdate: 2025-07-23
-:page-revdate: {revdate}
 
 The `fleet.yaml` file adds options to a bundle. Any directory with a `fleet.yaml` file is automatically turned into a bundle.
 
 For more information about customizing bundles using `fleet.yaml`, see xref:explanations/gitrepo-content.adoc[Git Repository Contents].
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
-https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`], which contains the xref:/reference/ref-crds.adoc#_bundlespec[BundleSpec].
+https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
+which contains the xref:reference\ref-crds.adoc#_bundlespec[BundleSpec].
+
 == Full Example
 
 [%collapsible]
@@ -173,6 +173,13 @@ rolloutStrategy:
   # The default value is defined in rolloutStrategy.maxUnavailable
   autoPartitionSize: 10%
 
+  # The minimum number of clusters that need to be present before 
+  # auto-partitioning is enabled. If the number of target clusters is less 
+  # than this value, all clusters will be placed in a single partition.
+  #
+  # default: 200
+  autoPartitionThreshold: 100
+
   # A list of definitions of partitions.  If any target clusters do not match
   # the configuration they are added to partitions at the end following the
   # autoPartitionSize.
@@ -275,8 +282,8 @@ targetCustomizations:
       keepFailHistory: false
 
 # dependsOn allows you to configure dependencies to other bundles. The current
-# bundle will only be deployed, after all dependencies are deployed and in a
-# Ready state.
+# bundle will only be deployed, after all dependencies are deployed an
+# accepted state. The default accepted state is the Ready state.
 dependsOn:
 
   # Format:
@@ -295,11 +302,16 @@ dependsOn:
   #     opni-fleet-examples-fleets-opni-ui-plugin-operator-crd becomes
   #     opni-fleet-examples-fleets-opni-ui-plugin-opera-021f7
   - name: one-multi-cluster-hello-world
-
+      acceptedStates:
+        - Ready
+        - Modified
   # Select bundles to depend on based on their label.
   - selector:
       matchLabels:
         app: weak-monkey
+    acceptedStates:
+      - Ready
+      - Modified
 
 # Ignore fields when monitoring a Bundle. This can be used when Fleet thinks
 # some conditions in Custom Resources makes the Bundle to be in an error state
@@ -332,7 +344,7 @@ These options define the fundamental properties and behavior of the bundle itsel
 
 | `paused` | If true, the bundle will not be updated on downstream clusters. Instead, it will be marked as *OutOfSync*. You can then manually approve the deployment. | All
 | `labels` | A map of key-value pairs set at the bundle level. These can be used in a `dependsOn.selector` to define dependencies. | All
-| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in a *Ready* state. | All
+| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in an accepted state. Accepted states correspond to any valid  xref: xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states]. | All
 | `ignore` | Specifies fields to ignore when monitoring bundle status. Useful for preventing false error states from Custom Resources. | All
 | `overrideTargets` | A list of target customizations that override any targets defined in the GitRepo. | All
 |===
@@ -433,7 +445,7 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI. For more information, refer to xref:explanations/ref-bundle-stages.adoc#fleet-target[fleet-target].
+You can test values templating with the CLI, refer to xref:reference/ref-bundle-stages.adoc#fleet-target[fleet-target].
 
 Template context keys:
 
@@ -477,7 +489,7 @@ ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }m
 
 == Helm Deployment
 
-These options control how {product_name}’s agent deploys resources.  
+These options control how Fleet’s agent deploys resources.  
 They also apply to *kustomize-* and *manifest-style bundles*.
 
 |===
@@ -512,10 +524,11 @@ These options control how updates roll out across clusters.
 | `rolloutStrategy.maxUnavailable` | Maximum unavailable clusters during update. | All
 | `rolloutStrategy.maxUnavailablePartitions` | Maximum unavailable partitions during update. | All
 | `rolloutStrategy.autoPartitionSize` | Auto partition size for clusters. | All
+| rolloutStrategy.autoPartitionThreshold | The minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition. | All 
 | `rolloutStrategy.partitions` | Defines cluster partitions for phased rollouts. | All
 |===
 
-For more information, see xref:how-tos-for-users/rollout.adoc[Rollout Strategies].
+For more information, see xref:rollout.adoc[Rollout Strategies].
 
 == Targeting and Customization
 

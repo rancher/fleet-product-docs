@@ -799,6 +799,11 @@ BundleDeploymentList contains a list of BundleDeployment
 | false
 |===
 
+[Note]
+====
+If you do not want Fleet to apply the `helm.sh/resource-policy: keep`, configure the `deleteCRDResource` option to `true` in `fleet.yaml`.
+====
+
 <<Resources,Back to Custom Resources>>
 
 

@@ -57,7 +57,7 @@ In this mode, {product_name} loads resources from a specified base directory.
 It looks for a `fleet.yaml` at the root only if an options file isn’t provided.  
 This method is **non-recursive** and loads only explicitly defined Bundles.
 
-==== Example File Structure
+==== Example Directory Structure
 
 [source,console]
 ----
