@@ -344,7 +344,7 @@ These options define the fundamental properties and behavior of the bundle itsel
 
 | `paused` | If true, the bundle will not be updated on downstream clusters. Instead, it will be marked as *OutOfSync*. You can then manually approve the deployment. | All
 | `labels` | A map of key-value pairs set at the bundle level. These can be used in a `dependsOn.selector` to define dependencies. | All
-| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in an accepted state. Accepted states correspond to any valid  xref: xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states]. | All
+| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in an accepted state. Accepted states correspond to any valid  xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states]. | All
 | `ignore` | Specifies fields to ignore when monitoring bundle status. Useful for preventing false error states from Custom Resources. | All
 | `overrideTargets` | A list of target customizations that override any targets defined in the GitRepo. | All
 |===
