@@ -93,7 +93,7 @@ Starting with {product_name} v0.13, the Helm chart exposes replica count setting
 * `agent.replicas` : Controls the Fleet agent.
 
 Each defaults to one replica.
-
+[[multi-controller-install-sharding]]
 == Multi-Controller Installation: Sharding
 
 === Deployment

@@ -20,7 +20,7 @@ Multiple paths can be defined for a `GitRepo` and each path is scanned independe
 Internally each scanned path will become a xref:explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
-The following files are looked for to determine the how the resources will be deployed.
+{product_name} looks for the following files to determine how resources will be deployed.
 
 |===
 | File | Location | Meaning
@@ -177,7 +177,7 @@ helm:
 == Per Cluster Customization
 
 The `GitRepo` defines which clusters a git repository should be deployed to and the `fleet.yaml` in the repository
-determines how the resources are customized per target.
+determines how resources are customized per target.
 
 All clusters and cluster groups in the same namespace as the `GitRepo` will be evaluated against all targets of that
 `GitRepo`. The targets list is evaluated one by one and if there is a match the resource will be deployed to the cluster.
@@ -219,7 +219,7 @@ Refer to xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clust
 
 == Raw YAML Resource Customization
 
-When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how the resource are
+When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how resource are
 customized per target cluster. If you are using raw YAML then the following simple mechanism is built-in and can
 be used.  The `overlays/` folder in the git repo is treated specially as folder containing folders that
 can be selected to overlay on top per target cluster. The resource overlay content

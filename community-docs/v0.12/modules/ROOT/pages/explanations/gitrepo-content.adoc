@@ -28,23 +28,23 @@ Multiple paths can be defined for a `GitRepo`. Each path is scanned independentl
 | Location
 | Meaning
 
-| *Chart.yaml*
+| Chart.yaml
 | Relative to `path` or custom path from `fleet.yaml`
 | The resources are deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
 
-| *kustomization.yaml*
+| kustomization.yaml
 | Relative to `path` or custom path from `fleet.yaml`
 | The resources are deployed using Kustomize. Refer to the `fleet.yaml` for more options.
 
-| *fleet.yaml*
+| fleet.yaml
 | Any subpath
 | If any `fleet.yaml` is found, a new xref:explanations/concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
 
-| *\*.yaml*
+| \.yaml
 | Any subpath
 | If a `Chart.yaml` or `kustomization.yaml` isn’t found, any `.yaml` or `.yml` file is assumed to be a Kubernetes resource and is deployed.
 
-| *overlays/\{name}*
+| overlays/\{name}
 | Relative to `path`
 | When deploying using raw YAML (not Kustomize or Helm), `overlays` is a special directory for customizations.
 |===
@@ -57,7 +57,7 @@ In this mode, {product_name} loads resources from a specified base directory.
 It looks for a `fleet.yaml` at the root only if an options file isn’t provided.  
 This method is **non-recursive** and loads only explicitly defined Bundles.
 
-==== Example File Structure
+==== Example Directory Structure
 
 [source,console]
 ----

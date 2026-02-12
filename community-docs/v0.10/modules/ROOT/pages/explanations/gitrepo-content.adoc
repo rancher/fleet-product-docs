@@ -20,28 +20,27 @@ Multiple paths can be defined for a `GitRepo` and each path is scanned independe
 Internally each scanned path will become a xref:explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
-The following files are looked for to determine the how the resources will be deployed.
-
+{product_name} looks for the following files to determine how resources will be deployed.
 |===
 | File | Location | Meaning
 
-| *Chart.yaml*:
+| Chart.yaml:
 | / relative to `path` or custom path from `fleet.yaml`
 | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
 
-| *kustomization.yaml*:
+| kustomization.yaml:
 | / relative to `path` or custom path from `fleet.yaml`
 | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
 
-| *fleet.yaml*
+| fleet.yaml
 | Any subpath
 | If any fleet.yaml is found a new xref:explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo
 
-| ** *.yaml **
+|  .yaml 
 | Any subpath
 | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
 
-| *overlays/\{name}*
+| overlays/\{name}
 | / relative to `path`
 | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
@@ -86,14 +85,14 @@ This currently comes with a few limitations, the following not being supported:
 == `fleet.yaml`
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
-the resources are deployed and customized.  The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
+resources are deployed and customized.  The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
 and if a subdirectory is found with a `fleet.yaml` a new xref:explanations/concepts.adoc[bundle] is defined that will then be
 configured differently from the parent bundle.
 
 [CAUTION]
 ====
 
-*Helm chart dependencies*:
+**Helm chart dependencies**:
 
 ifeval::["{product}" == "fleet"]
 It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
@@ -112,7 +111,7 @@ See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Usi
 
 == Using Helm Values
 
-*How changes are applied to `values.yaml`*:
+How changes are applied to `values.yaml`:
 
 * Note that the most recently applied changes to the `values.yaml` will override any previously existing values.
 * When changes are applied to the `values.yaml` from multiple sources at the same time, the values will update in the following order: `helm.values` \-> `helm.valuesFiles` \-> `helm.valuesFrom`. That means `valuesFrom` will take precedence over both, `valuesFiles` and `values`.
@@ -177,7 +176,7 @@ helm:
 == Per Cluster Customization
 
 The `GitRepo` defines which clusters a git repository should be deployed to and the `fleet.yaml` in the repository
-determines how the resources are customized per target.
+determines how resources are customized per target.
 
 All clusters and cluster groups in the same namespace as the `GitRepo` will be evaluated against all targets of that
 `GitRepo`. The targets list is evaluated one by one and if there is a match the resource will be deployed to the cluster.
@@ -219,7 +218,7 @@ Refer to xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clust
 
 == Raw YAML Resource Customization
 
-When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how the resource are
+When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how resource are
 customized per target cluster. If you are using raw YAML then the following simple mechanism is built-in and can
 be used.  The `overlays/` folder in the git repo is treated specially as folder containing folders that
 can be selected to overlay on top per target cluster. The resource overlay content
