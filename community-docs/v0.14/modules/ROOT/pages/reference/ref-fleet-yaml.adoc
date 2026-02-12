@@ -445,7 +445,8 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI, refer to xref:explanations/ref-bundle-stages.adoc#_fleet_target[fleet-target].
+You can test values templating with the CLI, refer to xref:explanations/ref-bundle-stages.adoc#fleet-target[fleet-target].
+
 
 Template context keys:
 

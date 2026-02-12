@@ -40,7 +40,7 @@
 **** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
 **** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
 **** xref:reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]
-**** xref:reference/cli/fleet-controller/fleet-gitjob.adoc[fleet-gitjob]
+**** xref:reference/cli/fleet-controller/fleet-controller_gitjob[fleet-gitjob]
 
 *** Deprecated Commands
 **** xref:reference/cli/fleet-cli/fleet_test.adoc[fleet test]
