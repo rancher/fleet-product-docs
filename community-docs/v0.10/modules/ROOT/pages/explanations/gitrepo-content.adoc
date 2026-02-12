@@ -24,23 +24,23 @@ deploy, and monitor independently.
 |===
 | File | Location | Meaning
 
-| *Chart.yaml*:
+| Chart.yaml:
 | / relative to `path` or custom path from `fleet.yaml`
 | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
 
-| *kustomization.yaml*:
+| kustomization.yaml:
 | / relative to `path` or custom path from `fleet.yaml`
 | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
 
-| *fleet.yaml*
+| fleet.yaml
 | Any subpath
 | If any fleet.yaml is found a new xref:explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo
 
-| ** *.yaml **
+|  .yaml 
 | Any subpath
 | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
 
-| *overlays/\{name}*
+| overlays/\{name}
 | / relative to `path`
 | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
@@ -92,7 +92,7 @@ configured differently from the parent bundle.
 [CAUTION]
 ====
 
-*Helm chart dependencies*:
+**Helm chart dependencies**:
 
 ifeval::["{product}" == "fleet"]
 It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
@@ -111,7 +111,7 @@ See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Usi
 
 == Using Helm Values
 
-*How changes are applied to `values.yaml`*:
+How changes are applied to `values.yaml`:
 
 * Note that the most recently applied changes to the `values.yaml` will override any previously existing values.
 * When changes are applied to the `values.yaml` from multiple sources at the same time, the values will update in the following order: `helm.values` \-> `helm.valuesFiles` \-> `helm.valuesFrom`. That means `valuesFrom` will take precedence over both, `valuesFiles` and `values`.

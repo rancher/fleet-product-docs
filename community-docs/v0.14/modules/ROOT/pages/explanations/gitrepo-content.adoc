@@ -16,11 +16,11 @@ Bundle lifecycles are tracked between releases by the Helm `releaseName` field a
 
 == How repos are scanned
 
-*The git repository has no explicitly required structure.* It is important
+**The git repository has no explicitly required structure**. It is important
 to realize the scanned resources will be saved as a resource in Kubernetes so
 you want to make sure the directories you are scanning in git do not contain
 arbitrarily large resources. Right now there is a limitation that the resources
-deployed must *gzip to less than 1MB*.
+deployed must **gzip to less than 1MB**.
 Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
 Internally each scanned path will become a xref:/explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
@@ -29,11 +29,11 @@ deploy, and monitor independently.
 [cols="1,1,2", options="header"]
 |===
 | File | Location | Meaning
-| *Chart.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
-| *kustomization.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
-| *fleet.yaml* | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
-| *.yaml* | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
-| *overlays/+{name}+* | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
+| Chart.yaml | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
+| kustomization.yaml | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
+| fleet.yaml | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
+| .yaml | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
+| overlays/+{name}+ | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
 === Alternative scan, explicitly defined by the user
@@ -253,7 +253,7 @@ These examples showcase the style and format for using `valuesFrom`.
 
 [Note]
 ====
-**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in *downstream clusters*.
+**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in downstream clusters.
 
 However, from {product_name} v0.14.0 onwards, they can also be referenced through a HelmOp's `downstreamResources` field to be
 automatically propagated to targeted downstream clusters.
