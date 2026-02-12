@@ -34,6 +34,7 @@
 ** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
 ** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
 
+
 * Reference
 ** CLI 
 *** Fleet 
@@ -41,10 +42,9 @@
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
-**** xref:reference/cli/fleet-cli/analyze.adoc[fleet analyze]
-**** xref:reference/cli/fleet-cli/monitor.adoc[fleet monitor]
-**** xref:reference/cli/fleet-cli/dump.adoc[fleet dump]
-
+**** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]
+**** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
+**** xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]
 *** Fleet Agent 
 **** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
 **** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
@@ -53,27 +53,24 @@
 **** xref:reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]
 **** xref:reference/cli/fleet-cli/fleet_cleanup_clusterregistration.adoc[fleet cluster registration cleanup]
 **** xref:reference/cli/fleet-cli/fleet_cleanup_gitjob.adoc[fleet gitjob cleanup]
-
 *** Fleet Controller 
 **** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
 **** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
 **** xref:reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]
-// missing file
-gitcloner
+**** xref:reference/cli/fleet-controller/fleet-gitjob.adoc[fleet-gitjob]
 
 ** Resources and APIs
 *** xref:reference/ref-crds.adoc[Custom Resources Spec]
+*** xref:reference/ref-crd-schema.adoc[CRD Schema]
 *** xref:reference/ref-gitrepo.adoc[GitRepo Resource]
 *** xref:reference/ref-bundle.adoc[Bundle Resource]
 *** xref:reference/ref-resources.adoc[List of Deployed Resources]
-*** xref:reference/resources-list.adoc[Resources List] //check if this is used
 ** Configuration Reference
 *** xref:reference/ref-fleet-yaml.adoc[fleet.yaml]
 *** xref:reference/ref-configuration.adoc[Configuration]
 ** Status and Internals
 *** xref:reference/ref-status-fields.adoc[Cluster and Bundle State]
 *** xref:reference/ref-registration.adoc[Cluster Registration Internals]
-
 * xref:troubleshooting.adoc[Troubleshooting]
 
 * Experimental Features

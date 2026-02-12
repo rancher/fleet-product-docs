@@ -6,7 +6,7 @@ For more information about customizing bundles using `fleet.yaml`, see xref:expl
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
-which contains the xref:reference\ref-crds.adoc#_bundlespec[BundleSpec].
+which contains the xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Full Example
 
@@ -445,7 +445,7 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI, refer to xref:reference/ref-bundle-stages.adoc#fleet-target[fleet-target].
+You can test values templating with the CLI, refer to xref:explanations/ref-bundle-stages.adoc#_fleet_target[fleet-target].
 
 Template context keys:
 
@@ -528,7 +528,7 @@ These options control how updates roll out across clusters.
 | `rolloutStrategy.partitions` | Defines cluster partitions for phased rollouts. | All
 |===
 
-For more information, see xref:rollout.adoc[Rollout Strategies].
+For more information, see xref:how-tos-for-users/rollout.adoc[Rollout Strategy].
 
 == Targeting and Customization
 
