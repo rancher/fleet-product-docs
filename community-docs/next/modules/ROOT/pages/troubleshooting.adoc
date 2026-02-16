@@ -1,5 +1,5 @@
 = Troubleshooting
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 This section contains commands and tips to troubleshoot{product_name}.
@@ -253,7 +253,6 @@ You will need to re-import and restart the registration process: Select *Cluster
 ====
 
 *WaitCheckIn status for Rancher v2.5*:
-====
 
 ifeval::["{product}" == "fleet"]
 The cluster will show in `WaitCheckIn` status because the `fleet-controller` is attempting to communicate with {product_name} using the Rancher service IP. However, {product_name} must communicate directly with Rancher via the Kubernetes service DNS using service discovery, not through the proxy. For more, see the https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/rancher-behind-an-http-proxy/install-rancher[Rancher docs].

@@ -1,5 +1,5 @@
 = fleet cleanup gitjob
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Clean up outdated git jobs
@@ -22,4 +22,4 @@ fleet cleanup gitjob [flags]
 
 == SEE ALSO
 
-* xref:/reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources
+* xref:reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources

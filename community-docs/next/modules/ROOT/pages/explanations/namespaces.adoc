@@ -1,5 +1,5 @@
 = Namespaces
-:revdate: 2025-06-17
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 :toc_max_heading_level: 4
 

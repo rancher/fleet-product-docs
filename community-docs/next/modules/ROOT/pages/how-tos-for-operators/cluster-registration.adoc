@@ -1,7 +1,7 @@
 :doctype: book
 
 = Register Downstream Clusters
-:revdate: 2025-07-01
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 == Overview
@@ -31,6 +31,7 @@ After the cluster is registered there is no further need for the manager to cont
 cluster API.  This style is more compatible if you wish to manage the creation of all your Kubernetes
 clusters through GitOps using something like https://github.com/kubernetes-sigs/cluster-api[cluster-api]
 or https://github.com/rancher/rancher[Rancher].
+
 
 [options="header"]
 |===
@@ -85,6 +86,7 @@ or https://github.com/rancher/rancher[Rancher].
 | N/A; registration token/kubeconfig management is handled internally by the Fleet Manager.
 
 |===
+
 
 == Agent Initiated
 

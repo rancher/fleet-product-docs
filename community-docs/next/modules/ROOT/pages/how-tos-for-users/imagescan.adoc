@@ -1,5 +1,5 @@
 = Using Image Scan to Update Container Image References
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Image scan in fleet allows you to scan your image repository, fetch the desired image and update your git repository,

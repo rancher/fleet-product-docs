@@ -177,11 +177,11 @@ For example, you have 200 clusters, which are manually partitioned, each with 40
 How rollout proceeds:
 
 1. {product_name} begins with the first partition (40 clusters).
-1. It deploys up to 50 `BundleDeployments` at once. So it deploys to all 40 clusters in the partition in one batch.
-1. {product_name} checks the readiness of clusters in the partition.
+2. It deploys up to 50 `BundleDeployments` at once. So it deploys to all 40 clusters in the partition in one batch.
+3. {product_name} checks the readiness of clusters in the partition.
 * If more than 4 clusters are not ready, then the partition is considered `NotReady` and the rollout is paused.
 * Once ≤4 clusters are `NotReady`, {product_name} proceeds with the deployment.
-1. When the entire partition is mostly ready (90%), {product_name} moves to the next partition.
+4. When the entire partition is mostly ready (90%), {product_name} moves to the next partition.
 
 If you want or need to process fewer than 40 deployments at once, you can put fewer clusters into each partition.
 

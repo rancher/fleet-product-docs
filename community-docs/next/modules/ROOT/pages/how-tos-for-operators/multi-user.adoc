@@ -1,5 +1,5 @@
 = Setup Multi User
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 {product_name} uses Kubernetes RBAC where possible.
@@ -78,7 +78,6 @@ ifeval::["{product}" == "continuous-delivery"]
 * To create the `project1` and `project2` fleet workspaces, you can either do it in the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_accessing_suse_rancher_prime_continuous_delivery_in_the_rancher_ui[Rancher UI] or use the following YAML resources:
 
 endif::[]
-
 [,yaml]
 ----
 apiVersion: management.cattle.io/v3
