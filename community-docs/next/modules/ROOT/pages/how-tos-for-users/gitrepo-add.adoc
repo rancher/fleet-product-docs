@@ -9,11 +9,13 @@ Git repositories are registered by creating a `GitRepo` resource in Kubernetes. 
 to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for examples.
 
 xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
-The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
 
+The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
+Adding A Private Git Repository
 [NOTE]
 ====
-{product_name} does not support SSH proxy server authentication when cloning <<adding-a-private-git-repository,adding-a-private-git-repository>>or <<using-private-helm-repositories,using Private Helm Repositories>>. Use HTTPS authentication with a username and password or a personal access token.
+{product_name} does not support SSH proxy server authentication when cloning <<_adding_a_private_git_repository,adding-a-private-git-repository>>or <<_using_private_helm_repositories,Using Private Helm Repositories>>
+. Use HTTPS authentication with a username and password or a personal access token.
 ====
 
 
@@ -38,7 +40,6 @@ It takes precendence over all other namespace definitions:
 
 Workload namespace definitions can be restricted with `allowedTargetNamespaces` in the `GitRepoRestriction` resource.
 
-[[adding-a-private-git-repository]]
 == Adding A Private Git Repository
 
 {product_name} supports the following authentication mechanisms for private repositories:
@@ -247,7 +248,7 @@ Note that if secrets specifying CA bundles exist, for instance if {product_name}
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[Additional Trusted CA's]),
-{product_name} will use those CA bundles if no CA bundle is specified in the Helm secret.
+{product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 endif::[]
 ====
 
@@ -274,7 +275,7 @@ Create a file named `secrets-path.yaml` that specifies credentials for each path
 * an exact path, which must match the full path to a bundle directory (a folder containing a `fleet.yaml` file). The path may have more segments than the entry under `paths:`.
 * a _glob_ matching one or more paths, useful when credentials need to be reused across multiple paths/bundles.
 
-See the link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
+Refer to link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation] for examples of supported syntax.
 
 [NOTE]
 ====
@@ -373,6 +374,7 @@ kubectl create secret generic test-multipasswd -n fleet-local --from-file=secret
 ====
 The secret must be created in the same namespace as the `GitRepo` resource.
 ====
+
 ifeval::["{product}" == "fleet"]
 If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
@@ -382,7 +384,6 @@ ifeval::["{product}" == "continuous-delivery"]
 If you use link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
 endif::[]
-
 [source,bash]
 ----
 kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=true
@@ -418,7 +419,7 @@ When backing up and restoring {product_name} with existing workloads, be they Gi
 
 === Kubernetes API server availability
 
-A Fleet agent in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
+A {product_name} agent in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
 During a restore operation, changes made in the upstream cluster may affect deployments in downstream clusters, which could be updated or deleted based on incomplete state from upstream.
 
 To prevent this, make the Kubernetes API server inaccessible to downstream clusters while a restore is running. Agents should not access the upstream cluster until all resources are re-created.
@@ -430,7 +431,7 @@ A xref:reference/ref-gitrepo.adoc[paused] GitRepo will pause bundles and bundle 
 * Deleting a bundle deployment from a paused GitRepo: {product_name} will not re-create the bundle deployment until the GitRepo is unpaused.
 * Deleting a bundle from a paused GitRepo: {product_name} will delete the bundle deployments coming from that bundle, and will not re-create the bundle (nor bundle-deployments) until the GitRepo is unpaused.
 
-Pausing a GitRepo only prevents bundles and bundle deployments from being created or updated. It only affects _controller_ operations, not Fleet _agent_ operations.  
+Pausing a GitRepo only prevents bundles and bundle deployments from being created or updated. It only affects _controller_ operations, not {product_name} _agent_ operations.  
 To prevent user resources in a bundle from being deleted when deleting a bundle deployment, use xref:reference/ref-bundle.adoc[keepResources].
 
 == Troubleshooting

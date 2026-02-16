@@ -1,5 +1,5 @@
 = Bundle Lifecycle
-:revdate: 2025-06-16
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 A bundle is an internal resource used for the orchestration of resources from git. When a GitRepo is scanned it will produce one or more bundles.
@@ -24,6 +24,8 @@ image::FleetBundleStages.svg[Bundle Stages]
 
 Several fleet CLI commands help with debugging bundles.
 
+image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
+
 === fleet apply
 
 xref:reference/cli/fleet-cli/fleet_apply.adoc[Apply] renders a folder with Kubernetes resources, such as a Helm chart, manifests, or kustomize folders, into a {product_name} bundle resource.
@@ -36,6 +38,7 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users/bundle-add.adoc[section on bundles].
 
+[[fleet-target]]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Target] reads a bundle from a file and works with a live cluster to print out the `bundledeployment` & `content` resource, which fleetcontroller would create. It takes a namespace as an argument, so it can look in that namespace for e.g. cluster resources. It can also dump the data structure which is used during "targeting", so decisions taken regarding labels and cluster names can be checked.
@@ -46,8 +49,11 @@ xref:reference/cli/fleet-cli/fleet_deploy.adoc[Deploy] takes the output of `flee
 
 The deploy command can be used to bring bundles to air-gapped clusters.
 
-=== Lifecycle CLI Example
+=== Lifecycle CLI
 
+Fleet CLI commands help you debug and understand the bundle lifecycle. The following example uses the full bundle lifecycle using CLI:
+
+[source,bash]
 ----
 git clone https://github.com/rancher/fleet-test-data
 cd fleet-test-data
