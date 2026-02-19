@@ -35,7 +35,6 @@
 ** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
 ** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
 
-
 * Reference
 ** CLI 
 *** Fleet 
