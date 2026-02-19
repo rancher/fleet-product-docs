@@ -10,6 +10,7 @@ fleet-controller agentmanagement [flags]
 
 == Options
 
+[source,text]
 ----
       --debug               Turn on debug logging
       --debug-level int     If debugging is enabled, set klog -v=X
@@ -21,6 +22,7 @@ fleet-controller agentmanagement [flags]
 
 == Options inherited from parent commands
 
+[source,text]
 ----
       --disable-metrics   disable metrics
       --shard-id string   only manage resources labeled with a specific shard ID

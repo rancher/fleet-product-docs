@@ -130,7 +130,7 @@ From best to worst:
 * *Accepted* : `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
 * *Polled* : `True` if polling succeeded. `False` otherwise, with an error message.
 
-== `status.display`
+== status.display
 
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
 
@@ -142,18 +142,6 @@ The `status.display` fields are shared between GitRepos and GitOps. Both resourc
 == Resources List
 
 Resources deployed to target clusters are categorized under `GitRepos` and `HelmOps`.
-
-=== GitRepos
-
-The deployed resources are listed under `GitRepos` in `status.Resources`, derived from `bundleDeployments`.
-
-=== HelmOps
-
-Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
-
-== Resource Counts
-
-This shows how resource counts propagate between resources.
 
 === GitRepos
 
@@ -215,6 +203,18 @@ The `BundleDeployment` resource includes two additional fields for better visibi
 === HelmOps
 
 The `status.ResourceCounts` list for HelmOps is derived from `bundleDeployments`.
+
+== Resource Counts
+
+This shows how resource counts propagate between resources.
+
+=== GitRepos
+
+The deployed resources are listed under `GitRepos` in `status.Resources`, derived from `bundleDeployments`.
+
+=== HelmOps
+
+Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
 
 === Clusters
 
