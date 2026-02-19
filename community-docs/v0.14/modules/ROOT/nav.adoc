@@ -61,7 +61,6 @@
 **** xref:reference/cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-gitjob]
 *** Deprecated Commands
 **** xref:reference/cli/fleet-cli/fleet_test.adoc[fleet test]
-
 ** Resources and APIs
 *** xref:reference/ref-crds.adoc[Custom Resources Spec]
 *** xref:reference/ref-crd-schema.adoc[CRD Schema]

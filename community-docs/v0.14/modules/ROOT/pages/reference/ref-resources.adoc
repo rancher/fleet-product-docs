@@ -4,7 +4,7 @@
 
 After installing {product_name} in Rancher these resources are created in the upstream cluster.
 
-Also see xref:namespaces.adoc[Namespaces].
+Also see xref:explanations/namespaces.adoc[Namespaces].
 
 == From Helm, Initial Setup
 
