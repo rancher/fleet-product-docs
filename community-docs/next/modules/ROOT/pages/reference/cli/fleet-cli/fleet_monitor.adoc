@@ -296,16 +296,19 @@ fleet monitor | jq -r '
 A resource is considered "stuck" when:
 
 **Bundle (Generation Mismatch):**
+
 * `generation != observedGeneration` (controller hasn't processed latest spec)
 
 **Note:** Bundles with deletion timestamps are tracked separately as a count in `diagnostics.bundlesWithDeletionTimestamp`.
 
 **BundleDeployment (Stuck):**
+
 * `spec.deploymentID != status.appliedDeploymentID` (agent hasn't applied latest deployment)
 * `syncGeneration` doesn't match `forceSyncGeneration` (forced sync not applied)
 * Has `deletionTimestamp` but still exists
 
 **BundleDeployment (SyncGeneration Mismatch):**
+
 * `syncGeneration` != `forceSyncGeneration` when `forceSyncGeneration > 0` (tracked separately from stuck BundleDeployments)
 
 ==== API Consistency Check
