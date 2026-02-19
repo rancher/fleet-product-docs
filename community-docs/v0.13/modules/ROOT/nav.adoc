@@ -11,6 +11,8 @@
 ** xref:explanations/gitrepo-content.adoc[Git Repository Contents]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Custom Resources During Deployment]
+** xref:explanations/glossary.adoc[Custom Resources During Deployment]
+
 * How-tos for Operators
 ** xref:how-tos-for-operators/installation.adoc[Installation Details]
 ** xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]

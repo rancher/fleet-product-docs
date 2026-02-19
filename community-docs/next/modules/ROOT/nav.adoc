@@ -11,6 +11,7 @@
 ** xref:explanations/gitrepo-content.adoc[Git Repository Contents]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Custom Resources During Deployment]
+** xref:explanations/glossary.adoc[Custom Resources During Deployment]
 * How-tos for Operators
 ** xref:how-tos-for-operators/installation.adoc[Installation Details]
 ** xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]
@@ -58,6 +59,8 @@
 **** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
 **** xref:reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]
 **** xref:reference/cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-gitjob]
+*** Deprecated Commands
+**** xref:reference/cli/fleet-cli/fleet_test.adoc[fleet test]
 
 ** Resources and APIs
 *** xref:reference/ref-crds.adoc[Custom Resources Spec]
