@@ -297,8 +297,8 @@ You can use a Helm chart’s `values.yaml` file to:
 ====
 A Helm chart's `values.yaml` does not support templating. Any substitutions happen during chart rendering before Fleet applies the chart.
 
-* You cannot use shell-style variables (for example, `${var}`) inside this file.  
-* If `${var}` appears, Helm treats it as plain text—you don’t need to escape it.
+* You cannot use shell-style variables (for example, pass:[`${var}`]) inside this file.  
+* If pass:[`${var}`] appears, Helm treats it as plain text—you don’t need to escape it.
 ====
 
 === Fleet valuesFiles referenced from fleet.yaml
