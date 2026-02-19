@@ -28,21 +28,24 @@ fleet dump <flags>
 ==== Contents
 
 The `dump` command produces a `.tgz` archive containing the following data:
+
 * Raw Fleet resources, in YAML format:
-    * Bundles
-    * BundleDeployments
-    * BundleNamespaceMappings
-    * Clusters
-    * ClusterGroups
-    * GitRepos
-    * GitRepoRestrictions
-    * HelmOps
+** Bundles
+** BundleDeployments
+** BundleNamespaceMappings
+** Clusters
+** ClusterGroups
+** GitRepos
+** GitRepoRestrictions
+** HelmOps
+
 * Kubernetes events for the following namespaces:
-    * `cattle-fleet-system`
-    * `cattle-fleet-local-system`
-    * `default`
-    * `kube-system`
-    * each namespace containing a Fleet `Cluster` resource
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** each namespace containing a Fleet `Cluster` resource
+
 * Metrics exposed by `monitoring-*` services living in the `cattle-fleet-system` namespace.
 This typically includes `monitoring-gitjob` and `monitoring-fleet-controller` services, as well as their
 xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[sharded] counterparts, if any.
