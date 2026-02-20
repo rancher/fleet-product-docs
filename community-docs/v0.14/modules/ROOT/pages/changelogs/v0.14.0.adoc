@@ -45,7 +45,7 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 - Adds basicHTTP to HelmOps when using OCI registries by https://github.com/0xavi0[@0xavi0] in #3990
 
 === Optimising bundle contents
-- Fleet config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning (see warning block xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
+- {product_name} config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning. See xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
 - Harden values files exclusion from bundle resources by https://github.com/weyfonk[@weyfonk] in #3960
 
 === Errors and reporting
@@ -56,7 +56,7 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 - Improve Bundle Value Secret Logging by https://github.com/manno[@manno] in #4026
 - Don't add same field multiple times to logger by https://github.com/manno[@manno] in #4156
 
-=== Better management of Fleet resources
+=== Better management of {product_name} resources
 - Deletes the cluster's namespace on Cluster deletion by https://github.com/0xavi0[@0xavi0] in #4224
 - Track UID of existing bundle deployment to prevent orphaning on failure by https://github.com/thardeck[@thardeck] in #4276
 - Avoids returning an error when deleting OCI artifacts by https://github.com/0xavi0[@0xavi0] in #4221

@@ -80,12 +80,7 @@ targets:
       replicas: 1
 ----
 
-== Monitoring
-
-[Note]
-====
-From version `v0.14.0` onwards, Fleet monitors changes made to secrets and configmaps that are listed in `DownstreamResources`. It also checks whether a secret or configmap was created after the Bundle was created.
-====
+== Limitations
 
 Helm options related to downloading the helm chart will be ignored. The helm chart is downloaded by the fleet-cli, which creates the bundles. The bundle has to contain all the resources from the chart. Therefore the bundle will ignore:
 
@@ -95,3 +90,8 @@ Helm options related to downloading the helm chart will be ignored. The helm cha
 You can't use a `fleet.yaml` in resources, it is only used by the fleet-cli to create bundles.
 
 The `spec.targetRestrictions` field is not useful, as it is an allow list for targets specified in `spec.targets`. It is not needed, since `targets` are explicitly given in a bundle and an empty `targetRestrictions` defaults to allow.
+
+[Note]
+====
+You can use Fleet CLI to convert a Helm chart into a `bundle`. For more information, refer to xref:how-tos-for-users/install-use-fleet-cli.adoc[Convert a Helm chart into a bundle using CLI.].
+====

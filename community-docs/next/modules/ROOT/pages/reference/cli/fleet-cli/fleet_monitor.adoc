@@ -1,17 +1,16 @@
 == fleet monitor
 
-Advanced diagnostic tool for troubleshooting Fleet deployments.
+Advanced diagnostic tool for troubleshooting  {product_name} deployments.
 
 == Overview
 
-Extract insights from Fleet's GitOps lifecycle by capturing snapshots of all relevant resources and performing automated
+Extract insights from  {product_name}'s GitOps lifecycle by capturing snapshots of all relevant resources and performing automated
 diagnostics. This command helps identify why bundles get stuck during targeting and deployment phases, and provides
-actionable information about the health of your Fleet installation.
+actionable information about the health of your  {product_name} installation.
 
 [source,text]
 ----
 fleet monitor [flags]
-[source,text]
 ----
 
 === Options
@@ -19,12 +18,11 @@ fleet monitor [flags]
 [source,text]
 ----
   -n, --namespace string          Namespace to monitor (default: all namespaces)
-      --system-namespace string   Fleet system namespace (default: cattle-fleet-system)
+      --system-namespace string    {product_name} system namespace (default: cattle-fleet-system)
       --agent-staleness duration  Consider agent stale after this duration (default: 24h)
       --watch                     Watch for changes and output continuously
       --interval int              Interval in seconds between checks when watching (default: 60)
   -h, --help                      help for monitor
-[source,text]
 ----
 
 === Quick Start
@@ -33,15 +31,14 @@ The monitor command outputs **compact JSON** (one snapshot per line). Use `jq` t
 
 [source,bash]
 ----
-= Single snapshot with formatted output
+# Single snapshot with formatted output
 fleet monitor | jq
 
-= Single snapshot with human-readable analysis
+# Single snapshot with human-readable analysis
 fleet monitor | fleet analyze
 
-= Continuous monitoring with built-in watch mode (every 60 seconds)
+# Continuous monitoring with built-in watch mode (every 60 seconds)
 fleet monitor --watch --interval 60 >> monitor.json
-[source,text]
 ----
 
 === What It Detects
@@ -51,7 +48,7 @@ The monitor command performs comprehensive diagnostics to detect:
 ==== Resource Lifecycle Issues
 *  **Bundles with Generation Mismatch**: Bundles not progressing through their lifecycle (generation != observedGeneration)
 *  **Stuck BundleDeployments**: BundleDeployments where the agent isn't applying new deploymentIDs
-*  **Multiple Finalizers**: Resources with more than one finalizer (indicates bugs - only Contents should have multiple finalizers for ref counting, in Fleet v0.11.1 to v0.14.x)
+*  **Multiple Finalizers**: Resources with more than one finalizer (indicates bugs - only Contents should have multiple finalizers for ref counting, in  {product_name} v0.11.1 to v0.14.x)
 *  **Orphaned Resources**: Resources with deletion timestamps that can't be garbage collected
 
 ==== Data Consistency Problems
@@ -102,7 +99,6 @@ fleet monitor -n fleet-local | jq
 
 # Check fleet-default namespace (common for local clusters)
 fleet monitor -n fleet-default | jq
-[source,text]
 ----
 
 ==== Continuous Monitoring
@@ -114,7 +110,6 @@ fleet monitor --watch --interval 60 >> monitor.json
 
 # Or monitor with a shorter interval (every 30 seconds)
 fleet monitor --watch --interval 30 >> monitor.json
-[source,text]
 ----
 
 ==== Targeted Diagnostics
@@ -142,7 +137,6 @@ fleet monitor | jq '.diagnostics | {
   gitreposNoBundles: .gitReposWithNoBundles | length,
   clusterGroupsNoClusters: .clusterGroupsWithNoClusters | length
 }'
-[source,text]
 ----
 
 ==== Comparing States
@@ -157,7 +151,6 @@ kubectl edit gitrepo my-repo
 
 # After changes
 fleet monitor > after.json
-[source,text]
 ----
 
 === Common Troubleshooting Scenarios
@@ -177,7 +170,6 @@ jq '.diagnostics.bundlesWithNoDeployments' bundle-status.json
 
 # Check bundle-to-gitrepo consistency
 jq '.diagnostics.gitRepoBundleInconsistencies' bundle-status.json
-[source,text]
 ----
 
 ==== Scenario 2: Agent Not Reporting Status
@@ -192,7 +184,6 @@ fleet monitor | jq '.clusters[] | select(.agentStatus != "ready")'
 
 # Check when agents last checked in
 fleet monitor | jq '.clusters[] | {name, lastSeen, agentAge}'
-[source,text]
 ----
 
 ==== Scenario 3: Resources Stuck with Deletion Timestamps
@@ -207,7 +198,6 @@ fleet monitor | jq '{
 
 # Check finalizers preventing deletion
 fleet monitor | jq '.bundles[] | select(.deletionTimestamp != null) | {name, finalizers}'
-[source,text]
 ----
 
 ==== Scenario 4: Commits Not Propagating
@@ -224,7 +214,6 @@ fleet monitor | jq '{
 # Find commit mismatches
 fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies[] | 
   select(.commitMismatch == true)'
-[source,text]
 ----
 
 ==== Scenario 5: Performance Issues
@@ -240,7 +229,6 @@ fleet monitor | jq '[.bundles[] | {name, size: .sizeBytes, sizeMB: (.sizeBytes /
 
 # Check for missing content resources
 fleet monitor | jq '.diagnostics.bundlesWithMissingContent'
-[source,text]
 ----
 
 === Continuous Monitoring Workflow
@@ -260,7 +248,6 @@ fleet analyze --diff /var/log/fleet-monitor.json > fleet-report-$(date +%Y%m%d).
 
 # 4. Log rotation (keep last 7 days)
 find /var/log -name "fleet-report-*.txt" -mtime +7 -delete
-[source,text]
 ----
 
 === Integration with Alerting
@@ -286,7 +273,6 @@ fleet monitor | jq -r '
   "fleet_agent_issues \(.diagnostics.clustersWithAgentIssues | length)",
   "fleet_large_bundles \(.diagnostics.largeBundles | length)"
 '
-[source,text]
 ----
 
 === Understanding Diagnostics
@@ -353,7 +339,6 @@ kubectl get crds | grep fleet.cattle.io
 
 # Enable verbose logging
 fleet monitor --verbose 2>&1 | tee monitor-debug.log
-[source,text]
 ----
 
 === SEE ALSO

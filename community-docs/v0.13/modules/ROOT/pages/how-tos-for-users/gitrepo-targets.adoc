@@ -165,7 +165,10 @@ targetCustomizations:
 
 {product_name} will deploy the Helm chart with your customized `values.yaml` to the different clusters.
 
-NOTE: Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
+[NOTE]
+====
+Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
+====
 
 == Additional Examples
 

@@ -45,15 +45,20 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --target-namespace string                Ensure this bundle goes to this target namespace
       --targets-file string                    Addition source of targets and restrictions to be append
       --username string                        Basic auth username for helm repo
+      --driven-scan                            Use driven scan. Bundles are defined by the user.
+                                               Paths will be defined by the tuple <base, options> separated by a separator.
+                                               The default separator is the character ':'. If you need to use a different one,
+                                               use the --driven-scan-sep flag.
+      --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
 === Good to know
 
-`fleet apply` now reads known_hosts data from an environment variable (`FLEET_KNOWN_HOSTS`), similarly to what the git
+`fleet apply` reads `known_hosts`` data from an environment variable (`FLEET_KNOWN_HOSTS`), similarly to what the git
 cloner does.
 
 This means that, should you want to run `fleet apply` directly on your host machine, providing it a custom
-value of `KNOWN_HOSTS`, you will need to export `FLEET_KNOWN_HOSTS` beforehand or run it as
+value of `KNOWN_HOSTS`, you need to export `FLEET_KNOWN_HOSTS` beforehand or run it as
 `FLEET_KNOWN_HOSTS=<your_entries> fleet apply <args>`.
 
 The number of concurrent bundle creation routines can be configured via the `--bundle-creation-max-concurrency` flag or the `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY` environment variable. The default value is 4. This can be useful when working with large repositories containing many bundles, as it allows you to control the parallelism of bundle creation. For example:
@@ -61,4 +66,4 @@ The number of concurrent bundle creation routines can be configured via the `--b
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
 == SEE ALSO
-* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations
+* xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]	 - Manage {product_name} operations
