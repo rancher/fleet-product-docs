@@ -139,6 +139,7 @@ If no such secret exists, or no `known_hosts` entries are available in that secr
 `known-hosts` config map, newly created at installation time with static entries for the most widely used git providers.
 
 Host key fingerprints added to the config map are sourced, respectively:
+
 * from link:https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints[GitHub SSH key fingerpints] for
 Github
 * from link:https://docs.gitlab.com/ee/user/gitlab_com/index.html#ssh-known_hosts-entries[SSH known host entries] for Gitlab
