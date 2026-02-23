@@ -226,4 +226,3 @@ Example:
 ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }missing${ end}
 ----
 ====
-====
