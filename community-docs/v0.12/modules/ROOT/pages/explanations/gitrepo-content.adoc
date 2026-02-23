@@ -42,7 +42,7 @@ Fleet looks for the following files to determine how the resources will be deplo
 | Any subpath
 | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
 
-| | *overlays/\{name\}*
+| *overlays/\{name\}*
 | / relative to `path`
 | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
@@ -114,7 +114,7 @@ See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Usi
 
 image::FleetValuesStages.svg[Fleet value stages]
 
-See xref:reference/ref-fleet-yaml.adoc#templating[Helm values templating].
+See xref:reference/ref-fleet-yaml.adoc#_templating[Helm values templating].
 
 [NOTE]
 ====
@@ -224,3 +224,22 @@ This allows complex GitOps setups or multi-level repository structures.
 
 Example:  
 https://github.com/rancher/fleet-examples/tree/master/single-cluster/multi-gitrepo[Multi-GitRepo Example].
+
+
+[08:51:58.904] ERROR (asciidoctor): dropping cells from incomplete row detected end of table
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/explanations/gitrepo-content.adoc:47
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
+
+
+[08:51:59.102] ERROR (asciidoctor): dropping cells from incomplete row detected end of table
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/explanations/gitrepo-content.adoc:47
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
+
+
+[08:51:58.935] WARN (asciidoctor): unterminated example block
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/reference/ref-fleet-yaml.adoc:228
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
+
+[08:51:59.500] WARN (asciidoctor): unterminated example block
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/reference/ref-fleet-yaml.adoc:228
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
