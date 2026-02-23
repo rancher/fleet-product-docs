@@ -42,7 +42,7 @@ Fleet looks for the following files to determine how the resources will be deplo
 | Any subpath
 | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
 
-| *overlays/{name}*
+| | *overlays/\{name\}*
 | / relative to `path`
 | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
@@ -103,7 +103,7 @@ See link:https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/#
 
 The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fleet.yaml reference].
 
-See xref:how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Using Private Helm Repositories].
+See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 == Using Helm Values
 
@@ -112,7 +112,7 @@ See xref:how-tos-for-users/gitrepo-add.adoc#using-private-helm-repositories[Usin
 * Most recent changes override previous values
 * Order: `helm.values` -> `helm.valuesFiles` -> `helm.valuesFrom`
 
-image::/img/FleetValuesStages.svg[]
+image::FleetValuesStages.svg[Fleet value stages]
 
 See xref:reference/ref-fleet-yaml.adoc#templating[Helm values templating].
 
@@ -199,7 +199,7 @@ targetCustomizations:
   clusterName: fleetname
 ----
 
-See xref:how-tos-for-users/gitrepo-targets.adoc#customization-per-cluster[Mapping to Downstream Clusters].
+See xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[Mapping to Downstream Clusters].
 
 == Raw YAML Resource Customization
 
