@@ -1,4 +1,4 @@
-== fleet dump
+= fleet dump
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 
@@ -16,33 +16,36 @@ Dump data from a cluster into an archive, including:
 fleet dump <flags>
 ----
 
-=== Flags
+== Flags
 
 [source,text]
 ----
   -p <path>         Path to the archive file to generate
 ----
 
-=== Output
+== Output
 
-==== Contents
+=== Contents
 
 The `dump` command produces a `.tgz` archive containing the following data:
+
 * Raw Fleet resources, in YAML format:
-    * Bundles
-    * BundleDeployments
-    * BundleNamespaceMappings
-    * Clusters
-    * ClusterGroups
-    * GitRepos
-    * GitRepoRestrictions
-    * HelmOps
+** Bundles
+** BundleDeployments
+** BundleNamespaceMappings
+** Clusters
+** ClusterGroups
+** GitRepos
+** GitRepoRestrictions
+** HelmOps
+
 * Kubernetes events for the following namespaces:
-    * `cattle-fleet-system`
-    * `cattle-fleet-local-system`
-    * `default`
-    * `kube-system`
-    * each namespace containing a Fleet `Cluster` resource
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** each namespace containing a Fleet `Cluster` resource
+
 * Metrics exposed by `monitoring-*` services living in the `cattle-fleet-system` namespace.
 This typically includes `monitoring-gitjob` and `monitoring-fleet-controller` services, as well as their
 xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[sharded] counterparts, if any.
@@ -58,7 +61,7 @@ They contain one event per line, each event being encoded in JSON.
 Metrics are stored into files by service, each file being named `metrics_<service_name>`.
 Their contents are `GET` response bodies received from each service's `/metrics` endpoint, verbatim.
 
-=== SEE ALSO
+== SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
