@@ -37,31 +37,7 @@ For details, see the link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/k
 
 ==== Propagation of Ready Status
 
-[mermaid]
-....
-flowchart TB
-  subgraph Upstream Cluster
-    gr[GitRepo]
-    c[Cluster]
-    cg[ClusterGroup]
-    b[Bundle]
-    bd[BundleDeployment]
-  end
-  
-  subgraph Downstream Clusters
-    a[Agent]
-  end
-  gr -->|triggers creation or update| b
-  b  -->|triggers creation or update| bd
-  bd -->|triggers deployment| a
-  a  -->|updates status| bd
-  bd -->|triggers status update| b
-  bd -->|triggers status update| c
-  b  -->|triggers status update| gr
-  c  -->|triggers status update| cg
-  linkStyle 0,1,2 stroke:#0000AA,stroke-width:2px;
-  linkStyle 3,4,5,6,7 stroke:#00AA00,stroke-width:2px;
-....
+image::PropogationReadyStatus.svg[Propagation of Ready status]
 
 === Display State
 
@@ -226,73 +202,4 @@ In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.
 
 == Class Diagram
 
-[mermaid]
-....
-classDiagram
-    direction TB
-    class HelmOp {
-        HelmOpStatus Status
-    }
-    class GitRepo {
-        GitRepoStatus Status
-    }
-    class HelmOpStatus {
-        StatusBase
-        metav1.Time LastPollingTime
-        string Version
-    }
-    class GitRepoStatus {
-        StatusBase
-        int64 ObservedGeneration
-        int64 UpdateGeneration
-        string Commit
-        string WebhookCommit
-        string GitJobStatus
-        metav1.Time LastSyncedImageScanTime
-        metav1.Time LastPollingTime
-    }
-    class StatusBase {
-        int ReadyClusters
-        int DesiredReadyClusters
-        BundleSummary Summary
-        StatusDisplay Display
-        []genericcondition.GenericCondition Conditions
-        []Resource Resources
-        ResourceCounts ResourceCounts
-        map[string]*ResourceCounts PerClusterResourceCounts
-    }
-    class StatusDisplay {
-        string ReadyBundleDeployments
-        string State
-        string Message
-        bool Error
-    }
-    class BundleSummary {
-        int NotReady
-        int WaitApplied
-        int ErrApplied
-        int OutOfSync
-        int Modified
-        int Ready
-        int Pending
-        int DesiredReady
-        NonReadyResource[] NonReadyResources
-    }
-    class ResourceCounts {
-        int Ready
-        int DesiredReady
-        int WaitApplied
-        int Modified
-        int Orphaned
-        int Missing
-        int Unknown
-        int NotReady
-    }
-    HelmOp "1" --> "1" HelmOpStatus : Status
-    GitRepo "1" --> "1" GitRepoStatus : Status
-    HelmOpStatus "1" --|> "1" StatusBase : embeds StatusBase
-    GitRepoStatus "1" --|> "1" StatusBase : embeds StatusBase
-    StatusBase "1" --> "1" StatusDisplay : Display
-    StatusBase "1" --> "1" BundleSummary : Summary
-    StatusBase "1" --> "1" ResourceCounts : ResourceCounts
-....
+image::ClusterGroups_classDiagram.svg[Propagation of Ready status]
