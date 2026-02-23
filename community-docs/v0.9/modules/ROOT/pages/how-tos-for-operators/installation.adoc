@@ -202,7 +202,7 @@ KDs/pb3fnMTtpA==
 ----END CERTIFICATE----
 ----
 
-### Install for Multi-Cluster
+=== Install for Multi-Cluster
 
 In the following example it will be assumed the API server URL from the `KUBECONFIG` which is `+https://example.com:6443+` and the CA certificate is in the file `ca.pem`. If your API server URL is signed by a well-known CA you can omit the `apiServerCA` parameter below or just create an empty `ca.pem` file (ie `touch ca.pem`).
 

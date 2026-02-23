@@ -7,15 +7,13 @@ Dump cluster data into an archive.
 == Overview
 
 Dump data from a cluster into an archive, including:
-
-* Fleet-managed resources
+*  {product_name}-managed resources
 * Kubernetes events
 * Metrics exposed by Fleet controllers
 
 [source,text]
 ----
 fleet dump <flags>
-[source,text]
 ----
 
 === Flags
@@ -23,7 +21,6 @@ fleet dump <flags>
 [source,text]
 ----
   -p <path>         Path to the archive file to generate
-[source,text]
 ----
 
 === Output
@@ -55,7 +52,7 @@ xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[s
 
 ==== Format
 
-Raw Fleet resources are each stored in a different file, named as `<kind>_<namespace>_<name>`, where `<kind>` is
+Raw  {product_name} resources are each stored in a different file, named as `<kind>_<namespace>_<name>`, where `<kind>` is
 one of the raw resource names mentioned in the previous section, in lowercase.
 
 Kubernetes events are split into files by namespace, each file named as `events_<namespace>`.
@@ -66,5 +63,5 @@ Their contents are `GET` response bodies received from each service's `/metrics`
 
 === SEE ALSO
 
-* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]
+* xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]

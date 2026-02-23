@@ -30,6 +30,7 @@
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
+**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
 *** Fleet Agent 
 **** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
 **** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]

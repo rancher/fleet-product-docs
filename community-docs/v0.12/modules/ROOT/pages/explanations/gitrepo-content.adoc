@@ -4,214 +4,128 @@
 
 {product_name} creates bundles from a git repository. This happens either explicitly by specifying paths, or when a `fleet.yaml` is found.
 
-The folder could contain a Helm chart, or reference one. It could be a plain Kubernetes manifest, or a Kustomize folder. Each bundle is converted to a single Helm chart for deployment.
+Each bundle is created from paths in a GitRepo and modified further by reading the discovered `fleet.yaml` file.
+Bundle lifecycles are tracked between releases by the helm releaseName field added to each bundle. If the releaseName is not
+specified within fleet.yaml it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
 
-The `fleet.yaml` file contains all the options for the deployment.
+*The git repository has no explicitly required structure.* It is important
+to realize the scanned resources will be saved as a resource in Kubernetes so
+you want to make sure the directories you are scanning in git do not contain
+arbitrarily large resources. Right now there is a limitation that the resources
+deployed must *gzip to less than 1MB*.
 
-== Bundle Names
+== How repos are scanned
 
-By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
+Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
+Internally each scanned path will become a xref:explanations/concepts.adoc[bundle] that Fleet will manage,
+deploy, and monitor independently.
 
-Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
+Fleet looks for the following files to determine how the resources will be deployed.
 
-== How Repositories Are Scanned
-
-**The Git repository has no required structure.** All scanned resources are stored as Kubernetes resources, so ensure scanned directories do not contain large files. Currently, resources must **gzip to less than 1 MB**.
-
-Multiple paths can be defined for a `GitRepo`. Each path is scanned independently and becomes a managed xref:explanations/concepts.adoc[bundle] that {product_name} deploys and monitors.
-
-{product_name} looks for the following files to determine deployment behavior:
-
-[cols="1,2,3", options="header"]
+[cols="1,2,4", options="header"]
 |===
-| File
-| Location
-| Meaning
+| File | Location | Meaning
 
-| Chart.yaml
-| Relative to `path` or custom path from `fleet.yaml`
-| The resources are deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
+| *Chart.yaml*
+| / relative to `path` or custom path from `fleet.yaml`
+| The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
 
-| kustomization.yaml
-| Relative to `path` or custom path from `fleet.yaml`
-| The resources are deployed using Kustomize. Refer to the `fleet.yaml` for more options.
+| *kustomization.yaml*
+| / relative to `path` or custom path from `fleet.yaml`
+| The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
 
-| fleet.yaml
+| *fleet.yaml*
 | Any subpath
-| If any `fleet.yaml` is found, a new xref:explanations/concepts.adoc[bundle] is defined. This allows mixing charts, Kustomize, and raw YAML in the same repository.
+| If any fleet.yaml is found a new xref:explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo
 
-| \.yaml
+| *.yaml*
 | Any subpath
-| If a `Chart.yaml` or `kustomization.yaml` isn’t found, any `.yaml` or `.yml` file is assumed to be a Kubernetes resource and is deployed.
+| If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
 
-| overlays/\{name}
-| Relative to `path`
-| When deploying using raw YAML (not Kustomize or Helm), `overlays` is a special directory for customizations.
+| *overlays/\{name\}*
+| / relative to `path`
+| When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
-=== Alternative Scan: Explicitly Defined by the User
+=== Excluding files and directories from bundles
 
-{product_name} also supports a user-driven method for defining Bundles directly.
+Fleet supports file and directory exclusion by means of `.fleetignore` files, in a similar fashion to how `.gitignore`
+files behave in git repositories:
 
-In this mode, {product_name} loads resources from a specified base directory.  
-It looks for a `fleet.yaml` at the root only if an options file isn’t provided.  
-This method is **non-recursive** and loads only explicitly defined Bundles.
+* Glob syntax is used to match files or directories, using Golang's link:https://pkg.go.dev/path/filepath#Match[`filepath.Match`]
+* Empty lines are skipped, and can therefore be used to improve readability
+* Characters like white spaces and `#` can be escaped with a backslash
+* Trailing spaces are ignored, unless escaped
+* Comments, ie lines starting with unescaped `#`, are skipped
+* A given line can match a file or a directory, even if no separator is provided
+* A match may be found for a file or directory at any level below the directory where a `.fleetignore` lives
+* Multiple `.fleetignore` files are supported
 
-==== Example Directory Structure
-
-[source,console]
-----
-driven/
-├── helm/
-│   └── fleet.yaml
-├── simple/
-│   ├── configmap.yaml
-│   └── service.yaml
-└── kustomize/
-    ├── base/
-    │   ├── kustomization.yaml
-    │   └── secret.yaml
-    ├── overlays/
-    │   ├── dev/
-    │   │   ├── kustomization.yaml
-    │   │   └── secret.yaml
-    │   ├── prod/
-    │   │   ├── kustomization.yaml
-    │   │   └── secret.yaml
-    │   └── test/
-    │       ├── kustomization.yaml
-    │       └── secret.yaml
-    ├── dev.yaml
-    ├── prod.yaml
-    └── test.yaml
-----
-
-==== Corresponding GitRepo Definition
-
-[source,yaml]
-----
-kind: GitRepo
-apiVersion: fleet.cattle.io/v1alpha1
-metadata:
-  name: driven
-  namespace: fleet-local
-spec:
-  repo: https://github.com/0xavi0/fleet-test-data
-  branch: driven-scan-example
-  bundles:
-    - base: driven/helm
-    - base: driven/simple
-    - base: driven/kustomize
-      options: dev.yaml
-    - base: driven/kustomize
-      options: test.yaml
-----
-
-In this example:
-
-* `driven/helm`: contains a `fleet.yaml` that configures the Bundle.  
-* `driven/simple`: contains only manifests; {product_name} packages all resources by default.  
-* `driven/kustomize`: reused for multiple environments using different options files (`dev.yaml`, `test.yaml`).
-
-Example options file for `driven/kustomize`:
-
-[source,yaml]
-----
-namespace: kustomize-dev
-kustomize:
-  dir: "overlays/dev"
-----
-
-All paths must be relative to the base directory.  
-If `base: driven/kustomize`, paths in options files are relative to `driven/kustomize`.
-
-Incorrect:
-[source,yaml]
-----
-namespace: kustomize-dev
-kustomize:
-  dir: "."
-----
-
-Correct:
-[source,yaml]
-----
-namespace: kustomize-dev
-kustomize:
-  dir: "overlays/dev"
-----
-
-This approach simplifies working with Kustomize and provides finer control compared to recursive scanning.
-
-== Excluding Files and Directories
-
-{product_name} supports `.fleetignore` files, similar to `.gitignore`, to exclude files and directories.
-
-* Uses Go’s [`filepath.Match`](https://pkg.go.dev/path/filepath#Match) syntax.  
-* Supports comments (`#`), escaped characters, and multiple `.fleetignore` files.  
-* Applies recursively under each `.fleetignore` directory.
-
-Example:
-
-[source,console]
+[source,text]
 ----
 root/
-├── .fleetignore            # contains `ignore-always.yaml`
+├── .fleetignore
 ├── something.yaml
-├── bar/
-│   ├── .fleetignore        # contains `something.yaml`
+├── bar
+│   ├── .fleetignore
 │   ├── ignore-always.yaml
 │   ├── something2.yaml
 │   └── something.yaml
-└── foo/
+└── foo
     ├── ignore-always.yaml
     └── something.yaml
 ----
 
-Unsupported:
-* `**` wildcards
-* Explicit inclusions (`!`)
+This currently comes with a few limitations, the following not being supported:
 
-== The `fleet.yaml` File
+* Double asterisks (`**`)
+* Explicit inclusions with `!`
 
-`fleet.yaml` modifies how resources are deployed and customized.  
-It’s located at the root relative to the `GitRepo.path`.  
-If found in a subdirectory, it defines a new xref:explanations/concepts.adoc[bundle] configured independently.
+== `fleet.yaml`
 
-[NOTE]
+The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
+the resources are deployed and customized.
+
+[CAUTION]
 ====
-Helm chart dependencies  
-{product_name} automatically updates Helm chart dependencies unless `disableDependencyUpdate: true` is set.  
-If disabled, manually update dependencies using:
+*Helm chart dependencies*:
 
-* `helm dependencies update $chart`  
-* `helm dependencies build $chart`
+It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run:
+
+[source,bash]
+----
+helm dependencies update $chart
+helm dependencies build $chart
+----
+
+See link:https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/#helm-chart-dependencies[Fleet docs].
 ====
 
-For field details, see xref:reference/ref-fleet-yaml.adoc[{product_name} YAML Reference].   
-For private Helm repositories, see xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
+The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fleet.yaml reference].
+
+See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 == Using Helm Values
 
-When applying changes to `values.yaml`:
+*How changes are applied to `values.yaml`*:
 
-* The latest changes override previous ones.
-* Merge order: `helm.values` → `helm.valuesFiles` → `helm.valuesFrom`.
+* Most recent changes override previous values
+* Order: `helm.values` -> `helm.valuesFiles` -> `helm.valuesFrom`
 
-image::FleetValuesStages.svg[Static, 600]
+image::FleetValuesStages.svg[Fleet value stages]
 
-Values can be templated with data from `clusters.fleet.cattle.io`.  
-To disable templating, set `disablePreProcess` in `fleet.yaml`.
+See xref:reference/ref-fleet-yaml.adoc#_templating[Helm values templating].
 
 [NOTE]
 ====
-If charts generate credentials or certificates, override these values to prevent redeployment loops.
+Credentials in Values
 
-Secrets loaded from downstream clusters using `valuesFrom` are encrypted if [data encryption](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/) is enabled.  
-However, credentials stored in Git (`values:` or `valuesFiles:`) are not.
+If the chart generates certificates or passwords in its templates, these values must be overriden.
+
+Credentials loaded with `valuesFrom` are encrypted when Kubernetes encryption is enabled.
 ====
 
-== Using `valuesFrom`
+=== Using ValuesFrom
 
 Example ConfigMap:
 
@@ -224,6 +138,7 @@ metadata:
   namespace: default
 data:
   values.yaml: |-
+    replication: true
     replicas: 2
     serviceType: NodePort
 ----
@@ -239,17 +154,15 @@ metadata:
   namespace: default
 stringData:
   values.yaml: |-
+    replication: true
     replicas: 3
     serviceType: NodePort
 ----
 
-Create the secret:
-[source,console]
+[source,bash]
 ----
 kubectl create secret generic secret-values --from-file=values.yaml=secretdata.yaml
 ----
-
-Reference them in `fleet.yaml`:
 
 [source,yaml]
 ----
@@ -268,53 +181,37 @@ helm:
     replicas: "4"
 ----
 
-== Per-Cluster Customization
-
-{product_name} customizes resources per cluster using `targetCustomizations` in `fleet.yaml`.
-
-Cluster matching uses any combination of:
-
-* `clusterSelector`
-* `clusterGroupSelector`
-* `clusterGroup`
-
-Example:
+== Per Cluster Customization
 
 [source,yaml]
 ----
 targetCustomizations:
-  - name: all
-    clusterSelector: {}
-  - name: none
-    clusterSelector: null
+- name: all
+  clusterSelector: {}
+- name: none
+  clusterSelector: null
 ----
-
-To match a specific cluster, use the `clusters.fleet.cattle.io` resource name.
 
 [source,yaml]
 ----
 targetCustomizations:
-  - name: prod
-    clusterName: fleetname
+- name: prod
+  clusterName: fleetname
 ----
 
-See xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[Customization per Cluster] for details.
+See xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[Mapping to Downstream Clusters].
 
-== Raw YAML Customization
+== Raw YAML Resource Customization
 
-When using raw YAML instead of Helm or Kustomize, you can apply overlays via the `overlays/` directory.
-
-[source,console]
+[source,shell]
 ----
 deployment.yaml
 svc.yaml
-overlays/custom/configmap.yaml         # added
-overlays/custom/svc.yaml               # replaces svc.yaml
-overlays/custom/deployment_patch.yaml  # patches deployment.yaml
-----
 
-Files ending in `_patch.` (for example, `deployment_patch.yaml`) patch matching base files.  
-Patching uses JSON Merge, Strategic Merge, or JSON Patch, depending on content.
+overlays/custom/configmap.yaml
+overlays/custom/svc.yaml
+overlays/custom/deployment_patch.yaml
+----
 
 == Cluster and Bundle State
 
@@ -327,3 +224,22 @@ This allows complex GitOps setups or multi-level repository structures.
 
 Example:  
 https://github.com/rancher/fleet-examples/tree/master/single-cluster/multi-gitrepo[Multi-GitRepo Example].
+
+
+[08:51:58.904] ERROR (asciidoctor): dropping cells from incomplete row detected end of table
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/explanations/gitrepo-content.adoc:47
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
+
+
+[08:51:59.102] ERROR (asciidoctor): dropping cells from incomplete row detected end of table
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/explanations/gitrepo-content.adoc:47
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
+
+
+[08:51:58.935] WARN (asciidoctor): unterminated example block
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/reference/ref-fleet-yaml.adoc:228
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)
+
+[08:51:59.500] WARN (asciidoctor): unterminated example block
+    file: /home/runner/work/fleet-product-docs/fleet-product-docs/community-docs/v0.12/modules/ROOT/pages/reference/ref-fleet-yaml.adoc:228
+    source: /home/runner/work/fleet-product-docs/fleet-product-docs (branch: HEAD <worktree> | start path: community-docs/v0.12)

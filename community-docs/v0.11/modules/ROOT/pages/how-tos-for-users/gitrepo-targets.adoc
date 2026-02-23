@@ -134,6 +134,7 @@ Instead of deploying the app on each cluster, {product_name} allows you to deplo
 . Under `multi-cluster/helm`, a Helm chart will deploy the frontend app service and backend database service.
 . The following rule will be defined in `fleet.yaml`:
 
+[source,yaml]
 ----
 targetCustomizations:
 - name: dev

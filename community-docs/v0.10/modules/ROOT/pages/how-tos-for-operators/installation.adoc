@@ -340,4 +340,4 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 --
 ====
 
-At this point the {product_name} manager should be ready. You can now xref:how-tos-for-operators/cluster-registration.adoc[register clusters] and xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[git repos] with the {product_name} manager.
+At this point the {product_name} manager should be ready. You can now xref:how-tos-for-operators/cluster-registration.adoc[register clusters] and xref:how-tos-for-users/gitrepo-add.adoc[git repos] with the {product_name} manager.

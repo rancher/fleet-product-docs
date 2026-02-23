@@ -11,6 +11,7 @@
 ** xref:explanations/gitrepo-content.adoc[Git Repository Contents]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Custom Resources During Deployment]
+** xref:explanations/glossary.adoc[Custom Resources During Deployment]
 * How-tos for Operators
 ** xref:how-tos-for-operators/installation.adoc[Installation Details]
 ** xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]
@@ -34,7 +35,6 @@
 ** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
 ** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
 
-
 * Reference
 ** CLI 
 *** Fleet 
@@ -50,9 +50,9 @@
 **** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
 **** xref:reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register]
 *** Cleanup
-**** xref:reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]
-**** xref:reference/cli/fleet-cli/fleet_cleanup_clusterregistration.adoc[fleet cluster registration cleanup]
-**** xref:reference/cli/fleet-cli/fleet_cleanup_gitjob.adoc[fleet gitjob cleanup]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[fleet cluster registration cleanup]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[fleet gitjob cleanup]
 *** Fleet Controller 
 **** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
 **** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
