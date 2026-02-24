@@ -51,13 +51,30 @@ image::flow-rollout-fleet.png[A visual asset displaying flow of rollout in {prod
 
 Various limits that can be configured in {product_name}:
 
-| Field | Description | Default |
-| -- | ---- | -- |
-| maxUnavailable | Maximum number or percentage of clusters that can be `NotReady` before halting rollout. | 100% |
-| maxUnavailablePartitions | Number or percentage of partitions that can be `NotReady` at once. | 0 |
-| autoPartitionSize | Number or percentage of clusters per auto-created partition. | 25% |
-| autoPartitionThreshold | Minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition. | 200 |
-| partitions | Define manual partitions by cluster labels or group. If set, autoPartitionSize is ignored. | – |
+[cols="2,5,1", options="header"]
+|===
+| Field | Description | Default
+
+| maxUnavailable
+| Maximum number or percentage of clusters that can be `NotReady` before halting rollout.
+| 100%
+
+| maxUnavailablePartitions
+| Number or percentage of partitions that can be `NotReady` at once.
+| 0
+
+| autoPartitionSize
+| Number or percentage of clusters per auto-created partition.
+| 25%
+
+| autoPartitionThreshold
+| Minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition.
+| 200
+
+| partitions
+| Define manual partitions by cluster labels or group. If set, autoPartitionSize is ignored.
+| –
+|===
 
 {product_name} supports automatic and manual partitioning. For more information about configuration options, refer to the xref:reference/ref-fleet-yaml.adoc[`rolloutStrategy` option in the fleet.yaml reference.]
 
