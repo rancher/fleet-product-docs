@@ -66,7 +66,7 @@ Put your private key into secret, use the namespace the GitRepo is in:
 
 [source,bash]
 ----
-kubectl create secret generic basic-auth-secret -n namespace-of-your-gitrepo --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
+kubectl create secret generic ssh-key-secret -n $namespace --type=kubernetes.io/ssh-auth --from-file=ssh-privatekey=$filepath
 ----
 
 Now the `clientSecretName` must be specified in the repo definition:
