@@ -92,6 +92,39 @@ Starting with {product_name} v0.13, the Helm chart exposes replica count setting
 * `agent.replicas` : Controls the Fleet agent.
 
 Each defaults to one replica.
+
+[[additional-ssh-known-hosts]]
+=== Additional SSH known hosts
+
+When interacting with git repositories through SSH, strict host key checks are enabled by default, meaning that
+{product_name} will reject SSH connection attempts to hosts for which no `known_hosts` entry exists.
+
+More information on what this means xref:how-tos-for-users/gitrepo-add.adoc#strict-host-key-checks[here].
+
+By default, Fleet installs `known_hosts` entries for a few widely used git hosting providers.
+
+Host key fingerprints added to the config map are sourced, respectively:
+
+* from link:https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints[GitHub SSH key fingerpints] for
+Github
+* from link:https://docs.gitlab.com/ee/user/gitlab_com/index.html#ssh-known_hosts-entries[SSH known host entries] for Gitlab
+* from link:https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification/[configure SSH and two step verification] for
+Bitbucket, which also provides a `curl` command to fetch them in `known_hosts`-friendly format: `curl
+https://bitbucket.org/site/ssh`
+* from link:https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops[Use SSH keys to authenticate]
+for Azure DevOps
+
+However, when using a different git hosting setup, such as private servers hosted by yourself or your company, entries
+for those servers can be added to Fleet at installation time using the `additionalKnownHosts` Helm value, which supports
+an array of strings.
+Each element of that array would be an additional entry, e.g.:
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet \
+  --set additionalKnownHosts={'ourgitserver.company ssh-rsa <fingerprint>','our-other-git-server.company ssh-ed25519 <fingerprint2>'}
+----
+
 [[multi-controller-install-sharding]]
 == Multi-Controller Installation: Sharding
 
