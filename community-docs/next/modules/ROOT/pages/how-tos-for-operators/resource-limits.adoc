@@ -1,0 +1,116 @@
+:doctype: book
+
+= Resource Limits
+:revdate: 2026-02-25
+:page-revdate: {revdate}
+
+{product_name} supports configuring CPU and memory resource requests and limits in two places:
+
+* *Management cluster controllers* — configured via the Helm chart's `resources` field, as described on this page.
+* *Downstream cluster agents* — configured per-cluster via the `agentResources` field on the `Cluster` resource.
+
+[NOTE]
+====
+When running {product_name} inside Rancher, use the `rancher-config` ConfigMap to pass Helm values instead of using Helm directly.
+The `resources` fields described on this page still apply — pass them nested under the `fleet` key in the ConfigMap.
+See xref:reference/ref-configuration.adoc[Configuration] for details.
+====
+
+== Default Resources
+
+Set a default for all controller containers using the top-level `resources` field:
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 8000m
+    memory: 8Gi
+  requests:
+    cpu: 250m
+    memory: 768Mi
+----
+
+Pass this to Helm during installation or upgrade:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  --set resources.limits.cpu=8000m \
+  --set resources.limits.memory=8Gi \
+  --set resources.requests.cpu=250m \
+  --set resources.requests.memory=768Mi
+----
+
+== Per-Component Overrides
+
+Individual controller containers can override the default with component-specific settings.
+The supported component keys are:
+
+* `fleetController` — the main Fleet controller
+* `fleetCleanup` — the cleanup controller
+* `fleetAgentmanagement` — the agent management controller
+* `gitjob` — the GitJob controller
+* `helmops` — the HelmOps controller
+
+If a component key is present, its value takes precedence over the default `resources.limits` and `resources.requests`.
+Set a component to an empty object `{}` to explicitly assign no resource constraints for that container, regardless of the default.
+
+Example `values.yaml` using per-component overrides:
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  fleetController:
+    limits:
+      cpu: 8000m
+      memory: 8Gi
+    requests:
+      cpu: 250m
+      memory: 768Mi
+  gitjob: {}         # no resource constraints for gitjob
+  helmops: {}        # no resource constraints for helmops
+----
+
+In this example:
+
+* `fleetController` uses its own limits and requests.
+* `gitjob` and `helmops` have no resource constraints applied.
+* `fleetCleanup` and `fleetAgentmanagement` fall back to the top-level default.
+
+Apply the configuration with Helm:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  -f values.yaml
+----
+
+== Downstream Cluster Agent Resources
+
+To configure resource limits and requests for the Fleet agent running on a specific downstream cluster, set `agentResources` on the corresponding `Cluster` resource:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: fleet-default
+spec:
+  agentResources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+----
+
+This is independent of the management cluster controller settings above and applies only to the agent deployed on that downstream cluster.
