@@ -20,12 +20,12 @@ This approach avoids maintaining a separate chart repository and reuses your exi
 
 == Helm chart in fleet.yaml
 
-To fetch a Helm chart, reference the chart like this in a `fleet.yaml` file:
+To fetch a Helm chart from an OCI registry, reference the chart using the `repo` field in a `fleet.yaml` file:
 
 [source,yaml]
 ----
 helm:
-  chart: "oci://ghcr.io/fleetrepoci/guestbook"
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
 ----
 
 You can use the `version` field to reference a specific chart version:
@@ -33,11 +33,30 @@ You can use the `version` field to reference a specific chart version:
 [source,yaml]
 ----
 helm:
-  chart: "oci://ghcr.io/fleetrepoci/guestbook"
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
   version: 0.1.0
 ----
 
 {product_name} pulls the chart from the OCI registry and deploys it to the targeted clusters.
+
+[NOTE]
+====
+The `repo` field is the canonical way to specify OCI registry URLs in a `fleet.yaml` file. It is consistent with how OCI registries are referenced in HelmOp resources.
+====
+
+=== Deprecated: OCI URL in `helm.chart`
+
+Prior to this change, {product_name} expected the OCI URL to be placed in the `chart` field instead of `repo`:
+
+[source,yaml]
+----
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"  # <1>
+  version: 0.1.0
+----
+<1> Deprecated: use `helm.repo` instead.
+
+This form still works for backwards compatibility, but it is deprecated and will produce a warning in the {product_name} logs. Migrate existing `fleet.yaml` files to use `helm.repo` for OCI URLs.
 
 == Using authenticated registries
 
