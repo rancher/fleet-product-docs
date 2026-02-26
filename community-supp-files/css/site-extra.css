@@ -56,6 +56,28 @@ i.fa[title="Tip:"] {
   background-color: #0c322c;
 }
 
+/* Fix dropdown positioning */
+.navbar-item.has-dropdown {
+  position: relative;
+}
+
+.navbar-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: max-content;
+  left: auto;
+}
+
+/* Make navbar-link behave like icon button */
+.navbar-link.is-icon-only {
+  padding: 0.25rem 0.5rem;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+}
+
 /* navigation buttons top nav */
 .navbar .button {
   border: none;
@@ -63,19 +85,19 @@ i.fa[title="Tip:"] {
 }
 
 @media screen and (min-width: 1024px) {
-
+  .navbar-dropdown a.navbar-item:hover {
+    background-color: #30ba78;
+    color: white;
+    text-decoration: unset;
+  }
+  
   .navbar-end .navbar-link:hover,
   .navbar-end>a.navbar-item:hover {
     background-color: #ff6a52;
     color: #fff;
   }
 
-  .navbar-dropdown {
-    right: 0;
-    left: unset;
-  }
 }
-
 .navbar-end .navbar-item.has-dropdown:hover .navbar-link,
 .navbar-end .navbar-link:hover,
 .navbar-end>a.navbar-item:hover {
@@ -89,13 +111,6 @@ i.fa[title="Tip:"] {
   width: calc(270 / 16 * 1rem);
 }
 
-@media screen and (min-width: 1024px) {
-  .navbar-dropdown a.navbar-item:hover {
-    background-color: #30ba78;
-    color: white;
-    text-decoration: unset;
-  }
-}
 
 /* Nav menu */
 .nav-menu {
@@ -172,6 +187,15 @@ div#topbar-nav :hover {
   border-bottom-color: #0C322C;
 }*/
 
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #ffffff;
+  border-bottom: 2px solid #0c322c;
+  min-height: 2.75rem;     /* reduces bar height */
+}
+
 .navbar-brand {
   display: flex;
   align-items: center;
@@ -180,14 +204,6 @@ div#topbar-nav :hover {
 #search-input {
   width: 300px;
 }
-
-/* navbar background + full-width bottom border */
-.navbar {
-  background-color: #ffffff;
-  border-bottom: 2px solid #0c322c;
-  min-height: 2.75rem;     /* reduces bar height */
-}
-
 
 /* margin hack: we need this margin to prevent logo from covering
  bottom navbar border on lower resolutions screens */
@@ -1347,10 +1363,13 @@ nav.pagination a {
   align-self: anchor-center;
 }
 
-/* === Mobile navbar fix === */
+/* === Mobile navbar fix (combined + cleaned) === */
 @media screen and (max-width: 768px) {
-  /* Compact bar */
+  
+
+  /* Base navbar layout */
   .navbar {
+    position: relative;
     min-height: 2.4rem;
     padding: 0 0.5rem;
   }
@@ -1372,7 +1391,7 @@ nav.pagination a {
     padding-bottom: 0.15rem;
   }
 
-  /* Remove the green tile background from all nav items */
+  /* Remove green background / tile effect */
   .navbar .navbar-item,
   .navbar .navbar-link {
     background: transparent !important;
@@ -1382,10 +1401,8 @@ nav.pagination a {
     padding-bottom: 0.25rem !important;
   }
 
-  /* Hide the right-side dropdown/icon items on phones
-     (version, GitHub, Slack, language) so they can't overlap */
-  .navbar-end .has-dropdown,
-  .navbar-end .navbar-item {
+  /* ✅ FIX: Hide only unnecessary items (NOT dropdown) */
+  .navbar-end .navbar-item:not(.has-dropdown):not(.search) {
     display: none !important;
   }
 
@@ -1398,34 +1415,30 @@ nav.pagination a {
   #search-input {
     width: 100% !important;
     max-width: none !important;
+    display: block;
+    margin-top: 0.25rem;
   }
 
-  /* TOC should scroll with the page */
-  .toc.sidebar .toc-menu {
-    position: static !important;
+
+  /* Hide ALL toolbar links except version selector */
+  .toolbar a,
+  .toolbar .toolbar-item {
+    display: none !important;
   }
 
-  .doc {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-/* === FORCE NAVBAR ICONS TO BE CLICKABLE ON MOBILE === */
-@media screen and (max-width: 768px) {
-  /* Base: navbar is the stacking context */
-  .navbar {
-    position: relative;
+  /* Keep version dropdown visible */
+  .toolbar .page-versions {
+    display: flex !important;
   }
 
-  /* All brand icons (burger, home, logo, etc.) sit on top */
+  /* Ensure navbar icons are clickable */
   .navbar-brand,
   .navbar-brand * {
     position: relative;
-    z-index: 50;          /* higher than anything else in the bar */
-    pointer-events: auto; /* ensure they accept clicks */
+    z-index: 50;
+    pointer-events: auto;
   }
 
-  /* Anything on the right (search / version / etc.) sits below */
   .navbar-end,
   .navbar-end *,
   .navbar-menu,
@@ -1434,10 +1447,30 @@ nav.pagination a {
     z-index: 1;
   }
 
-  /* Keep search below the icons, not on top of them */
-  #search-input {
+  /* ✅ Mobile dropdown behavior (tap = open) */
+  .navbar-item.has-dropdown:focus-within .navbar-dropdown {
     display: block;
-    margin-top: 0.25rem;
+  }
+
+  .navbar-dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    left: auto;
+    background: #fff;
+    min-width: 200px;
+    z-index: 1000;
+  }
+
+  /* TOC should scroll normally */
+  .toc.sidebar .toc-menu {
+    position: static !important;
+  }
+
+  .doc {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
 
@@ -1449,15 +1482,17 @@ nav.pagination a {
   display: block;
 }
 
-/* Center icons vertically in navbar */
-.header-icon-container {
-  display: flex !important;
+/* Fix navbar right section layout */
+.navbar-end {
+  display: flex;
   align-items: center;
-  height: 100%;
+  justify-content: flex-end;
+  gap: 0.75rem;
 }
 
-/* Remove Bulma offset from dropdown link */
-.navbar-link.header-icon-container {
-  padding-top: 0;
-  padding-bottom: 0;
+/* Ensure items stay inline */
+.navbar-end .navbar-item {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
 }
