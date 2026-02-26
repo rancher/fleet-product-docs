@@ -92,6 +92,21 @@ Starting with {product_name} v0.13, the Helm chart exposes replica count setting
 * `agent.replicas` : Controls the Fleet agent.
 
 Each defaults to one replica.
+
+
+[[enabling-imagescan]]
+=== Enabling imagescan
+
+The xref:how-tos-for-users/imagescan.adoc[imagescan] feature is disabled by default, meaning that:
+
+* non-empty `imageScans` blocks in your `fleet.yaml` or equivalent config files will lead to bundle creation errors,
+  visible in your GitRepo's status.
+* the imagescan controller will not run, hence repositories referenced in `imageScan` blocks of `fleet.yaml` or
+  equivalent config files will not be monitored for newer images. This also means that image tags referenced in your
+  manifests with annotations such as `image: <image>:<tag> # {"$imagescan": "test-scan"}` will not be expanded.
+
+To remedy this, install Fleet with `--set imagescan.enabled=true`.
+
 [[multi-controller-install-sharding]]
 == Multi-Controller Installation: Sharding
 
