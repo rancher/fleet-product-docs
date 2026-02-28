@@ -9,67 +9,61 @@
 {{#if page.attributes.draft-preview-only}}
   <div class="draft-banner">&nbsp;&nbsp;&nbsp;DRAFT PREVIEW ONLY!</div>
 {{/if}}
-      {{#if env.SITE_SEARCH_PROVIDER}}
       <div class="navbar-item search hide-for-print">
-        <div id="search-field" class="field">
-          <label class="visual-search-label" for="search-input">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</label>
-          <input label="Search" aria-label="Search" id="search-input" type="text" placeholder="Search the docs" {{#if page.home}} autofocus{{/if}}>
-          <label class="filter checkbox" style="display: none">
-            <input type="checkbox" data-facet-filter="component:{{page.component.name}}" checked> Only this project
-          </label>
-        </div>
-      </div>
-      {{/if}}
-      <button class="navbar-burger" data-target="topbar-nav">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-    </div>
+  <div id="search-field" class="field search-field">
+    <span class="search-icon">
+      <i class="fas fa-search"></i>
+    </span>
+    <input id="search-input"
+           type="text"
+           placeholder="Search the docs"
+           {{#if page.home}} autofocus{{/if}}>
+  </div>
+</div>
     <div class="navbar-end">
 
   <!-- GitHub dropdown -->
-<div class="navbar-item has-dropdown is-hoverable">
-  <a class="navbar-link is-icon-only">
-    <img src="../_/img/github_logo.svg" alt="GitHub" class="header-icon">
-  </a>
-
-  <div class="navbar-dropdown is-right">
-    <a class="navbar-item" href="https://github.com/rancher/fleet">
-      <i class="fab fa-github"></i>&nbsp;Fleet&nbsp;
-      <i class="fas fa-external-link-alt"></i>
-    </a>
-    <a class="navbar-item" href="https://github.com/rancher/fleet-product-docs">
-      <i class="fab fa-github"></i>&nbsp;Fleet docs&nbsp;
-      <i class="fas fa-external-link-alt"></i>
-    </a>
-  </div>
-</div>
+    <div class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-link is-icon-only">
+        <img src="../_/img/github_logo.svg" alt="GitHub" class="header-icon">
+      </a>
+    
+      <div class="navbar-dropdown is-right">
+        <a class="navbar-item" href="https://github.com/rancher/fleet">
+          <i class="fab fa-github"></i>&nbsp;Fleet&nbsp;
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+        <a class="navbar-item" href="https://github.com/rancher/fleet-product-docs">
+          <i class="fab fa-github"></i>&nbsp;Fleet docs&nbsp;
+          <i class="fas fa-external-link-alt"></i>
+        </a>
+      </div>
+    </div>
 
   <!-- Slack -->
-  <a href="https://rancher-users.slack.com/channels/fleet"
-     target="_blank"
-     rel="noopener noreferrer"
-     class="navbar-item"
-     aria-label="Slack Channel">
-    <img src="../_/img/slack.svg"
-         alt="Slack"
-         class="header-icon">
-  </a>
-
-  <!-- Language -->
-  <div class="navbar-item has-dropdown is-hoverable">
-    <a class="navbar-link">
-      <img src="../_/img/language.png"
-           class="langIcon"
-           alt="Language"
-           title="Language">
+    <a href="https://rancher-users.slack.com/channels/fleet"
+       target="_blank"
+       rel="noopener noreferrer"
+       class="navbar-item"
+       aria-label="Slack Channel">
+      <img src="../_/img/slack.svg"
+           alt="Slack"
+           class="header-icon">
     </a>
-    <div class="navbar-dropdown is-right">
-    </div>
-  </div>
 
-</div>
+  {{!-- <!-- Language -->
+    <div class="navbar-item has-dropdown is-hoverable">
+      <a class="navbar-link">
+        <img src="../_/img/language.png"
+             class="langIcon"
+             alt="Language"
+             title="Language">
+      </a>
+      <div class="navbar-dropdown is-right">
+      </div>
+    </div> --}}
+
+  </div>
  </div>
-  </nav>
+ </nav>
 </header>

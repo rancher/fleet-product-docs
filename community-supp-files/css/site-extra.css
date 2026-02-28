@@ -199,10 +199,19 @@ div#topbar-nav :hover {
 .navbar-brand {
   display: flex;
   align-items: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;       
+  flex-shrink: 0;              
 }
+
 
 #search-input {
   width: 300px;
+  max-width: 400px;
+  min-width: 150px;
+  flex: 1;
+  height: 2rem;
 }
 
 /* margin hack: we need this margin to prevent logo from covering
@@ -218,6 +227,8 @@ a.navbar-logo {
   display: inline-flex;
   align-items: center;
   color: #2a2f45;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 navbar-item,
@@ -1363,136 +1374,88 @@ nav.pagination a {
   align-self: anchor-center;
 }
 
-/* === Mobile navbar fix (combined + cleaned) === */
-@media screen and (max-width: 768px) {
-  
-
-  /* Base navbar layout */
-  .navbar {
-    position: relative;
-    min-height: 2.4rem;
-    padding: 0 0.5rem;
-  }
-
-  /* Logo + title */
-  .logo {
-    height: 30px;
-    width: auto;
-    position: static !important;
-  }
-
-  .navbar__title {
-    font-size: 1rem;
-    margin-left: 4px;
-  }
-
-  .navbar-brand .navbar-item {
-    padding-top: 0.15rem;
-    padding-bottom: 0.15rem;
-  }
-
-  /* Remove green background / tile effect */
-  .navbar .navbar-item,
-  .navbar .navbar-link {
-    background: transparent !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.25rem !important;
-  }
-
-  /* ✅ FIX: Hide only unnecessary items (NOT dropdown) */
-  .navbar-end .navbar-item:not(.has-dropdown):not(.search) {
-    display: none !important;
-  }
-
-  /* Keep search visible */
-  .navbar-end .navbar-item.search,
-  .navbar-end .navbar-item.search * {
-    display: block !important;
-  }
-
-  #search-input {
-    width: 100% !important;
-    max-width: none !important;
-    display: block;
-    margin-top: 0.25rem;
-  }
-
-
-  /* Hide ALL toolbar links except version selector */
-  .toolbar a,
-  .toolbar .toolbar-item {
-    display: none !important;
-  }
-
-  /* Keep version dropdown visible */
-  .toolbar .page-versions {
-    display: flex !important;
-  }
-
-  /* Ensure navbar icons are clickable */
-  .navbar-brand,
-  .navbar-brand * {
-    position: relative;
-    z-index: 50;
-    pointer-events: auto;
-  }
-
-  .navbar-end,
-  .navbar-end *,
-  .navbar-menu,
-  .navbar-menu * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* ✅ Mobile dropdown behavior (tap = open) */
-  .navbar-item.has-dropdown:focus-within .navbar-dropdown {
-    display: block;
-  }
-
-  .navbar-dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
-    left: auto;
-    background: #fff;
-    min-width: 200px;
-    z-index: 1000;
-  }
-
-  /* TOC should scroll normally */
-  .toc.sidebar .toc-menu {
-    position: static !important;
-  }
-
-  .doc {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-
-/* Normalize icon sizing */
+/* Icon sizing */
 .header-icon {
   width: 22px;
   height: 22px;
   object-fit: contain;
-  display: block;
 }
 
-/* Fix navbar right section layout */
+/* Remove green background from icon buttons */
+.navbar-link.is-arrowless {
+  background: transparent !important;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Align right section */
 .navbar-end {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
   gap: 0.75rem;
+  flex-shrink: 0;      
 }
 
-/* Ensure items stay inline */
-.navbar-end .navbar-item {
+/* Desktop: use Bulma default hover */
+@media screen and (min-width: 1024px) {
+  /* no overrides */
+}
+
+/* Tablet (769px–1023px): disable dropdown completely */
+@media screen and (max-width: 1023px) {
+  .navbar-dropdown {
+    display: none !important;
+  }
+}
+
+/* Mobile cleanup */
+@media screen and (max-width: 768px) {
+  /* Hide right-side clutter */
+  .navbar-end .navbar-item:not(.search):not(.has-dropdown) {
+    display: none;
+  }
+
+  /* Keep layout stable */
+  .navbar {
+    padding: 0 0.5rem;
+  }
+
+  .logo {
+    height: 30px;
+  }
+}
+
+/* Ensure logo + text stay together */
+.navbar-logo {
   display: flex;
   align-items: center;
-  white-space: nowrap;
+  gap: 6px;
+  white-space: nowrap;     
+}
+
+/* Prevent shrinking */
+.navbar-brand .navbar-item {
+  flex-shrink: 0;
+}
+
+/* CENTER: search */
+.navbar-item.search {
+  flex: 1;                     
+  display: flex;
+  justify-content: center;
+  max-width: 500px;
+}
+
+/* Search container */
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Icon */
+.search-icon {
+  display: flex;
+  align-items: center;
+  color: #0c322c;
+  font-size: 0.9rem;
 }
