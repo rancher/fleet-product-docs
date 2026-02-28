@@ -43,6 +43,7 @@
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
+*** Fleet Troubleshooting
 **** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]
 **** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
 **** xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]
