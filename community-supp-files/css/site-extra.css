@@ -56,6 +56,28 @@ i.fa[title="Tip:"] {
   background-color: #0c322c;
 }
 
+/* Fix dropdown positioning */
+.navbar-item.has-dropdown {
+  position: relative;
+}
+
+.navbar-dropdown {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  z-index: 1000;
+  min-width: max-content;
+  left: auto;
+}
+
+/* Make navbar-link behave like icon button */
+.navbar-link.is-icon-only {
+  padding: 0.25rem 0.5rem;
+  background: transparent !important;
+  display: flex;
+  align-items: center;
+}
+
 /* navigation buttons top nav */
 .navbar .button {
   border: none;
@@ -63,19 +85,19 @@ i.fa[title="Tip:"] {
 }
 
 @media screen and (min-width: 1024px) {
-
+  .navbar-dropdown a.navbar-item:hover {
+    background-color: #30ba78;
+    color: white;
+    text-decoration: unset;
+  }
+  
   .navbar-end .navbar-link:hover,
   .navbar-end>a.navbar-item:hover {
     background-color: #ff6a52;
     color: #fff;
   }
 
-  .navbar-dropdown {
-    right: 0;
-    left: unset;
-  }
 }
-
 .navbar-end .navbar-item.has-dropdown:hover .navbar-link,
 .navbar-end .navbar-link:hover,
 .navbar-end>a.navbar-item:hover {
@@ -89,13 +111,6 @@ i.fa[title="Tip:"] {
   width: calc(270 / 16 * 1rem);
 }
 
-@media screen and (min-width: 1024px) {
-  .navbar-dropdown a.navbar-item:hover {
-    background-color: #30ba78;
-    color: white;
-    text-decoration: unset;
-  }
-}
 
 /* Nav menu */
 .nav-menu {
@@ -172,22 +187,32 @@ div#topbar-nav :hover {
   border-bottom-color: #0C322C;
 }*/
 
-.navbar-brand {
+.navbar {
   display: flex;
   align-items: center;
-}
-
-#search-input {
-  width: 300px;
-}
-
-/* navbar background + full-width bottom border */
-.navbar {
+  justify-content: space-between;
   background-color: #ffffff;
   border-bottom: 2px solid #0c322c;
   min-height: 2.75rem;     /* reduces bar height */
 }
 
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;       
+  flex-shrink: 0;              
+}
+
+
+#search-input {
+  width: 300px;
+  max-width: 400px;
+  min-width: 150px;
+  flex: 1;
+  height: 2rem;
+}
 
 /* margin hack: we need this margin to prevent logo from covering
  bottom navbar border on lower resolutions screens */
@@ -202,6 +227,8 @@ a.navbar-logo {
   display: inline-flex;
   align-items: center;
   color: #2a2f45;
+  white-space: nowrap;
+  display: inline-block;
 }
 
 navbar-item,
@@ -1347,117 +1374,88 @@ nav.pagination a {
   align-self: anchor-center;
 }
 
-/* === Mobile navbar fix === */
-@media screen and (max-width: 768px) {
-  /* Compact bar */
-  .navbar {
-    min-height: 2.4rem;
-    padding: 0 0.5rem;
-  }
-
-  /* Logo + title */
-  .logo {
-    height: 30px;
-    width: auto;
-    position: static !important;
-  }
-
-  .navbar__title {
-    font-size: 1rem;
-    margin-left: 4px;
-  }
-
-  .navbar-brand .navbar-item {
-    padding-top: 0.15rem;
-    padding-bottom: 0.15rem;
-  }
-
-  /* Remove the green tile background from all nav items */
-  .navbar .navbar-item,
-  .navbar .navbar-link {
-    background: transparent !important;
-    box-shadow: none !important;
-    margin: 0 !important;
-    padding-top: 0.25rem !important;
-    padding-bottom: 0.25rem !important;
-  }
-
-  /* Hide the right-side dropdown/icon items on phones
-     (version, GitHub, Slack, language) so they can't overlap */
-  .navbar-end .has-dropdown,
-  .navbar-end .navbar-item {
-    display: none !important;
-  }
-
-  /* Keep search visible */
-  .navbar-end .navbar-item.search,
-  .navbar-end .navbar-item.search * {
-    display: block !important;
-  }
-
-  #search-input {
-    width: 100% !important;
-    max-width: none !important;
-  }
-
-  /* TOC should scroll with the page */
-  .toc.sidebar .toc-menu {
-    position: static !important;
-  }
-
-  .doc {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-}
-/* === FORCE NAVBAR ICONS TO BE CLICKABLE ON MOBILE === */
-@media screen and (max-width: 768px) {
-  /* Base: navbar is the stacking context */
-  .navbar {
-    position: relative;
-  }
-
-  /* All brand icons (burger, home, logo, etc.) sit on top */
-  .navbar-brand,
-  .navbar-brand * {
-    position: relative;
-    z-index: 50;          /* higher than anything else in the bar */
-    pointer-events: auto; /* ensure they accept clicks */
-  }
-
-  /* Anything on the right (search / version / etc.) sits below */
-  .navbar-end,
-  .navbar-end *,
-  .navbar-menu,
-  .navbar-menu * {
-    position: relative;
-    z-index: 1;
-  }
-
-  /* Keep search below the icons, not on top of them */
-  #search-input {
-    display: block;
-    margin-top: 0.25rem;
-  }
-}
-
-/* Normalize icon sizing */
+/* Icon sizing */
 .header-icon {
   width: 22px;
   height: 22px;
   object-fit: contain;
-  display: block;
 }
 
-/* Center icons vertically in navbar */
-.header-icon-container {
-  display: flex !important;
+/* Remove green background from icon buttons */
+.navbar-link.is-arrowless {
+  background: transparent !important;
+  padding: 0.25rem 0.5rem;
+}
+
+/* Align right section */
+.navbar-end {
+  display: flex;
   align-items: center;
-  height: 100%;
+  gap: 0.75rem;
+  flex-shrink: 0;      
 }
 
-/* Remove Bulma offset from dropdown link */
-.navbar-link.header-icon-container {
-  padding-top: 0;
-  padding-bottom: 0;
+/* Desktop: use Bulma default hover */
+@media screen and (min-width: 1024px) {
+  /* no overrides */
+}
+
+/* Tablet (769px–1023px): disable dropdown completely */
+@media screen and (max-width: 1023px) {
+  .navbar-dropdown {
+    display: none !important;
+  }
+}
+
+/* Mobile cleanup */
+@media screen and (max-width: 768px) {
+  /* Hide right-side clutter */
+  .navbar-end .navbar-item:not(.search):not(.has-dropdown) {
+    display: none;
+  }
+
+  /* Keep layout stable */
+  .navbar {
+    padding: 0 0.5rem;
+  }
+
+  .logo {
+    height: 30px;
+  }
+}
+
+/* Ensure logo + text stay together */
+.navbar-logo {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;     
+}
+
+/* Prevent shrinking */
+.navbar-brand .navbar-item {
+  flex-shrink: 0;
+}
+
+/* CENTER: search */
+.navbar-item.search {
+  flex: 1;                     
+  display: flex;
+  justify-content: center;
+  max-width: 500px;
+}
+
+/* Search container */
+.search-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+/* Icon */
+.search-icon {
+  display: flex;
+  align-items: center;
+  color: #0c322c;
+  font-size: 0.9rem;
 }
