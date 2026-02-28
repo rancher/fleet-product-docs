@@ -12,7 +12,7 @@ The `fleet.yaml` file contains all the options for the deployment.
 
 By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
 
-Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
+Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added (Bundle names are limited to 53 characters long).
 
 == How repos are scanned
 
