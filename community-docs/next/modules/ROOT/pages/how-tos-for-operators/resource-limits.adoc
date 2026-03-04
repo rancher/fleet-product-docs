@@ -6,14 +6,15 @@
 
 {product_name} supports configuring CPU and memory resource requests and limits in two places:
 
-* *Management cluster controllers* — configured via the Helm chart's `resources` field, as described on this page.
-* *Downstream cluster agents* — configured per-cluster via the `agentResources` field on the `Cluster` resource.
+* *Management cluster controllers*: configured via the Helm chart's `resources` field, as described on this page.
+* *Downstream cluster agents*: configured per-cluster via the `agentResources` field on the `Cluster` resource.
 
 [NOTE]
 ====
 When running {product_name} inside Rancher, use the `rancher-config` ConfigMap to pass Helm values instead of using Helm directly.
-The `resources` fields described on this page still apply — pass them nested under the `fleet` key in the ConfigMap.
-See xref:reference/ref-configuration.adoc[Configuration] for details.
+The `resources` fields described on this page still apply. Specify the fields nested under the `fleet` key in the ConfigMap.
+
+For more information, refer to xref:reference/ref-configuration.adoc[Configuration].
 ====
 
 == Default Resources
@@ -47,14 +48,15 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
 Individual controller containers can override the default with component-specific settings.
 The supported component keys are:
 
-* `fleetController` — the main Fleet controller
-* `fleetCleanup` — the cleanup controller
-* `fleetAgentmanagement` — the agent management controller
-* `gitjob` — the GitJob controller
-* `helmops` — the HelmOps controller
+* `fleetController` : the main Fleet controller
+* `fleetCleanup` : the cleanup controller
+* `fleetAgentmanagement` : the agent management controller
+* `gitjob` : the GitJob controller
+* `helmops` : the HelmOps controller
 
-If a component key is present, its value takes precedence over the default `resources.limits` and `resources.requests`.
-Set a component to an empty object `{}` to explicitly assign no resource constraints for that container, regardless of the default.
+If a component key is present, its value takes precedence over the default `resources.limits` and `resources.requests`. 
+
+To remove resource constraints for a container regardless of the default settings, set a component to an empty object `{}`.
 
 Example `values.yaml` using per-component overrides:
 
