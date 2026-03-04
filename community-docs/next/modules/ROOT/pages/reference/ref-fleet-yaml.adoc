@@ -61,10 +61,10 @@ helm:
   #
   chart: ./chart
 
-  # A https URL to a Helm repo to download the chart from. It's typically easier
-  # to just use `chart` field and refer to a tgz file.  If repo is used the
-  # value of `chart` will be used as the chart name to lookup in the Helm
-  # repository.
+  # A https URL to a Helm repo to download the chart from, or an OCI registry
+  # URL (oci://...). For OCI registries, repo is the canonical field and no
+  # chart name is needed. For standard Helm repos, the value of `chart` is used
+  # as the chart name to look up in the repository.
   repo: https://charts.rancher.io
 
   # The version of the chart or semver constraint of the chart to find. If a
@@ -373,8 +373,8 @@ These options specify how to download the chart. The reference can be a local pa
 |===
 | Option | Description | Applies to
 
-| `helm.chart` | The Helm chart location (local path, go-getter URL, or OCI registry). | Helm
-| `helm.repo` | URL of a Helm repository. | Helm
+| `helm.chart` | The Helm chart location (local path or go-getter URL). For OCI registries, use `helm.repo` instead (see below). | Helm
+| `helm.repo` | URL of a Helm repository or OCI registry (`oci://...`). | Helm
 | `helm.version` | Chart version or semver constraint. Re-evaluated on every git change. | Helm
 | `helm.disableDependencyUpdate` | If true, disables automatic dependency downloads. | Helm
 |===
@@ -382,22 +382,34 @@ These options specify how to download the chart. The reference can be a local pa
 The chart reference can be one of the following:
 
 * Local path (`chart`)
-* https://github.com/hashicorp/go-getter?tab=readme-ov-file#url-format[go-getter URL]
-* OCI chart URL (`oci://...`)
-* Helm repository (`repo` + `version`)
-* OCI Helm repository (`repo` + `version`)
+* https://github.com/hashicorp/go-getter?tab=readme-ov-file#url-format[go-getter URL] (`chart`)
+* OCI chart URL (`repo: oci://...`)
+* Helm repository (`repo` + `chart` + optional `version`)
+* OCI Helm repository (`repo: oci://...` + optional `version`)
+
+==== `helm.repo`
+
+For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it like this:
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+  version: "0.1.0"  # optional
+----
+
+This is consistent with how OCI registries are referenced in xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOp resources].
 
 ==== `helm.chart`
 
-Specifies a custom location for the Helm chart. For example:
-`oci://ghcr.io/fleetrepoci/guestbook`.
+Specifies a local path or go-getter URL for the Helm chart. When `helm.repo` is set to a standard (non-OCI) Helm repository URL, `helm.chart` holds the chart name within that repository.
 
 If a secret for the SSH key was defined via `helmSecretName`, it is injected automatically.
 
 [NOTE]
 ====
-If the `fleet.yaml` file is located outside the embedded chart’s directory, it must explicitly reference the chart using `helm.chart`.  
-Otherwise, {product_name} won’t install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
+If the `fleet.yaml` file is located outside the embedded chart's directory, it must explicitly reference the chart using `helm.chart`.  
+Otherwise, {product_name} won't install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
 ====
 
 [WARNING]
@@ -405,6 +417,23 @@ Otherwise, {product_name} won’t install the chart, and Helm-specific fields li
 **Limitation:** Downloading Helm charts from Git with custom CA bundles does not work.  
 If a CA bundle is configured in a secret referenced in `helmSecretName`, it will be ignored.  
 See https://github.com/rancher/fleet/issues/3646[fleet#3646] for details.
+====
+
+[WARNING]
+====
+**Deprecated:** Placing an OCI URL (e.g. `oci://...`) in `helm.chart` is deprecated.
+Use `helm.repo` for OCI URLs instead.
+
+[source,yaml]
+----
+# Deprecated - still works, but produces a warning in Fleet logs:
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"
+
+# Preferred:
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+----
 ====
 
 ==== `helm.version`

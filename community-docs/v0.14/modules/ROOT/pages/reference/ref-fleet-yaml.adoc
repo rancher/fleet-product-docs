@@ -400,13 +400,6 @@ If the `fleet.yaml` file is located outside the embedded chart’s directory, it
 Otherwise, {product_name} won’t install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
 ====
 
-[WARNING]
-====
-**Limitation:** Downloading Helm charts from Git with custom CA bundles does not work.  
-If a CA bundle is configured in a secret referenced in `helmSecretName`, it will be ignored.  
-See https://github.com/rancher/fleet/issues/3646[fleet#3646] for details.
-====
-
 ==== `helm.version`
 
 Determines which chart to download from OCI registries.

@@ -11,6 +11,7 @@ content:
 
 urls:
   html_extension_style: drop
+  latest_version_segment: ''
 
 # Description: SUSE UI bundle
 ui:
@@ -30,6 +31,7 @@ asciidoc:
 antora:
   extensions:
   - require: '@antora/lunr-extension'
+    index_latest_only: true
   - require: '@springio/antora-xref-extension'
 
 output:

@@ -50,4 +50,10 @@ If resources referenced through `downstreamResources` should stay on downstream 
 
 == Monitoring
 
-From version v0.14.0 onwards, {product_name} monitors changes made to secrets and configmaps that are listed in `DownstreamResources`. It also checks whether a secret or configmap was created after the Bundle was created.
+From version v0.15.0 onwards, {product_name} monitors changes made to secrets and configmaps that are listed in `DownstreamResources`. It also checks whether a secret or configmap was created after the Bundle was created.
+
+When a referenced secret or configmap is created or updated on the upstream cluster, Fleet will propagate those changes
+to downstream clusters, and re-deploy the workload.
+
+This enables deployments to make use of the latest versions of those referenced resources, which may represent
+configuration, Helm values, etc.

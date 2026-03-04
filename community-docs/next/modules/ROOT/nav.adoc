@@ -17,6 +17,7 @@
 ** xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]
 ** xref:how-tos-for-operators/cluster-group.adoc[Create Cluster Groups]
 ** xref:how-tos-for-operators/multi-user.adoc[Setup Multi User]
+** xref:how-tos-for-operators/resource-limits.adoc[Configure Resource Limits]
 * How-tos for Users
 ** xref:how-tos-for-users/gitrepo-add.adoc[Create a GitRepo Resource]
 ** xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clusters]
@@ -42,6 +43,7 @@
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
+*** Fleet Troubleshooting
 **** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]
 **** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
 **** xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]
