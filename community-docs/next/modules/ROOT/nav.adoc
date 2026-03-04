@@ -17,6 +17,7 @@
 ** xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]
 ** xref:how-tos-for-operators/cluster-group.adoc[Create Cluster Groups]
 ** xref:how-tos-for-operators/multi-user.adoc[Setup Multi User]
+** xref:how-tos-for-operators/resource-limits.adoc[Configure Resource Limits]
 * How-tos for Users
 ** xref:how-tos-for-users/gitrepo-add.adoc[Create a GitRepo Resource]
 ** xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clusters]
