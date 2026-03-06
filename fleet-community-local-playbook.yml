@@ -12,6 +12,7 @@ content:
 urls:
   html_extension_style: drop
   latest_version_segment: ''
+  latest_prerelease_version_segment: next
 
 # Description: SUSE UI bundle
 ui:
