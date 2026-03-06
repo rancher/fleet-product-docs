@@ -1,6 +1,7 @@
 = Architecture
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /architecture
 
 {product_name} has two primary components. The {product_name} controller and the cluster agents. These
 components work in a two-stage pull model. The {product_name} controller will pull from git and the

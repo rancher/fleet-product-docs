@@ -1,6 +1,7 @@
 = Install and Use Fleet CLI
 :revdate: 2025-10-6
 :page-revdate: {revdate}
+:page-aliases: /install-use-fleet-cli
 
 {product_name} CLI is a command-line interface (CLI) that allows you to interact directly with {product_name} from your local machine. It enables you to create, apply, and inspect `bundles` without requiring a `GitRepo`. Typical use cases include:
 
