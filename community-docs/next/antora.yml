@@ -1,7 +1,8 @@
 name: ROOT
 title: Fleet
 version: next
-display_version: 'Next'
+display_version: Next
+prerelease: true   
 start_page: index.adoc
 asciidoc:
   attributes:
