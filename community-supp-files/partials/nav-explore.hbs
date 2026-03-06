@@ -12,22 +12,23 @@
           <div class="title"><a href="{{{relativize ./url}}}">{{{./title}}}</a></div>
           {{#if (or ./versions.[1] ./versions.[0].version (ne ./versions.[0].displayVersion 'default'))}}
           <ul class="versions">
-            {{#each ./versions}}
-            {{! Look up this version in page.versions to get the page-aware URL }}
-            {{#with (lookup @root.page.versions ./version)}}
-            <li class="version
-              {{~#if (and (eq @root.page.component @root.page.component) (eq ../version @root.page.version))}} is-current{{/if~}}
-              {{~#if (eq .. ../../latest)}} is-latest{{/if}}">
-              <a href="{{{relativize (or ./url ../url)}}}">{{../displayVersion}}</a>
-            </li>
+            {{! If this is the current component, use page.versions which has page-aware URLs }}
+            {{#if (eq this @root.page.component)}}
+              {{#each @root.page.versions}}
+              <li class="version
+                {{~#if (eq ./version @root.page.version)}} is-current{{/if~}}">
+                <a href="{{{relativize ./url}}}">{{./displayVersion}}</a>
+              </li>
+              {{/each}}
             {{else}}
-            <li class="version
-              {{~#if (eq this @root.page.componentVersion)}} is-current{{/if~}}
-              {{~#if (eq this ../latest)}} is-latest{{/if}}">
-              <a href="{{{relativize ./url}}}">{{./displayVersion}}</a>
-            </li>
-            {{/with}}
-            {{/each}}
+              {{! For other components, fall back to component root URL }}
+              {{#each ./versions}}
+              <li class="version
+                {{~#if (eq this ../latest)}} is-latest{{/if}}">
+                <a href="{{{relativize ./url}}}">{{./displayVersion}}</a>
+              </li>
+              {{/each}}
+            {{/if}}
           </ul>
           {{/if}}
         </li>
