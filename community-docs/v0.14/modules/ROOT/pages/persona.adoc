@@ -1,7 +1,6 @@
 = Key Personas and Their Roles
 :revdate: 2025-07-23
 :page-revdate: {revdate}
-:page-aliases: /persona
 
 [cols="1,2,2", options="header"]
 |===
