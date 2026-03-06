@@ -13,11 +13,20 @@
           {{#if (or ./versions.[1] ./versions.[0].version (ne ./versions.[0].displayVersion 'default'))}}
           <ul class="versions">
             {{#each ./versions}}
+            {{! Look up this version in page.versions to get the page-aware URL }}
+            {{#with (lookup @root.page.versions ./version)}}
             <li class="version
-              {{~#if (and (eq .. @root.page.component) (eq this @root.page.componentVersion))}} is-current{{/if~}}
+              {{~#if (and (eq @root.page.component @root.page.component) (eq ../version @root.page.version))}} is-current{{/if~}}
+              {{~#if (eq .. ../../latest)}} is-latest{{/if}}">
+              <a href="{{{relativize (or ./url ../url)}}}">{{../displayVersion}}</a>
+            </li>
+            {{else}}
+            <li class="version
+              {{~#if (eq this @root.page.componentVersion)}} is-current{{/if~}}
               {{~#if (eq this ../latest)}} is-latest{{/if}}">
               <a href="{{{relativize ./url}}}">{{./displayVersion}}</a>
             </li>
+            {{/with}}
             {{/each}}
           </ul>
           {{/if}}
