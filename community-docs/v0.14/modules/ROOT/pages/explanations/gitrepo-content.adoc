@@ -1,6 +1,7 @@
 = Git Repository Contents
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /gitrepo-content
 
 {product_name} will create bundles from a git repository. This happens either explicitly by specifying paths, or when a `fleet.yaml` is found.
 

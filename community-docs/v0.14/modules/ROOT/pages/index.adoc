@@ -1,6 +1,7 @@
 = Overview
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /
 
 image::fleet-architecture.svg[Static, 600]
 

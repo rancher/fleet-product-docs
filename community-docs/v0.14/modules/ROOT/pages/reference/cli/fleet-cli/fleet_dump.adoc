@@ -1,6 +1,7 @@
 = fleet dump
 :revdate: 2026-02-05
 :page-revdate: {revdate}
+:page-aliases: /fleet_dump
 
 Dump cluster data into an archive.
 

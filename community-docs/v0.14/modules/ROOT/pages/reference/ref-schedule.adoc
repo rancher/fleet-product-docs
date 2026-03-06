@@ -1,6 +1,7 @@
 = Schedule Resource
 :revdate: 2025-10-10
 :page-revdate: {revdate}
+:page-aliases: /ref-schedule
 
 The `Schedule` resource defines time windows during which {product_name} accepts changes to `Clusters`.
 

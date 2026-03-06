@@ -1,6 +1,7 @@
 = Troubleshooting
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /troubleshooting
 
 This section contains commands and tips to troubleshoot{product_name}.
 

@@ -3,6 +3,7 @@
 = Installation Details
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /installation
 
 {product_name}  can be installed in two modes: *single-cluster* and *multi-cluster*.
 
