@@ -1,5 +1,5 @@
 = Custom Resources Spec
-:revdate: 2025-07-23
+:revdate: 2026-02-05
 :page-revdate: {revdate}
 :doctype: book
 
@@ -236,7 +236,7 @@ BundleResource represents the content of a single resource from the bundle, like
 | false
 
 | dependsOn
-| DependsOn refers to the bundles which must be ready before this bundle can be deployed.
+| DependsOn refers to the bundles which must be in an accepted state before this bundle can be deployed.
 | []<<BundleRef,BundleRef>>
 | false
 
@@ -638,6 +638,11 @@ RolloverStrategy controls the rollout of the bundle across clusters.
 | *intstr.IntOrString
 | false
 
+| autoPartitionThreshold 
+| The minimum number of clusters that need to be present before auto-partitioning is enabled. If the number of target clusters is less than this value, all clusters will be placed in a single partition. default: 200 
+| *int 
+| false 
+
 | partitions
 | A list of definitions of partitions.  If any target clusters do not match the configuration they are added to partitions at the end following the autoPartitionSize.
 | []<<Partition,Partition>>
@@ -798,6 +803,11 @@ BundleDeploymentList contains a list of BundleDeployment
 | bool
 | false
 |===
+
+[Note]
+====
+If you do not want Fleet to apply the `helm.sh/resource-policy: keep`, configure the `deleteCRDResource` option to `true` in `fleet.yaml`.
+====
 
 <<Resources,Back to Custom Resources>>
 
