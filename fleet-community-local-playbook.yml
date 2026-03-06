@@ -11,8 +11,8 @@ content:
 
 urls:
   html_extension_style: drop
-  latest_version_segment: next
-
+  latest_version_segment: ''
+  
 # Description: SUSE UI bundle
 ui:
   bundle:
