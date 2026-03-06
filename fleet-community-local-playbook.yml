@@ -1,7 +1,7 @@
 site:
   title: Fleet
   url: /
-  start_page: 0.14@ROOT:ROOT:index.adoc
+  start_page: next@ROOT:ROOT:index.adoc
 
 content:
   sources:
@@ -12,8 +12,7 @@ content:
 urls:
   html_extension_style: drop
   latest_version_segment: ''
-  latest_prerelease_version_segment: next
-
+  
 # Description: SUSE UI bundle
 ui:
   bundle:
