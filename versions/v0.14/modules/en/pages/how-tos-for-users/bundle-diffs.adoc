@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-Continuous Delivery in Rancher is powered by fleet. When a user adds a GitRepo CR, then Continuous Delivery creates the associated fleet bundles.
+Continuous Delivery in Rancher is powered by {product_name}. When a user adds a GitRepo CR, then Continuous Delivery creates the associated fleet bundles.
 
 You can access these bundles by navigating to the Cluster Explorer (Dashboard UI), and selecting the `Bundles` section.
 
@@ -18,15 +18,17 @@ image::ModifiedBundle.png[Static, 600]
 
 {product_name} bundles support the ability to specify a custom http://jsonpatch.com/[jsonPointer patch].
 
-With the patch, users can instruct fleet to ignore object modifications.
+With the patch, users can instruct {product_name} to ignore object modifications.
 
-== Simple Example
+== Ignoring object modifications
+
+=== Simple Example
 
 In this simple example, we create a Service and ConfigMap that we apply a bundle diff onto.
 
 https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
 
-== Gatekeeper Example
+=== Gatekeeper Example
 
 In this example, we are trying to deploy opa-gatekeeper using Continuous Delivery to our clusters.
 
@@ -36,7 +38,7 @@ Each path in the GitRepo CR, has an associated Bundle CR. The user can view the 
 
 In our case the differences detected are as follows:
 
-[,yaml]
+[source,yaml]
 ----
   summary:
     desiredReady: 1
@@ -64,14 +66,14 @@ Based on this summary, there are three objects which need to be patched.
 
 We will look at these one at a time.
 
-=== 1. ValidatingWebhookConfiguration:
+==== 1. ValidatingWebhookConfiguration:
 
 The gatekeeper-validating-webhook-configuration validating webhook has two ValidatingWebhooks in its spec.
 
 In cases where more than one element in the field requires a patch, that patch will refer these to as `$setElementOrder/ELEMENTNAME`
 
 From this information, we can see the two ValidatingWebhooks in question are:
-
+[source,json]
 ----
   "$setElementOrder/webhooks": [
     {
@@ -85,6 +87,7 @@ From this information, we can see the two ValidatingWebhooks in question are:
 
 Within each ValidatingWebhook, the fields that need to be ignore are as follows:
 
+[source,json]
 ----
     {
       "clientConfig": {
@@ -113,6 +116,7 @@ Within each ValidatingWebhook, the fields that need to be ignore are as follows:
 
 and
 
+[source,json]
 ----
      {
       "clientConfig": {
@@ -147,7 +151,7 @@ image::WebhookConfigurationSpec.png[Static, 600]
 
 Based on this information, our diff patch would look as follows:
 
-[,yaml]
+[source,yaml]
 ----
   - apiVersion: admissionregistration.k8s.io/v1
     kind: ValidatingWebhookConfiguration
@@ -159,10 +163,11 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path":"/webhooks/1/rules"}
 ----
 
-=== 2. Deployment gatekeeper-controller-manager:
+==== 2. Deployment gatekeeper-controller-manager:
 
 The gatekeeper-controller-manager deployment is modified since there are cpu limits and tolerations applied (which are not in the actual bundle).
 
+[source,json]
 ----
 {
   "spec": {
@@ -194,7 +199,7 @@ In this case, there is only 1 container in the deployment container spec, and th
 
 Based on this information, our diff patch would look as follows:
 
-[,yaml]
+[source,yaml]
 ----
   - apiVersion: apps/v1
     kind: Deployment
@@ -205,10 +210,11 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
-=== 3. Deployment gatekeeper-audit:
+==== 3. Deployment gatekeeper-audit:
 
 The gatekeeper-audit deployment is modified in a similarly, to the gatekeeper-controller-manager, with additional cpu limits and tolerations applied.
 
+[source,json]
 ----
 {
   "spec": {
@@ -240,7 +246,7 @@ Similar to gatekeeper-controller-manager, there is only 1 container in the deplo
 
 Based on this information, our diff patch would look as follows:
 
-[,yaml]
+[source,yaml]
 ----
   - apiVersion: apps/v1
     kind: Deployment
@@ -251,11 +257,11 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
-=== Combining It All Together
+==== Combining It All Together
 
 We can now combine all these patches as follows:
 
-[,yaml]
+[source,yaml]
 ----
 diff:
   comparePatches:
@@ -286,3 +292,42 @@ diff:
 We can add these now to the bundle directly to test and also commit the same to the `fleet.yaml` in your GitRepo.
 
 Once these are added, the GitRepo should deploy and be in "Active" status.
+
+== Ignoring entire objects
+
+When installing a chart such as link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul], a job named
+`consul-server-acl-init` is created, then deleted once it has successfully completed.
+
+That chart can be installed by creating a `GitRepo` pointing to a git repository using a `fleet.yaml` such as:
+
+[source,yaml]
+----
+defaultNamespace: consul
+helm:
+  releaseName: test-consul
+  chart: "consul"
+  repo: "https://helm.releases.hashicorp.com"
+
+  values:
+    global:
+      name: consul
+      acls:
+        manageSystemACLs: true
+----
+
+Installing this chart will result in the `GitRepo` reporting a `Modified` status, with job `consul-server-acl-init`
+missing, once that job has completed.
+
+This can be remedied with the following bundle diff in our `fleet.yaml`:
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: consul-server-acl-init
+    operations:
+    - {"op":"ignore"}
+----
+
