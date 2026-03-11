@@ -249,6 +249,21 @@ Based on the above log, you can add the following entry to remove the operation:
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
+==== GitRepo sync fails without retry
+
+A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the GitJob controller logs can show network timeouts or etcd request timeouts. This issue is more likely when {product_name} is under high load.
+
+product_name retries apply operations when it detects a resource version conflict. The number of retry attempts is controlled by the `FLEET_APPLY_CONFLICT_RETRIES` environment variable.
+
+By default, product_name retries the operation a limited number of times. If conflicts occur frequently under heavy load, increase this value to allow more retry attempts.
+
+You can configure this variable in the product_name controller deployment.
+
+For example:
+
+
+For more information about configuring product_name environment variables, see xref:reference/ref-configuration.adoc[product_name configuration].
+
 === `GitRepo` or `Bundle` stuck in modified state
 
 *Modified* means that there is a mismatch between the actual state and the desired state, the source of truth, which lives in the git repository.
