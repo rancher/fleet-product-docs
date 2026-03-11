@@ -255,14 +255,17 @@ A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the
 
 {product_name} retries apply operations when it detects a resource version conflict. The number of retry attempts is controlled by the `FLEET_APPLY_CONFLICT_RETRIES` environment variable.
 
-By default, {product_name} retries the operation a limited number of times. If conflicts occur frequently under heavy load, increase this value to allow more retry attempts.
+The default value is `1`. This means {product_name} retries the bundle creation or update once if a conflict occurs. If conflicts occur frequently under heavy load, increase this value to allow additional retry attempts. Configure this variable as an environment variable on the GitJob deployment. 
 
-You can configure this variable in the {product_name} controller deployment.
+For example, when installing with Helm:
 
-For example:
+[source,bash]
+----
+--set-string extraEnv[0].name=FLEET_APPLY_CONFLICT_RETRIES \
+--set-string extraEnv[0].value=3
+----
 
-
-For more information about configuring {product_name} environment variables, see xref:reference/ref-configuration.adoc[{product_name} configuration].
+This configuration sets the retry count to `3` instead of the default value `1`.
 
 === `GitRepo` or `Bundle` stuck in modified state
 
