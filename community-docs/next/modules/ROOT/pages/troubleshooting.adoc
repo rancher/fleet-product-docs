@@ -257,7 +257,7 @@ A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the
 
 By default, {product_name} retries the operation a limited number of times. If conflicts occur frequently under heavy load, increase this value to allow more retry attempts.
 
-You can configure this variable in the product_name controller deployment.
+You can configure this variable in the {product_name} controller deployment.
 
 For example:
 
