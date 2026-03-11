@@ -133,6 +133,7 @@ Instead of deploying the app on each cluster, {product_name} allows you to deplo
 . Under `multi-cluster/helm`, a Helm chart will deploy the frontend app service and backend database service.
 . The following rule will be defined in `fleet.yaml`:
 
+[source,yaml]
 ----
 targetCustomizations:
 - name: dev
@@ -170,6 +171,26 @@ targetCustomizations:
 ====
 Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
 ====
+
+=== Limitations when overriding Helm chart settings with `targetCustomizations`
+
+Although `helm.chart`, `helm.repo`, and `helm.version` can be specified in `targetCustomizations`, overriding these fields has important limitations.
+
+{product_name} retrieves the Helm chart during the initial **Bundle creation** phase using the top-level `helm` configuration. This retrieval is performed by the Fleet toolchain (`GitJob`) before `targetCustomizations` are processed.
+
+Because the chart is downloaded at this stage, `targetCustomizations` cannot be used to dynamically fetch a different chart from:
+
+* a local directory
+* a different Helm repository
+* a separate OCI registry (for example, one behind a firewall)
+
+If you attempt to override these fields, the override may be ignored during chart retrieval. In some cases, Fleet may attempt to include multiple chart versions in the same bundle, which can significantly increase bundle size and may exceed etcd size limits.
+
+If different environments require different charts or registries, use one of the following approaches:
+
+* Define separate `fleet.yaml` files for each chart configuration.
+* Create separate `GitRepo` resources for each environment.
+
 
 == Additional Examples
 
