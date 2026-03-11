@@ -262,7 +262,7 @@ You can configure this variable in the {product_name} controller deployment.
 For example:
 
 
-For more information about configuring product_name environment variables, see xref:reference/ref-configuration.adoc[product_name configuration].
+For more information about configuring {product_name} environment variables, see xref:reference/ref-configuration.adoc[{product_name} configuration].
 
 === `GitRepo` or `Bundle` stuck in modified state
 
