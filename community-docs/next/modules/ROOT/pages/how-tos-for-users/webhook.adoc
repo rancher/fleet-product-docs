@@ -7,7 +7,7 @@ Polling works well for small installations (up to a few tens of repositories).
 
 For larger deployments, configure webhooks to trigger reconciliation when new commits arrive. This reduces the delay between a Git push and {product_name} processing the change.
 
-When multiple commits arrive in quick succession, the controller reconciliation loop processes the updates and applies the required status updates and patches. Handling updates through reconciliation helps reduce update conflicts and improves reliability in large-scale deployments.
+When multiple commits arrive in quick succession, the {product_name} controllers process them through the normal reconciliation loop when updating the corresponding `GitRepo` resources. This helps avoid update conflicts and improves reliability in large-scale deployments.
 
 For installations with many repositories or when you want to reduce latency (the time between a Git push and {product_name} reacting to it), configure **webhooks** instead of polling.
 
