@@ -255,7 +255,7 @@ A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the
 
 {product_name} retries apply operations when it detects a resource version conflict. The number of retry attempts is controlled by the `FLEET_APPLY_CONFLICT_RETRIES` environment variable.
 
-By default, product_name retries the operation a limited number of times. If conflicts occur frequently under heavy load, increase this value to allow more retry attempts.
+By default, {product_name} retries the operation a limited number of times. If conflicts occur frequently under heavy load, increase this value to allow more retry attempts.
 
 You can configure this variable in the product_name controller deployment.
 
