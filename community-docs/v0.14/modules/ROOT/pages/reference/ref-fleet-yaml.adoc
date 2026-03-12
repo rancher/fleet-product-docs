@@ -369,6 +369,19 @@ These options control the Kubernetes namespace where resources will be deployed.
 
 All bundles are deployed using Helm, but these options are specific to *Helm-style bundles* (those with a `Chart.yaml` file).
 
+[NOTE]
+====
+The `helm.chart`, `helm.repo`, and `helm.version` settings defined at the root of `fleet.yaml` determine which Helm chart Fleet downloads.
+
+Fleet downloads the chart during the initial **Bundle creation** phase. This occurs before `targetCustomizations` are processed. As a result, `targetCustomizations` cannot be used to select a different chart source for individual clusters, such as:
+
+* a different local chart directory
+* a separate Helm repository
+* a different OCI registry
+
+If a specific cluster must use a different registry or chart source (for example, due to network or firewall restrictions), configure it using a separate `GitRepo` resource or a different bundle path.
+====
+
 === Chart Source
 
 These options specify how to download the chart. The reference can be a local path, go-getter URL, Helm repo, or OCI Helm repo.
