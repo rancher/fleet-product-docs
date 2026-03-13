@@ -97,6 +97,38 @@ cluster. If an allowedTargetNamespaces restriction is present, all `GitRepos`
 must specify a `targetNamespace` and the specified namespace must be in the
 allow list. This also prevents the creation of cluster wide resources.
 
+==== Allowed target namespace selector
+
+`allowedTargetNamespaceSelector` restricts deployments to namespaces on
+downstream clusters whose labels match the given selector. When this field is
+set in a `GitRepoRestriction`, all `GitRepos` must specify a `targetNamespace`.
+The Fleet agent checks the labels of that namespace on the downstream cluster
+before deploying a bundle:
+
+* If the namespace exists and its labels match the selector, deployment proceeds.
+* If the namespace exists but its labels do not match, the `BundleDeployment` is
+* set to an error state and the bundle is not deployed.
+* If the namespace does not exist on the downstream cluster, the deployment fails
+  with an error. Pre-creating the namespace and labelling it correctly is
+  required; Helm's `createNamespace` option does not apply when this selector is
+  set.
+
+Multiple `GitRepoRestriction` resources in the same namespace each contribute
+their `allowedTargetNamespaceSelector`. The selectors are merged before being
+propagated to bundle deployments; a namespace must satisfy all of them.
+
+[source,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: project1
+allowedTargetNamespaceSelector:
+  matchLabels:
+    team: frontend
+----
+
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom
@@ -149,7 +181,7 @@ The *fleet-local* namespace is a special namespace used for the single cluster
 use case or to bootstrap the configuration of the {product_name} manager.
 Access to the local cluster should be limited to operators.
 
-When fleet is installed the `fleet-local` namespace is created along with one
+When {product_name} is installed the `fleet-local` namespace is created along with one
 `Cluster` called `local` and one `ClusterGroup` called `default`. If no targets
 are specified on a `GitRepo`, it is by default targeted to the `ClusterGroup`
 named `default`. This means that all `GitRepos` created in `fleet-local` will
