@@ -118,7 +118,8 @@ The `--fleet-yaml` flag requires `--bundle-deployment`, because the generated ou
 is merged with the existing `comparePatches` from the associated `Bundle`.
 ====
 
-See xref:how-tos-for-users/fleet_bundlediff.adoc[{product_name} bundlediff] for the full flag reference.
+See xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
+[{product_name} bundlediff] for the full flag reference.
 
 == Ignoring object modifications
 

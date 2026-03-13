@@ -35,13 +35,13 @@
 * Fleet CLI
 ** xref:how-tos-for-users/install-use-fleet-cli.adoc[Install and Use Fleet CLI]
 ** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
-** xref:how-tos-for-users/fleet_bundlediff.adoc[bundle diffs from resource status]
 
 * Reference
 ** CLI 
 *** Fleet 
 **** xref:reference/cli/fleet-cli/fleet.adoc[fleet]
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
+**** xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
 *** Fleet Troubleshooting
