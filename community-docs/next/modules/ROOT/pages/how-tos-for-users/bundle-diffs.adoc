@@ -18,7 +18,108 @@ image::ModifiedBundle.png[Static, 600]
 
 {product_name} bundles support the ability to specify a custom http://jsonpatch.com/[jsonPointer patch].
 
-With the patch, users can instruct {product_name} to ignore object modifications.
+With the patch, users can instruct {product_name} to ignore object modifications and entire objects.
+
+== Generating comparePatches with `fleet bundlediff`
+
+The `fleet bundlediff` CLI command reads the diff information already present in
+`Bundle` and `BundleDeployment` status fields and displays it in a human-readable form.
+It can also generate a ready-to-use `diff:` snippet in `fleet.yaml` format so you can
+accept the observed drift without manually constructing JSON Patch paths.
+
+=== Viewing diffs
+
+[source,bash]
+----
+# Show all diffs across all namespaces, grouped by Bundle
+fleet bundlediff
+
+# Show diffs for a specific Bundle
+fleet bundlediff --bundle my-bundle
+
+# Show diffs for a specific BundleDeployment
+fleet bundlediff --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Output in JSON format
+fleet bundlediff --json
+----
+
+Default text output groups results by `Bundle` and lists each modified or non-ready
+resource together with its JSON Merge Patch:
+
+[source,yaml]
+----
+Bundle: my-bundle
+BundleDeployments with diffs: 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  BundleDeployment: cluster-fleet-local-local-abc123/my-bundle-deployment
+  Modified Resources (1):
+    Resource: ConfigMap.v1 default/my-config
+    Status: Modified
+    Patch:
+    {
+      "metadata": {
+        "annotations": {
+          "timestamp": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+----
+
+=== Generating a `fleet.yaml` `comparePatches` snippet
+
+Use `--fleet-yaml` together with `--bundle-deployment` to produce a `diff:` block that
+you can paste directly into your `fleet.yaml`. The command converts the observed JSON
+Merge Patch into `remove` operations and merges them with any `comparePatches` already
+configured on the `Bundle`, so existing ignores remain intact.
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123
+----
+
+Example output:
+
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: ConfigMap
+    name: my-config
+    namespace: default
+    operations:
+    - op: remove
+      path: /metadata/annotations/timestamp
+----
+
+You can redirect the output and append it to your `fleet.yaml` in Git:
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123 >> fleet.yaml
+----
+
+After you commit and push the updated `fleet.yaml`, {product_name} reconciles the change and the
+bundle transitions from *Modified* to *Ready*. The field itself is not reverted. {product_name}
+simply stops reporting it as drift.
+
+
+[NOTE]
+====
+The `--fleet-yaml` flag requires `--bundle-deployment`, because the generated output
+is merged with the existing `comparePatches` from the associated `Bundle`.
+====
+
+See xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
+[{product_name} bundlediff] for the full flag reference.
 
 == Ignoring object modifications
 

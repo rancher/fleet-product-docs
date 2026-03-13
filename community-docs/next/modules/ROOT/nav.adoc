@@ -41,6 +41,7 @@
 *** Fleet 
 **** xref:reference/cli/fleet-cli/fleet.adoc[fleet]
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
+**** xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
 *** Fleet Troubleshooting
