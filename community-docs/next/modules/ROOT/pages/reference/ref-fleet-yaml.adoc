@@ -173,12 +173,19 @@ rolloutStrategy:
   # The default value is defined in rolloutStrategy.maxUnavailable
   autoPartitionSize: 10%
 
-  # The minimum number of clusters that need to be present before 
-  # auto-partitioning is enabled. If the number of target clusters is less 
+  # The minimum number of clusters that need to be present before
+  # auto-partitioning is enabled. If the number of target clusters is less
   # than this value, all clusters will be placed in a single partition.
   #
   # default: 200
   autoPartitionThreshold: 100
+
+  # The maximum number of new BundleDeployments that can be created in a
+  # single reconciliation. This limits the rate at which new deployments are
+  # staged when a bundle is first applied to many clusters.
+  #
+  # default: 50
+  maxNew: 50
 
   # A list of definitions of partitions.  If any target clusters do not match
   # the configuration they are added to partitions at the end following the
@@ -554,7 +561,8 @@ These options control how updates roll out across clusters.
 | `rolloutStrategy.maxUnavailable` | Maximum unavailable clusters during update. | All
 | `rolloutStrategy.maxUnavailablePartitions` | Maximum unavailable partitions during update. | All
 | `rolloutStrategy.autoPartitionSize` | Auto partition size for clusters. | All
-| rolloutStrategy.autoPartitionThreshold | The minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition. | All 
+| rolloutStrategy.autoPartitionThreshold | The minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition. | All
+| `rolloutStrategy.maxNew` | Maximum number of new BundleDeployments that can be staged per reconciliation. Default is 50. | All
 | `rolloutStrategy.partitions` | Defines cluster partitions for phased rollouts. | All
 |===
 

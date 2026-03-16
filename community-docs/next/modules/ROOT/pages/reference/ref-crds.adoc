@@ -290,11 +290,6 @@ BundleResource represents the content of a single resource from the bundle, like
 | int
 | true
 
-| maxNew
-| MaxNew is always 50. A bundle change can only stage 50 bundledeployments at a time.
-| int
-| false
-
 | partitions
 | PartitionStatus lists the status of each partition.
 | []<<PartitionStatus,PartitionStatus>>
@@ -638,10 +633,15 @@ RolloverStrategy controls the rollout of the bundle across clusters.
 | *intstr.IntOrString
 | false
 
-| autoPartitionThreshold 
-| The minimum number of clusters that need to be present before auto-partitioning is enabled. If the number of target clusters is less than this value, all clusters will be placed in a single partition. default: 200 
-| *int 
-| false 
+| autoPartitionThreshold
+| The minimum number of clusters that need to be present before auto-partitioning is enabled. If the number of target clusters is less than this value, all clusters will be placed in a single partition. default: 200
+| *int
+| false
+
+| maxNew
+| The maximum number of new BundleDeployments that can be created in a single reconciliation. This limits the rate at which new deployments are staged when a bundle is first applied to many clusters. default: 50
+| *int
+| false
 
 | partitions
 | A list of definitions of partitions.  If any target clusters do not match the configuration they are added to partitions at the end following the autoPartitionSize.

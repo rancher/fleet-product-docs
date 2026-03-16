@@ -39,10 +39,10 @@ The threshold is determined by:
 
 [NOTE]
 ====
-{product_name} rolls out deployments in batches of up to 50 clusters per partition, regardless of partitions having more clusters assigned. After each batch, {product_name} checks the `maxUnavailable` threshold before continuing. After all deployments for a partition have been created, `maxUnavailable` is also evaluated. For example:
+{product_name} rolls out deployments in batches of up to `maxNew` clusters per partition (default: 50), regardless of partitions having more clusters assigned. After each batch, {product_name} checks the `maxUnavailable` threshold before continuing. After all deployments for a partition have been created, `maxUnavailable` is also evaluated. For example:
 
 * If a partition has 25 clusters and `maxUnavailable` is 5, {product_name} deploys to all 25 before checking `maxUnavailable`.
-* If a partition has 100 clusters, {product_name} deploys to the first 50, checks `maxUnavailable`, and proceeds with the remaining 50 only if the threshold is not exceeded.
+* If a partition has 100 clusters, {product_name} deploys to the first 50 (default `maxNew`), checks `maxUnavailable`, and proceeds with the remaining 50 only if the threshold is not exceeded.
 ====
 
 The following diagram displays how {product_name} handles rollout:
@@ -70,6 +70,10 @@ Various limits that can be configured in {product_name}:
 | autoPartitionThreshold
 | Minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition.
 | 200
+
+| maxNew
+| Maximum number of `BundleDeployments` that can be staged per reconciliation.
+| 50
 
 | partitions
 | Define manual partitions by cluster labels or group. If set, autoPartitionSize is ignored.
@@ -140,10 +144,10 @@ image::deploy-targets-partition.png[A visual asset displaying the flow of partit
 
 [NOTE]
 ====
-MaxNew is always 50. A bundle change can only stage 50 `BundleDeployments` at a time.	
+`maxNew` controls how many `BundleDeployments` can be staged per reconciliation. The default is 50. You can configure this via `rolloutStrategy.maxNew` in `fleet.yaml`.
 ====
 
-Within each partition, {product_name} rolls out up to 50 `BundleDeployments` at a time. The diagram below shows how {product_name} determines whether to proceed or wait during this process:
+Within each partition, {product_name} rolls out up to `maxNew` `BundleDeployments` at a time (default: 50). The diagram below shows how {product_name} determines whether to proceed or wait during this process:
 
 image::partition-rollout-flow.png[A visual asset displaying the flow of deploying targets in a partition.]
 
