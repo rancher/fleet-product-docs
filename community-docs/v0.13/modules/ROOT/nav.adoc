@@ -88,5 +88,6 @@
 ** xref:changelogs/v0.13.4.adoc[v0.13.4]
 ** xref:changelogs/v0.13.5.adoc[v0.13.5]
 ** xref:changelogs/v0.13.6.adoc[v0.13.6]
-** xref:changelogs/v0.13.7.adoc[v0.13.7 (latest)]
+** xref:changelogs/v0.13.7.adoc[v0.13.7 ]
+** xref:changelogs/v0.13.8.adoc[v0.13.8 (latest)]
 
