@@ -6,7 +6,6 @@
 :page-aliases: /quickstart
 image::single-cluster.png[]
 
-Who needs documentation, lets just run this thing!
 
 == Install
 
