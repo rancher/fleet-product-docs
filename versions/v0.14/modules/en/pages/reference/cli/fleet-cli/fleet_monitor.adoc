@@ -1,4 +1,7 @@
-== fleet monitor
+= fleet monitor
+:revdate: 2025-03-03
+:page-revdate: {revdate}
+:page-aliases: /fleet_monitor
 
 Advanced diagnostic tool for troubleshooting  {product_name} deployments.
 

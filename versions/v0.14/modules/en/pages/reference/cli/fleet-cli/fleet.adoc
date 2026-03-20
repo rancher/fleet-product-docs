@@ -1,6 +1,7 @@
 = fleet
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet
 
 Manage {product_name} operations
 

@@ -1,5 +1,5 @@
 = fleet-agent
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Manage operations with the Fleet agent that communicates with the Fleet controller

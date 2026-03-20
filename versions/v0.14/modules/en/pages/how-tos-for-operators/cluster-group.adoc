@@ -1,6 +1,7 @@
 = Create Cluster Groups
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /cluster-group
 
 Clusters in a namespace can be put into a cluster group. A cluster group is essentially a named selector.
 The only parameter for a cluster group is essentially the selector.

@@ -21,6 +21,7 @@ fleet [flags]
 ----
 
 == SEE ALSO
+=== Main commands
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]	 - Render a bundle into a Kubernetes resource and apply it in the {product_name} Manager
 * xref:/reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated cluster registrations

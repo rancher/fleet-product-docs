@@ -1,5 +1,5 @@
 = Cluster Registration Internals
-:revdate: 2025-06-18
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 == How does cluster registration work?
@@ -7,7 +7,7 @@
 This text describes cluster registration with more technical details. The text ignores agent initiated registration, as it's not commonly used.
 xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[Agent initiated registration] is xref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["`ClusterRegistrationToken` first"], which means pre-creating a cluster is optional.
 
-See "xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]" to learn how to register clusters.
+See xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters] to learn how to register clusters.
 
 === Cluster first
 
@@ -41,6 +41,7 @@ The new kubeconfig uses the "request" account. The "request" account can access 
 
 image::FleetRegistrationToken.svg[Static, 600]
 
+[[registered-watches-for-bundledeployments]]
 === {product_name} Agent is Registered, Watches for `BundleDeployments`
 
 At this point the agent is fully registered and will persist the "request" account into a `fleet-agent` secret.
@@ -58,6 +59,8 @@ The agent starts watching its xref:explanations/namespaces.adoc#_cluster_namespa
 * If no bootstrap secret exists, the agent will not re-register.
 
 == Diagram
+
+=== Registration Flow
 
 [mermaid, format=svg]
 ....
@@ -116,7 +119,6 @@ graph TD
     A3 --> C1
     B4 --> C1
 ....
-
 
 === Registration Process and Controllers
 

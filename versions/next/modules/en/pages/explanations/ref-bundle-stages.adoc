@@ -1,5 +1,5 @@
 = Bundle Lifecycle
-:revdate: 2025-06-16
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 A bundle is an internal resource used for the orchestration of resources from git. When a GitRepo is scanned it will produce one or more bundles.
@@ -8,12 +8,15 @@ To demonstrate the life cycle of a {product_name} bundle, we will use https://gi
 
 . User will create a xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] that points to the multi-cluster/helm repository.
 . The `gitjob-controller` will sync changes from the GitRepo and detect changes from the polling or xref:how-tos-for-users/webhook.adoc[webhook event]. With every commit change, the `gitjob-controller` will create a job that clones the git repository, reads content from the repo such as `fleet.yaml` and other manifests, and creates the {product_name} xref:reference/ref-status-fields.adoc#_bundles[bundle].
-
-NOTE: The job pod with the image name `rancher/tekton-utils` will be under the same namespace as the GitRepo.
-
++
+[NOTE]
+====
+The job pod with the image name `rancher/tekton-utils` will be under the same namespace as the GitRepo.
+====
++
 . The `fleet-controller` then syncs changes from the bundle. According to the targets, the `fleet-controller` will create `BundleDeployment` resources, which are a combination of a bundle and a target cluster.
 . The `fleet-agent` will then pull the `BundleDeployment` from the {product_name} controlplane. The agent deploys bundle manifests as a https://helm.sh/docs/intro/install/[Helm chart] from the `BundleDeployment` into the downstream clusters.
-. The `fleet-agent` will continue to monitor the application bundle and report statuses back in the following order: bundledeployment > bundle > GitRepo > cluster.
+. The `fleet-agent` will continue to monitor the application bundle and report statuses back in the following order: ++bundledeployment++ > ++bundle++ > ++GitRepo++ > ++cluster++.
 
 This diagram shows the different rendering stages a bundle goes through until deployment.
 
@@ -23,6 +26,8 @@ image::FleetBundleStages.svg[Bundle Stages]
 == Examining the Bundle Lifecycle With the CLI
 
 Several fleet CLI commands help with debugging bundles.
+
+image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
 
 === fleet apply
 
@@ -36,6 +41,7 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users/bundle-add.adoc[section on bundles].
 
+[[fleet-target]]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Target] reads a bundle from a file and works with a live cluster to print out the `bundledeployment` & `content` resource, which fleetcontroller would create. It takes a namespace as an argument, so it can look in that namespace for e.g. cluster resources. It can also dump the data structure which is used during "targeting", so decisions taken regarding labels and cluster names can be checked.
@@ -46,8 +52,11 @@ xref:reference/cli/fleet-cli/fleet_deploy.adoc[Deploy] takes the output of `flee
 
 The deploy command can be used to bring bundles to air-gapped clusters.
 
-=== Lifecycle CLI Example
+=== Lifecycle CLI
 
+Fleet CLI commands help you debug and understand the bundle lifecycle. The following example uses the full bundle lifecycle using CLI:
+
+[source,bash]
 ----
 git clone https://github.com/rancher/fleet-test-data
 cd fleet-test-data

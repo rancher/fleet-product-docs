@@ -6,7 +6,7 @@ For more information about customizing bundles using `fleet.yaml`, see xref:expl
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
-which contains the xref:reference\ref-crds.adoc#_bundlespec[BundleSpec].
+which contains the xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
 == Full Example
 
@@ -61,10 +61,10 @@ helm:
   #
   chart: ./chart
 
-  # A https URL to a Helm repo to download the chart from. It's typically easier
-  # to just use `chart` field and refer to a tgz file.  If repo is used the
-  # value of `chart` will be used as the chart name to lookup in the Helm
-  # repository.
+  # A https URL to a Helm repo to download the chart from, or an OCI registry
+  # URL (oci://...). For OCI registries, repo is the canonical field and no
+  # chart name is needed. For standard Helm repos, the value of `chart` is used
+  # as the chart name to look up in the repository.
   repo: https://charts.rancher.io
 
   # The version of the chart or semver constraint of the chart to find. If a
@@ -173,6 +173,13 @@ rolloutStrategy:
   # The default value is defined in rolloutStrategy.maxUnavailable
   autoPartitionSize: 10%
 
+  # The minimum number of clusters that need to be present before 
+  # auto-partitioning is enabled. If the number of target clusters is less 
+  # than this value, all clusters will be placed in a single partition.
+  #
+  # default: 200
+  autoPartitionThreshold: 100
+
   # A list of definitions of partitions.  If any target clusters do not match
   # the configuration they are added to partitions at the end following the
   # autoPartitionSize.
@@ -275,8 +282,8 @@ targetCustomizations:
       keepFailHistory: false
 
 # dependsOn allows you to configure dependencies to other bundles. The current
-# bundle will only be deployed, after all dependencies are deployed and in a
-# Ready state.
+# bundle will only be deployed, after all dependencies are deployed an
+# accepted state. The default accepted state is the Ready state.
 dependsOn:
 
   # Format:
@@ -295,11 +302,16 @@ dependsOn:
   #     opni-fleet-examples-fleets-opni-ui-plugin-operator-crd becomes
   #     opni-fleet-examples-fleets-opni-ui-plugin-opera-021f7
   - name: one-multi-cluster-hello-world
-
+      acceptedStates:
+        - Ready
+        - Modified
   # Select bundles to depend on based on their label.
   - selector:
       matchLabels:
         app: weak-monkey
+    acceptedStates:
+      - Ready
+      - Modified
 
 # Ignore fields when monitoring a Bundle. This can be used when Fleet thinks
 # some conditions in Custom Resources makes the Bundle to be in an error state
@@ -332,7 +344,7 @@ These options define the fundamental properties and behavior of the bundle itsel
 
 | `paused` | If true, the bundle will not be updated on downstream clusters. Instead, it will be marked as *OutOfSync*. You can then manually approve the deployment. | All
 | `labels` | A map of key-value pairs set at the bundle level. These can be used in a `dependsOn.selector` to define dependencies. | All
-| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in a *Ready* state. | All
+| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in an accepted state. Accepted states correspond to any valid  xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states]. | All
 | `ignore` | Specifies fields to ignore when monitoring bundle status. Useful for preventing false error states from Custom Resources. | All
 | `overrideTargets` | A list of target customizations that override any targets defined in the GitRepo. | All
 |===
@@ -354,6 +366,19 @@ These options control the Kubernetes namespace where resources will be deployed.
 
 All bundles are deployed using Helm, but these options are specific to *Helm-style bundles* (those with a `Chart.yaml` file).
 
+[NOTE]
+====
+The `helm.chart`, `helm.repo`, and `helm.version` settings defined at the root of `fleet.yaml` determine which Helm chart Fleet downloads.
+
+Fleet downloads the chart during the initial **Bundle creation** phase. This occurs before `targetCustomizations` are processed. As a result, `targetCustomizations` cannot be used to select a different chart source for individual clusters, such as:
+
+* a different local chart directory
+* a separate Helm repository
+* a different OCI registry
+
+If a specific cluster must use a different registry or chart source (for example, due to network or firewall restrictions), configure it using a separate `GitRepo` resource or a different bundle path.
+====
+
 === Chart Source
 
 These options specify how to download the chart. The reference can be a local path, go-getter URL, Helm repo, or OCI Helm repo.
@@ -361,8 +386,8 @@ These options specify how to download the chart. The reference can be a local pa
 |===
 | Option | Description | Applies to
 
-| `helm.chart` | The Helm chart location (local path, go-getter URL, or OCI registry). | Helm
-| `helm.repo` | URL of a Helm repository. | Helm
+| `helm.chart` | The Helm chart location (local path or go-getter URL). For OCI registries, use `helm.repo` instead (see below). | Helm
+| `helm.repo` | URL of a Helm repository or OCI registry (`oci://...`). | Helm
 | `helm.version` | Chart version or semver constraint. Re-evaluated on every git change. | Helm
 | `helm.disableDependencyUpdate` | If true, disables automatic dependency downloads. | Helm
 |===
@@ -370,22 +395,34 @@ These options specify how to download the chart. The reference can be a local pa
 The chart reference can be one of the following:
 
 * Local path (`chart`)
-* https://github.com/hashicorp/go-getter?tab=readme-ov-file#url-format[go-getter URL]
-* OCI chart URL (`oci://...`)
-* Helm repository (`repo` + `version`)
-* OCI Helm repository (`repo` + `version`)
+* https://github.com/hashicorp/go-getter?tab=readme-ov-file#url-format[go-getter URL] (`chart`)
+* OCI chart URL (`repo: oci://...`)
+* Helm repository (`repo` + `chart` + optional `version`)
+* OCI Helm repository (`repo: oci://...` + optional `version`)
+
+==== `helm.repo`
+
+For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it like this:
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+  version: "0.1.0"  # optional
+----
+
+This is consistent with how OCI registries are referenced in xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOp resources].
 
 ==== `helm.chart`
 
-Specifies a custom location for the Helm chart. For example:
-`oci://ghcr.io/fleetrepoci/guestbook`.
+Specifies a local path or go-getter URL for the Helm chart. When `helm.repo` is set to a standard (non-OCI) Helm repository URL, `helm.chart` holds the chart name within that repository.
 
 If a secret for the SSH key was defined via `helmSecretName`, it is injected automatically.
 
 [NOTE]
 ====
-If the `fleet.yaml` file is located outside the embedded chart’s directory, it must explicitly reference the chart using `helm.chart`.  
-Otherwise, {product_name} won’t install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
+If the `fleet.yaml` file is located outside the embedded chart's directory, it must explicitly reference the chart using `helm.chart`.  
+Otherwise, {product_name} won't install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
 ====
 
 [WARNING]
@@ -393,6 +430,23 @@ Otherwise, {product_name} won’t install the chart, and Helm-specific fields li
 **Limitation:** Downloading Helm charts from Git with custom CA bundles does not work.  
 If a CA bundle is configured in a secret referenced in `helmSecretName`, it will be ignored.  
 See https://github.com/rancher/fleet/issues/3646[fleet#3646] for details.
+====
+
+[WARNING]
+====
+**Deprecated:** Placing an OCI URL (e.g. `oci://...`) in `helm.chart` is deprecated.
+Use `helm.repo` for OCI URLs instead.
+
+[source,yaml]
+----
+# Deprecated - still works, but produces a warning in Fleet logs:
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"
+
+# Preferred:
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+----
 ====
 
 ==== `helm.version`
@@ -433,7 +487,8 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI, refer to xref:reference/ref-bundle-stages.adoc#fleet-target[fleet-target].
+You can test values templating with the CLI, refer to xref:explanations/ref-bundle-stages.adoc#fleet-target[fleet-target].
+
 
 Template context keys:
 
@@ -512,10 +567,11 @@ These options control how updates roll out across clusters.
 | `rolloutStrategy.maxUnavailable` | Maximum unavailable clusters during update. | All
 | `rolloutStrategy.maxUnavailablePartitions` | Maximum unavailable partitions during update. | All
 | `rolloutStrategy.autoPartitionSize` | Auto partition size for clusters. | All
+| rolloutStrategy.autoPartitionThreshold | The minimum number of clusters required before auto-partitioning is enabled. Below this threshold, all clusters are placed in a single partition. | All 
 | `rolloutStrategy.partitions` | Defines cluster partitions for phased rollouts. | All
 |===
 
-For more information, see xref:rollout.adoc[Rollout Strategies].
+For more information, see xref:how-tos-for-users/rollout.adoc[Rollout Strategy].
 
 == Targeting and Customization
 

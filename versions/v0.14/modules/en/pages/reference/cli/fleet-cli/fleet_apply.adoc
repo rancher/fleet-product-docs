@@ -1,6 +1,7 @@
 = fleet apply
 :revdate: 2026-02-05
 :page-revdate: {revdate}
+:page-aliases: /fleet_apply
 
 Create bundles from directories, and output them or apply them on a cluster
 

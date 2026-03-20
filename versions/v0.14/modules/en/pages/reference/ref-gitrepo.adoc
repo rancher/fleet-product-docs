@@ -1,6 +1,7 @@
 = GitRepo Resource
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /ref-gitrepo
 
 The GitRepo resource describes git repositories, how to access them and where the bundles are located.
 

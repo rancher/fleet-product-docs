@@ -1,8 +1,8 @@
 = Generating Diffs to Ignore Modified GitRepos
-:revdate: 2025-05-12
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
-Continuous Delivery in Rancher is powered by fleet. When a user adds a GitRepo CR, then Continuous Delivery creates the associated fleet bundles.
+Continuous Delivery in Rancher is powered by {product_name}. When a user adds a GitRepo CR, then Continuous Delivery creates the associated fleet bundles.
 
 You can access these bundles by navigating to the Cluster Explorer (Dashboard UI), and selecting the `Bundles` section.
 
@@ -18,15 +18,118 @@ image::ModifiedBundle.png[Static, 600]
 
 {product_name} bundles support the ability to specify a custom http://jsonpatch.com/[jsonPointer patch].
 
-With the patch, users can instruct fleet to ignore object modifications.
+With the patch, users can instruct {product_name} to ignore object modifications and entire objects.
 
-== Simple Example
+== Generating comparePatches with `fleet bundlediff`
+
+The `fleet bundlediff` CLI command reads the diff information already present in
+`Bundle` and `BundleDeployment` status fields and displays it in a human-readable form.
+It can also generate a ready-to-use `diff:` snippet in `fleet.yaml` format so you can
+accept the observed drift without manually constructing JSON Patch paths.
+
+=== Viewing diffs
+
+[source,bash]
+----
+# Show all diffs across all namespaces, grouped by Bundle
+fleet bundlediff
+
+# Show diffs for a specific Bundle
+fleet bundlediff --bundle my-bundle
+
+# Show diffs for a specific BundleDeployment
+fleet bundlediff --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Output in JSON format
+fleet bundlediff --json
+----
+
+Default text output groups results by `Bundle` and lists each modified or non-ready
+resource together with its JSON Merge Patch:
+
+[source,yaml]
+----
+Bundle: my-bundle
+BundleDeployments with diffs: 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  BundleDeployment: cluster-fleet-local-local-abc123/my-bundle-deployment
+  Modified Resources (1):
+    Resource: ConfigMap.v1 default/my-config
+    Status: Modified
+    Patch:
+    {
+      "metadata": {
+        "annotations": {
+          "timestamp": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+----
+
+=== Generating a `fleet.yaml` `comparePatches` snippet
+
+Use `--fleet-yaml` together with `--bundle-deployment` to produce a `diff:` block that
+you can paste directly into your `fleet.yaml`. The command converts the observed JSON
+Merge Patch into `remove` operations and merges them with any `comparePatches` already
+configured on the `Bundle`, so existing ignores remain intact.
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123
+----
+
+Example output:
+
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: ConfigMap
+    name: my-config
+    namespace: default
+    operations:
+    - op: remove
+      path: /metadata/annotations/timestamp
+----
+
+You can redirect the output and append it to your `fleet.yaml` in Git:
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123 >> fleet.yaml
+----
+
+After you commit and push the updated `fleet.yaml`, {product_name} reconciles the change and the
+bundle transitions from *Modified* to *Ready*. The field itself is not reverted. {product_name}
+simply stops reporting it as drift.
+
+
+[NOTE]
+====
+The `--fleet-yaml` flag requires `--bundle-deployment`, because the generated output
+is merged with the existing `comparePatches` from the associated `Bundle`.
+====
+
+See xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
+[{product_name} bundlediff] for the full flag reference.
+
+== Ignoring object modifications
+
+=== Simple Example
 
 In this simple example, we create a Service and ConfigMap that we apply a bundle diff onto.
 
 https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
 
-== Gatekeeper Example
+=== Gatekeeper Example
 
 In this example, we are trying to deploy opa-gatekeeper using Continuous Delivery to our clusters.
 
@@ -36,7 +139,7 @@ Each path in the GitRepo CR, has an associated Bundle CR. The user can view the 
 
 In our case the differences detected are as follows:
 
-[,yaml]
+[source,yaml]
 ----
   summary:
     desiredReady: 1
@@ -64,14 +167,14 @@ Based on this summary, there are three objects which need to be patched.
 
 We will look at these one at a time.
 
-=== 1. ValidatingWebhookConfiguration:
+==== 1. ValidatingWebhookConfiguration:
 
 The gatekeeper-validating-webhook-configuration validating webhook has two ValidatingWebhooks in its spec.
 
 In cases where more than one element in the field requires a patch, that patch will refer these to as `$setElementOrder/ELEMENTNAME`
 
 From this information, we can see the two ValidatingWebhooks in question are:
-
+[source,json]
 ----
   "$setElementOrder/webhooks": [
     {
@@ -85,6 +188,7 @@ From this information, we can see the two ValidatingWebhooks in question are:
 
 Within each ValidatingWebhook, the fields that need to be ignore are as follows:
 
+[source,json]
 ----
     {
       "clientConfig": {
@@ -113,6 +217,7 @@ Within each ValidatingWebhook, the fields that need to be ignore are as follows:
 
 and
 
+[source,json]
 ----
      {
       "clientConfig": {
@@ -147,7 +252,7 @@ image::WebhookConfigurationSpec.png[Static, 600]
 
 Based on this information, our diff patch would look as follows:
 
-[,yaml]
+[source,yaml]
 ----
   - apiVersion: admissionregistration.k8s.io/v1
     kind: ValidatingWebhookConfiguration
@@ -159,10 +264,11 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path":"/webhooks/1/rules"}
 ----
 
-=== 2. Deployment gatekeeper-controller-manager:
+==== 2. Deployment gatekeeper-controller-manager:
 
 The gatekeeper-controller-manager deployment is modified since there are cpu limits and tolerations applied (which are not in the actual bundle).
 
+[source,json]
 ----
 {
   "spec": {
@@ -194,7 +300,7 @@ In this case, there is only 1 container in the deployment container spec, and th
 
 Based on this information, our diff patch would look as follows:
 
-[,yaml]
+[source,yaml]
 ----
   - apiVersion: apps/v1
     kind: Deployment
@@ -205,10 +311,11 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
-=== 3. Deployment gatekeeper-audit:
+==== 3. Deployment gatekeeper-audit:
 
 The gatekeeper-audit deployment is modified in a similarly, to the gatekeeper-controller-manager, with additional cpu limits and tolerations applied.
 
+[source,json]
 ----
 {
   "spec": {
@@ -240,7 +347,7 @@ Similar to gatekeeper-controller-manager, there is only 1 container in the deplo
 
 Based on this information, our diff patch would look as follows:
 
-[,yaml]
+[source,yaml]
 ----
   - apiVersion: apps/v1
     kind: Deployment
@@ -251,11 +358,11 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
-=== Combining It All Together
+==== Combining It All Together
 
 We can now combine all these patches as follows:
 
-[,yaml]
+[source,yaml]
 ----
 diff:
   comparePatches:
@@ -286,3 +393,79 @@ diff:
 We can add these now to the bundle directly to test and also commit the same to the `fleet.yaml` in your GitRepo.
 
 Once these are added, the GitRepo should deploy and be in "Active" status.
+
+== Ignoring entire objects
+
+When installing a chart such as link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul], a job named
+`consul-server-acl-init` is created, then deleted once it has successfully completed.
+
+That chart can be installed by creating a `GitRepo` pointing to a git repository using a `fleet.yaml` such as:
+
+[source,yaml]
+----
+defaultNamespace: consul
+helm:
+  releaseName: test-consul
+  chart: "consul"
+  repo: "https://helm.releases.hashicorp.com"
+
+  values:
+    global:
+      name: consul
+      acls:
+        manageSystemACLs: true
+----
+
+Installing this chart will result in the `GitRepo` reporting a `Modified` status, with job `consul-server-acl-init`
+missing, once that job has completed.
+
+This can be remedied with the following bundle diff in our `fleet.yaml`:
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: consul-server-acl-init
+    operations:
+    - {"op":"ignore"}
+----
+
+In some cases, the full name of the job may not be known in advance, for instance when it is generated.
+Furthermore, a given workload may create multiple jobs in the same namespace, which would typically lead to one bundle
+diff per job.
+
+To make these situations easier to handle, jobs can also be ignored:
+
+- through a regular expression on their names, in which case the above diff could look like:
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: 'consul-server.*'
+    operations:
+    - {"op":"ignore"}
+----
+
+- or by specifying an empty `name` field, or omitting that field altogether, in which case all jobs living in that
+namespace (in this example in the `consul` namespace) will be ignored.
+
+More information on the supported regex syntax link:https://pkg.go.dev/regexp/syntax[here].
+
+== Horizontal Pod Autoscaling
+
+When dealing with Deployments or StatefulSets referenced by a Horizontal Pod Autoscaler, bundle diffs are no longer
+necessary to address updates in replica counts within the HPA's configured interval.
+The Fleet agent will automatically filter these updates away; as a result, the source bundle deployment will not be
+considered _modified_.
+
+However, if a Deployment or StatefulSet's `replicas` field is set to a value above or below the interval tolerated by an
+HPA referencing it, that modification will still appear in the source bundle deployment's status.
+
+Both `autoscaling/v1` and `autoscaling/v2` are supported.
+
+An empty `minReplicas` field in an HPA will be interpreted as `1`.

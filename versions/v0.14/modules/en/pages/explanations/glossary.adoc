@@ -1,6 +1,7 @@
 = Glossary
 :revdate: 2026-02-18
 :page-revdate: {revdate}
+:page-aliases: /glossary
 
 == Agent
 

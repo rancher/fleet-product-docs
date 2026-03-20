@@ -1,6 +1,7 @@
 = Configuration
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /ref-configuration
 
 A reference list of, mostly internal, configuration options.
 

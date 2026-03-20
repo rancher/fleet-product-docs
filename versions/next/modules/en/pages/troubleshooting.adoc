@@ -1,5 +1,5 @@
 = Troubleshooting
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 This section contains commands and tips to troubleshoot{product_name}.
@@ -21,7 +21,9 @@ If the issue is specific to a target cluster, users should check the Fleet agent
 
 The next section explains how to run all these checks.
 
-== *How Do I...*
+Some of them can be automated through xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor] and xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze].
+
+== How Do I...
 
 === Fetch the log from `fleet-controller`?
 
@@ -108,6 +110,44 @@ Available in Rancher v2.6.3 ({product_name} v0.3.8), the ability to enable debug
 * Go to the *Dashboard*, then click on the *local cluster* in the left navigation menu
 * Select *Apps & Marketplace*, then *Installed Apps* from the dropdown
 * From there, you will upgrade the {product_name} chart with the value `debug=true`. You can also set `debugLevel=5` if desired.
+
+==== Via Fleet Install Options
+
+You can create a config map `rancher-config` in the `cattle-system` namespace with xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Fleet Installation Options].
+
+For example, to enable debug logging for `fleet-controller` and `fleet-agent`, you can create a config map with the following content:
+
+[source,yaml]
+====
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    debug: true
+    debugLevel: 1
+    propagateDebugSettingsToAgents: true
+====
+
+Modifying the config will re-install Fleet and re-deploy the agents.
+
+=== Record Resource Changes Over Time
+
+Sometimes it is useful to record the changes of a resource over time. You can do this by watching the resource and saving the output to files.
+
+[source,bash]
+====
+for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.fleet.cattle.io; do
+  {
+    kubectl get -A --show-managed-fields -w --output-watch-events -o yaml $kind > $kind-watch.yaml &
+    pid=$!
+    sleep 60
+    kill $pid
+  } &
+done ; wait
+====
 
 == *Additional Solutions for Other {product_name} Issues*
 
@@ -209,6 +249,24 @@ Based on the above log, you can add the following entry to remove the operation:
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
+==== GitRepo sync fails without retry
+
+A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the GitJob controller logs can show network timeouts or etcd request timeouts. This issue is more likely when {product_name} is under high load.
+
+{product_name} retries apply operations when it detects a resource version conflict. The number of retry attempts is controlled by the `FLEET_APPLY_CONFLICT_RETRIES` environment variable.
+
+The default value is `1`. This means {product_name} only tries the bundle creation or update once, not retrying if a conflict occurs. If conflicts occur frequently under heavy load, increase this value to allow additional retry attempts. Configure this variable as an environment variable on the GitJob deployment. 
+
+For example, when installing with Helm:
+
+[source,bash]
+----
+--set-string extraEnv[0].name=FLEET_APPLY_CONFLICT_RETRIES \
+--set-string extraEnv[0].value=3
+----
+
+This configuration sets the retry count to `3` instead of the default value `1`.
+
 === `GitRepo` or `Bundle` stuck in modified state
 
 *Modified* means that there is a mismatch between the actual state and the desired state, the source of truth, which lives in the git repository.
@@ -251,7 +309,6 @@ You will need to re-import and restart the registration process: Select *Cluster
 ====
 
 *WaitCheckIn status for Rancher v2.5*:
-====
 
 ifeval::["{product}" == "fleet"]
 The cluster will show in `WaitCheckIn` status because the `fleet-controller` is attempting to communicate with {product_name} using the Rancher service IP. However, {product_name} must communicate directly with Rancher via the Kubernetes service DNS using service discovery, not through the proxy. For more, see the https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/rancher-behind-an-http-proxy/install-rancher[Rancher docs].

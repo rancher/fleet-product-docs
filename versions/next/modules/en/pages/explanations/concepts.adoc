@@ -1,5 +1,5 @@
 = Core Concepts
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 {product_name} is fundamentally a set of Kubernetes custom resource definitions (CRDs) and controllers
@@ -8,9 +8,8 @@ to manage GitOps for a single Kubernetes cluster or a large-scale deployment of 
 [IMPORTANT]
 ====
 
-For more information, refer to xref:troubleshooting.adoc#_naming_conventions_for_crds[naming conventions of CRD].
+For more on the naming conventions of CRDs, click xref:troubleshooting.adoc#_naming_conventions_for_crds[Naming conventions for CRDs].
 ====
-
 
 Below are some of the concepts of {product_name} that will be useful throughout this documentation:
 
@@ -42,11 +41,11 @@ ____
   contents of a `Bundle` may be Kubernetes manifests, Kustomize configuration, or Helm charts.
   Regardless of the source the contents are dynamically rendered into a Helm chart by the agent
   and installed into the downstream cluster as a helm release.
- ** To see the *life cycle of a bundle*, refer to xref:explanations/ref-bundle-stages.adoc[bundle stages].
+ ** To see the *life cycle of a bundle*, click xref:explanations/ref-bundle-stages.adoc[bundle lifecycle].
 * *BundleDeployment*: When a `Bundle` is deployed to a cluster an instance of a `Bundle` is called a `BundleDeployment`.
   A `BundleDeployment` represents the state of that `Bundle` on a specific cluster with its cluster specific
   customizations. The {product_name} agent is only aware of `BundleDeployment` resources that are created for
   the cluster the agent is managing.
- ** For an example of how to deploy Kubernetes manifests across clusters using {product_name} customization, refer to xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customizing per cluster].
+ ** For an example of how to deploy Kubernetes manifests across clusters using {product_name} customization, click xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customization per cluster].
 * *Downstream Cluster*: Clusters to which {product_name} deploys manifests are referred to as downstream clusters. In the single cluster use case, the {product_name} manager Kubernetes cluster is both the manager and downstream cluster at the same time.
 * *Cluster Registration Token*: Tokens used by agents to register a new cluster.

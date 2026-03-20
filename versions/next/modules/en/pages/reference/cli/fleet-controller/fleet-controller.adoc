@@ -1,5 +1,5 @@
 = fleet-controller
-:revdate: 2025-04-30
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 Manage the Fleet controller that communicates with the Fleet agent
@@ -28,4 +28,4 @@ fleet-controller [flags]
 == SEE ALSO
 * xref:/reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]	 - Configure Fleet agent management
 * xref:/reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]	 - Clean up outdated controller resources
-* xref:/reference/cli/fleet-controller/cli\fleet-controller\fleet-controller_gitjob.adoc[fleet-controller gitjob]	 - Configure Fleet controller gitjob operations
+* xref:/reference/cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-controller gitjob]	 - Configure Fleet controller gitjob operations

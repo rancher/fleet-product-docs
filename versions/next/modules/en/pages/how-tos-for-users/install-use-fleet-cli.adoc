@@ -93,7 +93,7 @@ image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key comman
 
 == Deploy a Sample Bundle Using Fleet CLI
 
-You can deploy workloads without using GitRepos by applying them locally with the CLI. For example, use the link:https://github.com/rancher/fleet-examples[{product_name} examples repository]:
+You can deploy workloads without using GitRepos by applying them locally with the CLI. For example, use the link:https://github.com/rancher/fleet-examples[Fleet examples repository]:
 
 [source,bash]
 ----
@@ -136,7 +136,7 @@ kubectl apply -f eso-bundle.yaml
 
 Make sure you use a cluster selector in `targets.yaml` that matches all clusters you want to deploy to.
 
-For more information, refer to link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[{product_name}: Multi-Cluster Deployment with the Help of External Secrets].
+For more information, refer to link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster Deployment with the Help of External Secrets].
 
 == Troubleshooting
 
@@ -155,7 +155,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 === Verify Agent and Controller Status
 
 Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
-For more information, see xref:reference/ref-registration.adoc#fleet-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+For more information, see xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
 
 If a bundle is not ready on a given cluster, check the following:
 

@@ -15,6 +15,7 @@ fleet [flags]
 ----
 
 == SEE ALSO
+=== Main commands
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]	 - Create bundles from directories, and output them or apply them on a cluster
 * xref:/reference/cli/fleet-cli/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated cluster registrations

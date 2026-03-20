@@ -26,7 +26,7 @@ The agent has been switched from a StatefulSet to a Deployment. This change allo
 * Move agent's clusterstatus controller into the controller container by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3429
 * Remove "fleet apply" config files from bundle resources by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3403
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.5...v0.12.0[v0.11.5\...v0.12.0]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.0...v0.12.0[v0.11.0...v0.12.0]
 
 === Additions
 

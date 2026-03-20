@@ -1,7 +1,7 @@
 :doctype: book
 
 = Register Downstream Clusters
-:revdate: 2025-07-01
+:revdate: 2025-07-23
 :page-revdate: {revdate}
 
 == Overview
@@ -31,6 +31,7 @@ After the cluster is registered there is no further need for the manager to cont
 cluster API.  This style is more compatible if you wish to manage the creation of all your Kubernetes
 clusters through GitOps using something like https://github.com/kubernetes-sigs/cluster-api[cluster-api]
 or https://github.com/rancher/rancher[Rancher].
+
 
 [options="header"]
 |===
@@ -85,6 +86,7 @@ or https://github.com/rancher/rancher[Rancher].
 | N/A; registration token/kubeconfig management is handled internally by the Fleet Manager.
 
 |===
+
 
 == Agent Initiated
 
@@ -422,7 +424,7 @@ data:
   value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
 ----
 
-### Create Cluster Resource
+== Create Cluster Resource
 
 The cluster resource needs to reference the kubeconfig secret.
 

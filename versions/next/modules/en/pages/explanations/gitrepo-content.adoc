@@ -12,29 +12,28 @@ The `fleet.yaml` file contains all the options for the deployment.
 
 By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
 
-Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
+Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added (Bundle names are limited to 53 characters long).
 
 == How repos are scanned
 
-*The git repository has no explicitly required structure.* It is important
+**The git repository has no explicitly required structure**. It is important
 to realize the scanned resources will be saved as a resource in Kubernetes so
 you want to make sure the directories you are scanning in git do not contain
 arbitrarily large resources. Right now there is a limitation that the resources
-deployed must *gzip to less than 1MB*.
+deployed must **gzip to less than 1MB**.
 Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
 Internally each scanned path will become a xref:/explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
-The following files are looked for to determine the how the resources will be deployed.
-
+{product_name} looks for the following files to determine how resources will be deployed.
 [cols="1,1,2", options="header"]
 |===
 | File | Location | Meaning
-| *Chart.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
-| *kustomization.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
-| *fleet.yaml* | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
-| *.yaml* | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
-| *overlays/+{name}+* | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
+| Chart.yaml | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
+| kustomization.yaml | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
+| fleet.yaml | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
+| .yaml | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
+| overlays/+{name}+ | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
 === Alternative scan, explicitly defined by the user
@@ -44,7 +43,7 @@ In addition to the previously described method, {product_name} also supports a m
 In this mode, {product_name} will load all resources found within the specified base directory. It will only attempt to locate a `fleet.yaml` file at the root of that directory if an options file is not explicitly provided.
 Unlike the traditional scanning method, this one is not recursive and does not attempt to find Bundle definitions other than those explicitly specified by the user.
 
-==== Example File Structure
+==== Example Directory Structure
 
 [source,bash]
 ----
@@ -158,7 +157,7 @@ With the previous scanning option, {product_name} cannot determine which YAML we
 Excluding irrelevant files from user-scanned bundles
 
 When using this bundle scanning mode, {product_name} does not exclude bundle configuration files which are not explicitly
-referenced in the GitRepo. For instance, in the above example file structure:
+referenced in the GitRepo. For instance, in the above example directory structure:
 
 * by default, neither `prod.yaml` nor `test.yaml` would be excluded from the bundle using `dev.yaml` as its options file  
 * similarly, by default, neither `dev.yaml` nor `prod.yaml` would be excluded from the bundle using `test.yaml` as its options file
@@ -201,10 +200,10 @@ Unsupported:
 * Double asterisks (`**`)
 * Explicit inclusions with `!`
 
-== `fleet.yaml`
+== fleet.yaml
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
-the resources are deployed and customized. The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
+resources are deployed and customized. The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
 and if a subdirectory is found with a `fleet.yaml` a new xref::/explanations/concepts.adoc[bundle] is defined that will then be
 configured differently from the parent bundle.
 
@@ -248,18 +247,99 @@ If the chart generates credentials, override them or the chart may redeploy cont
 Credentials loaded via `valuesFrom` are encrypted at rest if Kubernetes encryption at rest is enabled.
 ====
 
+=== Templating
+
+The targeting step can treat the values as a template and fill in information from the `clusters.fleet.cattle.io` resource. For more information, refer to xref:reference/ref-fleet-yaml.adoc#_values_templating[Helm values templating].
+
+You can turn this off in `fleet.yaml`, by setting `disablePreProcess`. This is useful to avoid conflicts with other templating languages.
+
+It is not necessary to reference a chart's own `values.yaml` via `valuesFiles:`. The `values.yaml` file contained in the
+chart is always used as a default when the agent installs the chart.
+
+[Note]
+====
+
+If the chart generates certificates or passwords in its templates, these values must be overridden. Otherwise the chart could be continuously deployed as these values change.
+
+Credentials loaded from the downstream cluster with `valuesFrom` are by default encrypted at rest, when link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[data encryption] is enabled in Kubernetes. Credentials contained in the default `values.yaml` file, or defined via `values:` or `valuesFiles` are not, as they are loaded from the repository when the bundle is created.
+
+Hardened clusters should add the Fleet CRDs to the xref:how-tos-for-users/gitrepo-add.adoc#storing-credentials-in-git[list of resources encrypted at rest], on the upstream cluster, when storing credentials in the bundles.
+
+====
+
+=== Understanding Helm `values.yaml` vs Fleet `valuesFiles`
+
+Installing Helm charts with Fleet offers multiple ways of configuring and referencing values, using the chart’s built-in `values.yaml` and additional values files referenced in `fleet.yaml`. These files serve different purposes, and it’s important to understand how they interact.
+
+image::helm-value-fleet-yaml.svg[Understanding Helm values.yaml vs Fleet valuesFiles with best practices]
+
+**Example directory structure:**
+
+[source,bash]
+----
+.
+├── Chart.yaml
+├── fleet.yaml
+├── README.md
+├── templates/
+│   ├── deployment.yaml
+│   └── service.yaml
+└── values.yaml   # chart defaults
+----
+
+You can use a Helm chart’s `values.yaml` file to:
+
+* Provide default settings and allow users to override defaults without modifying the chart itself.  
+* Define common Kubernetes resource defaults.
+
+
+[Note]
+====
+A Helm chart's `values.yaml` does not support templating. Any substitutions happen during chart rendering before Fleet applies the chart.
+
+* You cannot use shell-style variables (for example, pass:[`${var}`]) inside this file.  
+* If pass:[`${var}`] appears, Helm treats it as plain text—you don’t need to escape it.
+====
+
+=== Fleet valuesFiles referenced from fleet.yaml
+
+Fleet lets you reference additional values files through `fleet.yaml`. These files override or extend the chart’s baseline defaults.
+
+* A `valuesFiles` entry is equivalent to copy-pasting the contents of that file into the values section of `fleet.yaml`.  
+* It’s mainly a convenience feature for splitting values into multiple files.  
+* Unlike Helm chart `values.yaml`, Fleet’s values files support templating, which enables dynamic configuration per environment.
+
+**Example fleet.yaml:**
+[source,yaml]
+----
+helm:  
+  valuesFiles:  
+    - values.prod.yaml   # overrides baseline
+----
+
+You can use fleet `valuesFiles` referenced from `fleet.yaml` to:
+
+* Apply environment-specific overrides (dev, staging, prod).  
+* Enable advanced features not included in chart defaults.
+
+
+[Note]
+====
+**Best practice**:  Whether you use helm `values.yaml`, `fleet.yaml` values:, or `valuesFiles`, never store credentials in these files. The recommended and safer approach is to use `valuesFrom`, which references Kubernetes Secrets or ConfigMaps. Although this requires creating the Secrets on downstream clusters, it ensures sensitive data is stored securely.
+====
+
 === Using ValuesFrom
 
 These examples showcase the style and format for using `valuesFrom`.
 
 [Note]
 ====
-**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in *downstream clusters*.
+**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in downstream clusters.
 
 However, from {product_name} v0.14.0 onwards, they can also be referenced through a HelmOp's `downstreamResources` field to be
 automatically propagated to targeted downstream clusters.
 
-Refer to xref:how-tos-for-users/experimental-downstream-resource.adoc[experimental downstream resources] for more information.
+Refer to xref:/experimental-features/experimental-downstream-resource.adoc[experimental downstream resources] for more information.
 ====
 
 Example ConfigMap:

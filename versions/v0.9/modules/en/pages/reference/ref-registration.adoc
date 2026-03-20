@@ -7,7 +7,7 @@
 This text describes cluster registration with more technical details. The text ignores agent initiated registration, as it's not commonly used.
 xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[Agent initiated registration] is xref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["`ClusterRegistrationToken` first"], which means pre-creating a cluster is optional.
 
-See "xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]" to learn how to register clusters.
+See xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]" to learn how to register clusters.
 
 [discrete]
 ==== Cluster first

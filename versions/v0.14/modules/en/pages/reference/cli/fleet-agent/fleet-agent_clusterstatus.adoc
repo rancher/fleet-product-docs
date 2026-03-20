@@ -1,6 +1,7 @@
 = fleet-agent clusterstatus
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet-agent_clusterstatus
 
 Continuously report resource status to the upstream cluster
 
