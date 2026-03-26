@@ -1,0 +1,176 @@
+= v0.15.0
+:revdate: 2025-03-23
+:page-revdate: {revdate}
+:page-date: 2025-11-18 14:56:48 +0000 UTC
+
+_(github-actions[bot]) released this 2026-03-19 18:32:09 +0000 UTC_
+
+== Breaking Changes
+
+Imagescan, which has had a long life as an experimental feature, is now disabled by default. It can still be explicitly enabled; more information xref:how-tos-for-users/imagescan.adoc[Image Scan] on what this change means and how to keep the feature enabled. link:https://github.com/rancher/fleet/issues/4671[#4671] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4692[#4692]
+
+This release introduces Helm v4 and, since this version also incorporates Server-Side Apply, drift correction may be affected.  
+To resolve possible issues where drift correction does not work, use `force=true`.  
+This will be fixed in the next release.
+
+==- Future Deprecation Notice
+
+Imagescan will be deprecated in a future release.
+
+== Notable Changes
+
+=== Additions
+
+==== CLI
+
+* Add `dump` command to CLI xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump] link:https://github.com/rancher/fleet/issues/4030[#4030] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4374[#4374]
+* Add `monitor` xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor] and `analyze` xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze] commands for troubleshooting Fleet deployments link:https://github.com/rancher/fleet/issues/4030[#4030] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4474[#4474]
+* Add CLI command to display bundle diffs from status xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff] link:https://github.com/rancher/fleet/issues/4534[#4534] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4566[#4566]
+* Improve Fleet CLI subcommand `gitcloner` link:https://github.com/rancher/fleet/issues/4027[#4027] by link:https://github.com/ncuralli[@ncuralli] in link:https://github.com/rancher/fleet/pull/4488[#4488]
+
+=== Core Features
+
+* Fleet has been migrated to Helm v4 link:https://github.com/rancher/fleet/issues/4351[#4351] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4326[#4326]
+* Configure automated partitioning limit using `autoPartitionThreshold` xref:how-tos-for-users/rollout.adoc#_how_does_partitioning_work[How does partitioning work] link:https://github.com/rancher/fleet/issues/3827[#3827] by link:https://github.com/p-se[@p-se] in link:https://github.com/rancher/fleet/pull/4536[#4536]
+* Support custom dependency states using `acceptedStates` in `dependsOn` xref:explanations/namespaces.adoc#_allowed_target_namespaces[General bundle configuration] link:https://github.com/rancher/fleet/issues/2552[#2552] by link:https://github.com/ncuralli[@ncuralli] in link:https://github.com/rancher/fleet/pull/4558[#4558]
+* Restrict allowed target namespaces using `AllowedTargetNamespaceSelector` xref:explanations/namespaces.adoc#_allowed_target_namespaces[Allowed target namespaces] link:https://github.com/rancher/fleet/issues/4300[#4300] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4562[#4562]
+* Ignore drift by namespace or regex xref:how-tos-for-users/bundle-diffs.adoc#_ignoring_entire_objects[Ignoring entire objects] link:https://github.com/rancher/fleet/issues/748[#748] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4563[#4563]
+* Improve update handling for replica counts in Deployments and StatefulSets xref:xhow-tos-for-users/bundle-diffs.adoc#_horizontal_pod_autoscaling[Horizontal pod autoscaling] link:https://github.com/rancher/fleet/issues/4029[#4029] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4593[#4593]
+* Add proxy configuration to `fleet-agent` deployment link:https://github.com/rancher/fleet/issues/4267[#4267] by link:https://github.com/ftechmax[@ftechmax] in link:https://github.com/rancher/fleet/pull/4268[#4268]
+* Add labels to local clusters using Helm value `bootstrap.clusterLabels` link:https://github.com/rancher/fleet/issues/4096[#4096] by link:https://github.com/k0da[@k0da]
+
+== Bugfixes
+
+=== HelmOps
+
+* Support Helm templates with `lookup` link:https://github.com/rancher/fleet/issues/1851[#1851] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4302[#4302]
+* Support custom CA bundles when fetching charts from `helm.chart` link:https://github.com/rancher/fleet/issues/3646[#3646] by link:https://github.com/p-se[@p-se] in link:https://github.com/rancher/fleet/pull/4185[#4185]
+* Extend GitHub Apps support to GitHub Enterprise and custom hosts link:https://github.com/rancher/fleet/issues/4554[#4554] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4603[#4603]
+* Allow additional `known_hosts` entries via Helm value `additionalKnownHosts` link:https://github.com/rancher/fleet/issues/4680[#4680] by link:https://github.com/SebPlv[@SebPlv] in link:https://github.com/rancher/fleet/pull/4569[#4569]
+* Fix Helm auth handling when fetching multiple charts link:https://github.com/rancher/fleet/issues/4336[#4336] by link:https://github.com/aruiz14[@aruiz14]
+* Improve Helm URL resolution link:https://github.com/rancher/fleet/issues/4343[#4343] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4400[#4400]
+* Fix reporting of installed resources with forced drift correction using Helm v4 link:https://github.com/rancher/fleet/issues/4452[#4452] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4624[#4624]
+* Fix GitRepo URL matching in webhook server link:https://github.com/rancher/fleet/issues/4648[#4648] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4777[#4777]
+
+=== Resource Management
+
+* Track UID of bundle deployments to prevent orphaning link:https://github.com/rancher/fleet/issues/4144[#4144] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4273[#4273]
+* Create option secrets before bundle deployments link:https://github.com/rancher/fleet/issues/4284[#4284] by link:https://github.com/weyfonk[@weyfonk]
+* Detect overlaps between deleted and created bundles link:https://github.com/rancher/fleet/issues/3770[#3770] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4157[#4157]
+* Optimize concurrent Helm chart fetches link:https://github.com/rancher/fleet/issues/4343[#4343] by link:https://github.com/aruiz14[@aruiz14] in link:https://github.com/rancher/fleet/pull/4285[#4285]
+* Improve GitRepo deletion handling link:https://github.com/rancher/fleet/issues/4192[#4192] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4361[#4361]
+* Use `defaultNs` for `valuesFrom` in downstream resources link:https://github.com/rancher/fleet/issues/4274[#4274] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4373[#4373]
+* Make `valuesFrom` kind check case-insensitive link:https://github.com/rancher/fleet/issues/4274[#4274] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4408[#4408]
+* Remove finalizers in content resources after upgrade link:https://github.com/rancher/fleet/issues/4472[#4472] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4457[#4457]
+* Improve snapshot comparison using timestamps link:https://github.com/rancher/fleet/issues/4546[#4546] by link:https://github.com/weyfonk[@weyfonk]
+* Fix nil pointer dereference on cluster import link:https://github.com/rancher/fleet/issues/4491[#4491] by link:https://github.com/p-se[@p-se] in link:https://github.com/rancher/fleet/pull/4494[#4494]
+* Fix race conditions during bundle creation link:https://github.com/rancher/fleet/issues/4487[#4487] by link:https://github.com/p-se[@p-se] in link:https://github.com/rancher/fleet/pull/4489[#4489]
+
+=== Automated Copy of Resources to Downstream Clusters
+
+* Copy `downstreamResources` to local cluster link:https://github.com/rancher/fleet/issues/4559[#4559] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4560[#4560]
+* Monitor downstream resources and trigger deployments on change link:https://github.com/rancher/fleet/issues/2085[link:https://github.com/rancher/fleet/pull/2085[#2085] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4530[#4530]
+* Monitor GitRepo secrets link:https://github.com/rancher/fleet/issues/2085[#2085] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4574[#4574]
+* Preserve secret types when copied downstream link:https://github.com/rancher/fleet/issues/3617[#3617] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4490[#4490]
+
+=== Stability & Operations
+
+* Configure concurrent bundle creation in `fleet apply` link:https://github.com/rancher/fleet/issues/4233[#4233] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4292[#4292]
+* Support cluster display name in `clusterName` selector link:https://github.com/rancher/fleet/issues/4495[#4495]
+* Add sharding filter when calculating bundles link:https://github.com/rancher/fleet/issues/4275[#4275] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4282[#4282]
+* Prevent unnecessary requeue when adding finalizers link:https://github.com/rancher/fleet/issues/4264[#4264] by link:https://github.com/0xavi0[@0xavi0]
+* Clear reason when Ready condition transitions link:https://github.com/rancher/fleet/issues/4561[#4561] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4578[#4578]
+* Use controlled requeue for non-ready dependencies link:https://github.com/rancher/fleet/issues/4469[#4469] by link:https://github.com/aruiz14[@aruiz14] in link:https://github.com/rancher/fleet/pull/4453[#4453]
+* Prevent false drift from Helm v4 null fields link:https://github.com/rancher/fleet/issues/4655[#4655] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4664[#4664]
+* Set recreate strategy when `hostNetwork` is enabled link:https://github.com/rancher/fleet/issues/4432[#4432] by link:https://github.com/webD97[@webD97] in link:https://github.com/rancher/fleet/pull/4467[#4467]
+* Fix race condition for secrets and jobs link:https://github.com/rancher/fleet/issues/4319[#4319] by link:https://github.com/p-se[@p-se]
+* Sort `AgentTolerations` during bundle creation link:https://github.com/rancher/fleet/issues/4367[#4367] by link:https://github.com/0xavi0[@0xavi0]
+* Configure resource requests/limits for fleet controllers link:https://github.com/rancher/fleet/issues/4516[#4516] by link:https://github.com/p-se[@p-se] in link:https://github.com/rancher/fleet/pull/4568[#4568]
+* Fix transient secret availability issues link:https://github.com/rancher/fleet/issues/4599[#4599] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4707[#4707]
+* Make `agentSchedulingCustomization` nullable link:https://github.com/rancher/fleet/issues/4731[#4731]
+* Normalize empty `agentSchedulingCustomization` to nil link:https://github.com/rancher/fleet/issues/4751[#4751]
+* Fix BundleDeployment race condition link:https://github.com/rancher/fleet/issues/4756[#4756] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4757[#4757]
+* Avoid uninstalling releases in PendingInstall link:https://github.com/rancher/fleet/issues/4572[#4572] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4600[#4600]
+* Add temporary fix for webhook race conditions link:https://github.com/rancher/fleet/issues/4853[#4853] by link:https://github.com/0xavi0[@0xavi0] in link:https://github.com/rancher/fleet/pull/4854[#4854]
+
+== Notable Dependency Updates
+
+* Replace `gorilla/mux` with `net/http ServeMux` link:https://github.com/rancher/fleet/issues/4682[#4682] by link:https://github.com/thardeck[@thardeck] in link:https://github.com/rancher/fleet/pull/4717[#4717]
+* Update Go to v1.25.8 link:https://github.com/rancher/fleet/issues/4778[#4778]
+* Update `go-git` to v5.16.5 [security] link:https://github.com/rancher/fleet/issues/4614[#4614]
+* Update Kubernetes dependencies to v0.35.2 link:https://github.com/rancher/fleet/issues/4721[#4721]
+* Update Helm to v4.1.1 link:https://github.com/rancher/fleet/issues/4622[#4622]
+* Update `wrangler` to v3.4.0 link:https://github.com/rancher/fleet/issues/4650[#4650]
+* Update `golang.org/x/crypto` to v0.48.0 [security] link:https://github.com/rancher/fleet/issues/4653[#4653]
+* Update `golang.org/x/net` to v0.51.0 [security] link:https://github.com/rancher/fleet/issues/4772[#4772]
+* Update `cloudflare/circl` to v1.6.3 [security] link:https://github.com/rancher/fleet/issues/4723[#4723]
+
+== Known Issues
+
+=== Drift correction may not work as expected with Helm v4
+
+In some cases, drift correction may not behave as expected due to Helm v4 migration. For more information, refer to link:https://github.com/rancher/fleet/issues/4878[#4878].    
+
+==== Workaround
+
+Set the following option to force reconciliation:
+
+[source,yaml]
+====
+  correctDrift:
+    enabled: true
+    force: true
+====
+
+This issue will be addressed in a future release.
+
+== New Contributors
+
+* link:https://github.com/webD97[@webD97] made their first contribution in link:https://github.com/rancher/fleet/pull/4467[#4467]
+* link:https://github.com/ncuralli[@ncuralli] made their first contribution in link:https://github.com/rancher/fleet/pull/4488[#4488]
+* link:https://github.com/ftechmax[@ftechmax] made their first contribution in link:https://github.com/rancher/fleet/pull/4268[#4268]
+* link:https://github.com/SebPlv[@SebPlv] made their first contribution in link:https://github.com/rancher/fleet/pull/4569[#4569]
+
+Full Changelog: 
+
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.14.0...v0.15.0[v0.14.0...v0.15.0]
+
+
+== Download
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-0.15.0.tgz[fleet-0.15.0.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-agent-0.15.0.tgz[fleet-agent-0.15.0.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-benchmark-darwin-arm64[fleet-benchmark-darwin-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-benchmark-linux-amd64[fleet-benchmark-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-benchmark-linux-arm64[fleet-benchmark-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-benchmark-windows-amd64.exe[fleet-benchmark-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-crd-0.15.0.tgz[fleet-crd-0.15.0.tgz]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-darwin-arm64[fleet-darwin-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-linux-amd64[fleet-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-linux-arm64[fleet-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet-windows-amd64.exe[fleet-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleetagent-linux-amd64[fleetagent-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleetagent-linux-arm64[fleetagent-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleetagent-windows-amd64.exe[fleetagent-windows-amd64.exe]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleetcontroller-linux-amd64[fleetcontroller-linux-amd64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleetcontroller-linux-arm64[fleetcontroller-linux-arm64]
+
+* https://github.com/rancher/fleet/releases/download/v0.15.0/fleet_0.15.0_checksums.txt[fleet_0.15.0_checksums.txt]
+
+_Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.15.0[{product_name} v0.15.0]_
+
