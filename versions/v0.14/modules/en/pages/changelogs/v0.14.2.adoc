@@ -1,10 +1,7 @@
-
 = v0.14.2
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-date: 2026-01-21 14:41:13 +0000 UTC
-
-_(github-actions[bot]) released this 2026-01-21 14:41:13 +0000 UTC_
 
 
 == What's Changed

@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :page-date: 2026-01-21 14:43:09 +0000 UTC
 
-_(github-actions[bot]) released this 2026-01-21 14:43:09 +0000 UTC_
-
 
 == What's Changed
 * Use controlled Requeue for non-ready dependencies during deploy by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/4459

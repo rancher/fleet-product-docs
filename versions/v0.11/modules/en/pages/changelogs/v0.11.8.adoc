@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :date: 2025-05-16 08:32:50 +0000 UTC
 
-*(github-actions[bot]) released this 2025-05-16 08:32:50 +0000 UTC*
-
 == Release Note
 
 === What's Changed
