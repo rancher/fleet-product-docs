@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC
 
-_(github-actions[bot]) released this 2026-03-19 18:32:09 +0000 UTC_
-
 == Breaking Changes
 
 Imagescan, which has had a long life as an experimental feature, is now disabled by default. It can still be explicitly enabled; more information xref:how-tos-for-users/imagescan.adoc[Image Scan] on what this change means and how to keep the feature enabled. link:https://github.com/rancher/fleet/issues/4671[#4671] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4692[#4692]
