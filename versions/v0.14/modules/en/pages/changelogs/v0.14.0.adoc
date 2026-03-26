@@ -3,10 +3,6 @@ title: "v0.14.0"
 date: "2025-11-18 14:56:48 +0000 UTC"
 ---
 
-
-_(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
-
-
 == Notable changes
 
 * Auth through Github Apps is now supported xref:how-tos-for-users/gitrepo-add.adoc#_using_a_github_app[Add a GitRepo], courtesy of https://github.com/hmrks[@hmrks] in #3809

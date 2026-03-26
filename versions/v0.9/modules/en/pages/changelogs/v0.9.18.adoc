@@ -4,9 +4,6 @@
 :date: 2025-05-16 12:14:19 +0000 UTC
 
 
-*(github-actions[bot]) released this 2025-05-16 12:14:19 +0000 UTC*
-
-
 == What's Changed
 * Bump go mods by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3674
 

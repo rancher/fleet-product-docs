@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :page-date: 2025-09-25 11:27:27 +0000 UTC
 
-_(github-actions[bot]) released this 2025-09-25 11:27:27 +0000 UTC_
-
 == What's Changed
 * Remove HTML response body from HelmOps errors (#4129) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4141
 * Update helm.sh/helm dependency to v3.18.6 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4161

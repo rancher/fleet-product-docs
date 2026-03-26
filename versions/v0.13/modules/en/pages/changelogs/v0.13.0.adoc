@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :page-date: 2025-07-23 15:09:14 +0000 UTC
 
-_(github-actions[bot]) released this 2025-07-23 15:09:14 +0000 UTC_
-
 == Breaking changes
 
 * When using SSH to point to a git repository, Fleet checks host keys by default, rejecting connection attempts to unknown hosts xref:how-tos-for-users/gitrepo-add.adoc#_known_hosts[Add GitRepo], by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3523
