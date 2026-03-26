@@ -44,6 +44,7 @@
 **** xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
+**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
 *** Fleet Troubleshooting
 **** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]
 **** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
