@@ -1,0 +1,7 @@
+= Custom Resources During Deployment
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+This shows the resources, also the internal ones, involved in creating a deployment from a git repository.
+
+image::FleetResources.svg[Resources]
