@@ -4,6 +4,9 @@
 :page-date: 2025-12-12 14:45:25 +0000 UTC
 
 
+_(github-actions[bot]) released this 2025-12-12 14:45:25 +0000 UTC_
+
+
 == What's Changed
 * Add configurable concurrent bundle creation routines to fleet apply by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4307
 * Adds support for Helm lookup by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/4380
@@ -64,4 +67,3 @@ _Full Changelog_: https://github.com/rancher/fleet/compare/v0.14.0...v0.14.1[v0.
 
 
 _Information retrieved from https://github.com/rancher/fleet/releases/tag/v0.14.1[{product_name} v0.14.1]_
-

@@ -1,4 +1,7 @@
 = fleet.yaml
+:revdate: 2026-03-05
+:page-revdate: {revdate}
+:page-aliases: /ref-fleet-yaml
 
 The `fleet.yaml` file adds options to a bundle. Any directory with a `fleet.yaml` file is automatically turned into a bundle.
 
@@ -366,6 +369,19 @@ These options control the Kubernetes namespace where resources will be deployed.
 
 All bundles are deployed using Helm, but these options are specific to *Helm-style bundles* (those with a `Chart.yaml` file).
 
+[NOTE]
+====
+The `helm.chart`, `helm.repo`, and `helm.version` settings defined at the root of `fleet.yaml` determine which Helm chart Fleet downloads.
+
+Fleet downloads the chart during the initial **Bundle creation** phase. This occurs before `targetCustomizations` are processed. As a result, `targetCustomizations` cannot be used to select a different chart source for individual clusters, such as:
+
+* a different local chart directory
+* a separate Helm repository
+* a different OCI registry
+
+If a specific cluster must use a different registry or chart source (for example, due to network or firewall restrictions), configure it using a separate `GitRepo` resource or a different bundle path.
+====
+
 === Chart Source
 
 These options specify how to download the chart. The reference can be a local path, go-getter URL, Helm repo, or OCI Helm repo.
@@ -398,13 +414,6 @@ If a secret for the SSH key was defined via `helmSecretName`, it is injected aut
 ====
 If the `fleet.yaml` file is located outside the embedded chart’s directory, it must explicitly reference the chart using `helm.chart`.  
 Otherwise, {product_name} won’t install the chart, and Helm-specific fields like `valuesFiles` or `valuesFrom` will have no effect.
-====
-
-[WARNING]
-====
-**Limitation:** Downloading Helm charts from Git with custom CA bundles does not work.  
-If a CA bundle is configured in a secret referenced in `helmSecretName`, it will be ignored.  
-See https://github.com/rancher/fleet/issues/3646[fleet#3646] for details.
 ====
 
 ==== `helm.version`

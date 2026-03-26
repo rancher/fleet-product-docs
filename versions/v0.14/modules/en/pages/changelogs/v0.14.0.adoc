@@ -1,7 +1,7 @@
----
-title: "v0.14.0"
-date: "2025-11-18 14:56:48 +0000 UTC"
----
+= v0.14.0
+:revdate: 2025-11-18
+:page-revdate: {revdate}
+:page-date: 2025-11-18 14:56:48 +0000 UTC
 
 == Notable changes
 
@@ -67,7 +67,7 @@ date: "2025-11-18 14:56:48 +0000 UTC"
 
 == What's Changed
 
-_Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.5...v0.14.0[v0.13.5...v0.14.0]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.13.0...v0.14.0[v0.13.0...v0.14.0]
 
 == New Contributors
 

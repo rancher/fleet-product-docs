@@ -43,10 +43,11 @@
 **** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
 **** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
 **** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
+**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
+*** Fleet Troubleshooting
 **** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]
 **** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
 **** xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]
-**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
 *** Fleet Agent 
 **** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
 **** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
@@ -84,4 +85,5 @@
 * Changelog
 ** xref:changelogs/v0.14.0.adoc[v0.14.0]
 ** xref:changelogs/v0.14.1.adoc[v0.14.1]
-** xref:changelogs/v0.14.2.adoc[v0.14.2 (latest)]
+** xref:changelogs/v0.14.2.adoc[v0.14.2 ]
+** xref:changelogs/v0.14.3.adoc[v0.14.3 (latest)]
