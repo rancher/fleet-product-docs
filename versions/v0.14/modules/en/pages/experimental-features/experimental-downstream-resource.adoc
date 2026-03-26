@@ -1,6 +1,7 @@
 = Automatically copying resources to downstream clusters
 :revdate: 2025-11-04
 :page-revdate: {revdate}
+:page-aliases: /experimental-downstream-resource
 
 [WARNING]
 ====

@@ -1,6 +1,7 @@
 = Cluster Registration Internals
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /ref-registration
 
 == How does cluster registration work?
 
