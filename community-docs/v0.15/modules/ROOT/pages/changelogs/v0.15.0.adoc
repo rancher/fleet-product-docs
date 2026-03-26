@@ -13,7 +13,7 @@ This release introduces Helm v4 and, since this version also incorporates Server
 To resolve possible issues where drift correction does not work, use `force=true`.  
 This will be fixed in the next release.
 
-==- Future Deprecation Notice
+== Future Deprecation Notice
 
 Imagescan will be deprecated in a future release.
 
