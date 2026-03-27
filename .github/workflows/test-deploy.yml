@@ -13,6 +13,8 @@ jobs:
   test-community:
     name: Test community docs
     runs-on: ubuntu-latest
+    # Only runs if the PR is targeting the 'main' branch
+    if: github.base_ref == 'main'
 
     steps:
       - name: Checkout repository
@@ -53,6 +55,8 @@ jobs:
   test-product:
     name: Test product docs
     runs-on: ubuntu-latest
+    # Only runs if the PR is targeting the 'product-docs' branch
+    if: github.base_ref == 'product-docs'
 
     steps:
       - name: Checkout repository
