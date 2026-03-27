@@ -28,7 +28,7 @@ jobs:
           echo "Target base branch: ${{ matrix.base_branch }}"
 
       - name: Checkout target base branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: refs/heads/${{ matrix.base_branch }}
           fetch-depth: 0
