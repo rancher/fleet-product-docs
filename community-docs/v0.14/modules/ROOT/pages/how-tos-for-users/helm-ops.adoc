@@ -46,6 +46,12 @@ spec:
 
 For private charts, this requires a Helm access secret (referenced by field ++helmSecretName++) to be created in the same namespace as the ++HelmOp++ resource. The Fleet HelmOps controller takes care of copying that secret to targeted downstream clusters, enabling the Fleet agent to access the registry.
 
+[NOTE]
+====
+The `releaseName` field is optional; if not specified, Fleet will derive it from the name of the HelmOp, truncating it
+if needed.
+====
+
 == Supported use cases
 
 With 3 fields available to reference a Helm chart, let's clarify a few rules. As per the Helm install https://helm.sh/docs/helm/helm_install/[documentation], there are 6 ways of expressing a chart to install. 3 of them use either repository aliases or the local filesystem, which are not available in Fleet's HelmOps context. This leaves us with 3 options:
