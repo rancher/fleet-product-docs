@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :date: 2025-03-04 15:05:45 +0000 UTC
 
-*(github-actions[bot]) released this 2025-03-04 15:05:45 +0000 UTC*
-
 == What's Changed
 * Bump Gitjob to 0.9.22 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3413
 

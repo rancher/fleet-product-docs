@@ -4,9 +4,6 @@
 :page-date: 2025-12-12 14:47:18 +0000 UTC
 
 
-_(github-actions[bot]) released this 2025-12-12 14:47:18 +0000 UTC_
-
-
 == What's Changed
 * Webhooks in azure devops should support spaces and old URL formats in https://github.com/rancher/fleet/pull/4308
 * Add configurable concurrent bundle creation routines to fleet apply by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/4382

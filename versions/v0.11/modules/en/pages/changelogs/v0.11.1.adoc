@@ -3,8 +3,6 @@
 :page-revdate: {revdate}
 :date: 2024-11-15 15:30:49 +0000 UTC
 
-*(github-actions[bot]) released this 2024-11-15 15:30:49 +0000 UTC*
-
 == Release Note
 
 {product_name} v0.11.1 improves several log and status messages. It reduces the amount of reconciles done by the controllers for resource changes.
