@@ -4,6 +4,7 @@
 
 Continuously report resource status to the upstream cluster
 
+[source,text]
 ----
 fleet-agent clusterstatus [flags]
 ----
