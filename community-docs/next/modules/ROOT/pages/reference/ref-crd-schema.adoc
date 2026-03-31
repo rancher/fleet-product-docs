@@ -1,6 +1,7 @@
 = {product_name} CRD Schema Summary
 :revdate: 2026-02-05
 :page-revdate: {revdate}
+:page-aliases: /ref-crd-schema
 
 This table summarizes the Custom Resource Definitions (CRDs) used in *{product_name}*, including their purpose and top-level schema properties. Each CRD defines how {product_name} manages applications, deployments, and cluster configurations.
 

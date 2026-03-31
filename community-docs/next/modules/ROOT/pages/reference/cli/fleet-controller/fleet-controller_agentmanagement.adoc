@@ -1,9 +1,11 @@
 = fleet-controller agentmanagement
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet-controller_agentmanagement
 
 Configure Fleet agent management
 
+[source,text]
 ----
 fleet-controller agentmanagement [flags]
 ----

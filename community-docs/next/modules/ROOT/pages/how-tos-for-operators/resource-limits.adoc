@@ -3,6 +3,7 @@
 = Resource Limits
 :revdate: 2026-02-25
 :page-revdate: {revdate}
+:page-aliases: /resource-limits
 
 {product_name} supports configuring CPU and memory resource requests and limits in two places:
 
