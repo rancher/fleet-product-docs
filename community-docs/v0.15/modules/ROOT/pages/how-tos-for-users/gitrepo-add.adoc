@@ -2,6 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :doctype: book
+:page-aliases: /gitrepo-add
 
 == Create GitRepo Instance
 
