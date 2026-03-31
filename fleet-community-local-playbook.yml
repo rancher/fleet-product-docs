@@ -1,7 +1,7 @@
 site:
   title: Fleet
   url: https://fleet.rancher.io
-  start_page: next@ROOT:ROOT:index.adoc
+  start_page: 0.15@ROOT:ROOT:index.adoc
 
 content:
   sources:
