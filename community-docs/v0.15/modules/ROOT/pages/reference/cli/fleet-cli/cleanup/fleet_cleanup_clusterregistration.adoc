@@ -1,9 +1,10 @@
 = fleet cleanup clusterregistration
 :revdate: 2025-07-23
 :page-revdate: {revdate}
-
+:page-aliases: /fleet_cleanup_clusterregistration
 Clean up outdated cluster registrations
 
+[source,yaml]
 ----
 fleet cleanup clusterregistration [flags]
 ----

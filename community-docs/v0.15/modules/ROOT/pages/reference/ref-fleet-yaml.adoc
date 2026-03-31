@@ -1,4 +1,7 @@
 = fleet.yaml
+:revdate: 2026-03-05
+:page-revdate: {revdate}
+:page-aliases: /ref-fleet-yaml
 
 The `fleet.yaml` file adds options to a bundle. Any directory with a `fleet.yaml` file is automatically turned into a bundle.
 

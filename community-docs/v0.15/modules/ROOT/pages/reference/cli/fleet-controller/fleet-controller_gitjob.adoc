@@ -1,9 +1,11 @@
 = fleet-controller gitjob
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet-controller_gitjob
 
 Configure Fleet controller gitjob operations
 
+[source,text]
 ----
 fleet-controller gitjob [flags]
 ----

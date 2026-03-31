@@ -1,9 +1,11 @@
 = fleet-agent
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet-agent
 
 Manage operations with the Fleet agent that communicates with the Fleet controller
 
+[source,yaml]
 ----
 fleet-agent [flags]
 ----

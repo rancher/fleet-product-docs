@@ -1,6 +1,7 @@
 = Status Fields
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /ref-status-fields
 
 == Display States
 
