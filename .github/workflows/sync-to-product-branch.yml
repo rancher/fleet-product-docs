@@ -1,0 +1,52 @@
+name: Sync Community Docs to Product Branch
+
+on:
+  push:
+    branches:
+      - test-main
+    paths:
+      - 'community-docs/**' # Only trigger if files in this folder change
+  workflow_dispatch: # <--- Allows manual triggering from the UI
+  
+jobs:
+  create-product-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main branch
+        uses: actions/checkout@v4
+        with:
+          # We need the full history to switch branches easily
+          fetch-depth: 0
+
+      - name: Prepare changes
+        run: |
+          # 1. Create a temporary directory to hold the adoc files
+          mkdir -p /tmp/sync-docs
+          
+          # 2. Copy the files from your source directory
+          # Adjust 'community-docs/' to your actual source path
+          cp -r community-docs/* /tmp/sync-docs/
+          
+          # 3. Switch to the target branch
+          git checkout product-docs
+          
+          # 4. Move files to the target directory 
+          # (e.g., placing them in the root or a 'product-docs' folder)
+          # Use rsync or cp to overwrite existing files
+          cp -r /tmp/sync-docs/* ./
+          
+          # Clean up temp files
+          rm -rf /tmp/sync-docs
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v6
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: sync-community-updates  # The intermediate branch for the PR
+          base: test-   product-docs              # The branch you want to merge INTO
+          title: "docs: sync updates from main (community-docs)"
+          body: |
+            This is an automated PR to sync documentation changes from the `main` branch.
+            Source: `community-docs/`
+          commit-message: "sync: update docs from main community folder"
+          delete-branch: true             # Cleans up the 'sync-community-updates' branch after merge
