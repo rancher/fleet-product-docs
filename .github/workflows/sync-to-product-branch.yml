@@ -7,7 +7,7 @@ on:
     paths:
       - 'community-docs/**' # Only trigger if files in this folder change
   workflow_dispatch: # <--- Allows manual triggering from the UI
-  
+
 jobs:
   create-product-pr:
     runs-on: ubuntu-latest
@@ -43,7 +43,7 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           branch: sync-community-updates  # The intermediate branch for the PR
-          base: test-   product-docs              # The branch you want to merge INTO
+          base: test-product-docs-01              # The branch you want to merge INTO
           title: "docs: sync updates from main (community-docs)"
           body: |
             This is an automated PR to sync documentation changes from the `main` branch.
