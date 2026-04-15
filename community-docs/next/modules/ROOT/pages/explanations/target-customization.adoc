@@ -1,0 +1,573 @@
+= Target Customization
+:revdate: 2026-04-13
+:page-revdate: {revdate}
+
+Target customizations allow you to modify how bundles are deployed to specific clusters without creating separate bundles or GitRepos. This enables you to maintain a single source of truth while adapting deployments to different environments, regions, or cluster configurations.
+
+== What are Target Customizations?
+
+Target customizations are rules defined in `fleet.yaml` that match specific clusters and override bundle configuration for those clusters. Each customization can override:
+
+* Namespace settings
+* Helm values and value sources
+* Kustomize overlays
+* YAML overlays for raw manifests
+* Deployment options (atomic, force, etc.)
+* Drift correction settings
+
+== How Matching Works
+
+When {product_name} deploys a bundle to a cluster, it evaluates all `targetCustomizations` entries to determine which apply to that cluster. Each customization can match clusters using:
+
+* `clusterSelector`: Label selector matching cluster labels
+* `clusterName`: Exact cluster name match
+* `clusterGroup`: Cluster group name
+* `clusterGroupSelector`: Label selector matching cluster group labels
+
+All criteria within a single customization are combined with AND logic. For example:
+
+[source,yaml]
+----
+targetCustomizations:
+  - name: prod-us-east
+    clusterGroup: prod
+    clusterSelector:
+      matchLabels:
+        region: us-east
+----
+
+This matches clusters that are in the `prod` cluster group AND have the label `region: us-east`.
+
+== Customization Modes
+
+{product_name} supports two modes for applying target customizations, controlled by the `targetCustomizationMode` field in `fleet.yaml`:
+
+=== FirstMatch Mode (Default)
+
+In `FirstMatch` mode, {product_name} evaluates customizations in the order they appear and applies only the **first matching entry**. This is the traditional behavior and remains the default for backward compatibility.
+
+[source,yaml]
+----
+targetCustomizationMode: FirstMatch  # Can be omitted (default)
+
+targetCustomizations:
+  - name: specific-cluster
+    clusterName: my-special-cluster
+    helm:
+      values:
+        replicas: 10
+
+  - name: prod-clusters
+    clusterSelector:
+      matchLabels:
+        env: prod
+    helm:
+      values:
+        replicas: 3
+
+  - name: catch-all
+    clusterSelector: {}
+    helm:
+      values:
+        replicas: 1
+----
+
+==== Behavior
+
+* Cluster `my-special-cluster`: Gets `replicas: 10` (first match)
+* Any other cluster with `env: prod`: Gets `replicas: 3` (second entry matches)
+* All other clusters: Get `replicas: 1` (catch-all matches)
+
+==== When to use
+
+* When you have a clear precedence order
+* When customizations are mutually exclusive
+* When later entries serve as fallbacks
+
+[IMPORTANT]
+====
+Because only the first match wins, `doNotDeploy` entries must be placed *before* any broader-matching entry in the list.
+If a broader entry appears first, it matches the cluster before the `doNotDeploy` entry is ever evaluated.
+====
+
+=== AllMatches Mode
+
+In `AllMatches` mode, {product_name} evaluates **all** customizations and applies every matching entry in order, merging their configurations.
+
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  - name: edge-config
+    clusterSelector:
+      matchLabels:
+        edge: "true"
+    helm:
+      valuesFiles:
+        - values/edge.yaml
+
+  - name: configmap-override
+    clusterSelector:
+      matchLabels:
+        custom-values: "true"
+    helm:
+      valuesFrom:
+        - configMapKeyRef:
+            name: custom-values
+            key: values.yaml
+            namespace: default
+
+  - name: monitoring-enabled
+    clusterSelector:
+      matchLabels:
+        monitoring: "enabled"
+    helm:
+      values:
+        metrics:
+          enabled: true
+----
+
+==== Behavior
+
+* Cluster with labels `edge: "true"` and `custom-values: "true"`: Gets both `values/edge.yaml` AND values from the ConfigMap
+* Cluster with labels `edge: "true"` and `monitoring: "enabled"`: Gets `values/edge.yaml` AND `metrics.enabled: true`
+* Cluster with all three labels: Gets all three customizations merged
+
+==== When to use
+
+* When customizations are orthogonal (independent concerns)
+* When you need to layer configurations from different dimensions (environment, region, special features)
+* When you want to avoid combinatorial explosion of customization entries
+
+== Merge Behavior
+
+When using `AllMatches` mode, {product_name} merges customizations in order. The merge behavior depends on the field type:
+
+=== Scalar Fields (Last Wins)
+
+For scalar fields like `namespace`, `defaultNamespace`, `releaseName`, the **last matching customization wins**:
+
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  - name: base
+    clusterSelector: {}
+    defaultNamespace: app-default
+
+  - name: override
+    clusterSelector:
+      matchLabels:
+        special: "true"
+    defaultNamespace: app-special
+----
+
+A cluster with `special: "true"` gets `defaultNamespace: app-special` (override wins).
+
+=== Additive Fields (Accumulated)
+
+For list/array fields, all values are accumulated:
+
+**`helm.valuesFrom`**: All entries from matching customizations are combined
+[source,yaml]
+----
+targetCustomizations:
+  - name: base
+    helm:
+      valuesFrom:
+        - configMapKeyRef:
+            name: base-config
+            key: values.yaml
+
+  - name: extra
+    helm:
+      valuesFrom:
+        - secretKeyRef:
+            name: secret-config
+            key: values.yaml
+----
+
+Both matching customizations result in values from both the ConfigMap AND the Secret.
+
+**`yaml.overlays`**: All overlay names are combined
+[source,yaml]
+----
+targetCustomizations:
+  - name: base-overlay
+    yaml:
+      overlays:
+        - common
+
+  - name: env-overlay
+    yaml:
+      overlays:
+        - production
+----
+
+Both overlays (`common` and `production`) are applied.
+
+=== Helm Values (Deep Merge)
+
+The `helm.values` field is deep-merged using Helm's merge logic, where later keys override earlier ones:
+
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  - name: base
+    helm:
+      values:
+        app:
+          name: myapp
+          replicas: 1
+        database:
+          enabled: true
+
+  - name: scale
+    helm:
+      values:
+        app:
+          replicas: 3
+        monitoring:
+          enabled: true
+----
+
+Result for matching clusters:
+[source,yaml]
+----
+app:
+  name: myapp
+  replicas: 3          # Overridden by 'scale'
+database:
+  enabled: true
+monitoring:
+  enabled: true        # Added by 'scale'
+----
+
+=== Boolean Flags (Sticky)
+
+Some boolean fields like `force`, `atomic`, `takeOwnership` are OR'd together and cannot be unset once enabled:
+
+[source,yaml]
+----
+targetCustomizations:
+  - name: force-on
+    helm:
+      force: true
+
+  - name: force-off
+    helm:
+      force: false      # Has no effect if force-on also matches
+----
+
+If both match, `force` remains `true`.
+
+== Limitations and Considerations
+
+=== Chart Source Cannot Be Customized Per Cluster
+
+{product_name} retrieves the Helm chart during the initial **Bundle creation** phase using the top-level `helm` configuration. This happens before `targetCustomizations` are processed.
+
+As a result, you **cannot** use `targetCustomizations` to select different:
+
+* Local chart directories
+* Helm repositories
+* OCI registries
+
+[source,yaml]
+----
+# This will NOT work as expected
+helm:
+  repo: https://public-charts.example.com
+  chart: myapp
+
+targetCustomizations:
+  - name: airgapped
+    clusterSelector:
+      matchLabels:
+        network: airgapped
+    helm:
+      repo: https://internal-registry.example.com  # ❌ Ignored during chart download
+      chart: myapp
+----
+
+==== Workaround
+
+If different environments require different chart sources, use one of these approaches:
+
+* Create separate `fleet.yaml` files in different paths
+* Use separate `GitRepo` resources pointing to different paths
+* Use OCI registries with mirroring for airgapped environments
+
+==== What you CAN customize
+
+While chart *source* cannot vary, you can still customize:
+
+* `helm.version` - Different chart versions (but see bundle size warning below)
+* `helm.values` - Chart values
+* `helm.valuesFiles` - References to different values files in the bundle
+* `helm.valuesFrom` - ConfigMaps/Secrets in downstream clusters
+* `helm.releaseName` - Release name
+
+[WARNING]
+====
+*Bundle Size Considerations*
+
+When overriding `helm.version` in multiple `targetCustomizations`, {product_name} may include multiple chart versions in a single bundle. This significantly increases bundle size and may exceed etcd's blob size limit.
+
+For more details, see https://github.com/rancher/fleet/issues/1650[fleet#1650].
+====
+
+=== Values Files Are Pre-Processed
+
+The `helm.valuesFiles` field references files **within the bundle**. These are processed during bundle creation and merged into `helm.values` before deployment.
+
+You can safely use different `valuesFiles` in different customizations:
+
+[source,yaml]
+----
+helm:
+  valuesFiles:
+    - values.yaml       # Base values
+
+targetCustomizations:
+  - name: dev
+    helm:
+      valuesFiles:
+        - values/dev.yaml    # ✅ Merged with base
+
+  - name: prod
+    helm:
+      valuesFiles:
+        - values/prod.yaml   # ✅ Merged with base
+----
+
+== Common Patterns
+
+=== Pattern: Base + Environment-Specific Overrides
+
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  # Base configuration for all clusters
+  - name: base
+    clusterSelector: {}
+    helm:
+      values:
+        app:
+          name: myapp
+        resources:
+          limits:
+            memory: 512Mi
+
+  # Dev environment tweaks
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+    helm:
+      values:
+        replicas: 1
+        resources:
+          limits:
+            memory: 256Mi    # Override base
+
+  # Prod environment tweaks
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+    helm:
+      values:
+        replicas: 3
+        resources:
+          limits:
+            memory: 1Gi      # Override base
+----
+
+=== Pattern: Feature Flags
+
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  # Enable monitoring on labeled clusters
+  - name: monitoring
+    clusterSelector:
+      matchLabels:
+        monitoring: "enabled"
+    helm:
+      values:
+        monitoring:
+          enabled: true
+
+  # Enable TLS on labeled clusters
+  - name: tls
+    clusterSelector:
+      matchLabels:
+        tls: "enabled"
+    helm:
+      values:
+        tls:
+          enabled: true
+          certManager: true
+
+  # Load balancer for public clusters
+  - name: loadbalancer
+    clusterSelector:
+      matchLabels:
+        network: public
+    helm:
+      values:
+        service:
+          type: LoadBalancer
+----
+
+A cluster with labels `monitoring: "enabled"` and `tls: "enabled"` gets both features without creating a separate customization entry.
+
+=== Pattern: User Overrides via ConfigMap
+
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  # Standard configuration
+  - name: standard
+    clusterSelector: {}
+    helm:
+      valuesFiles:
+        - values.yaml
+
+  # Optional user overrides from downstream cluster
+  - name: user-override
+    clusterSelector:
+      matchLabels:
+        custom-config: "true"
+    helm:
+      valuesFrom:
+        - configMapKeyRef:
+            name: user-overrides
+            key: values.yaml
+            namespace: default
+----
+
+Users can create a ConfigMap named `user-overrides` on clusters labeled `custom-config: "true"` to inject custom values without modifying the GitRepo.
+
+== Best Practices
+
+=== Use FirstMatch for Precedence, AllMatches for Orthogonal Concerns
+
+* **FirstMatch**: When customizations represent alternatives (dev OR prod OR staging)
+* **AllMatches**: When customizations represent independent features (monitoring AND tls AND scaling)
+
+=== Order Matters in AllMatches Mode
+
+Since later customizations override earlier ones for scalar fields, structure your customizations from general to specific:
+
+[source,yaml]
+----
+targetCustomizations:
+  - name: all-clusters      # Most general
+    clusterSelector: {}
+
+  - name: prod-clusters     # More specific
+    clusterSelector:
+      matchLabels:
+        env: prod
+
+  - name: special-cluster   # Most specific
+    clusterName: critical-prod-01
+----
+
+=== Avoid Overly Complex Selectors
+
+Instead of creating combinatorial customizations:
+
+[source,yaml]
+----
+# ❌ Avoid: Combinatorial explosion
+targetCustomizations:
+  - name: edge-and-monitoring
+    clusterSelector:
+      matchLabels:
+        edge: "true"
+        monitoring: "enabled"
+    # ... config
+
+  - name: edge-without-monitoring
+    clusterSelector:
+      matchLabels:
+        edge: "true"
+    clusterSelector:
+      matchExpressions:
+        - key: monitoring
+          operator: NotIn
+          values: ["enabled"]
+    # ... config
+----
+
+Use `AllMatches` mode:
+
+[source,yaml]
+----
+# ✅ Better: Orthogonal customizations
+targetCustomizationMode: AllMatches
+
+targetCustomizations:
+  - name: edge
+    clusterSelector:
+      matchLabels:
+        edge: "true"
+    # ... edge config
+
+  - name: monitoring
+    clusterSelector:
+      matchLabels:
+        monitoring: "enabled"
+    # ... monitoring config
+----
+
+=== Use DoNotDeploy for Exclusions
+
+The `doNotDeploy` field prevents {product_name} from creating a `BundleDeployment` for matching clusters.
+In `FirstMatch` mode (the default), only the **first** matching customization is evaluated, so the entry with `doNotDeploy: true` **must appear before** any broader-matching entry.
+Otherwise the broader entry matches first and the `doNotDeploy` entry is never reached.
+
+[source,yaml]
+----
+targetCustomizations:
+  # ✅ Specific exclusion listed FIRST
+  - name: exclude-maintenance
+    clusterSelector:
+      matchLabels:
+        maintenance: "true"
+    doNotDeploy: true
+
+  # Catch-all entry AFTER the exclusion
+  - name: deploy-everywhere
+    clusterSelector: {}
+    # ... config
+----
+
+Clusters labeled `maintenance: "true"` match the first entry and will not receive the bundle.
+Any other cluster falls through to the `deploy-everywhere` entry.
+
+[IMPORTANT]
+====
+*Order matters:* If the catch-all entry (`clusterSelector: {}`) appeared first, it would match maintenance clusters before the `doNotDeploy` entry is evaluated, and those clusters would still receive the bundle.
+====
+
+In `AllMatches` mode the whole list is always evaluated, so `doNotDeploy` works regardless of position: if any matching customization carries `doNotDeploy: true`, the cluster is skipped.
+
+== See Also
+
+* xref:reference/ref-fleet-yaml.adoc#_targeting_and_customization[fleet.yaml Reference - Targeting and Customization]
+* xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[How-to: Customize Deployments per Cluster]
+* xref:reference/ref-crds.adoc#_bundletarget[BundleTarget CRD Reference]

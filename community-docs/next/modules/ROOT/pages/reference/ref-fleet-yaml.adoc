@@ -218,9 +218,13 @@ rolloutStrategy:
       clusterGroup: agroup
 
 
-# Target customization are used to determine how resources should be modified
-# per target Targets are evaluated in order and the first one to match a cluster
-# is used for that cluster.
+# Controls how targetCustomizations are evaluated. "FirstMatch" (default) applies
+# only the first matching customization. "AllMatches" applies all matching
+# customizations in order, merging them.
+targetCustomizationMode: FirstMatch
+
+# Target customizations are used to determine how resources should be modified
+# per target.
 targetCustomizations:
 
   # The name of target. If not specified a default name of the format
@@ -380,13 +384,9 @@ All bundles are deployed using Helm, but these options are specific to *Helm-sty
 ====
 The `helm.chart`, `helm.repo`, and `helm.version` settings defined at the root of `fleet.yaml` determine which Helm chart Fleet downloads.
 
-Fleet downloads the chart during the initial **Bundle creation** phase. This occurs before `targetCustomizations` are processed. As a result, `targetCustomizations` cannot be used to select a different chart source for individual clusters, such as:
+Fleet downloads the chart during the initial **Bundle creation** phase. This occurs before `targetCustomizations` are processed. As a result, `targetCustomizations` cannot be used to select a different chart source for individual clusters.
 
-* a different local chart directory
-* a separate Helm repository
-* a different OCI registry
-
-If a specific cluster must use a different registry or chart source (for example, due to network or firewall restrictions), configure it using a separate `GitRepo` resource or a different bundle path.
+For details and workarounds, see xref:explanations/target-customization.adoc#_chart_source_cannot_be_customized_per_cluster[Chart Source Limitations].
 ====
 
 === Chart Source
@@ -591,6 +591,7 @@ These options let you customize deployments for specific clusters or cluster gro
 |===
 | Option | Description | Applies to
 
+| `targetCustomizationMode` | Controls how `targetCustomizations` are evaluated. `FirstMatch` (default) applies only the first matching entry. `AllMatches` applies all matching entries in order, merging them. See xref:explanations/target-customization.adoc#_customization_modes[Customization Modes]. | All
 | `targetCustomizations` | List of rules for modifying resources per target. | All
 | `targetCustomizations.name` | Display name for customization. | All
 | `targetCustomizations.clusterSelector` | Kubernetes label selector for clusters. | All
@@ -605,6 +606,18 @@ These options let you customize deployments for specific clusters or cluster gro
 | `targetCustomizations.yaml.overlays` | Overlay names to replace or patch YAML resources. | Raw YAML
 | `targetCustomizations.correctDrift` | Enables drift correction for managed resources. | All
 |===
+
+For a comprehensive guide on how target customizations work, including matching logic, merge behavior, and common patterns, see xref:explanations/target-customization.adoc[Target Customization].
+
+=== Customization Modes
+
+The `targetCustomizationMode` field controls whether Fleet applies only the first matching customization or all matching customizations:
+
+* **`FirstMatch`** (default): Evaluates customizations in order and applies only the first matching entry. This preserves backward compatibility with existing behavior.
+
+* **`AllMatches`**: Evaluates all customizations and applies every matching entry in order, merging their configurations. This is useful when customizations represent independent concerns (e.g., environment, region, features) that should be layered together.
+
+For detailed examples and merge behavior, see xref:explanations/target-customization.adoc#_customization_modes[Customization Modes].
 
 === Supported Customizations
 
@@ -624,14 +637,6 @@ These options let you customize deployments for specific clusters or cluster gro
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.ValuesFrom]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.Values]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.Version]
-
-[WARNING]
-====
-Overriding Helm chart versions in target customizations can increase bundle sizes.  
-Because {product_name} stores bundles in etcd, this may exceed etcd’s blob size limit.  
-Refer to https://github.com/rancher/fleet/issues/1650[fleet#1650] for details.
-====
-
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.WaitForJobs]
 * xref:/reference/ref-crds.adoc#_kustomizeoptions[Kustomize.Dir]
 * xref:/reference/ref-crds.adoc#_yamloptions[YAML.Overlays]

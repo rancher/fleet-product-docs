@@ -9,6 +9,7 @@
 ** xref:explanations/concepts.adoc[Core Concepts]
 ** xref:explanations/ref-bundle-stages.adoc[Bundle Lifecycle]
 ** xref:explanations/gitrepo-content.adoc[Git Repository Contents]
+** xref:explanations/target-customization.adoc[Target Customization]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Custom Resources During Deployment]
 ** xref:explanations/glossary.adoc[Custom Resources During Deployment]
