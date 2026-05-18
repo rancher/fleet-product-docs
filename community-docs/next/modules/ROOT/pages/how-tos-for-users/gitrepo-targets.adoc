@@ -112,11 +112,21 @@ and add clusters to it.
 [IMPORTANT]
 ====
 
-The `targets:` in the `GitRepo` resource select clusters to deploy on. The `targetCustomizations:` in `fleet.yaml` override Helm values only and do not change targeting.
+The `targets:` in the `GitRepo` resource select clusters to deploy on. The `targetCustomizations:` in `fleet.yaml` override Helm values and other settings but do not change which clusters are targeted.
 ====
 
+Target customizations allow you to modify bundle deployments for specific clusters without maintaining separate bundles. You can customize Helm values, namespaces, overlays, and deployment options based on cluster labels or names.
 
-To demonstrate how to deploy Kubernetes manifests across different clusters with customization using {product_name}, we will use https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
+{product_name} supports two modes for applying customizations:
+
+* **FirstMatch** (default): Applies only the first matching customization
+* **AllMatches**: Applies all matching customizations in order, merging them
+
+For a comprehensive guide including merge behavior and advanced patterns, see xref:explanations/target-customization.adoc[Target Customization].
+
+=== Example: FirstMatch Mode (Environment-Specific Configuration)
+
+This example demonstrates the default `FirstMatch` behavior, where only the first matching customization is applied. We will use https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
 
 *Situation:* User has three clusters with three different labels: `env=dev`, `env=test`, and `env=prod`. User wants to deploy a frontend application with a backend database across these clusters.
 
@@ -173,24 +183,67 @@ targetCustomizations:
 Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
 ====
 
-=== Limitations when overriding Helm chart settings with `targetCustomizations`
+=== Example: AllMatches Mode (Layered Customizations)
 
-Although `helm.chart`, `helm.repo`, and `helm.version` can be specified in `targetCustomizations`, overriding these fields has important limitations.
+When customizations represent independent concerns that should be combined, use `AllMatches` mode. This example shows how to layer environment-specific configuration with optional user overrides.
 
-{product_name} retrieves the Helm chart during the initial **Bundle creation** phase using the top-level `helm` configuration. This retrieval is performed by the Fleet toolchain (`GitJob`) before `targetCustomizations` are processed.
+*Situation:* You need to deploy an application where:
 
-Because the chart is downloaded at this stage, `targetCustomizations` cannot be used to dynamically fetch a different chart from:
+* Edge clusters require specific values
+* Some clusters need user-provided ConfigMap overrides
+* Clusters may have both requirements
 
-* a local directory
-* a different Helm repository
-* a separate OCI registry (for example, one behind a firewall)
+*Configuration:*
 
-If you attempt to override these fields, the override may be ignored during chart retrieval. In some cases, Fleet may attempt to include multiple chart versions in the same bundle, which can significantly increase bundle size and may exceed etcd size limits.
+[source,yaml]
+----
+targetCustomizationMode: AllMatches
 
-If different environments require different charts or registries, use one of the following approaches:
+helm:
+  chart: ./chart
+  values:
+    # Base configuration
+    app:
+      name: myapp
+      replicas: 1
 
-* Define separate `fleet.yaml` files for each chart configuration.
-* Create separate `GitRepo` resources for each environment.
+targetCustomizations:
+  - name: edge-config
+    clusterSelector:
+      matchLabels:
+        edge: "true"
+    helm:
+      valuesFiles:
+        - values/edge.yaml
+
+  - name: configmap-override
+    clusterSelector:
+      matchLabels:
+        custom-values: "true"
+    helm:
+      valuesFrom:
+        - configMapKeyRef:
+            name: custom-values
+            key: values.yaml
+            namespace: default
+----
+
+*Result:*
+
+* Cluster with `edge: "true"` only: Gets values from `values/edge.yaml`
+* Cluster with `custom-values: "true"` only: Gets values from ConfigMap
+* Cluster with both labels: Gets both `values/edge.yaml` AND ConfigMap values merged together
+
+This avoids the need to create separate customizations for every label combination.
+
+[NOTE]
+====
+For more examples and detailed merge behavior, see xref:explanations/target-customization.adoc#_common_patterns[Common Patterns].
+====
+
+=== Limitations
+
+For information about limitations when overriding Helm chart settings, bundle size considerations, and workarounds, see xref:explanations/target-customization.adoc#_limitations_and_considerations[Limitations and Considerations].
 
 
 == Additional Examples
