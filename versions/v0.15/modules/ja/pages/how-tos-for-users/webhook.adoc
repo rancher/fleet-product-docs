@@ -1,0 +1,225 @@
+= ポーリングの代わりにウェブフックを使用する
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+デフォルトでは、{product_name}はGitリポジトリからデータを取得するためにポーリング（デフォルトで15秒ごと）を使用します。
+ポーリングは小規模なインストール（数十のリポジトリまで）には適しています。
+
+大規模なデプロイメントの場合は、新しいコミットが到着したときにリコンシリエーションをトリガーするためにウェブフックを設定してください。これにより、Gitプッシュと{product_name}が変更を処理するまでの遅延が減少します。
+
+複数のコミットが短時間に到着した場合、{product_name}コントローラーは対応する`GitRepo`リソースを更新する際に通常の調整ループを通じてそれらを処理します。これにより、更新の競合を回避し、大規模なデプロイメントにおける信頼性が向上します。
+
+多くのリポジトリを持つインストールや、Gitプッシュと{product_name}の反応の間のレイテンシを減らしたい場合は、ポーリングの代わりに**ウェブフック**を設定してください。
+
+{product_name}は現在、以下のプロバイダーをサポートしています：
+
+* Azure DevOps
+* GitHub
+* GitLab
+* Bitbucket
+* Bitbucket Server
+* Gogs
+
+== 1.Webhookサービスを設定する
+
+{product_name}はウェブフックリクエストを処理するために`gitjob`サービスを使用します。
+`gitjob`サービスを指すIngressを作成します。
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  rules:
+  - host: your.domain.com
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: gitjob
+              port:
+                number: 80
+----
+
+Rancherや他のサービスと同じホスト名でウェブフックを利用可能にしたい場合は、以下のYAMLを使用してください。
+この例では、NGINX Ingress Controllerを使用し、`http://your.domain.com/gitjob`でウェブフックを公開します。
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  rules:
+  - host: your.domain.com
+    http:
+      paths:
+        - path: /gitjob(/|$)(.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: gitjob
+              port:
+                number: 80
+----
+
+Ingress Nginxは https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/[廃止]されます。以下はTraefikを使用した例です：
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: cattle-fleet-system-gitjob-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.priority: '100'
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: your.domain.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: gitjob
+                port:
+                  number: 80
+            path: /gitjob(/|$)(.*)
+            pathType: ImplementationSpecific
+----
+
+[NOTE]
+====
+2つのIngressリソースが競合する可能性がある場合のみ、アノテーション`traefik.ingress.kubernetes.io/router.priority: '100'`を使用してください。このアノテーションはGitJobルートに高い優先度を割り当てます。これは`pathType`プロパティに依存します。`pathType`がPrefixに設定されている場合、アノテーションは必須です。
+====
+
+この設定では、`gitjob`がルートパスから直接応答するため、URLから追加のパスを削除するミドルウェアが必要です。これはNginxの`nginx.ingress.kubernetes.io/rewrite-target`アノテーションと同等です：
+
+[source,yaml]
+----
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: gitjob-stripprefix
+  namespace: cattle-fleet-system
+spec:
+  stripPrefix:
+    prefixes:
+      - /gitjob
+----
+このアプローチは、アプリケーションの設定を変更せずにIngress NginxからTraefikへのスムーズな移行を可能にします。
+
+[NOTE]
+====
+Ingressで https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS]を設定して、安全な通信を行うことができます。
+====
+
+== 2.WebhookコールバックURLを設定してください。
+
+Gitプロバイダーに移動し、WebhookコールバックURLを設定してください。
+以下の画像はGitHubからの例を示しています。
+
+image:: ../../images/webhook.png[]
+
+シークレットの設定は任意です。
+シークレットはWebhookペイロードを検証するために使用されます。ペイロードはデフォルトで信頼されるべきではありません。
+
+Webhookエンドポイントが公開されている場合、シークレットを設定することを強くお勧めします。
+シークレットを設定した場合は、ステップ3に進んでください。
+
+[NOTE]
+====
+Webhookライブラリの制限により、`application/json`のみがサポートされています。
+====
+
+[CAUTION]
+====
+Webhookが設定されると、ポーリング間隔は自動的に1時間に調整されます。
+====
+
+== 3.（任意）Webhookシークレットを設定してください。
+
+Webhookシークレットは、Gitプロバイダーから送信されたペイロードを検証します。
+各サポートされているプロバイダーは、Kubernetesシークレット内で特定のキー名を使用します。
+
+[cols="1,1", options="header"]
+|===
+| プロバイダ | Kubernetesシークレットキー
+| GitHub | `github`
+| GitLab | `gitlab`
+| Bitbucket | `bitbucket`
+| Bitbucket Server | `bitbucket-server`
+| Gogs | `gogs`
+| Azure DevOps | `azure-username`
+| Azure DevOps | `azure-password`
+|===
+
+=== オプション1:クラスター全体のシークレットを設定する
+
+このアプローチでは、シークレットはクラスター全体に適用され、すべてのGitRepoが自動的に使用します。
+個々のGitRepo定義で参照する必要はありません。
+
+ペイロードが受信されると、{product_name}はシークレットが存在するかどうかを確認し（`gitjob-webhook`は`cattle-fleet-system`ネームスペース内）、検証のために適切なキーを使用します。
+
+GitHubの場合：
+
+[source,bash]
+----
+kubectl create secret generic gitjob-webhook \
+  -n cattle-fleet-system \
+  --from-literal=github=webhooksecretvalue
+----
+
+Azure DevOpsの場合：
+
+1. Azureで基本認証を有効にします。
+2. 資格情報を含むシークレットを作成します。
+
+[source,bash]
+----
+kubectl create secret generic gitjob-webhook \
+  -n cattle-fleet-system \
+  --from-literal=azure-username=user \
+  --from-literal=azure-password=pass123
+----
+
+[[option-2-configure-secret]]
+=== オプション2:GitRepoごとにシークレットを設定する
+
+各GitRepoのためにユニークなWebhookシークレットを定義できます。
+GitRepoと同じネームスペースにシークレットを作成し、specの`webhookSecret`フィールドを使用して参照します。
+
+例:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: simple
+  namespace: fleet-local
+spec:
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+    - simple
+  disablePolling: true
+  webhookSecret: webhook-secret-name
+----
+
+クラスター全体のシークレットとGitRepoごとのシークレットの両方が存在する場合、{product_name}はGitRepoごとのシークレットを使用します。
+
+== 4.Webhookをテストする
+
+Gitプロバイダーに移動し、Webhook接続をテストします。Webhookの配信を確認するHTTPレスポンスコードを受け取るべきです。

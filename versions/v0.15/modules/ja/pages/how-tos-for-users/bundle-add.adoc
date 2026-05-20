@@ -1,0 +1,94 @@
+= バンドルリソースを作成する
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+バンドルは、{product_name}によって、`GitRepo`が作成されるときに自動的に作成されます。ほとんどの場合、`Bundles`はユーザーによって手動で作成されるべきではありません。Gitリポジトリからリソースをデプロイしたい場合は、代わりにxref:how-tos-for-users/gitrepo-add.adoc[GitRepo]を使用してください。
+
+Gitリポジトリなしでリソースをデプロイしたい場合は、このガイドに従って`Bundle`を作成してください。
+
+[NOTE]
+====
+Fleetコントローラーを実行せずにリソースをデプロイしたい場合。xref:how-tos-for-users/install-use-fleet-cli.adoc#_convert_a_helm_chart_into_a_bundle[CLIを使用してHelmチャートをバンドルに変換する]を参照してください。
+====
+
+`GitRepo`を作成する際、{product_name}はGitリポジトリからリソースを取得し、それらをバンドルに追加します。
+`Bundle`を作成する際、リソースは`Bundle`仕様に明示的に指定する必要があります。
+リソースはgzで圧縮できます。 https://github.com/rancher/rancher/blob/v2.7.3/pkg/controllers/provisioningv2/managedchart/managedchart.go#L149-L153[managedchart.go]を参照してください。RancherがGoコードで圧縮を使用する方法の例です。
+
+ダウンストリームクラスターにデプロイしたい場合は、ターゲットを定義する必要があります。ターゲットは、`GitRepo`のターゲットと同様に機能します。
+xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[ダウンストリームクラスターへのマッピング]を参照してください。
+
+以下の例は、ローカルクラスタにnginxの`Deployment`を作成します。
+
+[,yaml]
+----
+kind: Bundle
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  # Any name can be used here
+  name: my-bundle
+  # For single cluster use fleet-local, otherwise use the namespace of
+  # your choosing
+  namespace: fleet-local
+spec:
+  resources:
+  # List of all resources that will be deployed
+  - content: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: nginx-deployment
+        labels:
+          app: nginx
+      spec:
+        replicas: 3
+        selector:
+          matchLabels:
+            app: nginx
+        template:
+          metadata:
+            labels:
+              app: nginx
+          spec:
+            containers:
+              - name: nginx
+                image: nginx:1.14.2
+                ports:
+                  - containerPort: 80
+    name: nginx.yaml
+  targets:
+  - clusterName: local
+----
+
+== ターゲット
+
+バンドルは複数のクラスターをターゲットにできます。それはxref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[GitRepoと同じターゲティングを使用します]。
+ターゲットごとに追加のxref:reference/ref-fleet-yaml.adoc#_supported_customizations[カスタマイズオプション]を指定できます。
+
+[,yaml]
+----
+targets:
+- clusterSelector:
+    matchLabels:
+      env: dev
+  defaultNamespace: lab-1
+  helm:
+    values:
+      replicas: 1
+----
+
+== 制限
+
+Helmチャートのダウンロードに関連するHelmオプションは無視されます。HelmチャートはFleet CLIによってダウンロードされ、バンドルが作成されます。バンドルには、チャートからのすべてのリソースが含まれている必要があります。したがって、バンドルは以下を無視します：
+
+* `spec.helm.repo`
+* `spec.helm.charts`
+
+リソースに`fleet.yaml`を使用することはできません。これはバンドルを作成するためにFleet CLIによってのみ使用されます。
+
+`spec.targetRestrictions`フィールドは役に立ちません。これは`spec.targets`で指定されたターゲットの許可リストだからです。これは必要ありません。なぜなら、`targets`はバンドル内で明示的に指定されており、空の`targetRestrictions`はデフォルトで許可されるからです。
+
+[Note]
+====
+Fleet CLIを使用して、Helmチャートを`bundle`に変換することができます。詳細については、xref:how-tos-for-users/install-use-fleet-cli.adoc[CLIを使用してHelmチャートをバンドルに変換する]を参照してください。
+====

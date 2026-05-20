@@ -1,0 +1,89 @@
+= Planification
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Cette fonctionnalité est expérimentale.
+====
+
+{product_name} prend en charge (à partir de la version 0.13 et en mode expérimental) la définition de **plages horaires** pendant lesquelles de nouvelles mises à jour des déploiements existants sont autorisées.
+
+Cela permet aux utilisateurs de contrôler **quand les changements sont appliqués**, indépendamment du moment où les mises à jour sont poussées vers le dépôt Git—si désiré.
+
+Il existe de nombreuses raisons pour lesquelles on pourrait vouloir définir des fenêtres temporelles pendant lesquelles des changements dans un cluster sont autorisés. Par exemple :
+
+* En dehors des heures de bureau
+* Pour planifier des mises à jour à des moments spécifiques
+* Pour différencier les fenêtres de mise à jour entre les environnements (par exemple, dev vs prod)
+
+La planification des mises à jour est actuellement appliquée au niveau `Cluster`.
+
+Une ressource `Schedule` est définie, spécifiant quelles `Clusters` sont affectées. Ces clusters n'installeront de nouvelles mises à jour que si cela est permis par le `Schedule` défini.
+
+Tout changement détecté par {product_name} dans le dépôt Git sera toujours appliqué au niveau `Bundle`. Cependant, le **agent** responsable du déploiement des changements dans chaque cluster affecté n'initiera le déploiement que si le cluster est actuellement autorisé à le faire par le `Schedule` correspondant.
+
+Cela signifie que lorsqu'un changement est détecté dans le dépôt, il sera appliqué au `Bundle`, et le statut passera à *En attente de mise à jour* jusqu'à ce que l'agent `Cluster` soit actif et autorisé à effectuer des déploiements selon son `Schedule`.
+
+Si un `Cluster` n'est associé à aucun `Schedule`, les mises à jour seront appliquées immédiatement.
+
+== Ressource de planification
+
+Voyons maintenant comment définir un `Schedule` et quels champs sont disponibles.
+
+Un `Schedule` est essentiellement défini par{nbsp}:
+
+* Une **expression cron** qui indique son heure de début
+* Une **durée**
+* Les **cibles** (clusters) auxquelles cela s'applique
+
+Voici un exemple de base d'un `Schedule` qui utilise une définition de cible simple{nbsp}:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-local
+spec:
+  schedule: "0 0 22 * * *"
+  duration: 1h
+  targets:
+    clusters:
+      - name: local
+        clusterName: local
+----
+
+Cela définit une **fenêtre temporelle d'une heure** qui commence chaque jour à **22:00:00**, et s'applique au cluster nommé *local* dans l'espace de noms `fleet-local`.
+Les cibles d'un `Schedule` utilisent le **même espace de noms** que le `Schedule`.
+
+En d'autres termes{nbsp}: le *local* `Cluster` n'acceptera que les changements de **22:00:00 à 23:00:00**.
+
+Maintenant, examinons un autre exemple où le `Schedule` est utilisé pour déployer des mises à jour vers des **clusters en aval** étiquetés avec *env=dev*{nbsp}:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-default
+spec:
+  schedule: "0 0 */3 * * *"
+  duration: 1h 
+  targets:
+    clusters:
+      - name: targets-dev
+        clusterSelector:
+          matchLabels:
+            env: dev
+----
+
+Dans ce cas, le `Schedule` permet des mises à jour vers `Clusters` étiquetés avec *env=dev* **toutes les 3 heures**, pour une **durée d'une heure**.
+
+La façon dont vous définissez la cible `Clusters` est **identique** à la manière dont les cibles sont définies pour les ressources `GitRepo`.
+
+Pour plus d'informations, référez-vous aux xref:how-tos-for-users/gitrepo-targets.adoc[cibles GitRepo]. Ce qui s'applique également aux cibles `Schedule`.
+
+Vous pouvez consulter le CRD complet pour xref:reference/ref-schedule.adoc[Schedule].

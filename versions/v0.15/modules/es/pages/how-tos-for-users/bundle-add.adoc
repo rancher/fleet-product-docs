@@ -1,0 +1,94 @@
+= Crea un recurso Bundle
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Los Bundles se crean automáticamente por {product_name} cuando se crea un `GitRepo`. En la mayoría de los casos, `Bundles` no debe ser creado manualmente por el usuario. Si deseas desplegar recursos desde un repositorio git, utiliza un xref:how-tos-for-users/gitrepo-add.adoc[GitRepo] en su lugar.
+
+Si deseas desplegar recursos sin un repositorio git, sigue esta guía para crear un `Bundle`.
+
+[NOTE]
+====
+Si deseas desplegar recursos sin ejecutar un controlador Fleet. Consulta xref:how-tos-for-users/install-use-fleet-cli.adoc#_convert_a_helm_chart_into_a_bundle[Convierte un gráfico de Helm en un Bundle utilizando CLI.]
+====
+
+Al crear un `GitRepo`, {product_name} obtendrá los recursos de un repositorio git y los añadirá a un Bundle.
+Al crear un `Bundle`, los recursos deben especificarse explícitamente en la especificación de `Bundle`.
+Los recursos pueden ser comprimidos con gz. Consulta https://github.com/rancher/rancher/blob/v2.7.3/pkg/controllers/provisioningv2/managedchart/managedchart.go#L149-L153[managedchart.go] un ejemplo de cómo Rancher utiliza la compresión en el código Go.
+
+Si deseas desplegar en clústeres descendentes, necesitas definir objetivos. Los objetivos funcionan de manera similar a los objetivos en `GitRepo`.
+Consulta xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[Mapeo a clústeres descendentes].
+
+El siguiente ejemplo crea un nginx `Deployment` en el clúster local:
+
+[,yaml]
+----
+kind: Bundle
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  # Any name can be used here
+  name: my-bundle
+  # For single cluster use fleet-local, otherwise use the namespace of
+  # your choosing
+  namespace: fleet-local
+spec:
+  resources:
+  # List of all resources that will be deployed
+  - content: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: nginx-deployment
+        labels:
+          app: nginx
+      spec:
+        replicas: 3
+        selector:
+          matchLabels:
+            app: nginx
+        template:
+          metadata:
+            labels:
+              app: nginx
+          spec:
+            containers:
+              - name: nginx
+                image: nginx:1.14.2
+                ports:
+                  - containerPort: 80
+    name: nginx.yaml
+  targets:
+  - clusterName: local
+----
+
+== Destinos
+
+El Bundle puede dirigirse a múltiples clústeres. Utiliza la misma xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[asignación de objetivos que el GitRepo].
+Opciones de xref:reference/ref-fleet-yaml.adoc#_supported_customizations[personalización adicionales] pueden ser especificadas para cada objetivo:
+
+[,yaml]
+----
+targets:
+- clusterSelector:
+    matchLabels:
+      env: dev
+  defaultNamespace: lab-1
+  helm:
+    values:
+      replicas: 1
+----
+
+== limitaciones
+
+Las opciones de Helm relacionadas con la descarga del gráfico de Helm serán ignoradas. El gráfico de Helm es descargado por el fleet-cli, que crea los Bundles. El Bundle debe contener todos los recursos del gráfico. Por lo tanto, el Bundle ignorará:
+
+* `spec.helm.repo`
+* `spec.helm.charts`
+
+No puedes usar un `fleet.yaml` en los recursos, solo se utiliza por el fleet-cli para crear Bundles.
+
+El campo `spec.targetRestrictions` no es útil, ya que es una lista de permitidos para los objetivos especificados en `spec.targets`. No es necesario, ya que `targets` se especifican explícitamente en un Bundle y un `targetRestrictions` vacío, por defecto, permite.
+
+[Note]
+====
+Puedes usar Fleet CLI para convertir un gráfico de Helm en un `bundle`. Para más información, consulta xref:how-tos-for-users/install-use-fleet-cli.adoc[Convertir un gráfico de Helm en un Bundle usando CLI.].
+====

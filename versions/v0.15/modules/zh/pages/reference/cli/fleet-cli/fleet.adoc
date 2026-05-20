@@ -1,0 +1,30 @@
+= Fleet
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+管理 {product_name} 操作
+
+----
+fleet [flags]
+----
+
+== 选项
+
+----
+  -h, --help   help for fleet
+----
+
+== 另请参阅
+=== 主要命令
+
+* xref:/reference/cli/fleet-cli/fleet_apply.adoc[Fleet apply]     - 从目录创建捆绑，并将其输出或应用于集群
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - 清理过时的集群注册
+* xref:/reference/cli/fleet-cli/fleet_deploy.adoc[Fleet deploy]     - 通过创建 Helm 发布，将捆绑部署/内容资源部署到集群。这不会直接将捆绑部署/内容资源部署到集群。
+* xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[Fleet gitcloner]     - 克隆一个 git 储存库
+* xref:/reference/cli/fleet-cli/fleet_target.adoc[Fleet target]     - 打印可用的捆绑目标
+
+=== 故障排除和诊断
+
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]     - 监控 Fleet 设置中的问题
+* xref:/reference/cli/fleet-cli/fleet_analyze.adoc[Fleet analyze]     - 分析由 `fleet monitor` 创建的快照
+* xref:/reference/cli/fleet-cli/fleet_dump.adoc[Fleet dump]     - 将集群数据转储到归档中

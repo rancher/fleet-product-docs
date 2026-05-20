@@ -1,0 +1,112 @@
+= 用語集
+:revdate: 2026-02-18
+:page-revdate: {revdate}
+
+== エージェント
+
+{product_name}の文脈において、エージェントはワークロードをクラスターにデプロイする責任を持つKubernetesデプロイメントです。
+これは、アップストリームクラスターの特定のネームスペースを監視し、そのネームスペースに存在するバンドルデプロイメントを、エージェントが存在するダウンストリームクラスターにデプロイすることを含みます。
+
+== バンドル
+
+バンドルは、ワークロードまたはデプロイされるユーザーリソースのセットを表す、{product_name}特有のリソース（Kubernetesでは https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[カスタムリソース]としても知られています）です。通常、これは{product_name}によってgitリポジトリのパスから生成されます。
+
+== チャート
+
+（ https://helm.sh/docs/topics/charts/）[Helmチャートのドキュメント]を参照してください。
+
+== クラスタ
+
+クラスターは次のことを指します： +
+* https://kubernetes.io/docs/concepts/architecture/[Kubernetesクラスター]、{product_name}によって管理される +
+* FleetのAPI内の`Cluster`https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[リソース]、これは{product_name}がそのKubernetesクラスターを管理するために使用します。
+
+== 継続的デリバリ/デプロイメント
+
+継続的デリバリと継続的デプロイメントの定義と区別は大きく異なります。例えば、次のような要因によって異なります： +
+* デプロイメントステップがプロセスに含まれているか、どの環境に対してか：本番環境かその他か？ +
+* デプロイメントをトリガーするもの：手動のステップか自動化されたステップか？
+
+ただし、これだけは明らかです：{product_name}の目標は、デプロイメントを自動化しやすくすることです。
+
+== カスタムリソース
+
+https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Kubernetesカスタムリソース公式ドキュメント]を参照してください。
+要するに、カスタムリソースはアプリケーションの目的のために定義されたリソースです（この場合は{product_name}）、Kubernetes APIがサポートするリソースのセットを拡張するためのものです（ポッド、デプロイメント、サービスなど）。
+
+== カスタムリソース定義
+
+Kubernetesドキュメントの https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[Kubernetesカスタムリソース定義公式ドキュメント]を参照してください。
+
+== 展開
+
+デプロイメントは次のことを指す場合があります： +
+* https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[Kubernetesデプロイメント]、 +
+ユーザーのワークロードの一部であるか、{product_name}自体の一部であるか、エージェントデプロイメントやコントローラーデプロイメントなど。 +
+* ユーザーのワークロードをデプロイする行為、これは{product_name}が設定を読み取り（`GitRepo`、`fleet.yaml`など）、その結果、ターゲットクラスターにリソースを作成することを意味します。
+
+== ダウンストリームクラスタ
+
+ダウンストリームクラスターは、ユーザーのワークロードが実行されるKubernetesクラスターであり、そこにはFleetコントローラーは存在しません。それはFleetのターゲットクラスターであり、ユーザーのワークロードの隣にFleet agentのみが存在します。
+
+== fleet.yaml
+
+`fleet.yaml`ファイルはgitリポジトリに存在し、バンドルおよびそのバンドルから生成されるバンドルデプロイメントのオプションを保存します。詳細については、xref:reference/ref-fleet-yaml.adoc[fleet.yaml]を参照してください。
+
+== GitOps
+
+GitOpsは、gitが真実の源であり、gitリポジトリへの変更が1つ以上のクラスターの状態に適用される変更を引き起こす、gitトリガー操作を指します。
+
+== GitRepo
+
+`GitRepo`は、{product_name}を使用するためのエントリーポイントとして使用される、Fleet特有のリソースです。
+`GitRepo`を作成して、gitリポジトリ内の一連のパスを指すことで、{product_name}がそれらのパスを監視し、そこに保存または参照されているリソースをデプロイできるようになります。
+
+== ラベル
+
+https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[Kubernetesラベル]を指します。
+
+== マルチクラスター
+
+マルチクラスターセットアップは、1つ以上のクラスターを含みます：ワークロードのデプロイを管理するために必要なアップストリームクラスターと、少なくとも1つのダウンストリームクラスターです。
+
+== ネームスペース
+
+https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[Kubernetesネームスペース]を指します。
+
+== 調整
+
+調整は、Kubernetesクラスター内の状態に関する文脈で使用されます。リソースの調整とは、その実際の状態が期待される状態と一致するように更新することを意味します。期待される状態は、構成から来るもので、例えばgitリポジトリやチャートなどです。
+
+GitOpsを使用する場合、gitリポジトリへの更新は、そのgitリポジトリを通じて構成されたリソースの新しい期待される状態に変換される可能性があります。その結果、影響を受けたリソースは調整されます。
+リソースの状態は、別のリソースに依存することもあり、追加の調整が必要になることがあります。例えば、クラスターグループのステータスは、そのクラスターグループに含まれる個々のクラスターのステータスに依存します。したがって、クラスターの状態の変更は、そのクラスターが属する任意のクラスターグループも調整される結果になります。
+
+== 登録
+
+クラスター登録は、ダウンストリームクラスターに存在する Fleet agent を、アップストリームクラスターのFleetコントローラーに認識させるプロセスです。ダウンストリームクラスターの登録が完了すると、{product_name}はそのクラスターにワークロードをデプロイできるようになります。
+
+== リポジトリ
+
+リポジトリは次のようになります：
+* コード、設定、または任意の種類のファイルを保存し、それらのファイルに加えられた変更をコミットを通じて追跡するgitリポジトリ。{product_name}は、特定のブランチまたはリビジョンにプッシュされた新しいコミットのために、1つ以上のパスを通じてgitリポジトリを監視できます。
+* Helmチャートとそれらを参照するインデックスファイルをホストするHelmリポジトリ。{product_name}は、Helmチャートをインストールし、ユーザー定義の設定を適用することができます。
+
+== リソース
+
+これは通常、次のようなKubernetesリソースを指します： +
+* configマップ、デプロイメント、ポッド、サービスなど、Kubernetes自体によって定義されたコアリソース +
+* {product_name}自体のように、GitRepo、Bundle、Bundledeploymentなどを定義する個々のアプリケーションによって定義されたカスタムリソース。
+
+== ターゲット
+
+{product_name}は、ワークロードがどこで実行されるかを決定する文脈でこの言葉を使用します。これは、ワークロードのための宛先クラスターを表します。
+
+== アップストリームクラスター
+
+Fleetコントローラーが実行されるKubernetesクラスターです。これは、`GitRepo`、バンドル、およびバンドルデプロイメントが作成されるクラスターです。管理クラスターとも呼ばれます。
+
+== ワークロード
+
+ワークロードは、ユーザーが{product_name}を通じてデプロイしたいものを表します。それは、Helmチャート、Kubernetesマニフェスト、Kustomizeなどのセットであり、Gitリポジトリに保存または参照されます。
+
+ユーザーがそのgitリポジトリを指す`GitRepo`リソースを作成し、その後、関連する変更がそのリポジトリで見つかると、{product_name}がワークロードをデプロイします。

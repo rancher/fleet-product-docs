@@ -1,0 +1,436 @@
+= Git 储存库内容
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} 将从 git 储存库创建捆绑包。这可以通过显式指定路径，或者当找到 `fleet.yaml` 时发生。
+
+该文件夹可以包含 Helm 图表，或引用一个。它可以是一个普通的 Kubernetes 清单，或一个 Kustomize 文件夹。每个捆绑包都被转换为一个用于部署的单一 Helm 图表。
+
+`fleet.yaml` 文件包含所有部署选项。
+
+== 捆绑包名称
+
+默认情况下，捆绑包名称也将从 GitRepo 的名称和创建捆绑包的路径生成。但是，可以通过在 `fleet.yaml` 文件中使用 `name` 字段来覆盖捆绑包的名称。
+
+捆绑包的生命周期在发布之间通过添加到每个捆绑包的 Helm `releaseName` 字段进行跟踪。如果在 `fleet.yaml` 中未指定 releaseName，则从 `GitRepo.name + path` 生成。长名称会被截断，并添加 `-<hash>` 前缀（捆绑包名称限制为 53 个字符）。
+
+== 如何扫描储存库
+
+**git 储存库没有明确要求的结构**。重要的是要意识到扫描的资源将作为资源保存在 Kubernetes 中，因此您要确保在 git 中扫描的目录不包含任意大的资源。目前有一个限制，部署的资源必须 **gzip 小于 1MB**。
+可以为 `GitRepo` 定义多个路径，每个路径独立扫描。
+在内部，每个扫描的路径将成为一个 xref:/explanations/concepts.adoc[捆绑包]，{product_name} 将独立管理、部署和监控。
+
+{product_name} 查找以下文件以确定资源将如何部署。
+[cols="1,1,2", options="header"]
+|===
+| 文件 | 位置 | 含义
+| Chart.yaml | / 相对于 `path` 或从 `fleet.yaml` 的自定义路径| 资源将作为 Helm 图表部署。有关更多选项，请参见 `fleet.yaml`。
+| kustomization.yaml | / 相对于 `path` 或从 `fleet.yaml` 的自定义路径| 资源将使用 Kustomize 部署。有关更多选项，请参见 `fleet.yaml`。
+| fleet.yaml | 任何子路径 | 如果找到任何 fleet.yaml，将定义一个新的 xref::/explanations/concepts.adoc[捆绑包]。这允许在同一储存库中混合图表、kustomize 和原始 YAML。
+| .yaml | 任何子路径 | 如果未找到 `Chart.yaml` 或 `kustomization.yaml`，则任何 `.yaml` 或 `.yml` 文件将被视为 Kubernetes 资源并将被部署。
+| overlays/+{name}+| / 相对于 `path`| 使用原始 YAML 部署时（不是 Kustomize 或 Helm），`overlays` 是一个用于自定义的特殊目录。
+|===
+
+=== 用户明确定义的替代扫描
+
+除了之前描述的方法，{product_name} 还支持一种更直接的用户驱动的方法来定义捆绑包。
+
+在此模式下，{product_name} 将加载指定基础目录中找到的所有资源。仅在未明确提供选项文件的情况下，才会尝试在该目录的root查找 `fleet.yaml` 文件。
+与传统扫描方法不同，这种方法不是递归的，并且不尝试查找用户明确指定的捆绑包定义以外的内容。
+
+==== 示例目录结构
+
+[source,bash]
+----
+driven
+     |___helm
+     |      |__ fleet.yaml
+     |
+     |___simple
+     |      |__ configmap.yaml
+     |      |__ service.yaml
+     |
+     |___kustomize
+            |__ base
+            |      |__ kustomization.yaml
+            |      |__ secret.yaml
+            |
+            |__ overlays
+            |         |__ dev
+            |         |     |__ kustomization.yaml
+            |         |     |__ secret.yaml
+            |         |__ prod
+            |         |     |__ kustomization.yaml
+            |         |     |__ secret.yaml
+            |         |__ test
+            |               |__ kustomization.yaml
+            |               |__ secret.yaml
+            |__ dev.yaml
+            |__ prod.yaml
+            |__ test.yaml
+----
+
+==== 相应的 GitRepo 定义
+
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: driven
+  namespace: fleet-local
+spec:
+  repo: https://github.com/0xavi0/fleet-test-data
+  branch: driven-scan-example
+  bundles:
+  - base: driven/helm
+  - base: driven/simple
+  - base: driven/kustomize
+    options: dev.yaml
+  - base: driven/kustomize
+    options: test.yaml
+----
+
+在上面的示例中，用户明确地定义了要生成的四个捆绑包。
+
+* 在第一种情况下，基本目录被指定为`driven/helm`。如目录结构所示，此路径包含一个`fleet.yaml`文件，该文件将用于配置捆绑包。
+* 在第二种情况下，基本目录是`driven/simple`，其中仅包含Kubernetes资源清单（`configmap.yaml`和`service.yaml`）。由于未指定`fleet.yaml`或选项文件，{product_name}将使用默认行为生成一个捆绑包——简单地打包在目录中找到的所有资源。
+* 第三和第四种情况都引用了相同的基本目录：`driven/kustomize`。然而，每种情况都指定了不同的选项文件（分别为`dev.yaml`和`test.yaml`）。这些选项文件为每个环境（例如，开发、测试）定义了特定于覆盖的配置，通过选择适当的kustomize覆盖子目录并将其应用于共享基础上。
+
+{product_name}将把这些视为不同的捆绑包，即使它们源自相同的基本路径，因为提供的选项文件指向不同的配置。
+
+第三和第四个捆绑包中使用的文件示例如下：（这些文件遵循与`fleet.yaml`完全相同的格式，但由于我们现在可以按名称引用它们，因此可以使用最适合我们需求的文件）
+
+[source,yaml]
+----
+namespace: kustomize-dev
+kustomize:
+  dir: "overlays/dev"
+----
+
+重要的是要注意，这些文件中定义的任何路径必须相对于描述捆绑包时使用的基本目录。
+
+例如，使用之前提到的结构，我们将基本目录定义为`driven/kustomize`。这就是我们需要用作Kustomize文件中路径root的目录。
+
+我们可以决定将`dev.yaml`文件放在路径`driven/kustomize/overlays/dev`（这是支持的），然后将捆绑包定义为：
+
+[source,yaml]
+----
+bundles:
+    - base: driven/kustomize
+      options: overlays/dev/dev.yaml
+----
+
+然而，在`dev.yaml`中定义的路径仍应相对于`driven/kustomize`。
+这是因为当{product_name}读取选项文件时，它始终使用基本目录作为root。
+
+换句话说，使用之前的示例...，这将是错误的：
+
+[source,yaml]
+----
+namespace: kustomize-dev
+kustomize:
+  dir: "."
+----
+
+正确的定义仍应是：
+
+[source,yaml]
+----
+namespace: kustomize-dev
+kustomize:
+  dir: "overlays/dev"
+----
+
+通过这种新的捆绑包定义方式，{product_name}变得更加直接，并简化了使用 kustomize 进行部署的采用。
+在这个例子中，我们可以看到一个完整的 kustomize 使用案例，在每个捆绑包中，我们可以指定想要使用的版本。
+
+使用之前的扫描选项，{product_name} 无法确定我们想要使用哪个 YAML 来配置捆绑包，因此它尝试自行查找（这在某些情况下并不能提供足够的灵活性）。
+
+[WARNING]
+====
+从用户扫描的捆绑包中排除无关文件
+
+在使用此捆绑包扫描模式时，{product_name} 不会排除在 GitRepo 中未明确引用的捆绑包配置文件。例如，在上述示例目录结构中：
+
+* 默认情况下，`prod.yaml` 和 `test.yaml` 都不会被排除在使用 `dev.yaml` 作为其选项文件的捆绑包之外。
+* 同样，默认情况下，`dev.yaml` 和 `prod.yaml` 都不会被排除在使用 `test.yaml` 作为其选项文件的捆绑包之外。
+
+可以通过在 `{dev,test,prod}.yaml` 旁边使用一个 `.fleetignore` 文件来缓解此问题，从而排除它们三个。
+有关 `.fleetignore` 文件的更多详细信息，请参见下一节。
+====
+
+=== 从捆绑包中排除文件和目录
+
+{product_name} 通过 `.fleetignore` 文件支持文件和目录的排除，类似于 `.gitignore` 文件在 git 仓库中的行为：
+
+* 使用 Glob 语法来匹配文件或目录，使用 Golang 的 `filepath.Match`
+* 空行会被跳过，因此可以用来提高可读性
+* 像空格和 `#` 这样的字符可以用反斜杠转义
+* 尾随空格会被忽略，除非被转义
+* 注释，即以未转义的 `#` 开头的行，会被跳过
+* 给定的行可以匹配文件或目录，即使没有提供分隔符
+* 匹配可以在 `.fleetignore` 所在目录下的任何级别找到
+* 支持多个 `.fleetignore` 文件
+
+[source,bash]
+----
+root/
+├── .fleetignore            # contains `ignore-always.yaml'
+├── something.yaml
+├── bar
+│   ├── .fleetignore        # contains `something.yaml`
+│   ├── ignore-always.yaml
+│   ├── something2.yaml
+│   └── something.yaml
+└── foo
+    ├── ignore-always.yaml
+    └── something.yaml
+----
+
+不支持：
+
+* 双星号（`**`）
+* 显式包含 `!`
+
+== fleet.yaml
+
+`fleet.yaml` 是一个可选文件，可以包含在 git 仓库中，以更改资源的部署和自定义行为。`fleet.yaml` 始终位于 `GitRepo` 的 `path` 的根目录，如果在子目录中找到 `fleet.yaml`，则将定义一个新的 xref::/explanations/concepts.adoc[捆绑包]，该捆绑包将与父捆绑包的配置不同。
+
+[CAUTION]
+====
+__Helm 图表依赖项__：
+
+{product_name} 会自动处理 Helm 图表依赖项的更新，除非标志 `disableDependencyUpdate`（默认情况下为 `false`）被设置为 `true`。
+
+如果禁用自动依赖项更新，您必须手动运行：
+
+`helm dependencies update $chart` 或 `helm dependencies build $chart`
+
+有关更多信息，请参阅 Rancher 的 {product_name} 文档。
+====
+
+可用字段在 xref::/reference/ref-fleet-yaml.adoc[fleet.yaml 参考] 中有文档说明。
+对于私有 Helm 储存库，用户可以引用 git 储存库资源中的一个秘密。
+请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[使用私有 Helm 储存库]。
+
+== 使用 Helm 值
+
+__如何将更改应用于 `values.yaml`__：
+
+- 最近应用的更改会覆盖先前的值。
+- 合并顺序：`helm.values` → `helm.valuesFiles` → `helm.valuesFrom`
+
+image::FleetValuesStages.svg[Fleet 值阶段的流程]
+
+目标步骤可以使用集群信息将值视为模板。更多信息：xref:/reference/ref-fleet-yaml.adoc#_values_templating[fleet.yaml 中的模板]。
+
+您可以使用 `disablePreProcess` 禁用此功能。
+
+
+[Note]
+====
+值中的凭据
+
+如果图表生成凭据，请覆盖它们，否则图表可能会持续重新部署。
+
+通过 `valuesFrom` 加载的凭据在启用 Kubernetes 静态加密时会被加密。
+====
+
+=== 模板化
+
+目标步骤可以将值视为模板，并从 `clusters.fleet.cattle.io` 资源中填充信息。有关更多信息，请参阅 xref:reference/ref-fleet-yaml.adoc#_values_templating[Helm 值模板化]。
+
+您可以在 `fleet.yaml` 中通过设置 `disablePreProcess` 来关闭此功能。这对于避免与其他模板语言的冲突非常有用。
+
+不必通过 `values.yaml` 引用图表自己的 `valuesFiles:`。图表中包含的 `values.yaml` 文件在代理安装图表时始终用作默认值。
+
+[Note]
+====
+
+如果图表在其模板中生成证书或密码，则必须覆盖这些值。否则，随着这些值的变化，图表可能会持续被部署。
+
+通过 `valuesFrom` 从下游集群加载的凭据，在 Kubernetes 启用 link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[数据加密]时，默认会被加密。默认 `values.yaml` 文件中包含的凭据，或通过 `values:` 或 `valuesFiles` 定义的凭据不会被加密，因为它们在创建包时是从储存库加载的。
+
+强化的集群在存储凭据时，应在上游集群的 xref:how-tos-for-users/gitrepo-add.adoc#storing-credentials-in-git[静态加密资源列表] 中添加 Fleet CRD。
+
+====
+
+=== 理解 Helm `values.yaml` 与 Fleet `valuesFiles` 的区别
+
+使用 Fleet 安装 Helm 图表提供了多种配置和引用值的方法，使用图表内置的 `values.yaml` 和在 `fleet.yaml` 中引用的附加值文件。这些文件有不同的用途，理解它们如何相互作用非常重要。
+
+image::helm-value-fleet-yaml.svg[理解 Helm values.yaml 与 Fleet valuesFiles 的最佳实践]
+
+**示例目录结构：**
+
+[source,bash]
+----
+.
+├── Chart.yaml
+├── fleet.yaml
+├── README.md
+├── templates/
+│   ├── deployment.yaml
+│   └── service.yaml
+└── values.yaml   # chart defaults
+----
+
+您可以使用 Helm 图表的 `values.yaml` 文件来：
+
+* 提供默认设置，并允许用户在不修改图表本身的情况下覆盖默认值。
+* 定义常见的Kubernetes资源默认值。
+
+
+[Note]
+====
+Helm 图表的 `values.yaml` 不支持模板化。任何替换发生在图表渲染期间，然后由 Fleet 应用图表。
+
+* 您不能在此文件中使用外壳风格的变量（例如，pass:[`${var}`]）。
+* 如果出现pass:[`${var}`]，Helm将其视为纯文本——您无需转义。
+====
+
+=== 从fleet.yaml引用的Fleet valuesFiles。
+
+Fleet允许您通过`fleet.yaml`引用额外的值文件。这些文件覆盖或扩展图表的基线默认值。
+
+* `valuesFiles`条目相当于将该文件的内容复制粘贴到`fleet.yaml`的值部分。
+* 这主要是一个方便的功能，用于将值拆分为多个文件。
+* 与Helm图表`values.yaml`不同，Fleet的值文件支持模板化，这使得每个环境的动态配置成为可能。
+
+**示例fleet.yaml:**
+[source,yaml]
+----
+helm:
+  valuesFiles:
+    - values.prod.yaml   # overrides baseline
+----
+
+您可以使用从`valuesFiles`引用的Fleet `fleet.yaml`来：
+
+* 应用特定于环境的覆盖（开发、预发布、生产）。
+* 启用图表默认值中未包含的高级功能。
+
+
+[Note]
+====
+**最佳实践**： 无论您使用 Helm `values.yaml`、`fleet.yaml` 值，还是 `valuesFiles`，都不要在这些文件中存储凭据。推荐且更安全的方法是使用`valuesFrom`，它引用Kubernetes Secrets或ConfigMaps。尽管这需要在下游集群上创建Secrets，但它确保敏感数据安全存储。
+====
+
+=== 使用 ValuesFrom
+
+这些示例展示了使用 `valuesFrom` 的风格和格式。
+
+[Note]
+====
+**将 ConfigMaps 和 Secrets 传播到下游集群**:ConfigMaps 和 Secrets 通常应直接在下游集群中创建。
+
+然而，从 {product_name} v0.14.0 开始，它们也可以通过 HelmOp 的 `downstreamResources` 字段引用，以便自动传播到目标下游集群。
+
+有关更多信息，请参阅 xref:/experimental-features/experimental-downstream-resource.adoc[实验性下游资源]。
+====
+
+示例 ConfigMap:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-values
+  namespace: default
+data:
+  values.yaml: |-
+    replication: true
+    replicas: 2
+    serviceType: NodePort
+----
+
+示例 Secret:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-values
+  namespace: default
+stringData:
+  values.yaml: |-
+    replication: true
+    replicas: 3
+    serviceType: NodePort
+----
+
+引用它们:
+
+[source,yaml]
+----
+helm:
+  chart: simple-chart
+  valuesFrom:
+    - secretKeyRef:
+        name: secret-values
+        namespace: default
+        key: values.yaml
+    - configMapKeyRef:
+        name: configmap-values
+        namespace: default
+        key: values.yaml
+  values:
+    replicas: "4"
+----
+
+== 每个集群的自定义
+
+`GitRepo` 定义了一个储存库部署到哪些集群。`fleet.yaml` 定义了每个目标的自定义。
+
+同一名称空间中的所有集群和组都将与目标进行评估。第一个匹配项适用。
+
+[source,yaml]
+----
+targetCustomizations:
+- name: all
+  clusterSelector: {}
+- name: none
+  clusterSelector: null
+----
+
+按集群名称匹配:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: prod
+  clusterName: fleetname
+----
+请参见 xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[每个集群的自定义]。
+
+== 原始 YAML 资源自定义
+
+[source,shell]
+----
+# Base files
+deployment.yaml
+svc.yaml
+
+# Overlay files
+overlays/custom/configmap.yaml
+overlays/custom/svc.yaml
+overlays/custom/deployment_patch.yaml
+----
+
+规则：
+
+* 匹配名称替换基础文件。
+* `_patch.` 文件应用补丁 (JSON/strategic/JSONPatch).
+
+== 集群和包状态
+
+请查看xref:/reference/ref-status-fields.adoc[状态字段]。
+
+== 嵌套的GitRepo CRs
+
+支持嵌套的GitRepo CRs。
+
+请参考： https://github.com/rancher/fleet-examples/tree/master/single-cluster/multi-gitrepo

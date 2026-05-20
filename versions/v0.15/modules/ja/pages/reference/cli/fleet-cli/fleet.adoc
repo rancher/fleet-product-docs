@@ -1,0 +1,30 @@
+= Fleet
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name}の操作を管理する
+
+----
+fleet [flags]
+----
+
+== オプション
+
+----
+  -h, --help   help for fleet
+----
+
+== 関連項目
+=== 主なコマンド
+
+* xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]     - ディレクトリからバンドルを作成し、それを出力するか、クラスターに適用します
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]     - 古いクラスター登録をクリーンアップします
+* xref:/reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]     - Helmリリースを作成することによって、バンドルデプロイメント/コンテンツリソースをクラスターにデプロイしますこれにより、バンドルデプロイメント/コンテンツリソースが直接クラスターにデプロイされることはありません。
+* xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]     - gitリポジトリをクローンします
+* xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]     - バンドルの利用可能なターゲットを表示します
+
+=== トラブルシューティングと診断
+
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]     - Fleetのセットアップを監視して問題を確認します
+* xref:/reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]     - によって作成されたスナップショットを分析します`fleet monitor`
+* xref:/reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]     - クラスターのデータをアーカイブにダンプします

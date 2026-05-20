@@ -1,0 +1,78 @@
+= {product_name} Résumé du schéma CRD
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+Ce tableau résume les définitions de ressources personnalisées (CRD) utilisées dans *{product_name}*, y compris leur objectif et les propriétés de schéma de niveau supérieur. Chaque CRD définit comment {product_name} gère les applications, les déploiements et les configurations de cluster.
+
+[cols="1,4,2,2", options="header"]
+|===
+| CRD | Description | Propriétés de niveau supérieur | Référence
+
+| *Bundle v1alpha1*
+| Le Bundle contient les ressources d'une application et ses options de déploiement. Il est déployé sous forme de chart Helm vers les clusters cibles. Lorsqu'un GitRepo est analysé, il produit un ou plusieurs bundles. Les bundles sont des collections de ressources déployées sur un ou plusieurs clusters et représentent l'unité de déploiement fondamentale utilisée dans {product_name}. Le contenu d'un Bundle peut inclure des manifestes Kubernetes, une configuration Kustomize ou des charts Helm. Quelle que soit la source, le contenu est rendu dynamiquement en un chart Helm par l'agent et installé dans le cluster en aval en tant que release Helm.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/bundle_v1alpha1.json[Bundle v1alpha1]
+
+| *BundleDeployment v1alpha1*
+| Le BundleDeployment est utilisé en interne par {product_name} et ne doit pas être utilisé directement. Lorsqu'un Bundle est déployé sur un cluster, une instance d'un Bundle est appelée un BundleDeployment. Il représente l'état de ce Bundle sur un cluster spécifique avec des personnalisations spécifiques au cluster. L'agent Fleet n'est conscient que des ressources BundleDeployment créées pour le cluster qu'il gère.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/bundledeployment_v1alpha1.json[BundleDeployment v1alpha1]
+
+| *BundleNamespaceMapping v1alpha1*
+| BundleNamespaceMapping associe des bundles à des clusters dans d'autres espaces de noms.
+| `apiVersion, bundleSelector, kind, metadata, namespaceSelector`
+| link:reference/crds/bundlenamespacemapping_v1alpha1.json[BundleNamespaceMapping v1alpha1]
+
+| *Cluster v1alpha1*
+| Le cluster correspond à un cluster Kubernetes. {product_name} déploie des bundles vers des clusters ciblés, appelés clusters en aval. Dans un déploiement à cluster unique, le cluster Fleet agit à la fois comme gestionnaire et comme cluster en aval.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/cluster_v1alpha1.json[Cluster v1alpha1]
+
+| *ClusterGroup v1alpha1*
+| ClusterGroup est un sélecteur réutilisable utilisé pour cibler un groupe de clusters.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clustergroup_v1alpha1.json[ClusterGroup v1alpha1]
+
+| *ClusterRegistration v1alpha1*
+| ClusterRegistration est utilisé en interne par {product_name} et ne doit pas être utilisé directement.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clusterregistration_v1alpha1.json[ClusterRegistration v1alpha1]
+
+| *ClusterRegistrationToken v1alpha1*
+| ClusterRegistrationToken est utilisé par les agents pour enregistrer un nouveau cluster.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clusterregistrationtoken_v1alpha1.json[ClusterRegistrationToken v1alpha1]
+
+| *Content v1alpha1*
+| Content est utilisé en interne par {product_name} et ne doit pas être utilisé directement. Il contient les ressources d'un bundle pour un cluster cible spécifique.
+| `apiVersion, content, kind, metadata, sha256sum`
+| link:reference/crds/content_v1alpha1.json[Content v1alpha1]
+
+| *GitRepo v1alpha1*
+| GitRepo décrit un dépôt Git surveillé par {product_name}. La ressource contient les informations nécessaires pour déployer le dépôt, ou des parties de celui-ci, vers des clusters cibles.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/gitreporestriction_v1alpha1.json[GitRepo v1alpha1]
+
+| *GitRepoRestriction v1alpha1*
+| GitRepoRestriction restreint éventuellement les options GitRepo au sein du même espace de noms.
+| `allowedClientSecretNames, allowedRepoPatterns, allowedServiceAccounts, allowedTargetNamespaces, apiVersion, defaultClientSecretName, defaultServiceAccount, kind, metadata`
+| link:reference/crds/gitreporestriction_v1alpha1.json[GitRepoRestriction v1alpha1]
+
+| *HelmOp v1alpha1*
+| HelmOp décrit les informations sur le chart Helm nécessaires pour déployer un chart sur des clusters cibles.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/helmop_v1alpha1.json[HelmOp v1alpha1]
+
+| *ImageScan v1alpha1*
+| Schéma JSON pour ImageScan (v1alpha1) dans le groupe `fleet.cattle.io`.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/imagescan_v1alpha1.json[ImageScan v1alpha1]
+
+| *Schedule v1alpha1*
+| Schedule représente un calendrier de déploiement qui détermine quand les déploiements sont autorisés ou restreints.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/schedule_v1alpha1.json[Schedule v1alpha1]
+
+|===
+
+Pour plus d'informations, consultez https://github.com/rancher/fleet/blob/main/charts/fleet-crd/templates/crds.yaml[fleet-crds.yaml].

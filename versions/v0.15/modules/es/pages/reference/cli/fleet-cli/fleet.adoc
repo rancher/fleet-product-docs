@@ -1,0 +1,30 @@
+= Fleet
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Gestionar {product_name} operaciones
+
+----
+fleet [flags]
+----
+
+== Opciones
+
+----
+  -h, --help   help for fleet
+----
+
+== VÉASE
+=== Comandos principales
+
+* xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]     - Crear paquetes a partir de directorios y exportarlos o aplicarlos en un clúster
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]     - Limpiar registros de clúster obsoletos
+* xref:/reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]     - Desplegar un recurso de bundledeployment/content en un clúster, creando un release de Helm. Esto no desplegará los recursos de bundledeployment/contenido directamente en el clúster.
+* xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]     - Clona un repositorio git
+* xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]     - Imprimir objetivos disponibles para un paquete
+
+=== Resolución de problemas y diagnósticos
+
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]     - Monitorizar configuraciones de Fleet para detectar problemas
+* xref:/reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]     - Analizar instantáneas creadas por `fleet monitor`
+* xref:/reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]     - Volcar datos del clúster en un archivo

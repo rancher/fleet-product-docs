@@ -1,0 +1,168 @@
+= Instalar y usar Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+{product_name} CLI es una interfaz de línea de comandos (CLI) que te permite interactuar directamente con {product_name} desde tu máquina local. Te permite crear, aplicar e inspeccionar `bundles` sin necesidad de un `GitRepo`. Los casos de uso típicos incluyen:
+
+* Probar y previsualizar el contenido de los paquetes.
+* Crear paquetes directamente desde gráficos de Helm, manifiestos de Kubernetes y archivos de `fleet.yaml`.
+* Comprobar a qué clústeres se dirigiría un paquete.
+* Validar ampliaciones sin instalar {product_name} en el clúster.
+
+[NOTE]
+====
+Puedes usar `fleet apply` sin instalar {product_name} en tus clústeres. Sin embargo, para la interacción con el clúster (por ejemplo, `fleet target`, `fleet deploy`), se debe instalar {product_name}.
+
+Para más información, consulta xref:how-tos-for-operators/installation.adoc[Instalar Fleet].
+====
+
+== Instalar Fleet CLI
+
+Fleet CLI es un binario independiente que puedes descargar desde la link:https://github.com/rancher/fleet/releases[Página de lanzamientos de Fleet en GitHub].
+
+=== Linux/macOS
+
+[source,bash]
+----
+curl -L -o fleet https://github.com/rancher/fleet/releases/latest/download/fleet-linux-amd64
+
+# Make it executable and move to PATH
+chmod +x fleet
+sudo mv fleet /usr/local/bin/
+----
+
+=== Windows (PowerShell)
+
+[source,powershell]
+----
+Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
+----
+
+=== Verificar la instalación
+
+[source,bash]
+----
+fleet --version
+----
+
+== Requisitos previos
+
+Asegúrate de tener las siguientes herramientas instaladas y configuradas:
+
+* Un clúster de Kubernetes en funcionamiento (por ejemplo, k3s, kind o un proveedor de nube).
+* `kubectl` está configurado para tu clúster.
+* Helm está instalado.
+* Fleet CLI está instalado y accesible en tu terminal.
+
+=== Verifica los requisitos previos
+
+[source,bash]
+----
+kubectl get nodes
+helm version
+fleet --version
+----
+
+== Comandos Clave
+
+{product_name} proporciona varios comandos de CLI para crear, previsualizar y desplegar paquetes. Estos comandos son útiles para depurar y entender el ciclo de vida del paquete.
+
+* `fleet apply`: Crea o previsualiza un paquete a partir de archivos locales, tales como un Helm chart, manifiestos de Kubernetes o carpetas de kustomize.
+Este comando no requiere acceso a un clúster, por lo que funciona incluso sin {product_name} o `kubectl` instalados.
++
+Ejemplo:
+[source,bash]
+----
+fleet apply my-bundle ./manifests
+----
+* `fleet target`: Lee un archivo de paquete y evalúa qué clústeres lo recibirían, basándose en selectores y reglas de targeting como `targets`, `targetOverrides`, `clusterGroups` y selectores de etiquetas.
++
+Ejemplo:
+[source,bash]
+----
+fleet target my-bundle ./manifests
+----
+* `fleet deploy`: Toma la salida de `fleet target`, o un recurso `bundledeployment`/content volcado, y lo despliega en un clúster, tal como lo haría `fleet-agent`.
++
+Puedes usarlo en estos escenarios:
+** `fleet apply -o - name ./folder` para comprobar el YAML del paquete antes de crearlo. Para más información, consulta xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Examinando el Ciclo de Vida del Paquete con la CLI].
+** Usa con un objetivo para depurar selectores y verificar a qué clústeres en sentido descendente se dirigen.
+** `fleet deploy --dry-run` para imprimir recursos que serían desplegados, sin aplicarlos.
+
+image::fleetCLI-key-components.svg[Un diagrama que explica cómo funcionan los comandos clave de Fleet CLI]
+
+== Desplegar un Paquete de Muestra Usando Fleet CLI
+
+Puedes desplegar cargas de trabajo sin usar GitRepos aplicándolas localmente con la CLI. Por ejemplo, usa el link:https://github.com/rancher/fleet-examples[repositorio de ejemplos de Fleet]:
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-examples
+cd fleet-examples/single-cluster
+----
+
+Aplícalo al clúster actual:
+
+[source,bash]
+----
+fleet apply -o my-cool-bundle manifests
+----
+
+Este comando crea un recurso `Bundle` en el espacio de nombres.
+
+== Convierte un Helm Chart en un Paquete
+
+Puedes usar Fleet CLI para convertir un Helm chart en un paquete. Por ejemplo, para convertir el chart del operador *external-secrets*:
+
+[source,bash]
+----
+cat > targets.yaml <<EOF
+targets:
+- clusterSelector: {}
+EOF
+
+mkdir app
+cat > app/fleet.yaml <<EOF
+defaultNamespace: external-secrets
+helm:
+  repo: https://charts.external-secrets.io
+  chart: external-secrets
+EOF
+
+fleet apply --compress --targets-file=targets.yaml -n fleet-default -o - external-secrets app > eso-bundle.yaml
+
+kubectl apply -f eso-bundle.yaml
+----
+
+Asegúrate de usar un selector de clúster en `targets.yaml` que coincida con todos los clústeres a los que deseas desplegar.
+
+Para más información, consulta link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Despliegue Multi-Clúster con la Ayuda de Secretos Externos].
+
+== Solución de problemas
+
+Si el paquete no está listo:
+
+* Verifica si los pods `fleet-controller` y `fleet-agent` están en ejecución.
+* Asegúrate de que el clúster `fleet-local` esté registrado.
+* Inspecciona el paquete en busca de mensajes de error:
++
+[source,bash]
+----
+kubectl describe bundle -n fleet-local <bundle-name>
+----
+* Elimina y reaplica el paquete si encuentras conflictos de propiedad de Helm.
+
+=== Verifica el Estado del Agente y del Controlador
+
+Antes de solucionar problemas de paquetes o ampliaciones, verifica que el Fleet agent esté registrado y en ejecución en el clúster descendente.
+Para más información, consulta xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[El Agente de Fleet está registrado, observa las ampliaciones de paquetes].
+
+Si un paquete no está listo en un clúster dado, verifica lo siguiente:
+
+* En el clúster de gestión:
+** Verifica que los pods `fleet-controller` y `gitjob` (o `helmops`, dependiendo de tu configuración) estén en ejecución.
+** Asegúrate de que el estado del clúster muestre *Listo*.
+** Verifica el estado del paquete; debería contener un mensaje de error si la ampliación falló.
+* En el clúster objetivo donde el paquete no está listo:
+** Verifica que este clúster objetivo esté registrado y tenga un pod `fleet-agent` en funcionamiento.
+** Como último recurso, revisa los registros del pod `fleet-agent`.

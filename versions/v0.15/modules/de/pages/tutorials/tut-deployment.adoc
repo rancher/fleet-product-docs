@@ -1,0 +1,465 @@
+:doctype: book
+
+= Erstellen einer Bereitstellung
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Um Workloads auf Downstream-Cluster bereitzustellen, erstellen Sie zunächst ein Git-Repository, dann erstellen Sie eine GitRepo-Ressource und wenden Sie sie an.
+
+Dieses Tutorial verwendet das https://github.com/rancher/fleet-examples[fleet-examples] Repository.
+
+[NOTE]
+====
+Für weitere Details zur Strukturierung des Repositories und zur Konfiguration der Bereitstellung jedes Bundles siehe xref:explanations/gitrepo-content.adoc[GitRepo-Inhalte].
+Für weitere Details zu den Optionen, die pro Git-Repository verfügbar sind, siehe xref:how-tos-for-users/gitrepo-add.adoc[Hinzufügen eines GitRepo].
+====
+
+
+== Einzel-Cluster-Beispiele
+
+Alle Beispiele werden Inhalte an Cluster ohne clusterspezifische Anpassungen bereitstellen. Dies ist ein guter Ausgangspunkt, um die Grundlagen der Strukturierung von Git-Repos für {product_name} zu verstehen.
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Ein Beispiel mit Helm. Wir stellen das https://github.com/rancher/fleet-examples/tree/master/single-cluster/helm[Helm-Beispiel] im lokalen Cluster bereit.
++
+Das Repository enthält ein Helm-Chart und ein optionales `fleet.yaml`, um die Bereitstellung zu konfigurieren:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-helm-example
+
+# Custom helm options
+helm:
+  # The release name to use. If empty a generated release name will be used
+  releaseName: guestbook
+
+  # The directory of the chart in the repo.  Also any valid go-getter supported
+  # URL can be used there is specify where to download the chart from.
+  # If repo below is set this value if the chart name in the repo
+  chart: ""
+
+  # An https to a valid Helm repository to download the chart from
+  repo: ""
+
+  # Used if repo is set to look up the version of the chart
+  version: ""
+
+  # Force recreate resource that can not be updated
+  force: false
+
+  # How long for helm to wait for the release to be active. If the value
+  # is less that or equal to zero, we will not wait in Helm
+  timeoutSeconds: 0
+
+  # Custom values that will be passed as values.yaml to the installation
+  values:
+    replicas: 2
+----
+
+Helm Multi-Chart::
++
+Ein https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-multi-chart[Beispiel zur Bereitstellung mehrerer Charts] aus einem einzigen Repo. Dies ist ähnlich wie das vorherige Beispiel, wird jedoch drei Helm-Charts aus den Unterordnern bereitstellen, die jeweils durch ihr eigenes `fleet.yaml` konfiguriert sind.
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-multi-chart
+EOF
+----
+
+Helm & Kustomize::
++
+Ein Beispiel mit https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-kustomize[Kustomize zur Modifizierung eines Drittanbieter-Helm-Charts]. Es wird die Kubernetes-Beispielanwendung Gästebuch bereitstellen, die als Helm-Chart von einer Drittanbieterquelle heruntergeladen wurde, und das Helm-Chart mit Kustomize modifizieren. Die App wird im Namespace fleet-helm-kustomize-example bereitgestellt. 
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-kustomize
+EOF
+----
+
+Kustomize::
++
+Ein https://github.com/rancher/fleet-examples/blob/master/single-cluster/kustomize[Beispiel mit Kustomize]. 
++
+Beachten Sie, dass der `fleet.yaml` einen `kustomize:` Schlüssel hat, um den Pfad zur erforderlichen `kustomization.yaml` anzugeben:
++
+.fleet.yaml
+[source,yaml]
+----
+kustomize:
+  # To use a kustomization.yaml different from the one in the root folder
+  dir: ""
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/kustomize
+EOF
+----
+
+Manifeste::
++
+Ein https://github.com/rancher/fleet-examples/tree/master/single-cluster/manifests[Beispiel mit rohem Kubernetes YAML].
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/manifests
+EOF
+----
+====
+
+== Multi-Cluster-Beispiele
+
+Die folgenden Beispiele werden ein Multi-Git-Repo gleichzeitig auf mehrere Cluster bereitstellen und die App für jedes Ziel unterschiedlich konfigurieren.
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Ein Beispiel mit Helm. Wir stellen das https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[Helm-Beispiel] bereit und passen es für jedes Zielcluster an.
++
+Das Repository enthält ein Helm-Chart und eine optionale `fleet.yaml`, um die Bereitstellung zu konfigurieren. Der `fleet.yaml` wird verwendet, um verschiedene Bereitstellungsoptionen zu konfigurieren, abhängig von den Labels des Clusters:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-helm-example
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
++
+Um die Bereitstellung zu erstellen, wenden wir die benutzerdefinierte Ressource auf den Upstream-Cluster an. Der `fleet-default` Namespace enthält standardmäßig die Ressourcen des Downstream-Clusters. Das Chart wird in allen Clustern im Namespace fleet-default bereitgestellt, die über Ressourcen mit Labels verfügen, die mit einem Eintrag unter `targets:` übereinstimmen.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Durch das Anwenden der GitRepo-Ressource auf den Upstream-Cluster beginnt Fleet, das Repository zu überwachen und Bereitstellungen zu erstellen:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm Extern::
++
+Ein https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-external[Beispiel mit einem Helm-Chart, das von einer Drittanbieterquelle heruntergeladen wird, und dessen Anpassung für jedes Ziel-Cluster]. Die Anpassung ist ähnlich wie im vorherigen Beispiel.
++
+Um die Bereitstellung zu erstellen, wenden wir die benutzerdefinierte Ressource auf den Upstream-Cluster an. Der `fleet-default` Namespace enthält standardmäßig die Ressourcen des Downstream-Clusters. Das Chart wird in allen Clustern im Namespace fleet-default bereitgestellt, die über Ressourcen mit Labels verfügen, die mit einem Eintrag unter `targets:` übereinstimmen.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-external
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-external
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Durch das Anwenden der GitRepo-Ressource auf den Upstream-Cluster beginnt Fleet, das Repository zu überwachen und Bereitstellungen zu erstellen:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm & Kustomize::
++
+Ein Beispiel mit https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-kustomize[Kustomize, um ein Helm-Chart von einem Drittanbieter zu modifizieren]. Es wird die Kubernetes-Beispielanwendung Gästebuch bereitstellen, die als Helm-Chart von einer Drittanbieterquelle heruntergeladen wurde, und das Helm-Chart mit Kustomize modifizieren. Die App wird im Namespace fleet-helm-kustomize-example bereitgestellt. 
++
+Die Anwendung wird wie folgt pro Umgebung angepasst: 
++
+  * Entwicklungscluster: Nur der Redis-Leader wird bereitgestellt und nicht die Follower. 
+  * Testcluster: Skalieren Sie das Front-Deployment auf 3 
+  * Prodcluster: Skalieren Sie das Front-Deployment auf 3 und setzen Sie den Servicetyp auf LoadBalancer 
++
+Die `fleet.yaml` wird verwendet, um zu steuern, welche Overlays verwendet werden, abhängig von den Labels des Clusters:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-kustomize-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  kustomize:
+    dir: overlays/dev
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  kustomize:
+    dir: overlays/test
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  kustomize:
+    dir: overlays/prod
+----
++
+Um die Bereitstellung zu erstellen, wenden wir die benutzerdefinierte Ressource auf den Upstream-Cluster an. Der `fleet-default` Namespace enthält standardmäßig die Ressourcen des Downstream-Clusters. Das Chart wird in allen Clustern im Namespace fleet-default bereitgestellt, die über Ressourcen mit Labels verfügen, die mit einem Eintrag unter `targets:` übereinstimmen.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Durch das Anwenden der GitRepo-Ressource auf den Upstream-Cluster beginnt Fleet, das Repository zu überwachen und Bereitstellungen zu erstellen:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Kustomize::
++
+Ein https://github.com/rancher/fleet-examples/blob/master/multi-cluster/kustomize[Beispiel mit Kustomize] und Anpassung pro Zielcluster.
++
+Die Anpassung in `fleet.yaml` ist identisch mit dem Beispiel "Helm & Kustomize".
++
+Um die Bereitstellung zu erstellen, wenden wir die benutzerdefinierte Ressource auf den Upstream-Cluster an. Der `fleet-default` Namespace enthält standardmäßig die Ressourcen des Downstream-Clusters. Das Chart wird in allen Clustern im Namespace fleet-default bereitgestellt, die über Ressourcen mit Labels verfügen, die mit einem Eintrag unter `targets:` übereinstimmen.
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+EOF
+----
++
+Durch das Anwenden der GitRepo-Ressource auf den Upstream-Cluster beginnt Fleet, das Repository zu überwachen und Bereitstellungen zu erstellen: 
+
+Manifests::
++
+Ein https://github.com/rancher/fleet-examples/tree/master/multi-cluster/manifests[Beispiel mit rohem Kubernetes YAML und Anpassung pro Zielcluster]. Die Anwendung wird wie folgt pro Umgebung angepasst:
++
+* Entwicklungscluster: Nur der Redis-Leader wird bereitgestellt und nicht die Follower. 
+* Testcluster: Skalieren Sie das Front-Deployment auf 3 
+* Prodcluster: Skalieren Sie das Front-Deployment auf 3 und setzen Sie den Service-Typ auf LoadBalancer 
++
+Die `fleet.yaml` wird verwendet, um zu steuern, welche 'yaml'-Overlays verwendet werden, abhängig von den Labels des Clusters: 
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-manifest-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  yaml:
+    overlays:
+    # Refers to overlays/noreplication folder
+    - noreplication
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  yaml:
+    overlays:
+    # Refers to overlays/scale3 folder
+    - scale3
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  yaml:
+    # Refers to overlays/servicelb, scale3 folders
+    overlays:
+    - servicelb
+    - scale3
+----
++
+Um die Bereitstellung zu erstellen, wenden wir die benutzerdefinierte Ressource auf den Upstream-Cluster an. Der `fleet-default` Namespace enthält standardmäßig die Ressourcen des Downstream-Clusters. Das Chart wird in allen Clustern im Namespace fleet-default bereitgestellt, die über Ressourcen mit Labels verfügen, die mit einem Eintrag unter `targets:` übereinstimmen.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: manifests
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/manifests
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+====

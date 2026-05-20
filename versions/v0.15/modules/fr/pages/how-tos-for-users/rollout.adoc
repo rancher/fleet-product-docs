@@ -1,0 +1,321 @@
+= Stratégie de déploiement
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} utilise une stratégie de déploiement pour contrôler comment les applis sont déployées à travers les clusters. Vous pouvez définir l'ordre et le regroupement des déploiements de clusters en utilisant des partitions, permettant des déploiements contrôlés et des mises à jour plus sûres.
+
+{product_name} évalue le statut `Ready` de chaque `BundleDeployment` pour déterminer quand passer à la partition suivante. Pour plus d'informations, consultez xref:reference/ref-status-fields.adoc[les champs de statut].
+
+Lors d'un déploiement, le statut GitRepo indique l'avancement du déploiement. Cela vous aide à comprendre quand les paquets deviennent `Ready` avant de continuer{nbsp}:
+
+* Pour les déploiements initiaux{nbsp}:
+  * Un ou plusieurs clusters peuvent être dans un état `NotReady`.
+  * Les clusters restants sont marqués comme `Pending`, ce qui signifie que le déploiement n'a pas commencé.
+* Pour les déploiements{nbsp}:
+  * Un ou plusieurs clusters peuvent être dans un état `NotReady`.
+  * Les clusters restants sont marqués `OutOfSync` jusqu'à ce que le déploiement continue.
+
+Les options de configuration de déploiement sont documentées dans le champ `rolloutStrategy` du xref:reference/ref-fleet-yaml.adoc[+fleet.yaml+].
+
+[NOTE]
+====
+Si `rolloutStrategy` n'est pas spécifié dans `fleet.yaml`, {product_name} utilise les valeurs par défaut.
+====
+
+== Comment fonctionne le partitionnement{nbsp}?
+
+Les partitions sont uniquement utilisées pour regrouper et contrôler le déploiement de `BundleDeployments` à travers les clusters. Elles n'affectent en rien les options de déploiement.
+
+Si les clusters ciblés ne font pas partie du partitionnement manuel, ils ne seront pas inclus dans le déploiement. Si un cluster fait partie d'une partition, il recevra un `BundleDeployment` lorsque la partition sera traitée.
+
+Les partitions sont considérées comme `NotReady` si elles ont des clusters qui dépassent le nombre autorisé de `NotReady` clusters. Si un cluster est hors ligne, le cluster ciblé ne sera pas considéré comme `Ready` et restera dans l'état `NotReady` jusqu'à ce qu'il revienne en ligne et déploie avec succès le `BundleDeployment`.
+
+Le seuil est déterminé par{nbsp}:
+
+* **Partitions manuelles**{nbsp}: Utilisez la valeur `maxUnavailable` à l'intérieur de chaque partition pour contrôler la préparation de cette partition, sinon, si non spécifié, elle utilise `rolloutStrategy.maxUnavailable`.
+* **Partitions automatiques**{nbsp}: Utilisez la valeur `rolloutStrategy.maxUnavailable` pour contrôler quand une partition est prête.
+
+{product_name} ne progresse que si le nombre de partitions `NotReady` reste en dessous de `maxUnavailablePartitions`.
+
+[NOTE]
+====
+{product_name} déploie des déploiements par lots de jusqu'à `maxNew` clusters par partition (par défaut{nbsp}: 50), indépendamment des partitions ayant plus de clusters assignés. Après chaque lot, {product_name} vérifie le seuil `maxUnavailable` avant de continuer. Après que tous les déploiements pour une partition ont été créés, `maxUnavailable` est également évalué. Par exemple :
+
+* Si une partition a 25 clusters et que `maxUnavailable` est 5, {product_name} déploie à tous les 25 avant de vérifier `maxUnavailable`.
+* Si une partition a 100 clusters, {product_name} déploie aux 50 premiers (par défaut `maxNew`), vérifie `maxUnavailable`, et procède avec les 50 restants uniquement si le seuil n'est pas dépassé.
+====
+
+Le diagramme suivant montre comment {product_name} gère le déploiement{nbsp}:
+
+image::flow-rollout-fleet.png[Un actif visuel affichant le flux de déploiement dans {product_name}.]
+
+Diverses limites qui peuvent être configurées dans {product_name}{nbsp}:
+
+[cols="2,5,1", options="header"]
+|===
+| Champ | Description | Par défaut
+
+| maxUnavailable
+| Nombre maximum ou pourcentage de clusters qui peuvent être `NotReady` avant d'arrêter le déploiement.
+| 100 %
+
+| maxUnavailablePartitions
+| Nombre ou pourcentage de partitions pouvant être `NotReady` à la fois.
+| 0
+
+| autoPartitionSize
+| Nombre ou pourcentage de clusters par partition auto-créée.
+| 25 %
+
+| autoPartitionThreshold
+| Nombre minimum de clusters requis avant que l'auto-partitionnement soit activé. En dessous de ce seuil, tous les clusters sont placés dans une seule partition.
+| 200
+
+| maxNew
+| Nombre maximum de `BundleDeployments` pouvant être mis en scène par réconciliation.
+| 50
+
+| Partitions
+| Définir des partitions manuelles par étiquettes de cluster ou groupe. Si définie, la taillePartitionAuto est ignorée.
+| –
+|===
+
+{product_name} prend en charge le partitionnement automatique et manuel. Pour plus d'informations sur les options de configuration, reportez-vous à l'option xref:reference/ref-fleet-yaml.adoc[`rolloutStrategy` dans la référence fleet.yaml.]
+
+**Partitionnement Automatique**{nbsp}: {product_name} crée automatiquement des partitions en utilisant `autoPartitionSize`.
+
+Par exemple, vous avez 200 clusters et définissez `autoPartitionSize` à 25 %, {product_name} crée quatre partitions de 50 clusters chacune. Le déploiement se poursuit par lots de 50 clusters, vérifiant `maxUnavailable` avant de continuer.
+
+Le paramètre `autoPartitionThreshold` contrôle quand l'auto-partitionnement est activé{nbsp}:
+
+* **En dessous du seuil**{nbsp}: Tous les clusters sont placés dans une seule partition, indépendamment du paramètre `autoPartitionSize`. Cela empêche un partitionnement inutile pour de petits déploiements.
+* **À ou au-dessus du seuil**: {product_name} crée plusieurs partitions en fonction de `autoPartitionSize`.
+* **Seuil personnalisable**{nbsp}: Vous pouvez abaisser la limite pour activer le partitionnement avec moins de clusters (par exemple, fixez-la à 50 pour des tests à petite échelle) ou l'augmenter pour éviter le partitionnement jusqu'à ce que vous ayez un grand nombre de clusters (par exemple, fixez-la à 500).
+* **Désactiver le partitionnement automatique**{nbsp}: Fixez à 0 pour forcer tous les clusters dans une seule partition, quel que soit leur nombre.
+
+Par exemple :
+[source,yaml]
+----
+rolloutStrategy:
+  autoPartitionThreshold: 50  # Enable partitioning with only 50 clusters
+  autoPartitionSize: 50%      # Create partitions of 50% each
+[source,text]
+----
+
+Avec 50 clusters, cela crée 2 partitions de 25 clusters chacune. Sans définir `autoPartitionThreshold`, ces 50 clusters seraient dans une seule partition (puisque la limite par défaut est de 200).
+
+**Partitionnement manuel**{nbsp}: Vous définissez des partitions spécifiques en utilisant l'option `partitions`. Cela permet de contrôler la sélection des clusters et l'ordre de déploiement.
+
+[NOTE]
+====
+Si vous spécifiez les partitions manuellement, le `autoPartitionSize` est ignoré.
+====
+
+Par exemple, considérez{nbsp}:
+
+[source,yaml]
+----
+rolloutStrategy:
+  partitions:
+    - name: demoRollout
+      maxUnavailable: 10%
+      clusterSelector:
+        matchLabels:
+          env: staging
+    - name: stable
+      maxUnavailable: 5%
+      clusterSelector:
+        matchLabels:
+          env: prod
+[source,text]
+----
+
+{product_name} ensuite{nbsp}:
+
+1. Sélectionne les clusters en fonction de `clusterSelector`, `clusterGroup` ou `clusterGroupSelector`.
+  * Les partitions peuvent être spécifiées par `clusterName`, `clusterSelector`, `clusterGroup` et `clusterGroupSelector`.
+2. Commence le déploiement vers la première partition.
+3. Attend que la partition soit considérée comme `Ready` (en fonction du seuil `maxUnavailable`).
+4. Procède à la partition suivante.
+
+Le diagramme suivant illustre comment {product_name} gère le déploiement à travers plusieurs partitions, y compris les vérifications de préparation et le flux de déploiement{nbsp}:
+
+image::deploy-targets-partition.png[Un actif visuel affichant le flux de déploiement des partitions.]
+
+[NOTE]
+====
+`maxNew` contrôle combien de `BundleDeployments` peuvent être mis en scène par réconciliation. La valeur par défaut est 50. Vous pouvez configurer cela via `rolloutStrategy.maxNew` dans `fleet.yaml`.
+====
+
+Dans chaque partition, {product_name} déploie jusqu'à `maxNew` `BundleDeployments` à la fois (par défaut{nbsp}: 50). Le diagramme ci-dessous montre comment {product_name} détermine s'il faut continuer ou attendre pendant ce processus{nbsp}:
+
+image::partition-rollout-flow.png[Un actif visuel affichant le flux de déploiement des cibles dans une partition.]
+
+[NOTE]
+====
+{product_name} recommande d'étiqueter les clusters afin que vous puissiez utiliser ces étiquettes pour assigner des clusters à des partitions spécifiques.
+==== 
+
+[NOTE]
+====
+{product_name} traite les partitions dans l'ordre dans lequel elles apparaissent dans le fichier `fleet.yaml`.
+====
+
+=== Partition unique
+
+Si vous ne définissez pas `rolloutStrategy.partitions`, {product_name} crée des partitions automatiquement en fonction du nombre de clusters ciblés{nbsp}:
+
+* Pour moins de `autoPartitionThreshold` clusters (par défaut 200), {product_name} utilise une seule partition.
+* Pour `autoPartitionThreshold` clusters ou plus, {product_name} utilise la valeur `autoPartitionSize` (par défaut 25 %) pour créer des partitions.
+
+Par exemple, avec 200 clusters (répondant au `autoPartitionThreshold` par défaut), {product_name} utilise le `autoPartitionSize` par défaut de 25 %. Cela signifie que {product_name} crée 4 partitions (25 % de 200 = 50 clusters par partition). {product_name} traite jusqu'à 50 clusters à la fois, ce qui signifie qu'il{nbsp}:
+
+1. Déploie aux 50 premiers clusters.
+2. Évalue la préparation en fonction de `maxUnavailable`.
+. Si la condition est remplie, passe aux 50 suivants, et ainsi de suite.
+
+=== Multiples partitions
+
+Si vous définissez plusieurs partitions, {product_name} utilise `maxUnavailablePartitions` pour limiter le nombre de partitions pouvant être `NotReady` à la fois. Si le nombre de partitions `NotReady` dépasse `maxUnavailablePartitions`, {product_name} met en pause le déploiement.
+
+== Prévenir les tempêtes de tirage d'images
+
+Pendant le déploiement, chaque cluster en aval tire des images de conteneur. Si des centaines de clusters commencent à tirer des images simultanément, cela peut submerger le registre et se comporter comme une attaque DDoS.
+
+Pour éviter cela, {product_name} peut contrôler combien de clusters sont mis à jour à la fois. Vous pouvez utiliser les options de configuration de déploiement suivantes pour ralentir et étager le déploiement{nbsp}:
+
+* `autoPartitionSize`
+* `partitions`
+* `maxUnavailable`
+
+{product_name} n'ajoute pas de délais artificiels pendant le déploiement. Au lieu de cela, il progresse en fonction de l'état `readiness` des charges de travail dans chaque cluster. Les facteurs qui affectent la préparation incluent le temps de récupération d'image, le temps de démarrage et les sondes de préparation. Bien que l'utilisation de sondes de préparation soit recommandée, elles ne sont pas strictement nécessaires pour contrôler la vitesse de déploiement.
+
+Par exemple, vous avez 200 clusters, qui sont partitionnés manuellement, chacune contenant 40 clusters et vous souhaitez éviter une tempête de récupération d'image{nbsp}:
+
+* `maxUnavailablePartitions` : Définissez sur 0.
+* `maxUnavailable` : Définissez sur 10 %.
+
+Comment le déploiement progresse{nbsp}:
+
+1. {product_name} commence par la première partition (40 clusters).
+2. Il déploie jusqu'à 50 `BundleDeployments` à la fois. Ainsi, il déploie tous les 40 clusters de la partition en un seul lot.
+3. {product_name} vérifie si les clusters de la partition sont prêts.
+* Si plus de 4 clusters ne sont pas prêts, alors la partition est considérée comme `NotReady` et le déploiement est mis en pause.
+* Une fois que ≤4 clusters sont `NotReady`, {product_name} poursuit le déploiement.
+4. Lorsque l'ensemble de la partition est principalement prêt (90 %), {product_name} passe à la partition suivante.
+
+Si vous souhaitez ou devez traiter moins de 40 déploiements à la fois, vous pouvez mettre moins de clusters dans chaque partition.
+
+== Cas d'utilisation et comportement
+
+Si le nombre de clusters ne se divise pas uniformément, {product_name} arrondit les tailles de partition. Par exemple, 230 clusters avec `autoPartitionSize: 25%` donne{nbsp}:
+
+* Quatre partitions de 57 clusters
+* Une partition de 2 clusters
+
+=== Scénario : 50 Clusters (Partition unique)
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name} crée une partition contenant les 50 clusters, car aucune partition n'est définie.
+  * Aucune nécessité de spécifier `maxUnavailablePartitions`, car une seule partition est créée.
+* Bien qu'il n'y ait pas de partition manuelle spécifiée et que `maxUnavailable` soit réglé à 10 %, {product_name} déploie tous les 50 clusters en même temps (le comportement par lot remplace initialement `maxUnavailable`).
+* L'évaluation a lieu après que tous les déploiements ont été créés.
+
+Le diagramme suivant illustre comment {product_name} gère 50 clusters dans une seule partition{nbsp}:
+
+image::deploy-50Clusters.png[scénario de 50 clusters]
+
+=== Scénario : 100 Clusters (Partition unique) 
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name} crée une partition contenant les 100 clusters, car aucune partition n'est définie.
+  * Aucune nécessité de spécifier `maxUnavailablePartitions`, car vous n'en avez qu'une.
+* Bien qu'il n'y ait pas de partition manuelle spécifiée et que `maxUnavailable` soit réglé à 10 %, {product_name} déploie 50 clusters en même temps (le comportement par lot remplace initialement `maxUnavailable`).
+
+Si 10 clusters (10 % de 100 clusters) ne sont pas disponibles, le déploiement des 50 clusters restants est suspendu jusqu'à ce que moins de 10 clusters soient `NotReady`. 
+
+=== Scénario : 200 Clusters (Multiples partitions)
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailablePartitions: 1
+  autoPartitionSize: 10%
+[source,text]
+----
+
+* {product_name} crée 10 partitions, chacune avec 20 clusters.
+* Le déploiement se poursuit séquentiellement par partition.
+* Si deux partitions ou plus deviennent `NotReady`, le déploiement est suspendu.
+* Si une partition est `NotReady`, le déploiement peut se poursuivre vers la suivante.
+
+{product_name} crée `BundleDeployments` pour 20 clusters, attend qu'ils deviennent `Ready`, puis passe au suivant. Cela limite effectivement le nombre de téléchargements d'images depuis les clusters en aval à environ 40 images à la fois.
+
+=== Scénario : 200 Clusters (Préparation stricte, Partitions manuelles)
+
+La partition manuelle vous permet de contrôler le regroupement des clusters avec `maxUnavailablePartitions: 0`. 
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailable: 0
+  maxUnavailablePartitions: 0
+  partitions:
+    - name: demoRollout
+      clusterSelector:
+        matchLabels:
+          stage: demoRollout
+    - name: stable
+      clusterSelector:
+        matchLabels:
+          stage: stable
+[source,text]
+----
+
+* Vous définissez des partitions manuelles en utilisant `clusterSelector` et des étiquettes comme `stage: demoRollout` et `stage: stable`.
+* {product_name} crée `BundleDeployments` pour les clusters dans la première partition (par exemple, `demoRollout`).
+* Le déploiement se déroule strictement dans l'ordre, {product_name} ne passe à la partition suivante que lorsque la partition actuelle est considérée comme prête.
+* Avec `maxUnavailable: 0` et `maxUnavailablePartitions: 0`, {product_name} suspend le déploiement si une partition n'est pas considérée comme prête.
+
+Le diagramme suivant décrit comment {product_name} gère la décision de continuer ou de suspendre le déploiement.
+
+image::partition-fleet-rollout.png[Scénario de partitions manuelles]
+
+Cela garantit une préparation complète et un déploiement par étapes sur les 200 clusters. Utilisez cette approche lorsque vous avez besoin d'une séquence de déploiement précise et d'une préparation complète des clusters avant d'avancer. 
+
+== Valeurs par défaut de la stratégie de déploiement
+
+Si les valeurs de déploiement au niveau de la partition ne sont pas définies, {product_name} applique les valeurs globales de `rolloutStrategy` dans `fleet.yaml`. Les paramètres spécifiques à la partition remplacent les valeurs globales lorsqu'ils sont explicitement définis.
+
+Par défaut, {product_name} définit{nbsp}:
+
+* `maxUnavailable` à `100%`{nbsp}: Tous les clusters d'une partition peuvent être `NotReady` et être considérés comme Prêts. 
+* `maxUnavailablePartitions` à `0`{nbsp}: Empêche le déploiement uniquement lorsque une ou plusieurs partitions sont considérées comme `NotReady`. Cependant, cette vérification est inefficace si toutes les partitions semblent Prêtes en raison de `maxUnavailable: 100%`.
+
+Par exemple, considérez 200 clusters avec les paramètres par défaut{nbsp}:
+
+* {product_name} crée 4 partitions de 50 clusters chacune (`autoPartitionSize: 25%`).
+* Parce que `maxUnavailable` est `100%`, chaque partition est traitée comme `Ready` immédiatement.
+* {product_name} progresse à travers toutes les partitions, indépendamment de leur préparation réelle.
+
+{product_name} vous recommande de contrôler les déploiements en définissant{nbsp}:
+
+* Baissez `maxUnavailable`, par exemple à 10 %.
+* Définissez `maxUnavailablePartitions` à 0 ou plus, si vous le souhaitez.
+
+Cela garantit{nbsp}:
+
+* Les partitions répondent aux critères de préparation avant que le déploiement ne continue.
+* {product_name} suspend le déploiement si trop de partitions ne sont pas prêtes.

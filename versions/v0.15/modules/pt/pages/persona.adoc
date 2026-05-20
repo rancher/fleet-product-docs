@@ -1,0 +1,30 @@
+= Personas-chave e seus papéis
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+[cols="1,2,2", options="header"]
+|===
+|Persona |Responsabilidades |Principais benefícios
+
+|Engenheiros de Plataforma
+a|* Configurar e gerenciar {product_name} a instalação em clusters.
+* Definir e impor implantações de aplicativos e políticas em múltiplos clusters.
+* Gerenciar configurações do GitRepo e `fleet.yaml`.
+* Executar atualizações e rollbacks em todo o cluster.
+a|* Controle centralizado entre clusters.
+* Melhoria na padronização e conformidade.
+
+|Desenvolvedores de Aplicativos
+a|* Estruturar charts Helm ou manifests de aplicativos no Git.
+* Definir alvos de implantação e ambientes em `fleet.yaml`.
+* Monitorar o status da implantação via UI ou CLI.
+a|* Fluxos de trabalho baseados em GitOps.
+* Implantações mais rápidas, automatizadas e consistentes entre ambientes.
+
+|Administradores de Segurança
+a|* Definir e impor políticas de segurança como código.
+* Implantar ferramentas e configurações de segurança.
+* Auditar e gerenciar a postura de segurança entre clusters.
+a|* Redução de riscos e gerenciamento centralizado de conformidade.
+* Configuração de segurança automatizada e consistente.
+|===

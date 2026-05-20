@@ -1,0 +1,225 @@
+= Utiliser des Webhooks au lieu du sondage
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Par défaut, {product_name} utilise le sondage (toutes les 15 secondes par défaut) pour extraire d'un dépôt Git.
+Le sondage fonctionne bien pour les petites installations (jusqu'à quelques dizaines de dépôts).
+
+Pour des déploiements plus importants, configurez des webhooks pour déclencher la réconciliation lorsque de nouveaux commits arrivent. Cela réduit le délai entre un push Git et le traitement du changement par {product_name}.
+
+Lorsque plusieurs commits arrivent rapidement, les contrôleurs {product_name} les traitent via la boucle de réconciliation normale lors de la mise à jour des ressources `GitRepo` correspondantes. Cela aide à éviter les conflits de mise à jour et améliore la fiabilité dans les déploiements à grande échelle.
+
+Pour les installations avec de nombreux dépôts ou lorsque vous souhaitez réduire la latence (le temps entre un push Git et la réaction de {product_name}), configurez **webhooks** au lieu du sondage.
+
+{product_name} prend actuellement en charge ces fournisseurs{nbsp}:
+
+* Azure DevOps
+* GitHub
+* GitLab
+* Bitbucket
+* Bitbucket Server
+* Gogs
+
+== 1. Configurer le service Webhook
+
+{product_name} utilise un service `gitjob` pour gérer les requêtes de webhook.
+Créez un Ingress qui pointe vers le service `gitjob`.
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  rules:
+  - host: your.domain.com
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: gitjob
+              port:
+                number: 80
+----
+
+Si vous souhaitez rendre le webhook disponible en utilisant le même nom d'hôte que Rancher ou un autre service, utilisez le YAML suivant.
+Cet exemple utilise le contrôleur Ingress NGINX et expose le webhook à `http://your.domain.com/gitjob`.
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  rules:
+  - host: your.domain.com
+    http:
+      paths:
+        - path: /gitjob(/|$)(.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: gitjob
+              port:
+                number: 80
+----
+
+L'Ingress Nginx sera https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/[retraité], voici un exemple utilisant Traefik{nbsp}:
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: cattle-fleet-system-gitjob-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.priority: '100'
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: your.domain.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: gitjob
+                port:
+                  number: 80
+            path: /gitjob(/|$)(.*)
+            pathType: ImplementationSpecific
+----
+
+[NOTE]
+====
+Utilisez l'annotation `traefik.ingress.kubernetes.io/router.priority: '100'` uniquement lorsque deux ressources Ingress peuvent entrer en conflit. Cette annotation attribue une priorité plus élevée à la route GitJob. Cela dépend de la propriété `pathType`. Lorsque `pathType` est défini sur Préfixe, l'annotation est requise. 
+====
+
+Cette configuration nécessite un middleware pour supprimer le chemin supplémentaire de l'URL, puisque `gitjob` répond directement depuis le chemin racine. Ceci est équivalent à l'annotation `nginx.ingress.kubernetes.io/rewrite-target` dans Nginx{nbsp}:
+
+[source,yaml]
+----
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: gitjob-stripprefix
+  namespace: cattle-fleet-system
+spec:
+  stripPrefix:
+    prefixes:
+      - /gitjob
+----
+Cette approche permet une migration fluide d'Ingress Nginx vers Traefik tout en maintenant la configuration de l'application inchangée.
+
+[NOTE]
+====
+Vous pouvez configurer https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] sur Ingress pour une communication sécurisée.
+====
+
+== 2. Configurez l'URL de rappel du Webhook.
+
+Allez sur votre fournisseur Git et configurez l'URL de rappel du webhook.
+L'image suivante montre un exemple de GitHub.
+
+image:: ../../images/webhook.png[]
+
+La configuration d'un secret est optionnelle.
+Le secret est utilisé pour valider la charge utile du webhook puisque la charge utile ne doit pas être considérée comme fiable par défaut.
+
+Si votre point de terminaison de webhook est accessible publiquement, il est fortement recommandé de configurer un secret.
+Si vous configurez un secret, continuez avec l'étape 3.
+
+[NOTE]
+====
+Seul `application/json` est pris en charge en raison des limitations de la bibliothèque de webhook.
+====
+
+[CAUTION]
+====
+Lorsqu'un webhook est configuré, l'intervalle de sondage s'ajuste automatiquement à une heure.
+====
+
+== 3. (Optionnel) Configurez un secret de Webhook.
+
+Le secret du webhook valide la charge utile envoyée par votre fournisseur Git.
+Chaque fournisseur pris en charge utilise un nom de clé spécifique dans le secret Kubernetes.
+
+[cols="1,1", options="header"]
+|===
+| Provider | Clé secrète Kubernetes
+| GitHub | `github`
+| GitLab | `gitlab`
+| Bitbucket | `bitbucket`
+| Bitbucket Server | `bitbucket-server`
+| Gogs | `gogs`
+| Azure DevOps | `azure-username`
+| Azure DevOps | `azure-password`
+|===
+
+=== Option 1 : Configurer un secret à l'échelle du cluster
+
+Dans cette approche, le secret s'applique à l'ensemble du cluster, et tous les GitRepos l'utilisent automatiquement.
+Vous n'avez pas besoin de le référencer dans les définitions individuelles de GitRepo.
+
+Lorsqu'un payload est reçu, {product_name} vérifie si le secret existe (`gitjob-webhook` dans l'espace de noms `cattle-fleet-system`) et utilise la clé appropriée pour la validation.
+
+Pour GitHub{nbsp}:
+
+[source,bash]
+----
+kubectl create secret generic gitjob-webhook \
+  -n cattle-fleet-system \
+  --from-literal=github=webhooksecretvalue
+----
+
+Pour Azure DevOps{nbsp}:
+
+1. Activez l'authentification de base dans Azure.
+2. Créez un secret contenant les identifiants.
+
+[source,bash]
+----
+kubectl create secret generic gitjob-webhook \
+  -n cattle-fleet-system \
+  --from-literal=azure-username=user \
+  --from-literal=azure-password=pass123
+----
+
+[[option-2-configure-secret]]
+=== Option 2 : Configurer un secret par GitRepo
+
+Vous pouvez définir un secret de webhook unique pour chaque GitRepo.
+Créez le secret dans le même espace de noms que le GitRepo, et référez-vous à lui en utilisant le champ `webhookSecret` dans la spécification.
+
+Exemple :
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: simple
+  namespace: fleet-local
+spec:
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+    - simple
+  disablePolling: true
+  webhookSecret: webhook-secret-name
+----
+
+Si un secret à l'échelle du cluster et un secret par GitRepo existent, {product_name} utilise le secret par GitRepo.
+
+== 4. Tester le Webhook
+
+Allez sur votre fournisseur Git et testez la connexion du webhook. Vous devriez recevoir un code de réponse HTTP confirmant la livraison du webhook.

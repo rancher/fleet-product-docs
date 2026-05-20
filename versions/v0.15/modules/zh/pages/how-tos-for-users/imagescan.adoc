@@ -1,0 +1,133 @@
+= 使用图像扫描更新容器镜像引用
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Fleet 中的图像扫描允许您扫描图像储存库，获取所需的镜像并更新您的 git 储存库，而无需手动更新清单。
+
+[CAUTION]
+====
+
+此功能被视为实验性功能。
+默认情况下处于禁用状态。
+
+有关如何启用它的更多信息 xref:how-tos-for-operators/installation.adoc#enabling-imagescan[here]。
+====
+
+
+前往`fleet.yaml`并添加以下部分。
+
+[,yaml]
+----
+imageScans:
+# specify the policy to retrieve images, can be semver or alphabetical order
+- policy:
+    # if range is specified, it will take the latest image according to semver order in the range
+    # for more details on how to use semver, see https://github.com/Masterminds/semver
+    semver:
+      range: "*"
+    # can use ascending or descending order
+    alphabetical:
+      order: asc
+
+  # specify images to scan
+  image: "your.registry.com/repo/image"
+
+  # Specify the tag name, it has to be unique in the same bundle
+  tagName: test-scan
+
+  # specify secret to pull image if in private registry
+  secretRef:
+    name: dockerhub-secret
+
+  # Specify the scan interval
+  interval: 5m
+----
+
+[IMPORTANT]
+====
+
+您可以在 fleet.yaml 中创建多个图像扫描。
+====
+
+
+[NOTE]
+====
+
+Semver 将忽略预发布版本（例如，0.0.1-10），除非在范围定义中明确使用预发布版本。
+例如，"*" 范围将忽略预发布版本，而 ">= 0.0.1-10" 将考虑它们。
+====
+
+
+前往您的清单文件并更新您想要替换的字段。例如：
+
+[,yaml]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      containers:
+      - name: slave
+        image: <image>:<tag> # {"$imagescan": "test-scan"}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+----
+
+[NOTE]
+====
+
+您可以引用多种形式的 tagName。例如，
+
+`{"$imagescan": "test-scan"}`：使用完整的图像名称（foo/bar:tag）
+
+`{"$imagescan": "test-scan:name"}`：仅使用不带标签的图像名称（foo/bar）
+
+`{"$imagescan": "test-scan:tag"}`：仅使用图像标签
+
+`{"$imagescan": "test-scan:digest"}`：使用带有摘要的完整图像名称（foo/bar:tag@sha256...）
+====
+
+
+创建一个包含您的 fleet.yaml 的 GitRepo
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: my-repo
+  namespace: fleet-local
+spec:
+  # change this to be your own repo
+  repo: https://github.com/rancher/fleet-examples
+  # define how long it will sync all the images and decide to apply change
+  imageScanInterval: 5m
+  # user must properly provide a secret that have write access to git repository
+  clientSecretName: secret
+  # specify the commit pattern
+  imageScanCommit:
+    authorName: foo
+    authorEmail: foo@bar.com
+    messageTemplate: "update image"
+----
+
+尝试推送一个新的图像标签，例如 `<image>:<new-tag>`。等待一段时间，您的 git 储存库中应该会有一个新的提交，以更改 deployment.yaml 中的标签。
+一旦对 git 储存库进行了更改，Fleet 将读取更改并将其部署到您的集群中。

@@ -1,0 +1,166 @@
+= Detecção de Erro de Ajuste Fino
+:revdate: 2025-09-12
+:page-revdate: {revdate}
+
+{product_name} monitora o campo `status` de recursos implantados para determinar se um `Bundle` está saudável ou com erro. Em certos casos, {product_name} pode interpretar uma condição no campo de status como um erro, mesmo que seja esperado ou inofensivo.
+
+Você pode ajustar esse comportamento de duas maneiras:
+
+* Ignorar condições em `fleet.yaml`
+* Personalizar mapeamentos de erro com variáveis de ambiente
+
+image::fine-tune-error-flow.svg[Um fluxo visual de detecções de erro de ajuste fino]
+
+NOTA:  +
+Você raramente deve precisar configurar a detecção de prontidão em {product_name} com variáveis de ambiente. Se precisar, abra uma issue ou envie um pull request para ajudar a melhorar a detecção de prontidão padrão.
+
+== Ignorar condições em `fleet.yaml`
+
+Use a configuração `ignore.conditions` no arquivo `fleet.yaml` para informar ao {product_name} para ignorar condições específicas.
+
+[source,yaml]
+----
+# from ref-fleet-yaml
+
+# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# some conditions in Custom Resources makes the Bundle to be in an error state
+# when it shouldn't.
+ignore:
+
+  # Conditions to be ignored
+  conditions:
+
+    # In this example a condition will be ignored if it contains
+    # {"type": "Active", "status", "False"}
+    - type: Active
+      status: "False"
+----
+
+Esse método é útil quando um recurso ou controlador personalizado define condições que fazem com que {product_name} marque um Bundle como falhado, mesmo que o recurso esteja saudável.
+
+image::fine-tune-error-ingore.svg[Um fluxo visual de condições ignoradas durante a detecção de erro de ajuste fino]
+
+== Configure o mapeamento de erro com variáveis de ambiente
+
+Em {product_name} **v0.13**, a detecção de erro foi aprimorada para lhe dar mais controle. Você pode usar a variável de ambiente `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` para personalizar como as condições de recursos são interpretadas.
+
+Essa variável permite que você defina, por `Group`, `Version`, `Kind` (GVK), quais valores de condição devem ser tratados como erros ou explicitamente não tratados como erros.
+
+Defina essa variável na implantação do seu gráfico Helm do Fleet (`values.yaml`) usando `extraEnv`. O valor deve ser JSON.
+
+[source,yaml]
+----
+# Extra environment variables passed to the fleet pods.
+# extraEnv:
+# - name: OCI_STORAGE
+#   value: "false"
+----
+
+NOTA:  +
+Essa configuração é global para todos os controladores do Fleet e se aplica a cada `GitRepo`. Se você precisar ajustar o tratamento de erros apenas para um Bundle específico, use a opção `ignoreConditions` em `fleet.yaml` em vez disso.
+
+=== Comportamento de mesclagem
+
+Quando você substitui mapeamentos com `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING`:
+
+* Novas condições são mescladas com condições predefinidas.
+* Os valores das condições são substituídos para qualquer condição que você redefinir.
+
+Por exemplo, considere o mapeamento padrão: 
+
+`HelmChart.Failed=["True"]`
+
+Isso significa que `Failed=True` é tratado como um erro.
+
+Quando você substitui com:
+
+* `HelmChart.Failed=["False"]`
+* `HelmChart.Ready=["False"]`
+
+Isso resulta em:
+
+* `Failed=["False"]` substitui o mapeamento padrão. Isso significa que **`Failed=False`** agora é tratado como um erro.
+* `Ready=["False"]` é adicionado, então **`Ready=False`** também é tratado como um erro.
+* Outras condições inalteradas.
+
+=== Exemplo de desativação da interpretação de erros
+
+Suponha que cada valor de `Failed` foi anteriormente interpretado como um erro, por exemplo:
+
+[source,json]
+----
+{ "type": "Failed", "status": ["True", "False"] }
+----
+
+Você pode restringir esse mapeamento para tratar apenas `Failed=True` como um erro definindo:
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] } 
+    ]
+  }
+]
+----
+
+Essa configuração significa que apenas **`Failed=True`** é tratado como um erro. `Failed=False` não é mais considerado um erro.
+
+Você também pode desativar erros para qualquer valor de `Failed` fazendo:
+
+[source,json]
+----
+{ "type": "Failed", "status": [""] } 
+----
+
+Essa configuração garante que **nenhum valor de `Failed`** é tratado como um erro.
+
+NOTA:  +
+Substituir condições afeta apenas os mapeamentos de erro padrão (consulte xref:default-error-mappings[Mapeamentos de erro padrão]). {product_name} ainda pode marcar um recurso como um erro porque outras verificações, como aquelas da biblioteca `kstatus`, continuam a ser executadas após sua personalização.
+
+=== Habilitar exemplo de interpretação de erro
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] }
+    ]
+  }
+]
+----
+
+Aqui, `Failed=True` é tratado como um erro.
+
+[[default-error-mappings]]
+== Mapeamentos de erro padrão 
+
+{product_name} adiciona mapeamentos de erro padrão para interpretar certas condições de recurso no campo `status` como erros. Esses mapeamentos são aplicados além de outras verificações de prontidão, como aquelas realizadas pela biblioteca `kstatus` do Kubernetes.
+
+Os seguintes mapeamentos padrão se aplicam:
+
+* **HelmChart** (`helm.cattle.io/v1`)
+  * `JobCreated`: Nem `True` nem `False` são considerados um erro.
+  * `Failed`: `True` é considerado um erro.
+* **Nó** (`v1`)
+  * `OutOfDisk`: `True` é considerado um erro.
+  * `MemoryPressure`: `True` é considerado um erro.
+  * `DiskPressure`: `True` é considerado um erro.
+  * `NetworkUnavailable`: `True` é considerado um erro.
+* **Implantação** (`apps/v1`)
+  * `ReplicaFailure`: `True` é considerado um erro.
+  * `Progressing`: `False` é considerado um erro.
+* **ReplicaSet** (`apps/v1`)
+  * `ReplicaFailure`: `True` é considerado um erro.
+
+=== Mapeamento de fallback
+
+Se um recurso não corresponder aos GVKs listados, {product_name} aplica um mapeamento de fallback:
+
+* Qualquer `Group` e `Version` de qualquer tipo
+  * `Stalled`: `True` é considerado um erro.
+  * `Failed`: `True` é considerado um erro.

@@ -1,0 +1,190 @@
+= Mapping zu Downstream-Clustern
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} in Rancher] ermöglicht es Benutzern, Cluster so zu verwalten, als ob es sich um einen einzigen Cluster handelt. Benutzer können Bundles bereitstellen, die aus Bereitstellungsmanifesten oder anderen Kubernetes-Ressourcen bestehen können, und diese über Cluster hinweg mithilfe der Gruppierungskonfiguration bereitstellen.
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} in Rancher] ermöglicht es Benutzern, Cluster so zu verwalten, als ob es sich um einen einzigen Cluster handelt. Benutzer können Bundles bereitstellen, die aus Bereitstellungsmanifesten oder anderen Kubernetes-Ressourcen bestehen können, und diese über Cluster hinweg mithilfe der Gruppierungskonfiguration bereitstellen.
+endif::[]
+[IMPORTANT]
+====
+
+*Nur für Multi-Cluster*:
+Dieser Ansatz gilt nur, wenn Sie {product_name} im Multi-Cluster-Stil ausführen. Wenn keine Ziele angegeben sind, d.h. bei Verwendung eines Einzelclusters, zielen die Bundles auf die Standard-Clustergruppe ab.
+====
+
+
+Beim Bereitstellen von `GitRepos` an Downstream-Clustern müssen die Cluster einem Ziel zugeordnet werden.
+
+== Ziele definieren
+
+Die Bereitstellungsziele von `GitRepo` werden mit dem `spec.targets`-Feld festgelegt, um Cluster oder Clustergruppen abzugleichen. Die YAML-Spezifikation ist wie folgt.
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: myrepo
+  namespace: clusters
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - simple
+
+  # Targets are evaluated in order and the first one to match is used. If
+  # no targets match then the evaluated cluster will not be deployed to.
+  targets:
+  # The name of target. This value is largely for display and logging.
+  # If not specified a default name of the format "target000" will be used
+  - name: prod
+    # A selector used to match clusters.  The structure is the standard
+    # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
+    # clusterSelector will be used only to further refine the selection after
+    # clusterGroupSelector and clusterGroup is evaluated.
+    clusterSelector:
+      matchLabels:
+        env: prod
+    # A selector used to match cluster groups.
+    clusterGroupSelector:
+      matchLabels:
+        region: us-east
+    # A specific clusterGroup by name that will be selected
+    clusterGroup: group1
+    # A specific cluster by name that will be selected
+    clusterName: cluster1
+----
+
+== Zielabgleich
+
+Alle Cluster und Clustergruppen im selben Namespace wie das `GitRepo` werden gegen alle Ziele bewertet.
+Wenn eines der Ziele mit dem Cluster übereinstimmt, wird das `GitRepo` im Downstream-Cluster bereitgestellt. Wenn keine Übereinstimmung erfolgt, wird das `GitRepo` nicht in diesem Cluster bereitgestellt.
+
+Es gibt drei Ansätze zum Abgleichen von Clustern.
+Man kann Cluster-Selektoren, Clustergruppen-Selektoren oder einen expliziten Namen der Clustergruppe verwenden.  Alle Kriterien sind additiv, sodass die endgültige Übereinstimmung als "clusterSelector && clusterGroupSelector && clusterGroup" bewertet wird.  Wenn einer der drei den Standardwert hat, wird er aus den Kriterien entfernt.  Der Standardwert ist entweder null oder "".  Es ist wichtig zu erkennen, dass der Wert `{}` für einen Selektor "alles abgleichen" bedeutet.
+
+[,yaml]
+----
+targets:
+  # Match everything
+  - clusterSelector: {}
+  # Selector ignored
+  - clusterSelector: null
+----
+
+Sie können Cluster auch nach Namen abgleichen:
+
+[,yaml]
+----
+targets:
+  - clusterName: fleetname
+----
+
+Wenn Sie {product_name} in Rancher verwenden, stellen Sie sicher, dass Sie den Namen der `clusters.fleet.cattle.io` Ressource angeben.
+
+== Standardziel
+
+Wenn kein Ziel für das `GitRepo` festgelegt ist, wird der Standardwert für Ziele angewendet.  Der Standardwert für Ziele ist wie folgt.
+
+[,yaml]
+----
+targets:
+- name: default
+  clusterGroup: default
+----
+
+Das bedeutet, wenn Sie einen Standardstandort einrichten möchten, zu dem nicht konfigurierte GitRepos gehen, erstellen Sie einfach eine Clustergruppe namens default und fügen Sie Cluster hinzu.
+
+== Anpassung pro Cluster
+
+[IMPORTANT]
+====
+
+Das `targets:` in der `GitRepo` Ressource wählt Cluster aus, auf denen bereitgestellt werden soll. Das `targetCustomizations:` in `fleet.yaml` überschreibt nur die Helm-Werte und ändert nicht das Targeting.
+====
+
+
+Um zu demonstrieren, wie man Kubernetes-Manifeste über verschiedene Cluster mit Anpassungen unter Verwendung von {product_name} bereitstellt, verwenden wir https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
+
+*Situation:* Der Benutzer hat drei Cluster mit drei verschiedenen Labels: `env=dev`, `env=test` und `env=prod`. Der Benutzer möchte eine Frontend-Anwendung mit einer Backend-Datenbank über diese Cluster bereitstellen.
+
+*Erwartetes Verhalten:*
+
+* Nach der Bereitstellung im `dev` Cluster ist die Datenbankreplikation nicht aktiviert.
+* Nach der Bereitstellung im `test` Cluster ist die Datenbankreplikation aktiviert.
+* Nach der Bereitstellung im `prod` Cluster ist die Datenbankreplikation aktiviert und Load-Balancer-Services sind verfügbar.
+
+*Vorteil von {product_name}:*
+
+Anstatt die App in jedem Cluster bereitzustellen, ermöglicht {product_name} das Bereitstellen über alle Cluster, indem Sie diese Schritte befolgen:
+
+. Stellen Sie gitRepo `https://github.com/rancher/fleet-examples.git` bereit und geben Sie den Pfad `multi-cluster/helm` an.
+. Unter `multi-cluster/helm` wird ein Helm-Chart den Frontend-App-Service und den Backend-Datenbankdienst bereitstellen.
+. Die folgende Regel wird in `fleet.yaml` definiert:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
+
+*Ergebnis:*
+
+{product_name} wird das Helm-Chart mit Ihrem angepassten `values.yaml` in die verschiedenen Cluster bereitstellen.
+
+
+[NOTE]
+====
+Das Konfigurationsmanagement beschränkt sich nicht nur auf Implementierungen, sondern kann auf das allgemeine Konfigurationsmanagement ausgeweitet werden. {product_name} ist in der Lage, das Konfigurationsmanagement durch Anpassung automatisch auf beliebige Cluster anzuwenden.
+====
+
+=== Einschränkungen beim Überschreiben von Helm-Chart-Einstellungen mit `targetCustomizations`
+
+Obwohl `helm.chart`, `helm.repo` und `helm.version` in `targetCustomizations` angegeben werden können, gibt es wichtige Einschränkungen beim Überschreiben dieser Felder.
+
+{product_name} ruft das Helm-Chart während der initialen **Bundle-Erstellungsphase** unter Verwendung der obersten `helm`-Konfiguration ab. Dieser Abruf wird von der Fleet-Toolchain (`GitJob`) durchgeführt, bevor `targetCustomizations` verarbeitet werden.
+
+Da das Chart in dieser Phase heruntergeladen wird, kann `targetCustomizations` nicht verwendet werden, um dynamisch ein anderes Chart abzurufen:
+
+* einem lokalen Verzeichnis
+* einem anderen Helm-Repository
+* einer separaten OCI-Registry (zum Beispiel einem hinter einer Firewall)
+
+Wenn Sie versuchen, diese Felder zu überschreiben, kann die Überschreibung während des Chart-Abrufs ignoriert werden. In einigen Fällen kann Fleet versuchen, mehrere Chart-Versionen im selben Bundle einzuschließen, was die Bundle-Größe erheblich erhöhen und die etcd-Größenlimits überschreiten kann.
+
+Wenn verschiedene Umgebungen unterschiedliche Charts oder Registries benötigen, verwenden Sie einen der folgenden Ansätze:
+
+* Definieren Sie separate `fleet.yaml` Dateien für jede Chart-Konfiguration.
+* Erstellen Sie separate `GitRepo` Ressourcen für jede Umgebung.
+
+
+== Zusätzliche Beispiele
+
+Beispiele mit rohem Kubernetes YAML, Helm-Charts, Kustomize und Kombinationen der drei befinden sich im https://github.com/rancher/fleet-examples/[{product_name} Examples-Repository].

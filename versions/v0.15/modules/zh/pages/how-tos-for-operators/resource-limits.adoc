@@ -1,0 +1,118 @@
+:doctype: book
+
+= 资源限制
+:revdate: 2026-02-25
+:page-revdate: {revdate}
+
+{product_name} 支持在两个地方配置 CPU 和内存资源请求和限制：
+
+* *管理集群控制器*：通过 Helm 图表的 `resources` 字段进行配置，如本页所述。
+* *下游集群代理*：通过 `agentResources` 资源上的 `Cluster` 字段逐集群配置。
+
+[NOTE]
+====
+在 Rancher 中运行 {product_name} 时，使用 `rancher-config` ConfigMap 传递 Helm 值，而不是直接使用 Helm。
+本页所述的 `resources` 字段仍然适用。在 ConfigMap 中指定嵌套在 `fleet` 键下的字段。
+
+有关更多信息，请参阅 xref:reference/ref-configuration.adoc[配置]。
+====
+
+== 默认资源
+
+使用顶级 `resources` 字段为所有控制器容器设置默认值：
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 8000m
+    memory: 8Gi
+  requests:
+    cpu: 250m
+    memory: 768Mi
+----
+
+在安装或升级时将其传递给 Helm：
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  --set resources.limits.cpu=8000m \
+  --set resources.limits.memory=8Gi \
+  --set resources.requests.cpu=250m \
+  --set resources.requests.memory=768Mi
+----
+
+== 每组件覆盖
+
+单个控制器容器可以使用特定于组件的设置覆盖默认值。
+支持的组件键包括：
+
+* `fleetController` : 主要的 Fleet 控制器
+* `fleetCleanup` : 清理控制器
+* `fleetAgentmanagement` : 代理管理控制器
+* `gitjob` : GitJob 控制器
+* `helmops` : HelmOps 控制器
+
+如果存在组件键，则其值优先于默认值 `resources.limits` 和 `resources.requests`。
+
+要去除容器的资源限制，无论默认设置如何，请将组件设置为空对象 `{}`。
+
+示例 `values.yaml` 使用每个组件的覆盖：
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  fleetController:
+    limits:
+      cpu: 8000m
+      memory: 8Gi
+    requests:
+      cpu: 250m
+      memory: 768Mi
+  gitjob: {}         # no resource constraints for gitjob
+  helmops: {}        # no resource constraints for helmops
+----
+
+在此示例中：
+
+* `fleetController` 使用其自己的限制和请求。
+* `gitjob` 和 `helmops` 没有应用资源限制。
+* `fleetCleanup` 和 `fleetAgentmanagement` 回退到顶层默认值。
+
+使用 Helm 应用配置：
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  -f values.yaml
+----
+
+== 下游集群代理资源
+
+要为在特定下游集群上运行的 Fleet agent 配置资源限制和请求，请在相应的 `Cluster` 资源上设置 `agentResources`：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: fleet-default
+spec:
+  agentResources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+----
+
+这与上述管理集群控制器设置无关，仅适用于部署在该下游集群上的代理。

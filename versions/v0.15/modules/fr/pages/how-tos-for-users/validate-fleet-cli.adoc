@@ -1,0 +1,67 @@
+= Valider le déploiement de Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+Après avoir appliqué un bundle à l'aide de Fleet CLI, vous pouvez valider le déploiement en inspectant le `Bundle` et son `BundleDeployments` associé.
+
+Chaque cluster géré par {product_name} liste{nbsp}:
+
+* Quels bundles y sont déployés.
+* Leur statut de préparation.
+* Les erreurs ou problèmes de synchronisation éventuels.
+
+Pour valider si votre `fleet apply` a créé un bundle et s'il a été déployé sur le bon nombre de cibles, exécutez{nbsp}:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -A
+----
+
+image::validate-deployment-ss.png[Une capture d'écran montrant la validation du déploiement de Fleet]
+
+Vous verrez les champs suivants{nbsp}:
+
+* `BUNDLEDEPLOYMENTS-READY` — Indique combien de cibles sont prêtes sur le total.
+* `STATUS` — Peut afficher *Prêt*, *Modifié*, ou d'autres conditions en fonction du déploiement.
+
+[NOTE]
+====
+Si `BUNDLEDEPLOYMENTS-READY` affiche `1/1`, le bundle est déployé avec succès sur un cluster.
+====
+
+Pour obtenir une vue détaillée de la façon dont le bundle a été rendu et appliqué, exécutez{nbsp}:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -n fleet-local my-nginx-bundle -o yaml
+----
+
+Recherchez les champs suivants dans la section `status`{nbsp}:
+
+[source,yaml]
+----
+status:
+  display:
+    readyClusters: 1/1
+  summary:
+    desiredReady: 1
+    ready: 1
+  conditions:
+    type: Ready
+    status: "True"
+----
+
+Cela indique que{nbsp}:
+
+* Le bundle a été programmé pour un cluster.
+* Le cluster cible a accusé réception et appliqué les ressources.
+* Le contrôleur a marqué le déploiement comme prêt.
+
+Vous pouvez également vérifier l'objet `BundleDeployment` correspondant, car chaque `BundleDeployment` correspond à un cluster cible{nbsp}:
+
+[source,bash]
+----
+kubectl get bundledeployments.fleet.cattle.io -A
+----
+
+Pour plus d'informations, voir xref:reference/ref-status-fields.adoc[Champs de statut].

@@ -1,0 +1,225 @@
+= 使用 Webhooks 而不是轮询
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+默认情况下，{product_name} 使用轮询（默认每 15 秒）从 Git 储存库中拉取数据。
+轮询适用于小型安装（最多几十个储存库）。
+
+对于较大的部署，配置 Webhooks 以在新提交到达时触发协调。这减少了 Git 推送与 {product_name} 处理更改之间的延迟。
+
+当多个提交快速到达时，{product_name} 控制器通过正常的协调循环处理它们，同时更新相应的 `GitRepo` 资源。这有助于避免更新冲突，并提高大规模部署的可靠性。
+
+对于拥有多个储存库的安装，或者当您想减少延迟（Git 推送与 {product_name} 响应之间的时间）时，配置 **webhooks** 而不是轮询。
+
+{product_name} 当前支持以下提供商：
+
+* Azure DevOps
+* GitHub
+* GitLab
+* Bitbucket
+* Bitbucket Server
+* Gogs
+
+== 1.配置 Webhook 服务
+
+{product_name} 使用 `gitjob` 服务来处理 Webhook 请求。
+创建一个指向 `gitjob` 服务的 Ingress。
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  rules:
+  - host: your.domain.com
+    http:
+      paths:
+        - path: /
+          pathType: Prefix
+          backend:
+            service:
+              name: gitjob
+              port:
+                number: 80
+----
+
+如果您希望使用与 Rancher 或其他服务相同的主机名来提供 Webhook，请使用以下 YAML。
+此示例使用 NGINX Ingress Controller，并在 `http://your.domain.com/gitjob` 处公开 Webhook。
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    nginx.ingress.kubernetes.io/use-regex: "true"
+    nginx.ingress.kubernetes.io/rewrite-target: /$2
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  rules:
+  - host: your.domain.com
+    http:
+      paths:
+        - path: /gitjob(/|$)(.*)
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: gitjob
+              port:
+                number: 80
+----
+
+Ingress Nginx 将被 https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/[退役]，以下是使用 Traefik 的示例：
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: cattle-fleet-system-gitjob-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.priority: '100'
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: your.domain.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: gitjob
+                port:
+                  number: 80
+            path: /gitjob(/|$)(.*)
+            pathType: ImplementationSpecific
+----
+
+[NOTE]
+====
+仅在两个 Ingress 资源可能发生冲突时使用注释 `traefik.ingress.kubernetes.io/router.priority: '100'`。此注释为 GitJob 路由分配了更高的优先级。这取决于 `pathType` 属性。当 `pathType` 设置为前缀时，注释是必需的。
+====
+
+此配置需要一个中间件来从 URL 中剥离额外的路径，因为 `gitjob` 直接从根路径响应。这相当于 Nginx 中的 `nginx.ingress.kubernetes.io/rewrite-target` 注释：
+
+[source,yaml]
+----
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: gitjob-stripprefix
+  namespace: cattle-fleet-system
+spec:
+  stripPrefix:
+    prefixes:
+      - /gitjob
+----
+这种方法允许从 Ingress Nginx 平滑迁移到 Traefik，同时保持应用程序配置不变。
+
+[NOTE]
+====
+您可以在 Ingress 上配置 https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] 以实现安全通信。
+====
+
+== 2.配置 Webhook 回调 URL
+
+前往您的 Git 提供商并配置 Webhook 回调 URL。
+以下图像显示了来自 GitHub 的示例。
+
+image:: ../../images/webhook.png[]
+
+配置密钥是可选的。
+密钥用于验证 Webhook 负载，因为负载默认情况下不应被信任。
+
+如果您的 Webhook 端点是公开可访问的，强烈建议配置一个密钥。
+如果您设置了密钥，请继续进行第 3 步。
+
+[NOTE]
+====
+由于 Webhook 库的限制，仅支持 `application/json`。
+====
+
+[CAUTION]
+====
+当配置 Webhook 时，轮询间隔会自动调整为一小时。
+====
+
+== 3.（可选）配置 Webhook 密钥
+
+Webhook 密钥验证从您的 Git 提供商发送的负载。
+每个支持的提供商在 Kubernetes 密钥中使用特定的键名。
+
+[cols="1,1", options="header"]
+|===
+| 提供器 | Kubernetes 密钥
+| GitHub | `github`
+| GitLab | `gitlab`
+| Bitbucket | `bitbucket`
+| Bitbucket Server | `bitbucket-server`
+| Gogs | `gogs`
+| Azure DevOps | `azure-username`
+| Azure DevOps | `azure-password`
+|===
+
+=== 选项 1：配置集群范围的密钥
+
+在这种方法中，密钥适用于整个集群，所有 GitRepo 自动使用它。
+您无需在单个 GitRepo 定义中引用它。
+
+当接收到有效负载时，{product_name} 检查密钥是否存在（在 `cattle-fleet-system` 名称空间中的 `gitjob-webhook`），并使用适当的密钥进行验证。
+
+对于 GitHub：
+
+[source,bash]
+----
+kubectl create secret generic gitjob-webhook \
+  -n cattle-fleet-system \
+  --from-literal=github=webhooksecretvalue
+----
+
+对于 Azure DevOps：
+
+1. 在 Azure 中启用基本身份验证。
+2. 创建一个包含凭据的密钥。
+
+[source,bash]
+----
+kubectl create secret generic gitjob-webhook \
+  -n cattle-fleet-system \
+  --from-literal=azure-username=user \
+  --from-literal=azure-password=pass123
+----
+
+[[option-2-configure-secret]]
+=== 选项 2：为每个 GitRepo 配置一个密钥
+
+您可以为每个 GitRepo 定义一个唯一的 webhook 密钥。
+在与 GitRepo 相同的名称空间中创建密钥，并在规范中使用 `webhookSecret` 字段引用它。
+
+示例：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: simple
+  namespace: fleet-local
+spec:
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+    - simple
+  disablePolling: true
+  webhookSecret: webhook-secret-name
+----
+
+如果同时存在集群范围的密钥和每个 GitRepo 的密钥，{product_name} 将使用每个 GitRepo 的密钥。
+
+== 4.测试 Webhook
+
+前往您的 Git 提供商并测试 webhook 连接。您应该收到一个 HTTP 响应代码，确认 webhook 的交付。

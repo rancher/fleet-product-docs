@@ -1,0 +1,65 @@
+= Busque Helm Charts em Registros OCI
+:revdate: 2025-09-01
+:page-revdate: {revdate}
+
+{product_name} suporta a recuperação de Helm charts armazenados em registros OCI. Registros OCI são comumente usados para armazenar e distribuir imagens de contêiner. Ao usá-los para Helm charts, você pode aplicar os mesmos métodos de empacotamento, autenticação e distribuição que já utiliza para imagens de contêiner.
+
+Usar registros OCI para Helm charts ajuda você a:
+
+* Armazenar charts ao lado de imagens de contêiner no mesmo registro.
+* Usar a mesma autenticação e controle de acesso que você já aplica às imagens de contêiner.
+* Enviar e recuperar charts usando comandos OCI padrão, facilitando a distribuição entre ambientes.
+* Gerenciar charts em registros projetados para alta disponibilidade e distribuição global.
+
+Para mais informações sobre HelmOps com registro OCI, consulte xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOps].
+
+image::fetch-Helm-from-OCI.svg[Um ativo visual exibindo o fluxo de recuperação de Helm charts de um registro OCI]
+
+Por exemplo, se você gerencia múltiplos clusters com {product_name}, os desenvolvedores podem enviar Helm charts para um registro OCI interno. {product_name} então recupera os charts diretamente do registro e os implanta nos clusters downstream.
+Essa abordagem evita a manutenção de um repositório de charts separado e reutiliza sua infraestrutura de registro existente.
+
+== Helm chart em fleet.yaml
+
+Para recuperar um Helm chart de um registro OCI, faça referência ao chart usando o campo `repo` em um arquivo `fleet.yaml`:
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+----
+
+Você pode usar o campo `version` para referenciar uma versão específica do chart:
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+  version: 0.1.0
+----
+
+{product_name} recupera o chart do registro OCI e o implanta nos clusters alvo.
+
+[NOTE]
+====
+O campo `repo` é a maneira canônica de especificar URLs de registro OCI em um arquivo `fleet.yaml`. É consistente com a forma como os registros OCI são referenciados em recursos HelmOp.
+====
+
+=== Descontinuado: URL OCI em `helm.chart`
+
+Antes dessa mudança, {product_name} esperava que a URL OCI fosse colocada no campo `chart` em vez de `repo`:
+
+[source,yaml]
+----
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"  # <1>
+  version: 0.1.0
+----
+<1> Descontinuado: use `helm.repo` em vez disso.
+
+Este formulário ainda funciona para compatibilidade retroativa, mas está descontinuado e gerará um aviso nos logs de {product_name}. Migre os arquivos `fleet.yaml` existentes para usar `helm.repo` para URLs OCI.
+
+== Usando registros autenticados
+
+Se o registro OCI exigir autenticação, faça referência a um segredo do Kubernetes no recurso GitRepo. {product_name} usa esse segredo para recuperar o chart e implantá-lo nos clusters alvo.
+
+Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml com autenticação].

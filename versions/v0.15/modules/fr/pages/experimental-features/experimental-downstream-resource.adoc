@@ -1,0 +1,55 @@
+= Copie automatique des ressources vers les clusters en aval
+:revdate: 2025-11-04
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Ceci est une fonctionnalité expérimentale.
+====
+
+À partir de la version {product_name} v0.14.0, {product_name} prend en charge la propagation des ressources externes vers les clusters en aval.
+
+Cela simplifie la gestion des dépendances des charts, telles que les valeurs provenant de ressources externes.
+Voir aussi xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
+
+== Fonctionnement
+
+HelmOps prend en charge un nouveau champ `downstreamResources`, qui peut être utilisé pour référencer des ressources par type et nom.
+Ces ressources doivent{nbsp}:
+
+* Être soit des secrets, soit des config maps. Aucun autre `kind` n'est actuellement pris en charge.
+* Exister avant d'être référencées depuis le HelmOp, et vivre dans le même espace de noms que le HelmOp qui les référence.
+
+Exemple :
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+[...] # metadata
+spec:
+  helm:
+    [...] # Helm options
+  downstreamResources:
+    - kind: Secret
+      name: my-secret
+    - kind: ConfigMap
+      name: my-config
+----
+
+Cela indique au contrôleur Fleet de copier ces ressources vers chaque cluster en aval ciblé, avant de déployer la charge de travail (dans ce cas spécifiée par un chart Helm) vers ledit cluster en aval.
+
+Lorsqu'un cluster n'est plus ciblé, l'agent Fleet supprimera également ces ressources du cluster. Elles resteront cependant sur le cluster en amont.
+
+[NOTE]
+====
+Si les ressources référencées par `downstreamResources` doivent rester sur les clusters en aval même après qu'elles ne soient plus ciblées, xref:/reference/ref-bundle.adoc[keepResources] doit être défini sur `true` dans le HelmOp.
+====
+
+== Surveillance
+
+À partir de la version v0.15.0, {product_name} surveille les modifications apportées aux secrets et aux config maps qui sont listés dans `DownstreamResources`. Il vérifie également si un secret ou un config map a été créé après la création du Bundle.
+
+Lorsqu'un secret ou un config map référencé est créé ou mis à jour sur le cluster en amont, Fleet propagera ces modifications vers les clusters en aval et redéploiera la charge de travail.
+
+Cela permet aux déploiements d'utiliser les dernières versions de ces ressources référencées, qui peuvent représenter des configurations, des valeurs Helm, etc.

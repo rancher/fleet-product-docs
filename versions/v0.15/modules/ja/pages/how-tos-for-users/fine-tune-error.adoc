@@ -1,0 +1,166 @@
+= ファインチューニングエラー検出
+:revdate: 2025-09-12
+:page-revdate: {revdate}
+
+{product_name}は、デプロイされたリソースの`status`フィールドを監視し、`Bundle`が正常かエラーかを判断します。特定のケースでは、{product_name}がステータスフィールドの条件をエラーとして解釈することがありますが、それが予期されるものであったり無害であったりする場合もあります。
+
+この動作は2つの方法で調整できます：
+
+* `fleet.yaml`の条件を無視する
+* 環境変数でエラーマッピングをカスタマイズする
+
+image::fine-tune-error-flow.svg[ファインチューニングエラー検出の視覚的フロー]
+
+NOTE: +
+環境変数を使用して{product_name}でレディネス検出を設定する必要はほとんどありません。もし必要であれば、デフォルトのレディネス検出を改善するために、問題を開くかプルリクエストを提出してください。
+
+== `fleet.yaml`の条件を無視する
+
+`fleet.yaml`ファイルの`ignore.conditions`設定を使用して、{product_name}に特定の条件を無視するよう指示します。
+
+[source,yaml]
+----
+# from ref-fleet-yaml
+
+# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# some conditions in Custom Resources makes the Bundle to be in an error state
+# when it shouldn't.
+ignore:
+
+  # Conditions to be ignored
+  conditions:
+
+    # In this example a condition will be ignored if it contains
+    # {"type": "Active", "status", "False"}
+    - type: Active
+      status: "False"
+----
+
+この方法は、カスタムリソースまたはコントローラーが条件を設定し、それによって{product_name}がバンドルを失敗としてマークする場合に役立ちますが、リソースは正常です。
+
+image::fine-tune-error-ingore.svg[ファインチューニングエラー検出中の条件を無視する視覚的フロー]
+
+== 環境変数でエラーマッピングを設定する
+
+{product_name} **v0.13**では、エラー検出が強化され、より多くの制御が可能になりました。環境変数`CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING`を使用して、リソース条件の解釈方法をカスタマイズできます。
+
+この変数を使用すると、`Group`、`Version`、`Kind`（GVK）によって、どの条件値をエラーとして扱うべきか、または明示的にエラーとして扱わないべきかを定義できます。
+
+この変数を、`extraEnv`を使用してFleet Helmチャートデプロイメント（`values.yaml`）に設定します。値はJSONでなければなりません。
+
+[source,yaml]
+----
+# Extra environment variables passed to the fleet pods.
+# extraEnv:
+# - name: OCI_STORAGE
+#   value: "false"
+----
+
+NOTE: +
+この設定はすべてのFleetコントローラーにグローバルであり、すべての`GitRepo`に適用されます。特定のバンドルのエラーハンドリングのみを調整する必要がある場合は、代わりに`fleet.yaml`の`ignoreConditions`オプションを使用してください。
+
+=== マージ動作
+
+マッピングを`CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING`で上書きする場合:
+
+* 新しい条件は、事前定義された条件とマージされます。
+* 条件の値は、再定義した条件に対して置き換えられます。
+
+例えば、デフォルトマッピングを考えてみてください:
+
+`HelmChart.Failed=["True"]`
+
+これは、`Failed=True`がエラーとして扱われることを意味します。
+
+上書きする場合は:
+
+* `HelmChart.Failed=["False"]`
+* `HelmChart.Ready=["False"]`
+
+これにより、次のようになります:
+
+* `Failed=["False"]`がデフォルトマッピングを置き換えます。これは、**`Failed=False`**が現在エラーとして扱われることを意味します。
+* `Ready=["False"]`が追加されるため、**`Ready=False`**もエラーとして扱われます。
+* 他の条件は変更されません。
+
+=== エラー解釈無効化の例
+
+`Failed`のすべての値が以前はエラーとして解釈されていたと仮定します。例えば：
+
+[source,json]
+----
+{ "type": "Failed", "status": ["True", "False"] }
+----
+
+このマッピングを絞り込んで、`Failed=True`のみをエラーとして扱うには、次のように設定します：
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] } 
+    ]
+  }
+]
+----
+
+この設定は、**`Failed=True`**のみがエラーとして扱われることを意味します。`Failed=False`はもはやエラーとは見なされません。
+
+`Failed`の任意の値に対してエラーを無効にすることもできます。
+
+[source,json]
+----
+{ "type": "Failed", "status": [""] } 
+----
+
+この設定は、**no value of `Failed`**がエラーとして扱われることを保証します。
+
+NOTE: +
+条件の上書きは、デフォルトのエラーマッピングにのみ影響します（xref:default-error-mappings[デフォルトエラーマッピング]を参照）。{product_name}は、`kstatus`ライブラリからの他のチェックがカスタマイズ後も実行され続けるため、リソースをエラーとしてマークする可能性があります。
+
+=== エラー解釈有効化の例
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] }
+    ]
+  }
+]
+----
+
+ここでは、`Failed=True`はエラーとして扱われます。
+
+[[default-error-mappings]]
+== デフォルトのエラーマッピング 
+
+{product_name}は、`status`フィールド内の特定のリソース条件をエラーとして解釈するためにデフォルトのエラーマッピングを追加します。これらのマッピングは、Kubernetes `kstatus`ライブラリによって実行されるような他のレディネスチェックの他に適用されます。
+
+以下のデフォルトマッピングが適用されます：
+
+* **HelmChart** (`helm.cattle.io/v1`)
+  * `JobCreated`:`True`も`False`もエラーとは見なされません。
+  * `Failed`: `True`はエラーと見なされます。
+* **Node** (`v1`)
+  * `OutOfDisk`: `True`はエラーと見なされます。
+  * `MemoryPressure`: `True`はエラーと見なされます。
+  * `DiskPressure`: `True`はエラーと見なされます。
+  * `NetworkUnavailable`: `True`はエラーと見なされます。
+* **デプロイメント** (`apps/v1`)
+  * `ReplicaFailure`: `True`はエラーと見なされます。
+  * `Progressing`: `False`はエラーと見なされます。
+* **ReplicaSet** (`apps/v1`)
+  * `ReplicaFailure`: `True`はエラーと見なされます。
+
+=== フォールバックマッピング
+
+リソースがリストされたGVKに一致しない場合、{product_name}はフォールバックマッピングを適用します：
+
+* 任意の種類の`Group`と`Version`
+  * `Stalled`: `True`はエラーと見なされます。
+  * `Failed`: `True`はエラーと見なされます。

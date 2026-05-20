@@ -1,0 +1,454 @@
+= Generando Diffs para Ignorar GitRepos Modificados
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+La entrega continua en Rancher está impulsada por {product_name}. Cuando un usuario añade un CR de GitRepo, la entrega continua crea los paquetes de Fleet asociados.
+
+Puedes acceder a estos paquetes navegando al Explorador de Clústeres (Interfaz de Usuario del Dashboard) y seleccionando la sección `Bundles`.
+
+Los gráficos empaquetados pueden tener algunos objetos que se modifican en tiempo de ejecución, por ejemplo, en ValidatingWebhookConfiguration el `caBundle` está vacío y el certificado CA es inyectado por el clúster.
+
+Esto lleva a que el estado del paquete y del GitRepo asociado se informe como "Modificado"
+
+image::ModifiedGitRepo.png[Estática, 600]
+
+Paquete Asociado
+
+image::ModifiedBundle.png[Estática, 600]
+
+Los paquetes {product_name} soportan la capacidad de especificar un http://jsonpatch.com/[parche jsonPointer] personalizado.
+
+Con el parche, los usuarios pueden instruir a {product_name} para ignorar modificaciones de objetos y objetos enteros.
+
+== Generando comparePatches con `fleet bundlediff`
+
+El comando CLI `fleet bundlediff` lee la información de diferencia ya presente en `Bundle` y `BundleDeployment` campos de estado y la muestra en una forma legible para humanos.
+También puede generar un fragmento `diff:` listo para usar en formato `fleet.yaml` para que puedas aceptar la desviación observada sin construir manualmente las rutas de JSON Patch.
+
+=== Viendo diffs
+
+[source,bash]
+----
+# Show all diffs across all namespaces, grouped by Bundle
+fleet bundlediff
+
+# Show diffs for a specific Bundle
+fleet bundlediff --bundle my-bundle
+
+# Show diffs for a specific BundleDeployment
+fleet bundlediff --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Output in JSON format
+fleet bundlediff --json
+----
+
+La salida de texto por defecto agrupa los resultados por `Bundle` y lista cada recurso modificado o no listo junto con su JSON Merge Patch:
+
+[source,yaml]
+----
+Bundle: my-bundle
+BundleDeployments with diffs: 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  BundleDeployment: cluster-fleet-local-local-abc123/my-bundle-deployment
+  Modified Resources (1):
+    Resource: ConfigMap.v1 default/my-config
+    Status: Modified
+    Patch:
+    {
+      "metadata": {
+        "annotations": {
+          "timestamp": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+----
+
+=== Generando un fragmento `fleet.yaml` `comparePatches`
+
+Usa `--fleet-yaml` junto con `--bundle-deployment` para producir un bloque `diff:` que puedes pegar directamente en tu `fleet.yaml`. El comando convierte el JSON Merge Patch observado en operaciones `remove` y las fusiona con cualquier `comparePatches` ya configurada en el `Bundle`, de modo que los ignores existentes permanecen intactos.
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123
+----
+
+Resultado de ejemplo:
+
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: ConfigMap
+    name: my-config
+    namespace: default
+    operations:
+    - op: remove
+      path: /metadata/annotations/timestamp
+----
+
+Puedes redirigir la salida y añadirla a tu `fleet.yaml` en Git:
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123 >> fleet.yaml
+----
+
+Después de que confirmes y envíes el `fleet.yaml`, {product_name} reconcilia el cambio y el paquete pasa de *Modificado* a *Listo*. El campo en sí no se revierte. {product_name} simplemente deja de informarlo como desviación.
+
+
+[NOTE]
+====
+La bandera `--fleet-yaml` requiere `--bundle-deployment`, porque la salida generada se fusiona con el `comparePatches` existente del `Bundle` asociado.
+====
+
+Consulta xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff] [{product_name} bundlediff] para la referencia completa de la bandera.
+
+== Ignorando modificaciones de objetos
+
+=== Ejemplo Simple
+
+En este ejemplo simple, creamos un Servicio y un ConfigMap sobre los que aplicamos un diff de paquete.
+
+https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
+
+=== Ejemplo de Gatekeeper
+
+En este ejemplo, estamos intentando desplegar opa-gatekeeper utilizando entrega continua en nuestros clústeres.
+
+El paquete opa-gatekeeper asociado con el GitRepo de opa está en estado modificado.
+
+Cada vía en el CR de GitRepo tiene un CR de Bundle asociado. El usuario puede ver los Bundles y el diff asociado necesario en el estado del Bundle.
+
+En nuestro caso, las diferencias detectadas son las siguientes:
+
+[source,yaml]
+----
+  summary:
+    desiredReady: 1
+    modified: 1
+    nonReadyResources:
+    - bundleState: Modified
+      modifiedStatus:
+      - apiVersion: admissionregistration.k8s.io/v1
+        kind: ValidatingWebhookConfiguration
+        name: gatekeeper-validating-webhook-configuration
+        patch: '{"$setElementOrder/webhooks":[{"name":"validation.gatekeeper.sh"},{"name":"check-ignore-label.gatekeeper.sh"}],"webhooks":[{"clientConfig":{"caBundle":"Cg=="},"name":"validation.gatekeeper.sh","rules":[{"apiGroups":["*"],"apiVersions":["*"],"operations":["CREATE","UPDATE"],"resources":["*"]}]},{"clientConfig":{"caBundle":"Cg=="},"name":"check-ignore-label.gatekeeper.sh","rules":[{"apiGroups":[""],"apiVersions":["*"],"operations":["CREATE","UPDATE"],"resources":["namespaces"]}]}]}'
+      - apiVersion: apps/v1
+        kind: Deployment
+        name: gatekeeper-audit
+        namespace: cattle-gatekeeper-system
+        patch: '{"spec":{"template":{"spec":{"$setElementOrder/containers":[{"name":"manager"}],"containers":[{"name":"manager","resources":{"limits":{"cpu":"1000m"}}}],"tolerations":[]}}}}'
+      - apiVersion: apps/v1
+        kind: Deployment
+        name: gatekeeper-controller-manager
+        namespace: cattle-gatekeeper-system
+        patch: '{"spec":{"template":{"spec":{"$setElementOrder/containers":[{"name":"manager"}],"containers":[{"name":"manager","resources":{"limits":{"cpu":"1000m"}}}],"tolerations":[]}}}}'
+----
+
+Basado en este resumen, hay tres objetos que necesitan un parche.
+
+Los veremos uno a la vez.
+
+==== 1. ValidatingWebhookConfiguration:
+
+La configuración del webhook de validación gatekeeper-validating-webhook-configuration tiene dos ValidatingWebhooks en su especificación.
+
+En los casos donde más de un elemento en el campo requiere un parche, ese parche se referirá a ellos como `$setElementOrder/ELEMENTNAME`.
+
+A partir de esta información, podemos ver que los dos ValidatingWebhooks en cuestión son:
+[source,json]
+----
+  "$setElementOrder/webhooks": [
+    {
+      "name": "validation.gatekeeper.sh"
+    },
+    {
+      "name": "check-ignore-label.gatekeeper.sh"
+    }
+  ],
+----
+
+Dentro de cada ValidatingWebhook, los campos que necesitan ser ignorados son los siguientes:
+
+[source,json]
+----
+    {
+      "clientConfig": {
+        "caBundle": "Cg=="
+      },
+      "name": "validation.gatekeeper.sh",
+      "rules": [
+        {
+          "apiGroups": [
+            "*"
+          ],
+          "apiVersions": [
+            "*"
+          ],
+          "operations": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "resources": [
+            "*"
+          ]
+        }
+      ]
+    },
+----
+
+y
+
+[source,json]
+----
+     {
+      "clientConfig": {
+        "caBundle": "Cg=="
+      },
+      "name": "check-ignore-label.gatekeeper.sh",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "apiVersions": [
+            "*"
+          ],
+          "operations": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "resources": [
+            "namespaces"
+          ]
+        }
+      ]
+    }
+----
+
+En resumen, necesitamos ignorar los campos `rules` y `clientConfig.caBundle` en nuestra especificación de parche.
+
+El campo webhook en la especificación de ValidatingWebhookConfiguration es un array, por lo que necesitamos dirigirnos a los elementos por sus valores de índice.
+
+image::WebhookConfigurationSpec.png[Estática, 600]
+
+Basado en esta información, nuestro parche de diferencia se vería como sigue:
+
+[source,yaml]
+----
+  - apiVersion: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    name: gatekeeper-validating-webhook-configuration
+    operations:
+    - {"op": "remove", "path":"/webhooks/0/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/0/rules"}
+    - {"op": "remove", "path":"/webhooks/1/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/1/rules"}
+----
+
+==== 2. Despliegue gatekeeper-controller-manager:
+
+El despliegue gatekeeper-controller-manager se modifica ya que hay límites de CPU y tolerancias aplicadas (que no están en el paquete actual).
+
+[source,json]
+----
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "$setElementOrder/containers": [
+          {
+            "name": "manager"
+          }
+        ],
+        "containers": [
+          {
+            "name": "manager",
+            "resources": {
+              "limits": {
+                "cpu": "1000m"
+              }
+            }
+          }
+        ],
+        "tolerations": []
+      }
+    }
+  }
+}
+----
+
+En este caso, solo hay 1 contenedor en la especificación del contenedor de despliegue, y ese contenedor tiene límites de CPU y tolerancias añadidas.
+
+Basado en esta información, nuestro parche de diferencia se vería como sigue:
+
+[source,yaml]
+----
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-controller-manager
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+----
+
+==== 3. Despliegue gatekeeper-audit:
+
+El despliegue gatekeeper-audit se modifica de manera similar al gatekeeper-controller-manager, con límites de CPU y tolerancias adicionales aplicadas.
+
+[source,json]
+----
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "$setElementOrder/containers": [
+          {
+            "name": "manager"
+          }
+        ],
+        "containers": [
+          {
+            "name": "manager",
+            "resources": {
+              "limits": {
+                "cpu": "1000m"
+              }
+            }
+          }
+        ],
+        "tolerations": []
+      }
+    }
+  }
+}
+----
+
+Similar al gatekeeper-controller-manager, solo hay 1 contenedor en la especificación de los contenedores de los despliegues, y ese tiene límites de CPU y tolerancias añadidas.
+
+Basado en esta información, nuestro parche de diferencia se vería como sigue:
+
+[source,yaml]
+----
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-audit
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+----
+
+==== Sintetizando todo
+
+Ahora podemos combinar todos estos parches de la siguiente manera:
+
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-audit
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-controller-manager
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+  - apiVersion: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    name: gatekeeper-validating-webhook-configuration
+    operations:
+    - {"op": "remove", "path":"/webhooks/0/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/0/rules"}
+    - {"op": "remove", "path":"/webhooks/1/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/1/rules"}
+----
+
+Podemos añadir estos ahora al paquete directamente para probar y también confirmar lo mismo en el `fleet.yaml` en tu GitRepo.
+
+Una vez que se añadan, el GitRepo debería desplegarse y estar en estado "Activo".
+
+== Ignorando objetos enteros
+
+Al instalar un chart como link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul], se crea un trabajo llamado `consul-server-acl-init`, que luego se elimina una vez que se ha completado con éxito.
+
+Ese chart se puede instalar creando un `GitRepo` que apunte a un repositorio Git utilizando un `fleet.yaml` como:
+
+[source,yaml]
+----
+defaultNamespace: consul
+helm:
+  releaseName: test-consul
+  chart: "consul"
+  repo: "https://helm.releases.hashicorp.com"
+
+  values:
+    global:
+      name: consul
+      acls:
+        manageSystemACLs: true
+----
+
+Instalar este chart resultará en que el `GitRepo` informe un estado `Modified`, con el trabajo `consul-server-acl-init` faltante, una vez que ese trabajo se haya completado.
+
+Esto se puede remediar con la siguiente diferencia de paquete en nuestro `fleet.yaml`:
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: consul-server-acl-init
+    operations:
+    - {"op":"ignore"}
+----
+
+En algunos casos, el nombre completo del trabajo puede no ser conocido de antemano, por ejemplo, cuando se genera.
+Además, una carga de trabajo dada puede crear múltiples trabajos en el mismo espacio de nombres, lo que típicamente llevaría a una diferencia de paquete por trabajo.
+
+Para facilitar el manejo de estas situaciones, los trabajos también pueden ser ignorados:
+
+- a través de una expresión regular en sus nombres, en cuyo caso la diferencia anterior podría verse así:
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: 'consul-server.*'
+    operations:
+    - {"op":"ignore"}
+----
+
+- o especificando un campo vacío `name`, o omitiendo ese campo por completo, en cuyo caso todos los trabajos que residan en ese espacio de nombres (en este ejemplo en el espacio de nombres `consul`) serán ignorados.
+
+Más información sobre la sintaxis regex soportada link:https://pkg.go.dev/regexp/syntax[aquí].
+
+== Escalado automático de pods horizontal
+
+Al tratar con Deployments o StatefulSets referenciados por un Escalador Automático de Pods Horizontal, ya no son necesarios los diffs de paquetes para abordar las actualizaciones en los recuentos de réplicas dentro del intervalo configurado del HPA.
+El agente de Fleet filtrará automáticamente estas actualizaciones; como resultado, la ampliación del paquete fuente no será considerada _modificada_.
+
+Sin embargo, si el campo `replicas` de un Deployment o StatefulSet se establece en un valor por encima o por debajo del intervalo tolerado por un HPA que lo referencia, esa modificación seguirá apareciendo en el estado de la ampliación del paquete fuente.
+
+Tanto `autoscaling/v1` como `autoscaling/v2` son compatibles.
+
+Un campo `minReplicas` vacío en un HPA será interpretado como `1`.

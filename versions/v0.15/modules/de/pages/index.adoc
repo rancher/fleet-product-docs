@@ -1,0 +1,16 @@
+= Übersicht
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::fleet-architecture.svg[Static, 600]
+
+[discrete]
+=== Was ist {product_name}?
+
+* *Cluster-Engine*: {product_name} ist eine Containerverwaltungs- und Bereitstellungs-Engine, die darauf ausgelegt ist, den Benutzern mehr Kontrolle über den lokalen Cluster zu bieten und eine ständige Überwachung durch *GitOps* zu ermöglichen. {product_name} konzentriert sich nicht nur auf die Fähigkeit zur Skalierung, sondern gibt den Benutzern auch ein hohes Maß an Kontrolle und Sichtbarkeit, um genau zu überwachen, was im Cluster installiert ist.
+* *Bereitstellungsmanagement*: {product_name} kann Bereitstellungen aus Git von rohen Kubernetes-YAML, Helm-Charts, Kustomize oder einer beliebigen Kombination der drei verwalten. Unabhängig von der Quelle werden alle Ressourcen dynamisch in Helm-Charts umgewandelt, und Helm wird als Engine verwendet, um alle Ressourcen im Cluster bereitzustellen. Infolgedessen können die Benutzer ein hohes Maß an Kontrolle, Konsistenz und Nachvollziehbarkeit ihrer Cluster genießen.
+
+[discrete]
+=== Konfigurationsmanagement
+
+{product_name} ist grundsätzlich eine Reihe von Kubernetes xref:explanations/concepts.adoc[benutzerdefinierte Ressourcenbeschreibungen (CRDs)] und Controllern, die GitOps für einen einzelnen Kubernetes-Cluster oder eine groß angelegte Bereitstellung von Kubernetes-Clustern verwalten. Es handelt sich um ein verteiltes Initialisierungssystem, das die Anpassung von Anwendungen und die Verwaltung von HA-Clustern von einem einzigen Punkt aus vereinfacht.

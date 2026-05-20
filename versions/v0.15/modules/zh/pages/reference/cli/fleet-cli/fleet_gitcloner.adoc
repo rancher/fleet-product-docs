@@ -1,0 +1,27 @@
+= Fleet gitcloner
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+克隆一个 git 储存库
+
+----
+fleet gitcloner [REPO] [PATH] [flags]
+----
+
+== 选项
+
+----
+  -b, --branch string                 git branch
+      --ca-bundle-file string         CA bundle file
+  -h, --help                          help for gitcloner
+      --insecure-skip-tls             do not verify tls certificates
+      --known-hosts-file string       known hosts file
+      --password-file string          password file for basic auth
+      --revision string               git revision
+      --ssh-private-key-file string   ssh private key file path
+  -u, --username string               user name for basic auth
+----
+
+== 另请参阅
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - 管理 {product_name} 操作

@@ -1,0 +1,440 @@
+= Criar um Recurso GitRepo
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+:doctype: book
+
+== Criar Instância GitRepo
+
+Os repositórios Git são registrados criando um recurso `GitRepo` no Kubernetes. Consulte o xref:tutorials/tut-deployment.adoc[tutorial de criação de uma implantação] para exemplos.
+
+xref:explanations/gitrepo-content.adoc[Conteúdos do Repositório Git] contém detalhes sobre o conteúdo do repositório Git.
+
+Os campos disponíveis do recurso personalizado GitRepo estão documentados na xref:reference/ref-gitrepo.adoc[referência do recurso GitRepo]. Adicionando um repositório Git privado
+[NOTE]
+====
+{product_name} não suporta autenticação de servidor proxy SSH ao clonar <<_adding_a_private_git_repository,adicionando-um-repositório-git-privado>> ou <<_using_private_helm_repositories,Usando Repositórios Helm Privados>>
+. Use autenticação HTTPS com um nome de usuário e senha ou um token de acesso pessoal.
+====
+
+
+=== Namespace adequado
+
+Os repositórios Git são adicionados ao gerenciador {product_name} usando o tipo de recurso personalizado `GitRepo`. O tipo `GitRepo` é associado a um namespace. Por padrão, o Rancher criará dois espaços de trabalho {product_name}: 
+
+* `fleet-default` contém todos os clusters downstream que já estão registrados através do Rancher.
+* `fleet-local` conterá o cluster local por padrão.
+
+Se você estiver usando {product_name} em um estilo xref:explanations/concepts.adoc[cluster único], o namespace será sempre *fleet-local*. Verifique xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[registro de cluster] para mais informações sobre o namespace `fleet-local`.
+
+Para um estilo xref:explanations/concepts.adoc[multi-cluster], por favor, certifique-se de usar o repositório correto que será mapeado para os clusters de destino certos.
+
+== Substituir o namespace da carga de trabalho
+
+O campo `targetNamespace` substituirá qualquer namespace no pacote. Se a implantação contiver recursos com escopo de cluster, ela falhará.
+
+Isso tem precedência sobre todas as outras definições de namespace:
+
+`gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
+
+As definições de namespace de carga de trabalho podem ser restritas com `allowedTargetNamespaces` no recurso `GitRepoRestriction`.
+
+== Adicionando um Repositório Git Privado
+
+{product_name} suporta os seguintes mecanismos de autenticação para repositórios privados:
+* Autenticação básica HTTP
+* Chaves de autenticação SSH
+* Aplicativos do Github
+
+Para usar qualquer um deles, você precisa criar um segredo no namespace ++GitRepo's++.
+
+Por exemplo, para gerar uma chave SSH privada:
+
+[source,bash]
+----
+ssh-keygen -t rsa -b 4096 -m pem -C "user@email.com"
+----
+
+
+[NOTE]
+====
+O formato da chave privada deve estar em `EC PRIVATE KEY`, `RSA PRIVATE KEY` ou `PRIVATE KEY` e não deve conter uma passphrase.
+====
+
+Coloque sua chave privada no segredo, use o namespace em que o GitRepo está:
+
+[source,bash]
+----
+kubectl create secret generic ssh-key -n namespace-of-your-gitrepo --from-file=ssh-privatekey=/file/to/private/key  --type=kubernetes.io/ssh-auth
+----
+
+Agora o `clientSecretName` deve ser especificado na definição do repositório:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample-ssh
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "git@github.com:rancher/fleet-examples"
+  # or
+  # repo: "ssh://git@github.com/rancher/fleet-examples"
+  clientSecretName: ssh-key
+  paths:
+  - simple
+----
+
+[CAUTION]
+====
+
+Chave privada com passphrase não é suportada.
+====
+
+
+[CAUTION]
+====
+
+A chave deve estar no formato PEM.
+====
+
+
+=== Hosts conhecidos
+
+{product_name} suporta colocar `known_hosts` no segredo SSH. Aqui está um exemplo de como adicioná-lo:
+
+Recupere o hash da chave pública (pegue o GitHub como exemplo)
+
+[source,bash]
+----
+ssh-keyscan -H github.com
+----
+
+E adicione-o ao segredo:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ssh-key
+type: kubernetes.io/ssh-auth
+stringData:
+  ssh-privatekey: <private-key>
+  known_hosts: |-
+    |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+----
+
+[[strict-host-key-checks]]
+==== Verificações rigorosas de chave de host
+
+O valor do chart `insecureSkipHostKeyChecks` define como o Fleet se comporta em relação a `known_hosts` ao estabelecer conexões SSH.
+
+Quando esse valor é definido como `false`, o Fleet aplicará verificações rigorosas de chave de host, o que significa que falhará ao estabelecer qualquer conexão SSH com hosts para os quais nenhuma entrada correspondente de `known_hosts` puder ser encontrada.
+
+Este é o comportamento padrão a partir da versão 0.13 do Fleet.
+
+As entradas `known_hosts` são priorizadas a partir de segredos referenciados nos recursos `GitRepo`, por exemplo, `helmSecretName` para acessar charts Helm ou `clientSecretName` para clonar repositórios git.
+
+Observe que isso é compatível com o Fleet procurando um segredo `gitcredential` se nenhum segredo for referenciado no `GitRepo`.
+
+Se nenhum desses segredos existir, ou se não houver entradas `known_hosts` disponíveis nesse segredo, o Fleet usará seu próprio mapa de configuração `known-hosts`, criado na instalação com entradas estáticas para os provedores de Git mais amplamente utilizados.
+
+Mais detalhes xref:how-tos-for-operators/installation.adoc#additional-ssh-known-hosts[aqui] sobre de onde vêm as entradas padrão e como preencher entradas adicionais na instalação.
+
+A ausência do mapa de configuração, caso nenhum segredo esteja disponível, é considerada um sintoma de uma implantação incompleta do Fleet e relatada como tal.
+
+O Fleet usa apenas uma única fonte de entradas `known_hosts` por vez. Isso significa que, mesmo que um segredo contenha entradas inválidas (ou insuficientes), o Fleet não procurará entradas válidas no mapa de configuração. Isso se aplica a um segredo referenciado em um `GitRepo`, assim como a um possível segredo `gitcredential`, se nenhum segredo for referenciado no `GitRepo`.
+
+=== Usando Autenticação HTTP
+
+Crie um segredo contendo nome de usuário e senha. Você pode substituir a senha por um token de acesso pessoal, se necessário. Veja também xref:troubleshooting.adoc#_http_secrets_in_github[segredos HTTP no GitHub].
+
+[source,bash]
+----
+kubectl create secret generic basic-auth-secret -n namespace-of-your-gitrepo --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
+----
+
+
+Assim como com SSH, referencie o segredo em seu recurso GitRepo via `clientSecretName`.
+
+
+[source,yaml]
+----
+ spec:
+   repo: https://github.com/fleetrepoci/gitjob-private.git
+   branch: main
+   clientSecretName: basic-auth-secret
+----
+
+[CAUTION]
+====
+Ao usar o BitBucket e tokens de acesso, o nome de usuário deve ser `x-token-auth`.
+====
+
+=== Usando um App do GitHub
+
+Os seguintes campos são necessários para permitir que {product_name} se autentique no GitHub usando um App do GitHub:
+
+[options="header"]
+|===
+| Nome | Nome do campo secreto | Onde encontrá-lo
+
+| ID do app
+| `github_app_id`
+| Na página de configurações do seu aplicativo, sob `App ID` (valor numérico).
+
+| ID de instalação do aplicativo
+| `github_app_installation_id`
+| Na URL da página de instalação do aplicativo. Por exemplo, se você instalou o app em um repositório `foo/bar`, navegue até as configurações desse repositório **configurações → _Integrações_ → _Aplicativos_**, abra a página do app; sua URL será parecida com `https://github.com/settings/installations/<digits>`: esses dígitos são o ID de instalação do seu app.
+
+| chave privada
+| `github_app_private_key`
+| Gerado ao criar o GitHub App, ou na página de configurações do aplicativo, onde um botão `Generate a private key` está disponível.
+|===
+
+Consulte https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app[documentação do GitHub] para mais detalhes sobre como criar um GitHub App.
+
+Com os dados necessários em mãos, crie um segredo contendo esses campos:
+
+[source,bash]
+----
+kubectl -n namespace-of-your-gitrepo create secret generic github-app-secret \
+    --from-literal=github_app_id=<app-id> \
+    --from-literal=github_app_installation_id=<installation-id> \
+    --from-literal=github_app_private_key="<private-key>"
+----
+
+Usar um literal em vez de um arquivo para a chave privada pode ajudar a evitar erros de decodificação PEM no momento da execução.
+Antes de criar o segredo, a chave privada pode ser obtida de um arquivo exportando a variável de ambiente, para evitar que a chave apareça no histórico do shell.
+
+Colocar o valor ou o nome da variável de ambiente (por exemplo `--from-literal=github_app_private_key="$MY_VAR"`) entre aspas duplas garante que o seu conteúdo completo seja considerado, incluindo possíveis quebras de linha.
+
+Certifique-se de referenciar esse segredo em seu recurso GitRepo por meio de `clientSecretName`.
+
+=== Usando Pacotes CA Personalizados
+
+Validar um repositório usando um certificado assinado por uma Autoridade Certificadora personalizada pode ser feito especificando um campo `cabundle` em um `GitRepo`.
+
+[IMPORTANT]
+====
+ifeval::["{product}" == "fleet"]
+Observe que se existirem segredos especificando pacotes CA, por exemplo, se {product_name} estiver instalado com o Rancher (veja as páginas respectivas sobre https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Usando um Certificado Assinado por uma CA Privada] e https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[CA's Adicionais Confiáveis]), {product_name} usará esses pacotes CA se nenhum pacote CA for especificado no `GitRepo`.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Observe que se existirem segredos especificando pacotes CA, por exemplo, se {product_name} estiver instalado com o Rancher (veja as páginas respectivas sobre https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Usando um Certificado Assinado por uma CA Privada] e https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[CA's Adicionais Confiáveis]), {product_name} usará esses pacotes CA se nenhum pacote CA for especificado no `GitRepo`.
+endif::[]
+====
+
+== Usando Repositórios Helm Privados
+
+[CAUTION]
+====
+As credenciais serão usadas incondicionalmente para todos os repositórios Helm referenciados pelo recurso GitRepo.
+Certifique-se de não vazar credenciais misturando repositórios públicos e privados. Use <<Use different helm credentials for each path,credenciais Helm diferentes para cada caminho>>, ou divida-os em diferentes repositórios Git, ou use `helmRepoURLRegex` para limitar o escopo das credenciais a determinados servidores.
+====
+
+
+Para um repositório Helm privado, os usuários podem referenciar um segredo com as seguintes chaves:
+
+. `username` e `password` para autenticação HTTP básica se o repositório HTTP Helm estiver protegido por autenticação básica.
+. `cacerts` para um pacote CA personalizado se o repositório Helm estiver usando um CA personalizado.
+
+[IMPORTANT]
+====
+ifeval::["{product}" == "fleet"]
+Observe que se existirem segredos especificando pacotes CA, por exemplo, se {product_name} estiver instalado com o Rancher (veja as páginas respectivas sobre https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Usando um Certificado Assinado por uma CA Privada] e https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[CA's Adicionais Confiáveis]), {product_name} usará esses pacotes CA se nenhum pacote CA for especificado no `GitRepo`.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Observe que se existirem segredos especificando pacotes CA, por exemplo, se {product_name} estiver instalado com o Rancher (veja as páginas respectivas sobre https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Usando um Certificado Assinado por uma CA Privada] e https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[CA's Adicionais Confiáveis]), {product_name} usará esses pacotes CA se nenhum pacote CA for especificado no `GitRepo`.
+endif::[]
+====
+
+. `ssh-privatekey` para chave privada SSH se o repositório estiver usando o protocolo SSH. Chave privada com passphrase não é suportada atualmente.
+
+Por exemplo, para adicionar um segredo no kubectl, execute
+
+`kubectl create secret -n $namespace generic helm --from-literal=username=foo --from-literal=password=bar --from-file=cacerts=/path/to/cacerts --from-file=ssh-privatekey=/path/to/privatekey.pem`
+
+Após o segredo ser criado, especifique o segredo no `gitRepo.spec.helmSecretName`. Certifique-se de que o segredo seja criado no mesmo namespace que o GitRepo.
+
+=== Use credenciais Helm diferentes para cada caminho.
+
+{product_name} permite que você defina credenciais exclusivas para cada caminho de chart Helm em um repositório Git usando o campo helmSecretNameForPaths.
+
+
+[IMPORTANT]
+====
+`gitRepo.spec.helmSecretName` será ignorado se `gitRepo.spec.helmSecretNameForPaths` for fornecido
+====
+
+Crie um arquivo com o nome `secrets-path.yaml` que especifique credenciais para cada caminho no seu `GitRepo`. Cada chave pode ser um dos seguintes:
+
+* um caminho exato, que deve corresponder ao caminho completo para um diretório de bundle (uma pasta contendo um arquivo `fleet.yaml`). O caminho pode ter mais segmentos do que a entrada sob `paths:`.
+* um _glob_ que corresponda a um ou mais caminhos, útil quando as credenciais precisam ser reutilizadas em vários caminhos/bundles.
+
+Consulte link:https://pkg.go.dev/path/filepath#Match[documentação de Go filepath.Match] para exemplos de sintaxe suportada.
+
+[NOTE]
+====
+Se mais de um glob corresponder a um determinado caminho em um repositório Git, {product_name} ordenará os globs lexicamente e usará as credenciais da primeira correspondência.
+
+_Exemplo_: Para o caminho do repositório `world-domination/ui_charts` e um segredo contendo as seguintes chaves, as credenciais sob o glob _segundo_ serão usadas:
+
+[source,yaml]
+----
+world-domination/*_charts: # will not be used
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+world-domination/*: # will be used, as `/*` will be sorted before `/*_charts`
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+====
+
+Se um caminho listado no GitRepo não estiver incluído neste arquivo, seja por caminhos exatos ou correspondência glob, {product_name} não usará credenciais para ele.
+
+[NOTE]
+====
+O arquivo deve ser nomeado `secrets-path.yaml`; caso contrário, {product_name} não poderá usá-lo.
+====
+
+.Exemplo de recurso `GitRepo`.
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: gitrepo
+  namespace: fleet-local
+spec:
+  helmSecretNameForPaths: test-multipasswd
+  repo: https://github.com/0xavi0/fleet-examples
+  branch: helm-multi-passwd
+  paths:
+  - single-cluster/test-multipasswd
+----
+
+.Exemplo `secrets-path.yaml`
+[source,yaml]
+----
+single-cluster/test-multipasswd/passwd:
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+
+.Outro exemplo com dois caminhos distintos
+[source,yaml]
+----
+path-one: # path path-one must exist in the repository
+  username: user
+  password: pass
+path-two: # path path-two must exist in the repository
+  username: user2
+  password: pass2
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCiAgICBNSUlEblRDQ0FvV2dBd0lCQWdJVUNwMHB2...
+  sshPrivateKey: ICAgIC0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQogICAgTUlJRFF6Q0NBaXNDRkgxTm5Y...
+----
+
+Campos suportados por caminho:
+
+[cols="1,1",options="header"]
+|===
+|Campo |Descrição
+
+|`username`
+|Nome de usuário do registro ou repositório
+
+|`password`
+|Senha do registro ou repositório
+
+|`caBundle`
+|Pacote de certificados CA codificados em Base64
+
+|`sshPrivateKey`
+|Chave privada SSH codificada em Base64
+
+|`insecureSkipVerify`
+|Valor booleano para pular a verificação TLS
+|===
+
+.Para criar o segredo, execute:
+[source,bash]
+----
+kubectl create secret generic test-multipasswd -n fleet-local --from-file=secrets-path.yaml
+----
+
+[NOTE]
+====
+O segredo deve ser criado no mesmo namespace que o recurso `GitRepo`.
+====
+
+ifeval::["{product}" == "fleet"]
+Se você usar link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] e quiser incluir este segredo em seus backups, rotule-o com `resources.cattle.io/backup: true`:
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Se você usar link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] e quiser incluir este segredo em seus backups, rotule-o com `resources.cattle.io/backup: true`:
+
+endif::[]
+[source,bash]
+----
+kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=true
+----
+
+[NOTE]
+====
+Certifique-se de que o backup esteja criptografado para proteger credenciais sensíveis.
+====
+
+[[storing-credentials-in-git]]
+== Armazenando Credenciais no Git
+
+É recomendável não armazenar credenciais no Git. Mesmo que o repositório esteja devidamente protegido, segredos estão em risco durante a clonagem, etc.
+Como uma solução alternativa, ferramentas como SOPS podem criptografar credenciais.
+
+Em vez disso, faça referência a segredos no cluster downstream. Para pacotes no estilo manifest e no estilo kustomize, faça isso nos manifests, por exemplo, link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[montando os segredos] ou link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referenciando-os como variáveis de ambiente].
+Pacotes no estilo Helm podem usar xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] para ler valores de um segredo no cluster downstream.
+
+Ao usar Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[criptografia em repouso] e armazenando credenciais no Git, configure o cluster upstream para incluir vários {product_name} CRDs na lista de recursos de criptografia:
+
+[source]
+----
+- secrets
+- bundles.fleet.cattle.io
+- bundledeployments.fleet.cattle.io
+- contents.fleet.cattle.io
+----
+
+== Backup e restauração
+
+Ao fazer backup e restaurar {product_name} com cargas de trabalho existentes, sejam elas GitRepos ou HelmOps, considere:
+
+=== Disponibilidade do servidor API do Kubernetes
+
+Um agente {product_name} em um cluster downstream monitora um namespace específico do cluster no cluster upstream.
+Durante uma operação de restauração, as alterações feitas no cluster upstream podem afetar as implantações em clusters downstream, que podem ser atualizadas ou excluídas com base em um estado incompleto do upstream.
+
+Para evitar isso, torne o servidor API do Kubernetes inacessível para clusters downstream enquanto uma restauração estiver em execução. Os agentes não devem acessar o cluster upstream até que todos os recursos sejam recriados.
+
+=== Pausando
+
+Um xref:reference/ref-gitrepo.adoc[pausado] GitRepo irá pausar bundles e implantações de bundles. Isso significa:
+
+* Excluir uma implantação de bundle de um GitRepo pausado: {product_name} não recriará a implantação do bundle até que o GitRepo seja despausado.
+* Excluir um bundle de um GitRepo pausado: {product_name} irá excluir as implantações de bundles provenientes desse bundle e não recriará o bundle (nem as implantações de bundles) até que o GitRepo seja despausado.
+
+Pausar um GitRepo apenas impede que bundles e implantações de bundles sejam criados ou atualizados. Isso afeta apenas operações de _controlador_, não operações de {product_name} _agente_.
+Para evitar que recursos de usuário em um bundle sejam excluídos ao excluir uma implantação de bundle, use xref:reference/ref-bundle.adoc[keepResources].
+
+== Solução de problemas
+
+Veja a seção {product_name} de Solução de Problemas xref:troubleshooting.adoc[documentos de Solução de Problemas].

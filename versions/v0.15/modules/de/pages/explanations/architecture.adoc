@@ -1,0 +1,29 @@
+= Architektur
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} hat zwei Hauptkomponenten. Der {product_name} Controller und die Cluster-Agenten. Diese Komponenten arbeiten in einem zweistufigen Pull-Modell. Der {product_name} Controller zieht von Git und die Cluster-Agenten ziehen vom {product_name} Controller.
+
+== {product_name} Controller
+
+Der {product_name} Controller ist eine Gruppe von Kubernetes-Controllern, die in einem beliebigen Standard-Kubernetes-Cluster ausgeführt werden.  Die einzige API, die vom {product_name} Controller bereitgestellt wird, ist die Kubernetes-API; es gibt keine benutzerdefinierte API für den Fleet-Controller.
+
+== Cluster-Agenten
+
+Ein Cluster-Agent läuft in jedem Cluster und ist dafür verantwortlich, mit dem {product_name} Controller zu kommunizieren.
+Die einzige Kommunikation vom Cluster zum {product_name} Controller erfolgt über diesen Agenten, und alle Kommunikationen gehen vom verwalteten Cluster zum {product_name} Controller. Der Fleet-Controller initiiert keine Verbindungen zu Downstream-Clustern. Das bedeutet, dass verwaltete Cluster in privaten Netzwerken und hinter NATs betrieben werden können. Die einzige Voraussetzung ist, dass der Cluster-Agent in der Lage sein muss, mit der Kubernetes-API des Clusters, der den {product_name} Controller ausführt, zu kommunizieren. Die einzige Ausnahme hiervon ist, wenn Sie den xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager-initiated registration] Cluster-Registrierungsfluss verwenden. Dies ist nicht erforderlich, sondern ein optionales Schema.
+
+Es wird nicht davon ausgegangen, dass die Cluster-Agenten eine "immer aktiviert" Verbindung haben. Sie werden den Betrieb wieder aufnehmen, sobald sie sich verbinden können. Zukünftige Verbesserungen werden wahrscheinlich die Möglichkeit hinzufügen, Zeiten zu planen, wann der Agent sich anmeldet; derzeit werden sie immer versuchen, sich zu verbinden.
+
+== Sicherheit
+
+Der {product_name} Controller erstellt dynamisch Dienstkonten, verwaltet deren RBAC und gibt dann die Token an die Downstream-Cluster weiter. Cluster werden durch optional ablaufende Cluster-Registrierungstoken registriert.
+Das Cluster-Registrierungstoken wird nur während des Registrierungsprozesses verwendet, um ein spezifisches Credential für dieses Cluster zu generieren. Nachdem das Cluster-Credential erstellt wurde, "vergisst" das Cluster das Cluster-Registrierungstoken.
+
+Die Dienstkonten, die den Clustern zugewiesen sind, haben nur die Berechtigungen, `BundleDeployment` im speziell für dieses Cluster erstellten Namespace aufzulisten. Es kann auch die `status` Unterressource von `BundleDeployment` und die `status` Unterressource seiner `Cluster` Ressource aktualisieren.
+
+== Überblick über die Komponenten
+
+Ein Überblick über die Komponenten und wie sie auf hoher Ebene interagieren.
+
+image::FleetComponents.svg[Static, 600]

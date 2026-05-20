@@ -1,0 +1,359 @@
+:doctype: book
+
+= 安装细节
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} 可以以两种模式安装：*单集群* 和 *多集群*。
+
+* **单集群安装**：推荐用于入门。此模式在同一集群上运行 Fleet 管理器和 Fleet agent。
+* **多集群安装**：用于从中央管理器管理多个下游集群。
+
+image::single-cluster.png[静态, 600]
+
+在单集群设置中，同一集群运行 Fleet 管理器和 Fleet agent。
+该集群直接连接到 Git 服务器以本地部署资源。
+这是一个简单的、支持生产的设置，适合开发、测试和小规模使用。
+
+== 先决条件
+
+=== Helm 3
+
+Fleet 作为 Helm 图表分发。Helm 3 是一个仅客户端的 CLI，没有服务器端组件。
+要安装 Helm 3，请按照 https://helm.sh/docs/intro/install[Helm 安装指南] 中的官方说明进行操作。
+
+=== Kubernetes
+
+{product_name} 在现有的 Kubernetes 集群上作为控制器运行。
+对于单集群设置，在您打算使用 GitOps 管理的同一集群上安装 {product_name}。{product_name} 支持任何社区支持的 Kubernetes 版本，通常是 {versions.next.kubernetes} 或更高版本。
+
+== 默认安装
+
+安装以下 Helm 图表以设置 {product_name}。
+
+[CAUTION]
+====
+{product_name} 在 Rancher 中
+Rancher 为 {product_name} 提供单独的 Helm 图表，并使用不同的储存库。
+====
+
+. 添加 Fleet Helm 储存库
++
+[source,bash]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
++
+. 安装 Fleet `CustomResourceDefinitions``
++
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
+    fleet/fleet-crd
+----
++
+. 安装 Fleet 控制器
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet \
+    fleet/fleet
+----
+
+=== 验证安装
+
+运行以下命令以验证 {product_name} 控制器的 pod 是否正在运行：
+
+[source,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller
+kubectl -n cattle-fleet-system get pods -l app=fleet-controller
+----
+
+示例输出：
+
+[source,console]
+----
+NAME                                READY   STATUS    RESTARTS   AGE
+fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
+----
+
+您现在可以在 `fleet-local` 名称空间中 xref:how-tos-for-users/gitrepo-add.adoc[注册 Git 储存库] 以开始部署资源。
+
+== 调整您的 {product_name} 安装
+
+=== Fleet 控制器和 Fleet agent 副本
+
+从 {product_name} v0.13 开始，Helm 图表公开每种控制器类型和 Fleet agent 的副本计数设置：
+
+* `controller.replicas`：控制管理捆绑包、集群和组的 `fleet-controller` pod。
+* `gitjob.replicas`：控制 GitOps `GitRepo` 的协调。
+* `helmops.replicas`：控制实验性的 HelmOps 控制器。
+* `agent.replicas`：控制 Fleet agent。
+
+每个默认一个副本。
+
+
+[[enabling-imagescan]]
+=== 启用图像扫描
+
+xref:how-tos-for-users/imagescan.adoc[图像扫描] 功能默认禁用，这意味着：
+
+* 在您的 `imageScans` 或等效配置文件中的非空 `fleet.yaml` 块将导致捆绑包创建错误，您可以在 GitRepo 的状态中看到。
+* 图像扫描控制器将不会运行，因此在 `fleet.yaml` 或等效配置文件的 `imageScan` 块中引用的储存库将不会监控新图像。这也意味着在您的清单中引用的图像标签，如 `image: <image>:<tag> # {"$imagescan": "test-scan"}`，将不会被展开。
+
+为了解决此问题，请使用 `--set imagescan.enabled=true` 安装 Fleet。
+
+[[additional-ssh-known-hosts]]
+=== 其他 SSH 已知主机
+
+通过 SSH 与 git 储存库交互时，默认启用严格的主机密钥检查，这意味着 {product_name} 将拒绝对没有 `known_hosts` 条目的主机的 SSH 连接尝试。
+
+更多信息，请参阅 xref:how-tos-for-users/gitrepo-add.adoc#strict-host-key-checks[严格的主机密钥检查]。
+
+默认情况下，Fleet 为一些广泛使用的 git 托管提供商安装 `known_hosts` 条目。
+
+添加到配置映射中的主机密钥指纹分别来源于：
+
+* 来自 link:https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/githubs-ssh-key-fingerprints[GitHub SSH 密钥指纹]，用于 Github
+* 来自 link:https://docs.gitlab.com/ee/user/gitlab_com/index.html#ssh-known_hosts-entries[SSH 已知主机条目]，用于 Gitlab
+* 来自 link:https://support.atlassian.com/bitbucket-cloud/docs/configure-ssh-and-two-step-verification[配置 SSH 和两步验证]，用于 Bitbucket，它还提供了一个 `curl` 命令，以 `known_hosts` 友好的格式获取它们：`curl https://bitbucket.org/site/ssh`
+* 来自 link:https://learn.microsoft.com/en-us/azure/devops/repos/git/use-ssh-keys-to-authenticate?view=azure-devops[使用 SSH 密钥进行身份验证]，用于 Azure DevOps
+
+然而，当使用不同的 git 托管设置时，例如由您或您的公司托管的私有服务器，可以在安装时使用 `additionalKnownHosts` Helm 值将这些服务器的条目添加到 Fleet，该值支持字符串数组。
+该数组的每个元素将是一个额外的条目，例如：
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet \
+  --set additionalKnownHosts={'ourgitserver.company ssh-rsa <fingerprint>','our-other-git-server.company ssh-ed25519 <fingerprint2>'}
+----
+
+[[multi-controller-install-sharding]]
+== 多控制器安装：分片
+
+=== 部署
+
+从版本 0.10 开始，{product_name} 支持静态分片。
+每个分片由唯一的分片 ID 定义。
+您可以选择分配一个 https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector[节点选择器]，以便该分片的所有控制器 Pod 在特定节点上运行。
+
+使用以下 Helm 选项安装 {product_name}：
+
+* `--set shards[$index].id=$shard_id`
+* `--set shards[$index].nodeSelector.$key=$value`
+
+示例：
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet \
+  --set shards[0].id=foo \
+  --set shards[0].nodeSelector."kubernetes\.io/hostname"=k3d-upstream-server-0 \
+  --set shards[1].id=bar \
+  --set shards[1].nodeSelector."kubernetes\.io/hostname"=k3d-upstream-server-1 \
+  --set shards[2].id=baz \
+  --set shards[2].nodeSelector."kubernetes\.io/hostname"=k3d-upstream-server-2
+----
+
+验证 {product_name} 控制器和 GitJob Pod：
+
+[source,bash]
+----
+kubectl -n cattle-fleet-system get pods -l app=fleet-controller \
+  -o=custom-columns='Name:.metadata.name,Shard-ID:.metadata.labels.fleet\.cattle\.io/shard-id,Node:spec.nodeName'
+----
+
+[source,console]
+----
+Name                                          Shard-ID   Node
+fleet-controller-b4c469c85-rj2q8                         k3d-upstream-server-2
+fleet-controller-shard-bar-5f5999958f-nt4bm   bar        k3d-upstream-server-1
+fleet-controller-shard-baz-75c8587898-2wkk9   baz        k3d-upstream-server-2
+fleet-controller-shard-foo-55478fb9d8-42q2f   foo        k3d-upstream-server-0
+----
+
+GitJob Pod 也类似：
+
+[source,bash]
+----
+kubectl -n cattle-fleet-system get pods -l app=gitjob \
+  -o=custom-columns='Name:.metadata.name,Shard-ID:.metadata.labels.fleet\.cattle\.io/shard-id,Node:spec.nodeName'
+----
+
+=== 工作原理
+
+每个 Fleet 控制器处理标记为其分片 ID 的资源。
+未分片的控制器处理所有没有分片 ID 的资源。
+
+要将 GitRepo 部署到特定的分片，请将标签 `fleet.cattle.io/shard-ref` 添加到资源中。
+
+示例：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sharding-test
+  labels:
+    fleet.cattle.io/shard-ref: foo
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm
+----
+
+具有已知分片 ID（例如 `foo`）的 GitRepo 由该控制器处理。
+未知的分片 ID（例如 `boo`）将被忽略。
+
+要添加或删除分片，请使用更新的分片列表重新部署 {product_name}。
+
+== 多集群配置
+
+[CAUTION]
+====
+Rancher 中的下游集群会自动注册到 {product_name}。
+以下设置仅适用于独立的 {product_name}，并未经过 Rancher 的质量保证测试。
+====
+
+[NOTE]
+====
+安装步骤与单集群设置相同。
+安装 Fleet 管理器后，请手动注册远程集群。
+对于管理器发起的注册，需要额外的 API 服务器详细信息。
+没有这些信息，仅能进行 Fleet agent 发起的注册。
+====
+
+=== API 服务器 URL 和 CA 证书
+
+Fleet 管理器需要访问 Kubernetes API 服务器。
+Fleet agent 使用 API 服务器 URL 和 CA 证书进行安全通信。
+
+从您的 kubeconfig 文件中获取这些值 (`$HOME/.kube/config`)：
+
+[source,yaml]
+----
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTi...
+    server: https://example.com:6443
+----
+
+==== 提取 CA 证书
+
+`certificate-authority-data` 字段是 Base64 编码的。
+解码并保存到文件中：
+
+[source,bash]
+----
+base64 -d encoded-file > ca.pem
+----
+
+使用此命令提取所有 CA：
+
+[source,bash]
+----
+kubectl config view -o json --raw | jq -r '.clusters[].cluster["certificate-authority-data"]' | base64 -d > ca.pem
+----
+
+对于多集群 kubeconfig：
+
+[source,bash]
+----
+kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem
+----
+
+==== 提取 API 服务器
+
+[source,bash]
+----
+API_SERVER_URL=$(kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTER").cluster["server"]')
+API_SERVER_CA="ca.pem"
+----
+
+==== 验证
+
+验证 API 服务器 URL：
+
+[source,bash]
+----
+curl -fLk "$API_SERVER_URL/version"
+----
+
+预期输出：JSON 版本信息或 `401 Unauthorized` 错误。
+
+然后验证 CA 证书：
+
+[source,bash]
+----
+curl -fL --cacert "$API_SERVER_CA" "$API_SERVER_URL/version"
+----
+
+您应该看到有效的 JSON 或 `401 Unauthorized` 消息。
+如果您收到 SSL 错误，则 CA 文件不正确。
+
+示例 CA 文件 (`ca.pem`)：
+
+[source,pem]
+----
+-----BEGIN CERTIFICATE-----
+MIIBVjCB/qADAgECAgEAMAoGCCqGSM49BAMCMCMxITAfBgNVBAMMGGszcy1zZXJ2
+ZXItY2FAMTU5ODM5MDQ0NzAeFw0yMDA4MjUyMTIwNDdaFw0zMDA4MjMyMTIwNDda
+...
+-----END CERTIFICATE-----
+----
+
+=== 为多集群安装
+
+假设 API 服务器 URL 为 `https://example.com:6443`，CA 在 `ca.pem` 中。
+如果您的 API 服务器使用知名 CA，请省略 CA 参数。
+
+[source,bash]
+----
+API_SERVER_URL="https://example.com:6443"
+API_SERVER_CA="ca.pem"
+----
+
+然后安装 Fleet 图表：
+
+[source,bash]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+安装自定义资源定义：
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait \
+    fleet-crd fleet/fleet-crd
+----
+
+安装 Fleet 控制器：
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait \
+    --set apiServerURL="$API_SERVER_URL" \
+    --set-file apiServerCA="$API_SERVER_CA" \
+    fleet fleet/fleet
+----
+
+=== 校验
+
+[source,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller
+kubectl -n cattle-fleet-system get pods -l app=fleet-controller
+----
+
+[source,console]
+----
+NAME                                READY   STATUS    RESTARTS   AGE
+fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
+----
+
+此时，Fleet 管理器应该已准备好。
+您现在可以 xref:how-tos-for-operators/cluster-registration.adoc[注册集群] 和 xref:how-tos-for-users/gitrepo-add.adoc[添加 Git 储存库]。
+

@@ -1,0 +1,158 @@
+= HelmOps
+:revdate: 2025-07-01
+:page-revdate: {revdate}
+
+HelmOps 是一种简化的创建捆绑包的方法，通过直接指向 Helm 储存库或 OCI 注册表，而无需设置 git 储存库。
+
+== 总结
+
+当创建一个 +GitRepo+ 资源时，{product_name} 监控一个 git 储存库，从 +GitRepo+ 中指定的路径创建一个或多个捆绑包，遵循 GitOps 或基于 git 的持续部署方法。这需要一个可用的 git 储存库，可能包含 +fleet.yaml+ 或其他配置文件。
+
+另一方面，HelmOps 依赖于 Helm 储存库作为其真实来源，就像 GitOps 使用 git 储存库一样。利用 HelmOps 的方法是创建一个 +HelmOp+ 资源，具有与 +GitRepo+ 资源和/或 +fleet.yaml+ 文件中可用的选项类似的选项，以便将捆绑包定向到集群，配置图表值等。
+
+HelmOps 是一种概念。一个 +HelmOp+ 是一个由 {product_name} 管理的自定义 Kubernetes 资源。
+
+Fleet HelmOps 控制器将创建轻量级捆绑包，指向引用的 Helm 图表，而无需下载它们。然而，它将解析图表版本，以确保将相同的、最新版本的图表部署到所有目标下游集群。这适用于以下情况：
+
+* 指定了通配符或空版本
+* 指定了一个 https://semver.org/semantic[https://semver.org/semantic] 版本约束，例如 +0.1.x+，++< 2.0.0++。有关支持的约束的更多信息，请参阅 https://github.com/Masterminds/semver?tab=readme-ov-file#checking-version-constraints[检查版本约束]。
+
+当约束无效或找不到匹配版本时，{product_name} 会显示描述性错误消息。
+
+使用此功能时，Helm 图表从下游集群下载，因此必须能够访问 Helm 注册表。
+
+== 创建 HelmOp 资源
+
+可以按如下方式创建 +HelmOp+ 资源，以开始直接部署 Helm 图表：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+name: my-awesome-helmop
+namespace: "fleet-local"
+spec:
+helm:
+releaseName: my-fantastic-chart
+repo: [https://foo.bar/baz](https://foo.bar/baz)
+chart: fantastic-chart
+version: ''
+namespace: that-amazing-namespace
+helmSecretName: my-top-secret-helm-access
+insecureSkipTLSVerify: false
+----
+
+对于私有图表，这需要在与 +HelmOp+ 资源相同的命名空间中创建一个 Helm 访问密钥（由字段 +helmSecretName+ 引用）。Fleet HelmOps 控制器负责将该密钥复制到目标下游集群，使 Fleet 代理能够访问注册表。
+
+== 支持的用例
+
+在可引用 Helm 图表的 3 个字段中，让我们澄清一些规则。根据 Helm 安装 https://helm.sh/docs/helm/helm_install/[文档]，有 6 种方式来表达要安装的图表。其中 3 种使用了存储库别名或本地文件系统，这在 Fleet 的 HelmOps 上下文中不可用。这给我们留下了 3 个选项：
+
+=== 绝对 URL
+
+通过绝对 URL 引用 Helm 图表就像在 ++图表++ 字段中提供一个指向 +.tgz+ 文件的 URL 一样简单。Helm 选项看起来像：
+
+[source,yaml]
+----
+helm:
+chart: [https://example.com/charts/my-chart-1.2.3.tgz](https://example.com/charts/my-chart-1.2.3.tgz)
+# can be omitted
+
+repo: ''
+version: ''
+----
+
+如果在这种情况下指定了非空的储存库或非空的版本，则 HelmOp 状态中会出现错误，并且不会创建任何捆绑包，部署将中止。
+
+=== 图表引用和储存库 URL
+
+Helm 图表也可以通过其储存库和图表名称进行引用，版本是可选的，可以是静态版本或版本约束。
+
+在这种情况下，轮询是有意义的，因为使用储存库引用图表允许 {product_name} 检查储存库的 +index.yaml+ 以获取与 ++版本++ 字段匹配的可用版本。
+
+示例：
+
+[source,yaml]
+----
+helm:
+repo: [https://foo.bar/baz](https://foo.bar/baz)
+chart: fantastic-chart
+version: '1.2.3'
+----
+
+在这种情况下，只有 ++版本++ 字段可以为空。如果 ++图表++ 或 ++储存库++ 字段中的任何一个为空，{product_name} 会在 HelmOp 状态中设置错误，并且不会创建任何捆绑包。
+
+[[oci-registry]]
+=== OCI 注册表
+
+Helm 支持 OCI 注册表，可以在 {product_name} 中使用 ++储存库++ 字段进行引用。
+
+在这种情况下，Helm 选项将类似于：
+
+[source,yaml]
+----
+helm:
+repo: oci://foo.bar/baz
+version: '1.2.3' # optional
+----
+
+当在 ++储存库++ 字段中提供 OCI URL 时，非空的 ++图表++ 字段将导致 HelmOps 状态中出现错误，并且不会创建任何捆绑包。
+
+
+[NOTE]
+====
+在这种情况下，{product_name} 将下载 OCI 工件。这意味着：
+
+* `version` 字段表示 OCI 工件的标签，可能与存储在 OCI 工件中的图表的实际版本不同。
+* {product_name} 可以定期检查与提供的储存库和版本约束匹配的可用 OCI 标签，其轮询间隔由配置指定。
+* 一个 OCI 工件可能包含多个 Helm 图表。此用例仅在包含单个 Helm 图表的 OCI 工件中经过验证。
+====
+
+
+== 巡回检测
+
+{product_name} 可以轮询引用的 Helm 注册表，定期检查是否有新版本可用。当然，这只有在 +version+ 字段包含版本约束时才有意义，这可能解析为多个版本。
+
+=== 如何启用它
+
+轮询涉及一个 +pollingInterval+ 字段，类似于 GitOps 中存在的字段。然而，在 HelmOps 的情况下，默认轮询间隔为 0 秒，这意味着轮询将被禁用。
+
+必须满足以下条件，以便 {product_name} 在 HelmOp 资源上启用轮询：
+
+* +pollingInterval+ 字段设置为非零持续时间（例如 +10s+、+1m+ 等）
+* +version+ 字段设置为有效的语义版本约束（例如 +2.x.x+、++< 1.0++），而不是静态版本（例如 1.2.3）
+
+=== 作用
+
+当轮询被启用时，{product_name} 在配置的间隔内执行以下操作：
+
+* 检查引用的 Helm 注册表，以获取与 +version+ 字段中配置的版本约束匹配的最新版本
+* 如果找到新版本，则在从 HelmOp 对象创建的捆绑包上设置该版本，以便新版本的图表将在所有目标集群上安装。
+* 更新 HelmOp 资源的状态：
+** 设置其 +Polled+ 条件：
+*** 如果轮询成功，则为 +true+
+*** 如果发生错误，则为 +false+，并带有错误信息。
+** 将 ++Last Polling Time++ 字段更新为上次轮询尝试的开始时间，即使它失败。
+
+== 使用私有 Helm 储存库
+
+这与 gitOps 的工作方式相同，通过字段 `helmSecretName` 引用 Helm 访问密钥。
+
+有关更多信息，请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[私有 Helm 储存库]。
+
+关于为每个路径使用单独凭据的部分并不相关，因为与 GitRepo 不同，HelmOp 资源仅引用单个 Helm 图表。
+
+== 状态更新
+
+创建 HelmOp 资源会导致创建一个捆绑包，如果 Helm 选项有效并且可以找到图表版本。
+
+该捆绑包的状态会随着时间的推移而变化，因为会为每个目标集群从该捆绑包创建部署包，并且这些部署包的状态本身也会演变并反馈回该捆绑包。
+
+{product_name} 将捆绑包状态的更新传播到 HelmOp 资源本身的状态。包括以下内容：
+
+* 显示状态，包括摘要、预期和就绪的集群数量
+* 提供有关资源状态的更多信息的条件，指示其是否有效以及其部署是否准备就绪
+* 按状态的资源数量
+
+有关资源数量和条件的更多详细信息，请参阅 xref:reference/ref-status-fields.adoc[状态字段]。

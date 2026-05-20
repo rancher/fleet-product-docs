@@ -1,0 +1,166 @@
+= 微调错误检测
+:revdate: 2025-09-12
+:page-revdate: {revdate}
+
+{product_name} 监控已部署资源的 `status` 字段，以确定 `Bundle` 是否健康或出现错误。在某些情况下，{product_name} 可能会将状态字段中的某个条件解释为错误，即使它是预期的或无害的。
+
+您可以通过两种方式调整此行为：
+
+* 忽略 `fleet.yaml` 中的条件
+* 使用环境变量自定义错误映射
+
+image::fine-tune-error-flow.svg[微调错误检测的可视化流程]
+
+注意： +
+您通常不需要使用环境变量在 {product_name} 中配置就绪检测。如果您需要，请打开一个问题或提交一个拉取请求，以帮助改善默认的就绪检测。
+
+== 忽略 `fleet.yaml` 中的条件
+
+在 `ignore.conditions` 文件中使用 `fleet.yaml` 设置，告诉 {product_name} 忽略特定条件。
+
+[source,yaml]
+----
+# from ref-fleet-yaml
+
+# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# some conditions in Custom Resources makes the Bundle to be in an error state
+# when it shouldn't.
+ignore:
+
+  # Conditions to be ignored
+  conditions:
+
+    # In this example a condition will be ignored if it contains
+    # {"type": "Active", "status", "False"}
+    - type: Active
+      status: "False"
+----
+
+当自定义资源或控制器设置的条件导致 {product_name} 将一个 Bundle 标记为失败时，即使该资源是健康的，这种方法是有用的。
+
+image::fine-tune-error-ingore.svg[在微调错误检测期间忽略条件的可视化流程]
+
+== 使用环境变量配置错误映射
+
+在 {product_name} **v0.13** 中，错误检测得到了增强，以便您可以获得更多控制权。您可以使用环境变量 `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` 自定义资源条件的解释方式。
+
+此变量允许您通过 `Group`、`Version`、`Kind` (GVK) 定义哪些条件值应被视为错误或明确不被视为错误。
+
+在您的 Fleet Helm 图表部署 (`values.yaml`) 中使用 `extraEnv` 设置此变量。该值必须是 JSON。
+
+[source,yaml]
+----
+# Extra environment variables passed to the fleet pods.
+# extraEnv:
+# - name: OCI_STORAGE
+#   value: "false"
+----
+
+注意： +
+此设置对所有 Fleet 控制器是全局的，并适用于每个 `GitRepo`。如果您只需要为特定 Bundle 调整错误处理，请在 `fleet.yaml` 中使用 `ignoreConditions` 选项。
+
+=== 合并行为
+
+当您使用 `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` 重写映射时：
+
+* 新条件与预定义条件合并。
+* 任何您重新定义的条件值都会被替换。
+
+例如，考虑默认映射：
+
+`HelmChart.Failed=["True"]`
+
+这意味着 `Failed=True` 被视为错误。
+
+当您重写为：
+
+* `HelmChart.Failed=["False"]`
+* `HelmChart.Ready=["False"]`
+
+这会返回以下结果：
+
+* `Failed=["False"]` 替换默认映射。这意味着 **`Failed=False`** 现在被视为错误。
+* `Ready=["False"]` 被添加，因此 **`Ready=False`** 也被视为错误。
+* 其他条件保持不变。
+
+=== 禁用错误解释示例
+
+假设 `Failed` 的每个值之前都被解释为错误，例如：
+
+[source,json]
+----
+{ "type": "Failed", "status": ["True", "False"] }
+----
+
+您可以通过设置将此映射缩小到仅将 `Failed=True` 视为错误：
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] } 
+    ]
+  }
+]
+----
+
+此配置意味着仅 **`Failed=True`** 被视为错误。`Failed=False` 不再被视为错误。
+
+您还可以通过以下方式禁用 `Failed` 的任何值的错误：
+
+[source,json]
+----
+{ "type": "Failed", "status": [""] } 
+----
+
+此配置确保 **`Failed` 的所有值均不被视为错误**。
+
+注意： +
+重写条件仅影响默认错误映射（请参阅 xref:default-error-mappings[默认错误映射]）。{product_name} 仍可能将资源标记为错误，因为其他检查，例如来自 `kstatus` 库的检查，在您的自定义之后仍会继续运行。
+
+=== 启用错误解释示例
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] }
+    ]
+  }
+]
+----
+
+在这里，`Failed=True` 被视为错误。
+
+[[default-error-mappings]]
+== 默认错误映射 
+
+{product_name} 将默认错误映射添加到 `status` 字段，以将某些资源条件解释为错误。这些映射在其他就绪检查之外应用，例如 Kubernetes `kstatus` 库执行的检查。
+
+以下默认映射适用：
+
+* **HelmChart**（`helm.cattle.io/v1`）
+  * `JobCreated`：`True` 和 `False` 均不被视为错误。
+  * `Failed`：`True` 被视为错误。
+* **Node**（`v1`）
+  * `OutOfDisk`：`True` 被视为错误。
+  * `MemoryPressure`：`True` 被视为错误。
+  * `DiskPressure`：`True` 被视为错误。
+  * `NetworkUnavailable`：`True` 被视为错误。
+* **部署**（`apps/v1`）
+  * `ReplicaFailure`：`True` 被视为错误。
+  * `Progressing`：`False` 被视为错误。
+* **ReplicaSet**（`apps/v1`）
+  * `ReplicaFailure`：`True` 被视为错误。
+
+=== 回退映射
+
+如果资源不匹配列出的 GVK，{product_name} 将应用回退映射：
+
+* 任何种类的 `Group` 和 `Version`
+  * `Stalled`：`True` 被视为错误。
+  * `Failed`：`True` 被视为错误。

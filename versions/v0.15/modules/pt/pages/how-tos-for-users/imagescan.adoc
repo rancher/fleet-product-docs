@@ -1,0 +1,133 @@
+= Usando o Image Scan para Atualizar Referências de Imagem de Contêiner
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+A varredura de imagem no Fleet permite que você escaneie seu repositório de imagens, busque a imagem desejada e atualize seu repositório git, sem a necessidade de atualizar manualmente seus manifests.
+
+[CAUTION]
+====
+
+Esse recurso é considerado uma funcionalidade experimental.
+Esse recurso está desabilitado por padrão.
+
+Mais informações xref:how-tos-for-operators/installation.adoc#enabling-imagescan[aqui] sobre como habilitá-lo.
+====
+
+
+Vá para `fleet.yaml` e adicione a seguinte seção.
+
+[,yaml]
+----
+imageScans:
+# specify the policy to retrieve images, can be semver or alphabetical order
+- policy:
+    # if range is specified, it will take the latest image according to semver order in the range
+    # for more details on how to use semver, see https://github.com/Masterminds/semver
+    semver:
+      range: "*"
+    # can use ascending or descending order
+    alphabetical:
+      order: asc
+
+  # specify images to scan
+  image: "your.registry.com/repo/image"
+
+  # Specify the tag name, it has to be unique in the same bundle
+  tagName: test-scan
+
+  # specify secret to pull image if in private registry
+  secretRef:
+    name: dockerhub-secret
+
+  # Specify the scan interval
+  interval: 5m
+----
+
+[IMPORTANT]
+====
+
+Você pode criar múltiplas varreduras de imagem em fleet.yaml.
+====
+
+
+[NOTE]
+====
+
+Semver ignorará versões de pré-lançamento (por exemplo, 0.0.1-10) a menos que uma versão de pré-lançamento seja explicitamente usada na definição do intervalo.
+Por exemplo, o intervalo "*" ignorará pré-lançamentos, enquanto ">= 0.0.1-10" os levará em conta.
+====
+
+
+Vá para seus arquivos de manifests e atualize o campo que deseja substituir. Por exemplo:
+
+[,yaml]
+----
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: redis-slave
+spec:
+  selector:
+    matchLabels:
+      app: redis
+      role: slave
+      tier: backend
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: redis
+        role: slave
+        tier: backend
+    spec:
+      containers:
+      - name: slave
+        image: <image>:<tag> # {"$imagescan": "test-scan"}
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+----
+
+[NOTE]
+====
+
+Existem várias formas de tagName que você pode referenciar. Por exemplo
+
+`{"$imagescan": "test-scan"}`: Use o nome completo da imagem (foo/bar:tag)
+
+`{"$imagescan": "test-scan:name"}`: Use apenas o nome da imagem sem tag (foo/bar)
+
+`{"$imagescan": "test-scan:tag"}`: Use apenas a tag da imagem
+
+`{"$imagescan": "test-scan:digest"}`: Use o nome completo da imagem com digest (foo/bar:tag@sha256...)
+====
+
+
+Crie um GitRepo que inclua seu fleet.yaml
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: my-repo
+  namespace: fleet-local
+spec:
+  # change this to be your own repo
+  repo: https://github.com/rancher/fleet-examples
+  # define how long it will sync all the images and decide to apply change
+  imageScanInterval: 5m
+  # user must properly provide a secret that have write access to git repository
+  clientSecretName: secret
+  # specify the commit pattern
+  imageScanCommit:
+    authorName: foo
+    authorEmail: foo@bar.com
+    messageTemplate: "update image"
+----
+
+Tente enviar uma nova tag de imagem, por exemplo, `<image>:<new-tag>`. Aguarde um momento e deve haver um novo commit enviado para o seu repositório git para alterar a tag em deployment.yaml.
+Uma vez que a alteração é feita no repositório git, o Fleet lerá a alteração e implantará a mudança em seu cluster.

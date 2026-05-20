@@ -1,0 +1,24 @@
+= Criar Grupos de Cluster
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Clusters em um namespace podem ser colocados em um grupo de cluster. Um grupo de cluster é essencialmente um seletor nomeado.
+O único parâmetro para um grupo de cluster é essencialmente o seletor.
+Quando você chega a uma certa escala, os grupos de cluster se tornam uma maneira mais razoável de gerenciar seus clusters.
+Os grupos de cluster servem para fornecer um status agregado das implantações e também uma maneira mais simples de gerenciar alvos.
+
+Um grupo de cluster é criado criando um recurso `ClusterGroup` como mostrado abaixo
+
+[,yaml]
+----
+kind: ClusterGroup
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: production-group
+  namespace: clusters
+spec:
+  # This is the standard metav1.LabelSelector format to match clusters by labels
+  selector:
+    matchLabels:
+      env: prod
+----

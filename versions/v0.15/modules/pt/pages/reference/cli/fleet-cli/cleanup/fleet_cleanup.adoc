@@ -1,0 +1,21 @@
+= limpeza do Fleet
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Limpar recursos desatualizados
+
+----
+fleet cleanup [flags]
+----
+
+== Opções
+
+----
+  -h, --help   help for cleanup
+----
+
+== CONSULTE TAMBÉM
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gerenciar operações {product_name}
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Fleet cleanup clusterregistration]     - Limpar registros de cluster desatualizados
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Fleet cleanup gitjob]     - Limpar git jobs desatualizados

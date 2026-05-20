@@ -1,0 +1,362 @@
+= 查错
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+本节包含命令和故障排除提示{product_name}。
+
+== 查找问题根本原因的位置
+
+当{product_name}表现异常时，首先要检查的事项包括：
+
+* 管理集群上的`fleet-controller`日志：{product_name}是否未能将任何资源（包、包部署）的当前状态与其预期状态进行协调？
+* 管理集群上的`gitjob` pod日志：{product_name}在为监控的git 储存库中发现的新提交生成新包的作业时是否遇到任何问题？
+* 未正确部署资源的`GitRepo`状态：
+    ** 它列出了多少个`Ready Bundle Deployments`？
+    ** 列出的包部署有多少个是预期的？你期望看到多少个？
+        *** 请记住，`GitRepo`每个路径创建一个包；每个包会导致与目标集群数量相同的包部署。`Desired Ready Clusters`与您自己的期望之间的不匹配可能指向目标问题。
+    ** 在`GitRepo's`状态中列出了哪些资源？
+    ** 在`GitRepo's`状态中出现了哪个提交？
+
+如果问题特定于某个目标集群，用户应检查该集群上的Fleet agent日志：{product_name}是否未能在该集群上部署包部署？
+
+下一节将解释如何运行所有这些检查。
+
+其中一些可以通过xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]和xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]进行自动化。
+
+== 我该如何...
+
+=== 从`fleet-controller`获取日志？
+
+在部署`fleet-controller`的本地管理集群中，运行以下命令，并填写您的特定`fleet-controller` pod名称：
+
+ $ kubectl logs -l app=fleet-controller -n cattle-fleet-system
+
+=== 从`fleet-agent`获取日志？
+
+前往每个下游集群，并为本地集群运行以下命令，填入您的特定 `fleet-agent` pod 名称：
+
+----
+# Downstream cluster
+$ kubectl logs -l app=fleet-agent -n cattle-fleet-system
+# Local cluster
+$ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
+----
+
+=== 从 `GitRepos` 和 `Bundles` 获取详细的错误日志？
+
+通常，错误应该会出现在 Rancher UI 中。然而，如果那里没有显示足够的错误信息，您可以根据需要进一步研究，尝试以下一种或多种方法：
+
+* 有关该包的更多信息，请点击 `bundle`，将启用 YAML 模式。
+* 有关 GitRepo 的更多信息，请点击 `GitRepo`，然后在屏幕右上角点击 `View Yaml`。查看 YAML 后，检查 `status.conditions`；这里应该会显示详细的错误信息。
+* 检查 `fleet-controller` 的同步错误。
+* 如果在部署包时遇到问题，请检查下游集群中的 `fleet-agent` 日志。
+
+=== 从 `GitRepos` 和 `Bundles` 获取详细状态？
+
+对于调试和错误报告，资源状态字段的原始 JSON 最为有用。
+可以在 Rancher UI 中访问，或通过 `kubectl`：
+
+[,shell]
+----
+kubectl get bundle -n fleet-local fleet-agent-local -o=jsonpath={.status}
+kubectl get gitrepo -n fleet-default gitrepo-name -o=jsonpath={.status}
+----
+
+要下载除规格字段以外的更多资源：
+
+[,shell]
+----
+kubectl get clusters.fleet.cattle.io -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.metadata.labels}{"\t"}{.status}{"\n"}{end}'
+kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+----
+
+=== 检查 `Kustomize` 中的图表渲染错误？
+
+检查 xref:troubleshooting.adoc#_fetch_the_log_from_fleet_controller[`fleet-controller` 日志] 和 xref:troubleshooting.adoc#_fetch_the_log_from_the_fleet_agent[`fleet-agent` 日志]。
+
+=== 检查关于监视或检出 `GitRepo` 的错误，或关于在 `fleet.yaml` 中下载的 Helm 储存库的错误？
+
+使用以下命令检查 `gitjob-controller` 日志，填入您的特定 `gitjob` pod 名称：
+
+ $ kubectl logs -f $gitjob-pod-name -n cattle-fleet-system
+
+请注意，pod 内有两个容器：`step-git-source` 容器用于克隆 git 储存库，`fleet` 容器根据 git 储存库应用包。
+
+这些 pods 通常会有名为 `rancher/tekton-utils` 的镜像，`gitRepo` 名称作为前缀。按如下方式检查本地群集中的这些 Kubernetes 作业 pods 的日志，填入您的特定 `gitRepoName` pod 名称和名称空间：
+
+ $ kubectl logs -f $gitRepoName-pod-name -n namespace
+
+=== 检查 `fleet-controller` 的状态？
+
+您可以通过运行以下命令检查 `fleet-controller` pod 的状态：
+
+[,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller
+kubectl -n cattle-fleet-system get pods -l app=fleet-controller
+----
+
+[,bash]
+----
+NAME                                READY   STATUS    RESTARTS   AGE
+fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
+----
+
+=== 是否启用 `fleet-controller` 和 `fleet-agent` 的调试日志？
+
+在 Rancher v2.6.3 ({product_name} v0.3.8) 中，已添加启用调试日志的功能。
+
+* 转到 *仪表板*，然后在左侧导航菜单中单击 *本地群集*
+* 选择 *APP 与市场*，然后从下拉菜单中选择 *已安装的APP*
+* 从那里，您将升级 {product_name} 图表，使用值 `debug=true`。如果需要，您还可以设置 `debugLevel=5`。
+
+==== 通过 Fleet 安装选项
+
+您可以在 `cattle-system` 名称空间中创建一个配置映射 `rancher-config`，并使用 xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Fleet 安装选项]。
+
+例如，要启用 `fleet-controller` 和 `fleet-agent` 的调试日志，您可以创建一个包含以下内容的配置映射：
+
+[source,yaml]
+====
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    debug: true
+    debugLevel: 1
+    propagateDebugSettingsToAgents: true
+====
+
+修改配置将重新安装 Fleet 并重新部署代理。
+
+=== 记录资源随时间的变化
+
+有时记录资源随时间的变化是有用的。您可以通过监视资源并将输出保存到文件来做到这一点。
+
+[source,bash]
+====
+for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.fleet.cattle.io; do
+  {
+    kubectl get -A --show-managed-fields -w --output-watch-events -o yaml $kind > $kind-watch.yaml &
+    pid=$!
+    sleep 60
+    kill $pid
+  } &
+done ; wait
+====
+
+== *其他 {product_name} 问题的附加解决方案*
+
+=== CRD 的命名约定
+
+. 对于像 `clusters` 和 `gitrepos` 这样的 CRD 术语，您必须引用完整的 CRD 名称。例如，集群 CRD 的完整名称是 `cluster.fleet.cattle.io`，而 gitrepo CRD 的完整名称是 `gitrepo.fleet.cattle.io`。
+. `Bundles`，它们是从 `GitRepo` 创建的，遵循在创建 `GitRepo` 的同一工作区/名称空间中的 `$gitrepoName-$path` 模式。请注意，`$path` 是 git 储存库中包含 `bundle` (`fleet.yaml`) 的路径。
+. `BundleDeployments` 是从 `bundle` 创建的，遵循名称空间 `clusters-$workspace-$cluster-$generateHash` 中的 `$bundleName-$clusterName` 模式。请注意，`$clusterName` 是将要部署包的群集。
+
+=== Github 中的 HTTP 密钥
+
+在使用私有 git 储存库测试 {product_name} 时，您会注意到 Github 不再支持 HTTP 密钥。要解决此问题，请执行以下步骤：
+
+. 在 Github 中创建一个 https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[个人访问词元]。
++
+ifeval::["{product}" == "fleet"]
+. 在 Rancher 中，使用您的 Github 个人访问词元创建一个 HTTP https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/secrets[密钥]。您的用户名是可选的。
+endif::[]
++
+ifeval::["{product}" == "continuous-delivery"]
+. 在 Rancher 中，使用您的 Github 个人访问词元创建一个 HTTP https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/security/secrets-hub.html[密钥]。您的用户名是可选的。
+endif::[]
++
+. 将您的词元用作密钥。
+
+=== {product_name} 失败，响应代码错误：403
+
+如果您的 GitJob 返回以下错误，问题可能是 {product_name} 无法访问您在 xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`] 中指定的 Helm 储存库：
+
+----
+time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
+----
+
+执行以下步骤进行评估：
+
+* 检查您的储存库是否可以从开发机器访问，并且您可以成功下载 Helm 图表。
+* 检查您对 git 储存库的凭据是否有效。
+
+=== Helm 图表储存库：证书由未知机构签署。
+
+如果您的 GitJob 返回以下错误，您可能添加了错误的证书链：
+
+----
+time="2021-11-11T05:55:08Z" level=fatal msg="Get \"https://helm.intra/virtual-helm/index.yaml\": x509: certificate signed by unknown authority"
+----
+
+请使用以下命令验证您的证书：
+
+[,bash]
+----
+context=playground-local
+kubectl get secret -n fleet-default helm-repo -o jsonpath="{['data']['cacerts']}" --context $context | base64 -d | openssl x509 -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7a:1e:df:79:5f:b0:e0:be:49:de:11:5e:d9:9c:a9:71
+        Signature Algorithm: sha512WithRSAEncryption
+        Issuer: C = CH, O = MY COMPANY, CN = NOP Root CA G3
+...
+----
+
+=== {product_name} 部署停滞在修改状态。
+
+当您将包部署到 {product_name} 时，一些组件被修改，这导致 {product_name} 环境中的 "修改" 标志。
+
+要忽略由`fleet.yaml`生成的Helm安装与您集群中的资源之间的修改标志差异，请向您的Deployment的`fleet.yaml`中添加一个`diff.comparePatches`，如以下示例所示：
+
+[,yaml]
+----
+defaultNamespace: <namespace name>
+helm:
+  releaseName: <release name>
+  repo: <repo name>
+  chart: <chart name>
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    operations:
+    - {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
+    - {"op":"remove", "path":"/spec/template/spec/nodeSelector"}
+    jsonPointers: # jsonPointers allows to ignore diffs at certain json path
+    - "/spec/template/spec/priorityClassName"
+    - "/spec/template/spec/tolerations"
+----
+
+要确定应删除哪些操作，请观察目标集群中`fleet-agent`的日志。您应该会看到类似于以下内容的条目：
+
+[,text]
+----
+level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monitoring-monitoring-kube-state-metrics modified {\"spec\":{\"template\":{\"spec\":{\"hostNetwork\":false}}}}"
+----
+
+根据上述日志，您可以添加以下条目以删除该操作：
+
+[,json]
+----
+{"op":"remove", "path":"/spec/template/spec/hostNetwork"}
+----
+
+==== GitRepo同步失败，未重试
+
+一个`GitRepo`可能会停止同步并保持在**失败**状态。在这种情况下，GitJob控制器日志可能会显示网络超时或etcd请求超时。当{product_name}处于高负载时，这个问题更可能发生。
+
+{product_name}在检测到资源版本冲突时会重试应用操作。重试尝试的次数由`FLEET_APPLY_CONFLICT_RETRIES`环境变量控制。
+
+默认值为 `1`。这意味着{product_name}只尝试一次包的创建或更新，如果发生冲突则不重试。如果在高负载下频繁发生冲突，请增加此值以允许额外的重试尝试。将此变量配置为GitJob部署上的环境变量。
+
+例如，使用Helm安装时：
+
+[source,bash]
+----
+--set-string extraEnv[0].name=FLEET_APPLY_CONFLICT_RETRIES \
+--set-string extraEnv[0].value=3
+----
+
+此配置将重试次数设置为`3`，而不是默认值`1`。
+
+=== `GitRepo`或`Bundle`停留在修改状态
+
+*修改*意味着实际状态与期望状态之间存在不匹配，真实来源存在于git储存库中。
+
+. 查看xref:how-tos-for-users/bundle-diffs.adoc[包差异文档]以获取更多信息。
+. 您还可以强制更新`GitRepo`以执行手动重新同步。在左侧导航栏中选择**GitRepo**，然后选择**强制更新**。
+
+[NOTE]
+====
+当可能影响所创建包的ID的属性发生更改时（例如更改包的路径），新创建的包的状态可能会出现不一致，有时某些资源会停留在修改状态。
+
+在这种情况下，建议对受影响的 GitRepo 执行强制更新。
+====
+
+=== Bundle 拥有处于修改状态的水平 Pod 自动扩缩器（HPA）。
+
+对于具有 HPA 的 Bundles，预期状态是 `Modified`，因为该 Bundle 包含与部署时 Bundle 状态不同的字段——通常是 `ReplicaSet`。
+
+您必须在 `fleet.yaml` 中定义一个补丁，以根据 xref:troubleshooting.adoc#_gitrepo_or_bundle_stuck_in_modified_state[`GitRepo` 或 `Bundle` 卡在修改状态] 忽略此字段。
+
+以下是一个针对部署 `nginx` 位于名称空间 `default` 的补丁示例：
+
+[,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: nginx
+    namespace: default
+    operations:
+    - {"op": "remove", "path": "/spec/replicas"}
+----
+
+=== 如果集群不可用，或者处于 `WaitCheckIn` 状态怎么办？
+
+您需要重新导入并重新启动注册过程：在左侧导航栏中选择 *Cluster*，然后选择 *Force Update*。
+
+[CAUTION]
+====
+
+*等待 Rancher v2.5 的 CheckIn 状态*：
+
+ifeval::["{product}" == "fleet"]
+集群将显示为 `WaitCheckIn` 状态，因为 `fleet-controller` 正在尝试使用 Rancher 服务 IP 与 {product_name} 通信。然而，{product_name} 必须通过 Kubernetes 服务 DNS 直接与 Rancher 通信，使用服务发现，而不是通过代理。更多信息，请参见 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/rancher-behind-an-http-proxy/install-rancher[Rancher 文档]。
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+集群将显示为 `WaitCheckIn` 状态，因为 `fleet-controller` 正在尝试使用 Rancher 服务 IP 与 {product_name} 通信。然而，{product_name} 必须通过 Kubernetes 服务 DNS 直接与 Rancher 通信，使用服务发现，而不是通过代理。更多信息，请参见 https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/installation-and-upgrade/other-installation-methods/http-proxy/install-rancher.html [Rancher 文档]。
+endif::[]
+====
+
+
+=== GitRepo 报告 `gzip: invalid header`。
+
+当您看到如下错误 ... 时，
+
+[,sh]
+----
+Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid header
+----
+
+... helm chart 的内容不正确。手动将 chart 下载到本地计算机并检查内容。
+
+=== 代理不再注册。
+
+您可以通过设置 `redeployAgentGeneration` 强制重新部署给定集群的代理。
+
+[,sh]
+----
+kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
+----
+
+=== 将本地群集迁移到 {product_name} 默认集群工作区吗？
+
+用户可以创建新的工作区并在工作区之间移动集群。
+目前无法将本地群集从 `fleet-local` 移动到另一个工作区。
+
+=== Bundle 部署失败："资源已存在" 错误
+
+如果您的 Bundle 在部署过程中遇到以下错误信息：
+
+[,sh]
+----
+not installed: rendered manifests contain a resource that already
+exists. Unable to continue with install: ClusterRole "grafana-clusterrole"
+in namespace "" exists and cannot be imported into the current release: invalid
+ownership metadata; annotation validation error: key "meta.helm.sh/release-namespace"
+must equal "ns-2": current value is "ns-1"
+----
+
+此错误发生是因为集群中已经存在相同的 `releaseName` Helm 资源。要解决此问题，您需要更改要创建的资源的 `releaseName` 以避免冲突。

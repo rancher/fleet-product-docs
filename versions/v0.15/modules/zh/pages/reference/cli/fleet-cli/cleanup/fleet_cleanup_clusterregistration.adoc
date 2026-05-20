@@ -1,0 +1,27 @@
+= Fleet清理集群注册
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+清理过时的集群注册
+
+----
+fleet cleanup clusterregistration [flags]
+----
+
+== 选项
+
+----
+      --context string      kubeconfig context for authentication
+      --debug               Turn on debug logging
+      --debug-level int     If debugging is enabled, set klog -v=X
+      --factor string       Factor to increase delay between deletes (default: 1.1)
+  -h, --help                help for clusterregistration
+  -k, --kubeconfig string   kubeconfig for authentication
+      --max string          Maximum delay between deletes (default: 5s)
+      --min string          Minimum delay between deletes (default: 10ms)
+  -n, --namespace string    namespace (default "fleet-local")
+----
+
+== 另请参阅
+
+* xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet清理]     - 清理过时的资源

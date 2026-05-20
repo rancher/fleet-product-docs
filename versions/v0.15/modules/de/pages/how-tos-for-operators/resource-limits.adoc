@@ -1,0 +1,118 @@
+:doctype: book
+
+= Ressourcengrenzen
+:revdate: 2026-02-25
+:page-revdate: {revdate}
+
+{product_name} unterstützt die Konfiguration von CPU- und Arbeitsspeicher-Ressourcenanforderungen und -grenzen an zwei Stellen:
+
+* *Management-Cluster-Controller*: konfiguriert über das `resources`-Feld des Helm-Charts, wie auf dieser Seite beschrieben.
+* *Downstream-Cluster-Agenten*: pro Cluster über das `agentResources`-Feld der `Cluster`-Ressource konfiguriert.
+
+[NOTE]
+====
+Wenn Sie {product_name} innerhalb von Rancher ausführen, verwenden Sie die `rancher-config` ConfigMap, um Helm-Werte zu übergeben, anstatt Helm direkt zu verwenden.
+Die auf dieser Seite beschriebenen `resources`-Felder gelten weiterhin. Geben Sie die unter dem `fleet`-Schlüssel in der ConfigMap verschachtelten Felder an.
+
+Für weitere Informationen verweisen Sie auf xref:reference/ref-configuration.adoc[Konfiguration].
+====
+
+== Standardressourcen
+
+Setzen Sie einen Standard für alle Controller-Container mit dem obersten `resources`-Feld:
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 8000m
+    memory: 8Gi
+  requests:
+    cpu: 250m
+    memory: 768Mi
+----
+
+Übergeben Sie dies an Helm während der Installation oder des Upgrades:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  --set resources.limits.cpu=8000m \
+  --set resources.limits.memory=8Gi \
+  --set resources.requests.cpu=250m \
+  --set resources.requests.memory=768Mi
+----
+
+== Pro-Komponenten-Überschreibungen
+
+Einzelne Controller-Container können den Standard mit komponentenspezifischen Einstellungen überschreiben.
+Die unterstützten Komponenten-Schlüssel sind:
+
+* `fleetController` : der Haupt-Fleet-Controller
+* `fleetCleanup` : der Bereinigungs-Controller
+* `fleetAgentmanagement` : der Agent-Management-Controller
+* `gitjob` : der GitJob-Controller
+* `helmops` : der HelmOps-Controller
+
+Wenn ein Komponenten-Schlüssel vorhanden ist, hat dessen Wert Vorrang vor dem Standard `resources.limits` und `resources.requests`. 
+
+Um Ressourcenbeschränkungen für einen Container unabhängig von den Standardeinstellungen zu entfernen, setzen Sie eine Komponente auf ein leeres Objekt `{}`.
+
+Beispiel `values.yaml` mit komponentenspezifischen Überschreibungen:
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  fleetController:
+    limits:
+      cpu: 8000m
+      memory: 8Gi
+    requests:
+      cpu: 250m
+      memory: 768Mi
+  gitjob: {}         # no resource constraints for gitjob
+  helmops: {}        # no resource constraints for helmops
+----
+
+In diesem Beispiel:
+
+* `fleetController` verwendet eigene Limits und Anforderungen.
+* `gitjob` und `helmops` haben keine Ressourcengrenzen.
+* `fleetCleanup` und `fleetAgentmanagement` fallen auf die Standardwerte der obersten Ebene zurück.
+
+Wenden Sie die Konfiguration mit Helm an:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  -f values.yaml
+----
+
+== Ressourcen des Downstream-Cluster-Agenten
+
+Um Ressourcenlimits und -anforderungen für den Fleet-Agenten, der auf einem bestimmten Downstream-Cluster läuft, zu konfigurieren, setzen Sie `agentResources` auf die entsprechende `Cluster`-Ressource:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: fleet-default
+spec:
+  agentResources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+----
+
+Dies ist unabhängig von den oben genannten Einstellungen des Management-Cluster-Controllers und gilt nur für den Agenten, der auf diesem Downstream-Cluster bereitgestellt wird.

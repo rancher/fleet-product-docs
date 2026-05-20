@@ -1,0 +1,66 @@
+= Fleet-Dump
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+Cluster-Daten in ein Archiv exportieren.
+
+== Übersicht
+
+Daten aus einem Cluster in ein Archiv exportieren, einschließlich:
+*  {product_name}-verwaltete Ressourcen
+* Kubernetes-Ereignisse
+* Metriken, die von Fleet-Controllern bereitgestellt werden
+
+[source,text]
+----
+fleet dump <flags>
+----
+
+== Flaggen
+
+[source,text]
+----
+  -p <path>         Path to the archive file to generate
+----
+
+== Ausgabe
+
+=== Inhalt
+
+Der `dump`-Befehl erzeugt ein `.tgz`-Archiv, das die folgenden Daten enthält:
+
+* Rohressourcen von Fleet im YAML-Format:
+** Bundles
+** BundleDeployments
+** BundleNamespaceMappings
+** Cluster
+** ClusterGroups
+** GitRepos
+** GitRepoRestrictions
+** HelmOps
+
+* Kubernetes-Ereignisse für die folgenden Namespaces:
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** jeder Namespace, der eine Fleet-`Cluster`-Ressource enthält
+
+* Metriken, die von `monitoring-*`-Diensten im `cattle-fleet-system`-Namespace bereitgestellt werden.
+Dies umfasst typischerweise `monitoring-gitjob`- und `monitoring-fleet-controller`-Dienste sowie deren
+xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[sharded] Gegenstücke, falls vorhanden.
+
+==== Format
+
+Rohressourcen von {product_name} werden jeweils in einer anderen Datei gespeichert, die als `<kind>_<namespace>_<name>` (Dateiname) benannt ist, wobei `<kind>` einer der in dem vorherigen Abschnitt genannten Rohressourcennamen in Kleinbuchstaben ist.
+
+Kubernetes-Ereignisse werden nach Namespace in Dateien aufgeteilt, wobei jede Datei als `events_<namespace>` (Dateiname) benannt ist.
+Sie enthalten ein Ereignis pro Zeile, wobei jedes Ereignis in JSON kodiert ist.
+
+Metriken werden in Dateien nach Dienst gespeichert, wobei jede Datei als `metrics_<service_name>` (Dateiname) benannt ist.
+Ihr Inhalt sind `GET`-Antwortkörper, die von jedem Dienst über den `/metrics`-Endpunkt empfangen wurden, unverändert.
+
+== SIEHE AUCH
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet-Monitor]

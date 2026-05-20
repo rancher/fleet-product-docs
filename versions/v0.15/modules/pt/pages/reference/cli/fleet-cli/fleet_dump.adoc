@@ -1,0 +1,66 @@
+= descarregar Fleet
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+Descarregar dados do cluster para um arquivo.
+
+== Visão Geral
+
+Descarregar dados de um cluster para um arquivo, incluindo: +
+*  {product_name}-recursos gerenciados +
+* eventos do Kubernetes +
+* Métricas expostas pelos controladores do Fleet
+
+[source,text]
+----
+fleet dump <flags>
+----
+
+== Flags
+
+[source,text]
+----
+  -p <path>         Path to the archive file to generate
+----
+
+== Saída
+
+=== Conteúdo
+
+O comando `dump` produz um arquivo `.tgz` contendo os seguintes dados:
+
+* Recursos brutos do Fleet, em formato YAML:
+** Bundles
+** Implantações de Bundle
+** BundleNamespaceMappings
+** Clusters
+** ClusterGroups
+** GitRepos
+** Restrições de Repositório Git
+** Operações Helm
+
+* Eventos do Kubernetes para os seguintes namespaces:
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** cada namespace contendo um recurso Fleet `Cluster`
+
+* Métricas expostas pelos serviços `monitoring-*` que residem no namespace `cattle-fleet-system`.
+Isso normalmente inclui serviços `monitoring-gitjob` e `monitoring-fleet-controller`, bem como seus equivalentes xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[sharded], se houver.
+
+==== Formato
+
+Recursos brutos {product_name} são armazenados em arquivos diferentes, nomeados como `<kind>_<namespace>_<name>`, onde `<kind>` é
+um dos nomes de recursos brutos mencionados na seção anterior, em letras minúsculas.
+
+Eventos do Kubernetes são divididos em arquivos por namespace, cada arquivo nomeado como `events_<namespace>`.
+Eles contêm um evento por linha, cada evento sendo codificado em JSON.
+
+Métricas são armazenadas em arquivos por serviço, cada arquivo sendo nomeado `metrics_<service_name>`.
+O conteúdo consiste em corpos de resposta `GET` recebidos do endpoint `/metrics` de cada serviço, literalmente.
+
+== CONSULTE TAMBÉM
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]

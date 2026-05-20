@@ -1,0 +1,24 @@
+= 创建集群组
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+名称空间中的集群可以放入集群组中。集群组本质上是一个命名选择器。
+集群组的唯一参数本质上就是选择器。
+当你达到一定规模时，集群组成为管理集群的更合理方式。
+集群组的目的是提供部署的汇总状态，并且提供更简单的管理目标的方式。
+
+通过创建如下的`ClusterGroup`资源来创建集群组。
+
+[,yaml]
+----
+kind: ClusterGroup
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: production-group
+  namespace: clusters
+spec:
+  # This is the standard metav1.LabelSelector format to match clusters by labels
+  selector:
+    matchLabels:
+      env: prod
+----

@@ -1,0 +1,158 @@
+= HelmOps
+:revdate: 2025-07-01
+:page-revdate: {revdate}
+
+HelmOps ist eine vereinfachte Möglichkeit, Bundles zu erstellen, indem direkt auf ein Helm-Repository oder ein OCI-Registry verwiesen wird, ohne ein Git-Repository einrichten zu müssen.
+
+== Zusammenfassung
+
+Wenn eine +GitRepo+ Ressource erstellt wird, überwacht {product_name} ein Git-Repository und erstellt ein oder mehrere Bundles aus den im +GitRepo+ angegebenen Pfaden, wobei ein GitOps- oder git-gesteuerter Ansatz für Continuous Deployment verfolgt wird. Dies erfordert, dass ein Git-Repository verfügbar ist, das möglicherweise +fleet.yaml+ oder andere Konfigurationsdateien enthält.
+
+HelmOps hingegen verlässt sich auf ein Helm-Registry als seine Quelle der Wahrheit, genau wie GitOps ein Git-Repository verwendet. Die Nutzung von HelmOps erfolgt durch die Erstellung einer +HelmOp+-Ressource, wobei ähnliche Optionen wie in einer +GitRepo+-Ressource und/oder einer +fleet.yaml+-Datei zur Ausrichtung von Bundles auf Cluster und zur Konfiguration von Chart-Werten zur Verfügung stehen.
+
+HelmOps ist das Konzept. Eine +HelmOp+ ist eine benutzerdefinierte Kubernetes-Ressource, die von {product_name} verwaltet wird.
+
+Der Fleet HelmOps-Controller wird leichte Bundles erstellen, die auf referenzierte Helm-Charts verweisen, ohne sie herunterzuladen. Es wird jedoch die Chart-Version aufgelöst, um sicherzustellen, dass die gleiche und neueste Version eines Charts in allen angestrebten Downstream-Clustern bereitgestellt wird. Dies gilt für die folgenden Fälle:
+
+* eine Wildcard- oder leere Version ist angegeben
+* eine https://semver.org/semantic[https://semver.org/semantic] Versionsbeschränkung ist angegeben, wie +0.1.x+, ++< 2.0.0++. Weitere Informationen zu unterstützten Einschränkungen https://github.com/Masterminds/semver?tab=readme-ov-file#checking-version-constraints[Überprüfung der Versionsbeschränkungen].
+
+Wenn die Einschränkungen ungültig sind oder keine passende Version gefunden werden kann, zeigt {product_name} eine beschreibende Fehlermeldung an.
+
+Bei der Verwendung dieser Funktion werden Helm-Charts von Downstream-Clustern heruntergeladen, die daher Zugriff auf Helm-Registries haben müssen.
+
+== Erstellung einer HelmOp-Ressource
+
+Eine +HelmOp+ Ressource kann wie folgt erstellt werden, um Helm-Charts direkt bereitzustellen:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+name: my-awesome-helmop
+namespace: "fleet-local"
+spec:
+helm:
+releaseName: my-fantastic-chart
+repo: [https://foo.bar/baz](https://foo.bar/baz)
+chart: fantastic-chart
+version: ''
+namespace: that-amazing-namespace
+helmSecretName: my-top-secret-helm-access
+insecureSkipTLSVerify: false
+----
+
+Für private Charts ist es erforderlich, dass ein Helm-Zugriffsgeheimnis (verweist auf das Feld +helmSecretName+) im selben Namespace wie die +HelmOp+ Ressource erstellt wird. Der Fleet HelmOps-Controller kümmert sich um das Kopieren dieses Geheimnisses in die angestrebten Downstream-Cluster, sodass der Fleet agent auf das Registry zugreifen kann.
+
+== Unterstützte Anwendungsfälle
+
+Mit 3 Feldern, die zur Referenzierung eines Helm-Charts zur Verfügung stehen, lassen Sie uns einige Regeln klären. Laut der Helm-Installationsdokumentation https://helm.sh/docs/helm/helm_install/[documentation] gibt es 6 Möglichkeiten, ein Chart zu installieren. 3 davon verwenden entweder Repository-Aliase oder das lokale Dateisystem, die im Kontext von Fleet's HelmOps nicht verfügbar sind. Es bleiben 3 Optionen:
+
+=== Absolute URL
+
+Ein Helm-Chart über eine absolute URL zu referenzieren, ist so einfach wie die Angabe einer URL zu einer +.tgz+-Datei im +chart+-Feld. Die Helm-Optionen würden folgendermaßen aussehen:
+
+[source,yaml]
+----
+helm:
+chart: [https://example.com/charts/my-chart-1.2.3.tgz](https://example.com/charts/my-chart-1.2.3.tgz)
+# can be omitted
+
+repo: ''
+version: ''
+----
+
+Wenn in diesem Fall ein nicht leeres Repository oder eine nicht leere Version angegeben wird, erscheint ein Fehler im HelmOp-Status und es wird kein Bundle erstellt, was die Bereitstellung abbricht.
+
+=== Chart-Referenz und Repo-URL
+
+Ein Helm-Chart kann auch über seinen Repository- und Chartnamen referenziert werden, mit einer optionalen Version, die eine statische Version oder eine Versionsbeschränkung sein kann.
+
+In diesem Fall kann Polling sinnvoll sein, da die Referenzierung des Charts über ein Repository {product_name} ermöglicht, das +index.yaml+ des Repositories auf verfügbare Versionen zu überprüfen, die mit dem +version+-Feld übereinstimmen.
+
+Beispiel:
+
+[source,yaml]
+----
+helm:
+repo: [https://foo.bar/baz](https://foo.bar/baz)
+chart: fantastic-chart
+version: '1.2.3'
+----
+
+In diesem Fall darf nur das +version+-Feld leer sein. Wenn eines der Felder +chart+ oder +repo+ leer ist, wird {product_name} einen Fehler im HelmOp-Status setzen und es wird kein Bundle erstellt.
+
+[[oci-registry]]
+=== OCI-Registry
+
+Helm unterstützt OCI-Registries, die in {product_name} über das +repo+-Feld referenziert werden können.
+
+In diesem Fall wären die Helm-Optionen ähnlich wie folgt:
+
+[source,yaml]
+----
+helm:
+repo: oci://foo.bar/baz
+version: '1.2.3' # optional
+----
+
+Wenn eine OCI-URL im +repo+-Feld angegeben wird, führt ein nicht leeres +chart+-Feld zu einem Fehler im HelmOps-Status, und es wird kein Bundle erstellt.
+
+
+[NOTE]
+====
+In diesem Fall wird {product_name} OCI-Artefakte herunterladen. Das bedeutet, dass:
+
+* Das `version`-Feld repräsentiert das Tag eines OCI-Artefakts, das von der tatsächlichen Version des im OCI-Artefakt gespeicherten Charts abweichen kann.
+* {product_name} kann regelmäßig verfügbare OCI-Tags überprüfen, die sowohl mit dem bereitgestellten Repository als auch mit der Versionsbeschränkung übereinstimmen, konfiguriert über das Abfrageintervall.
+* Ein OCI-Artefakt kann mehrere Helm-Charts enthalten. Dieser Anwendungsfall wurde nur mit OCI-Artefakten validiert, die ein einzelnes Helm-Chart enthalten.
+====
+
+
+== Polling
+
+{product_name} kann das referenzierte Helm-Registry abfragen und regelmäßig überprüfen, ob neue Versionen verfügbar sind. Natürlich macht dies nur Sinn, wenn das +version+ Feld eine Versionsbeschränkung enthält, die auf mehrere Versionen aufgelöst werden kann.
+
+=== Wie man es aktiviert
+
+Das Abfragen umfasst ein +pollingInterval+ Feld, ähnlich dem, was für GitOps existiert. Im Fall von HelmOps beträgt das Standardabfrageintervall jedoch 0 Sekunden, was bedeutet, dass das Abfragen deaktiviert ist.
+
+Die folgenden Bedingungen müssen für eine HelmOp-Ressource erfüllt sein, damit {product_name} das Abfragen darauf aktivieren kann:
+
+* Das +pollingInterval+ Feld ist auf eine nicht-null-Dauer (z. B. +10s+, +1m+ usw.) eingestellt.
+* Das +version+ Feld ist auf eine gültige semantische Versionsbeschränkung (z.B. +2.x.x+, ++< 1.0++) eingestellt, nicht auf eine statische Version (z.B. 1.2.3).
+
+=== Funktion
+
+Wenn das Abfragen aktiviert ist, führt {product_name} in dem konfigurierten Intervall Folgendes aus:
+
+* Überprüfen des referenzierten Helm-Registry auf die neueste Version, die mit der im Feld +version+ konfigurierten Versionsbeschränkung übereinstimmt.
+* Wenn eine neue Version gefunden wird, wird diese Version auf das Bundle gesetzt, das aus dem HelmOp-Objekt erstellt wurde, sodass die neue Version des Helm-Charts auf allen Ziel-Clustern installiert wird.
+* Aktualisieren des Status der HelmOp-Ressource:
+** Setzen seiner +Polled+ Bedingung:
+*** mit +true+, wenn das Abfragen erfolgreich war
+*** mit +false+, falls ein Fehler aufgetreten ist
+** Aktualisieren des ++Last Polling Time++ Feldes auf die Startzeit des letzten Abfrageversuchs, auch wenn dieser fehlgeschlagen ist.
+
+== Verwendung privater Helm-Repositories
+
+Dies funktioniert auf die gleiche Weise wie bei gitOps, indem ein Helm-Zugriffs-Secret über das Feld `helmSecretName` referenziert wird.
+
+Für weitere Informationen siehe xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Privates Helm-Repository].
+
+Der Teil über die Verwendung separater Anmeldeinformationen für jeden Pfad ist jedoch nicht relevant, da eine HelmOp-Ressource im Gegensatz zu einem GitRepo nur auf ein einzelnes Helm-Chart verweist.
+
+== Statusaktualisierungen
+
+Die Erstellung einer HelmOp-Ressource führt dazu, dass ein Bundle erstellt wird, wenn die Helm-Optionen gültig sind und eine Chart-Version gefunden werden kann.
+
+Der Status dieses Bundles wird sich im Laufe der Zeit entwickeln, da aus ihm für jeden Ziel-Cluster Bundle-Bereitstellungen erstellt werden und sich die Status dieser Bundle-Bereitstellungen selbst entwickeln und an das Bundle propagiert werden.
+
+{product_name} propagiert Updates vom Bundle-Status zum Status der HelmOp-Ressource selbst. Dies beinhaltet:
+
+* Ein Anzeige-Status mit einer Zusammenfassung sowie erwarteten und einsatzbereiten Clusterzahlen.
+* Bedingungen, die weitere Informationen über den Zustand der Ressource liefern, ob diese gültig ist und ob ihre Bereitstellungen einsatzbereit sind.
+* Ressourcenzahlen nach Status
+
+Siehe xref:reference/ref-status-fields.adoc[Statusfelder] für weitere Details zu Ressourcenzahlen und Bedingungen.

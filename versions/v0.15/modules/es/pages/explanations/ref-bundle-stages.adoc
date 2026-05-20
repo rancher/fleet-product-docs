@@ -1,0 +1,69 @@
+= Ciclo de Vida del Paquete
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Un paquete es un recurso interno utilizado para la orquestación de recursos desde git. Cuando se escanea un GitRepo, producirá uno o más paquetes.
+
+Para demostrar el ciclo de vida de un {product_name} paquete, utilizaremos https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[multi-cluster/helm] como estudio de caso.
+
+. El usuario creará un xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] que apunte al repositorio multi-cluster/helm.
+. El `gitjob-controller` sincronizará los cambios del GitRepo y detectará cambios del sondeo o del xref:how-tos-for-users/webhook.adoc[evento webhook]. Con cada cambio de commit, el `gitjob-controller` creará un trabajo que clonará el repositorio git, leerá contenido del repositorio como `fleet.yaml` y otros manifiestos, y creará el {product_name} xref:reference/ref-status-fields.adoc#_bundles[paquete].
++
+[NOTE]
+====
+El pod del trabajo con el nombre de imagen `rancher/tekton-utils` estará bajo el mismo espacio de nombres que el GitRepo.
+====
++
+. El `fleet-controller` luego sincroniza los cambios del paquete. De acuerdo con los objetivos, el `fleet-controller` creará recursos `BundleDeployment`, que son una combinación de un paquete y un clúster objetivo.
+. El `fleet-agent` luego extraerá el `BundleDeployment` del {product_name} controlplane. El agente despliega manifiestos de paquetes como un https://helm.sh/docs/intro/install/[gráfico de Helm] desde el `BundleDeployment` en los clústeres en sentido descendente.
+. El `fleet-agent` continuará monitoreando el paquete de aplicación e informará de los estados en el siguiente orden: +bundledeployment+ > +paquete+ > +GitRepo+ > ++clúster++.
+
+Este diagrama muestra las diferentes etapas de renderizado que atraviesa un paquete hasta su despliegue.
+
+image::FleetBundleStages.svg[Etapas del Paquete]
+
+[[examining-the-bundle-lifecycle-with-the-cli]]
+== Examinando el Ciclo de Vida del Paquete con la CLI
+
+Varios comandos de la CLI de fleet ayudan con la depuración de paquetes.
+
+image::fleetCLI-key-components.svg[Un diagrama que explica cómo funcionan los comandos clave de Fleet CLI]
+
+=== fleet apply
+
+xref:reference/cli/fleet-cli/fleet_apply.adoc[Aplicar] renderiza una carpeta con recursos de Kubernetes, como un gráfico de Helm, manifiestos o carpetas de kustomize, en un recurso de {product_name} paquete.
+
+----
+git clone https://github.com/rancher/fleet-test-data
+cd fleet-test-data
+fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
+----
+
+Más información sobre cómo crear paquetes con `fleet apply` se puede encontrar en la xref:how-tos-for-users/bundle-add.adoc[sección sobre paquetes].
+
+[[fleet-target]]
+=== fleet target
+
+xref:reference/cli/fleet-cli/fleet_target.adoc[Objetivo] lee un paquete de un archivo y trabaja con un clúster en vivo para imprimir el recurso `bundledeployment` y `content`, que crearía el fleetcontroller. Toma un espacio de nombres como argumento, por lo que puede buscar en ese espacio de nombres recursos de clúster, por ejemplo. También puede volcar la estructura de datos que se utiliza durante "la fijación de objetivos", para que se puedan verificar las decisiones tomadas respecto a las etiquetas y nombres de clúster.
+
+=== fleet deploy
+
+xref:reference/cli/fleet-cli/fleet_deploy.adoc[Desplegar] toma la salida de `fleet target`, o un recurso de bundledeployment/contenido volcado y lo despliega en un clúster, tal como lo haría el fleet-agent. Soporta un modo de prueba en seco, para imprimir los recursos que se crearían, en lugar de instalarlos con Helm. Dado que el comando no crea los recursos de entrada, un Fleet agent en funcionamiento probablemente eliminaría la ampliación.
+
+El comando deploy se puede utilizar para llevar paquetes a clústeres en entorno aislado.
+
+=== CLI de ciclo de vida
+
+Los comandos de la CLI de Fleet te ayudan a depurar y entender el ciclo de vida del paquete. El siguiente ejemplo utiliza el ciclo de vida completo del paquete usando CLI:
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-test-data
+cd fleet-test-data
+fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
+fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
+fleet deploy --input-file bd.yaml --dry-run
+----
+
+Para información sobre aplicar, consulta xref:how-tos-for-users/bundle-add.adoc[Crear un recurso de paquete].
+

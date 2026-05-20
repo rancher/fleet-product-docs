@@ -1,0 +1,86 @@
+= Fleet分析
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+`fleet monitor`によって作成されたスナップショットを分析する
+
+[source,text]
+----
+fleet analyze [flags] MONITOR_FILE
+----
+
+== オプション
+
+[source,text]
+----
+    --compare      Show comparison between snapshots living in different files
+    --detailed     Show detailed analysis with all information
+    --diff         Show changes over time, comparing consecutive snapshot from the same file
+    --issues       Show only resources with issues (useful for quick health checks)
+    --json         Format output as JSON
+    --no-color     Disable color in output
+----
+
+== 使用方法
+
+[source,bash]
+----
+# Analyze latest snapshot
+fleet analyze monitor.json
+
+# Analyze from stdin
+fleet monitor | fleet analyze
+
+# Show all snapshots in file
+fleet analyze --all monitor.json
+
+# Show changes between consecutive snapshots
+fleet analyze --diff monitor.json
+
+fleet analyze --issues monitor.json
+
+# Detailed analysis with controller info and events
+fleet analyze --detailed monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare before.json after.json
+
+# JSON output for programmatic use
+fleet analyze --json monitor.json
+
+# Disable colored output
+fleet analyze --no-color monitor.json
+----
+
+== 出力モード
+
+- **概要（デフォルト）**:リソースと診断の高レベルの概要
+- **すべて**:マルチスナップショットファイル内のすべてのスナップショットの概要
+- **差分**:連続するスナップショット間の変更を表示
+- **問題**:検出された問題のあるリソースのみを表示
+- **詳細**:コントローラー情報、APIの整合性、イベントを含む完全な分析
+- **JSON**:スクリプトと自動化のための機械可読出力
+
+== マルチスナップショット分析
+
+あなたのmonitor.jsonファイルに複数のスナップショットが含まれている場合（1行につき1つのJSONオブジェクト）：
+
+[source,bash]
+----
+# Show summary of latest snapshot only
+fleet analyze monitor.json
+
+# Show differences between consecutive snapshots
+fleet analyze --diff monitor.json
+
+# Show summary of all snapshots
+fleet analyze --all monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare snapshot2.json snapshot1.json
+----
+
+== 関連項目
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]

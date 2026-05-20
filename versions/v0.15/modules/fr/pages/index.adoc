@@ -1,0 +1,16 @@
+= Présentation
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::fleet-architecture.svg[Statique, 600]
+
+[discrete]
+=== Qu'est-ce que {product_name} ?
+
+* *Cluster engine* : {product_name} est un moteur de gestion et de déploiement de conteneurs conçu pour offrir aux utilisateurs un meilleur contrôle sur la grappe locale et un suivi constant via *GitOps*. {product_name} se concentre non seulement sur la capacité à évoluer, mais il donne également aux utilisateurs un haut degré de contrôle et de visibilité pour surveiller exactement ce qui est installé sur le cluster.
+* *Gestion des déploiements* : {product_name} peut gérer les déploiements depuis git de YAML Kubernetes brut, de charts Helm, de Kustomize, ou de toute combinaison des trois. Quelle que soit la source, toutes les ressources sont dynamiquement transformées en charts Helm, et Helm est utilisé comme moteur pour déployer toutes les ressources dans le cluster. En conséquence, les utilisateurs peuvent bénéficier d'un haut degré de contrôle, de cohérence et d'auditabilité de leurs clusters.
+
+[discrete]
+=== Configuration Management
+
+{product_name} est fondamentalement un ensemble de xref:explanations/concepts.adoc[définitions de ressources personnalisées (CRDs)] Kubernetes et de contrôleurs qui gèrent GitOps pour un seul cluster Kubernetes ou un déploiement à grande échelle de clusters Kubernetes. Il s'agit d'un système d'initialisation distribué qui permet de personnaliser facilement les applications et de gérer les grappes HA à partir d'un seul point.

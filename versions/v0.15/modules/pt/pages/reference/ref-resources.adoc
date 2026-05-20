@@ -1,0 +1,95 @@
+= Lista de Recursos Implantados
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Após instalar {product_name} no Rancher, esses recursos são criados no cluster upstream.
+
+Veja também xref:explanations/namespaces.adoc[Namespaces].
+
+== Do Helm, Configuração Inicial
+
+[cols="1,1,1",options="header"]
+|===
+|Tipo |Nome |Namespace
+
+|ClusterRole |fleet-controller |-
+|ClusterRole |gitjob |-
+|ClusterRoleBinding |fleet-controller |-
+|ClusterRoleBinding |gitjob-binding |-
+|ConfigMap |fleet-controller |cattle-fleet-system
+|Implantação |fleet-controller |cattle-fleet-system
+|Implantação |gitjob |cattle-fleet-system
+|Função |fleet-controller |cattle-fleet-system
+|Função |gitjob |cattle-fleet-system
+|RoleBinding |fleet-controller |cattle-fleet-system
+|RoleBinding |gitjob |cattle-fleet-system
+|Serviço |gitjob |cattle-fleet-system
+|ServiceAccount |fleet-controller |cattle-fleet-system
+|ServiceAccount |gitjob |cattle-fleet-system
+|===
+
+== Gerado pelo bootstrap
+
+[cols="1,1,1",options="header"]
+|===
+|Tipo |Nome |Namespace
+
+|clusters.fleet.cattle.io |local |fleet-local
+|clusters.provisioning.cattle.io |local |fleet-local
+|clusters.management.cattle.io |local |-
+|ClusterGroup |default |fleet-local
+|Pacote |fleet-agent-local |fleet-local
+|===
+
+== Para Cada Cluster Registrado
+
+[cols="1,1,1",options="header"]
+|===
+|Tipo |Nome |Namespace
+
+|clusters.provisioning.cattle.io | |fleet-default (padrão)
+|clusters.management.cattle.io |gerado |-
+|clusters.fleet.cattle.io | |fleet-default
+|Segredo (opaco) |kubeconfig |fleet-default
+|ClusterRegistrationToken | |fleet-default
+|ServiceAccount |importar |fleet-default
+|RoleBinding |solicitar |fleet-default
+|RoleBinding |solicitar |cluster-fleet-default
+|Função |solicitar |cluster-fleet-default
+|Segredo (token-de-conta-de-serviço) |import-token |fleet-default
+|Namespace |cluster-fleet-default |-
+|ClusterRegistration |fleet-default |
+|ServiceAccount |solicitar |fleet-default
+|Segredo (credencial-do-agente) |c-ID |fleet-default
+|Segredo (token-de-conta-de-serviço) |request-token |fleet-default
+|Pacote |fleet-agent-name |fleet-name
+|Implantação de Pacote |fleet-agent-name |cluster-fleet-default
+|===
+
+== Para Cada Pacote, Por Cluster
+
+[cols="1,1,1",options="header"]
+|===
+|Tipo |Nome |Namespace
+
+|Pacote |name |fleet-default
+|Segredo (pacote) |name |fleet-default
+|Implantação de Pacote |name |cluster-fleet-default
+|Segredo (implantação-de-pacote) |name |cluster-fleet-default
+|Segredo (opaco, acesso-ao-conteúdo) |name |cluster-fleet-default
+|conteúdo |- |-
+|===
+
+== Para Cada GitRepo
+
+[cols="1,1,1",options="header"]
+|===
+|Tipo |Nome |Namespace
+
+|ServiceAccount |name |fleet-default
+|Função |name |fleet-default
+|RoleBinding |name |fleet-default
+|Job |name |fleet-default
+|ConfigMap |name-config |fleet-default
+|Segredo |name-cabundle |fleet-default
+|===

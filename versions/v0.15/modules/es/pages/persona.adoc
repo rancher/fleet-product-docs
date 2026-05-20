@@ -1,0 +1,30 @@
+= Personas Clave y Sus Roles
+:revdate: 23-07-2025
+:page-revdate: {revdate}
+
+[cols="1,2,2", options="header"]
+|===
+|Persona |Responsabilidades |Principales ventajas
+
+|Ingenieros de Plataforma
+a|* Configurar y gestionar {product_name} la instalación a través de clústeres.
+* Definir y hacer cumplir los despliegues de aplicaciones y políticas en múltiples clústeres.
+* Gestionar GitRepo y `fleet.yaml` las configuraciones de.
+* Realizar actualizaciones y reversiones a nivel de clúster.
+a|* Control centralizado a través de clústeres.
+* Mejora de la estandarización y el cumplimiento.
+
+|Desarrolladores de Aplicaciones
+a|* Estructurar charts o manifiestos de Helm en Git.
+* Definir objetivos de despliegue y entornos en `fleet.yaml`.
+* Monitorear el estado del despliegue a través de la interfaz de usuario o CLI.
+a|* Flujos de trabajo basados en GitOps.
+* Despliegues más rápidos, automatizados y consistentes a través de entornos.
+
+|Administradores de seguridad
+a|* Definir y hacer cumplir políticas de seguridad como código.
+* Desplegar herramientas y configuraciones de seguridad.
+* Auditar y gestionar la postura de seguridad a través de clústeres.
+a|* Reducción del riesgo y gestión centralizada del cumplimiento.
+* Configuración de seguridad automatizada y consistente.
+|===

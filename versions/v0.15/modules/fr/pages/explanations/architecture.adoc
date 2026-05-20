@@ -1,0 +1,29 @@
+= Architecture
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} a deux composants principaux. Le contrôleur {product_name} et les agents de cluster. Ces composants fonctionnent selon un modèle de récupération en deux étapes. Le contrôleur {product_name} récupérera depuis git et les agents de cluster récupéreront depuis le contrôleur {product_name}.
+
+== {product_name} Contrôleur
+
+Le {product_name} contrôleur est un ensemble de contrôleurs Kubernetes fonctionnant dans n'importe quel cluster Kubernetes standard.  La seule API exposée par le {product_name} contrôleur est l'API Kubernetes, il n'y a pas d'API personnalisée pour le contrôleur Fleet.
+
+== Agents de cluster
+
+Un agent de cluster fonctionne dans chaque cluster et est responsable de la communication avec le {product_name} contrôleur.
+La seule communication du cluster vers le {product_name} contrôleur se fait par cet agent et toute communication va du cluster géré vers le {product_name} contrôleur. Le contrôleur Fleet n'initie pas de connexions vers les clusters en aval. Cela signifie que les clusters gérés peuvent fonctionner dans des réseaux privés et derrière des NAT. La seule exigence est que l'agent de cluster doit pouvoir communiquer avec l'API Kubernetes du cluster exécutant le {product_name} contrôleur. La seule exception à cela est si vous utilisez le flux d'enregistrement de cluster initié par le xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager-initiated registration]. Cela n'est pas requis, mais c'est un modèle optionnel.
+
+On ne suppose pas que les agents de cluster aient une connexion "toujours active". Ils reprendront leur fonctionnement dès qu'ils pourront se connecter. Les améliorations futures ajouteront probablement la capacité de planifier des moments où l'agent se connecte, pour l'instant, ils tenteront toujours de se connecter.
+
+== Sécurité
+
+Le {product_name} contrôleur crée dynamiquement des comptes de service, gère leur RBAC et donne ensuite les tokens aux clusters en aval. Les clusters sont enregistrés par l'expiration optionnelle des tokens d'enregistrement de cluster.
+Le token d'enregistrement de cluster est utilisé uniquement pendant le processus d'enregistrement pour générer un identifiant spécifique à ce cluster. Après l'établissement de l'identifiant du cluster, le cluster "oublie" le token d'enregistrement de cluster.
+
+Les comptes de service attribués aux clusters n'ont que des privilèges pour lister `BundleDeployment` dans l'espace de noms créé spécifiquement pour ce cluster. Il peut également mettre à jour `status` la sous-ressource de `BundleDeployment` et `status` la sous-ressource de sa ressource `Cluster`.
+
+== Présentation générale des composants
+
+Un aperçu des composants et de la manière dont ils interagissent à un niveau élevé.
+
+image::FleetComponents.svg[Statique, 600]

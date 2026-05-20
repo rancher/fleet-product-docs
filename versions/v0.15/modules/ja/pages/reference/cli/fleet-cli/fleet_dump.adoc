@@ -1,0 +1,65 @@
+= Fleet ダンプ
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+クラスターデータをアーカイブにダンプします。
+
+== 概要
+
+クラスターからアーカイブにデータをダンプします。以下を含みます： +
+* {product_name} 管理リソース +
+* Kubernetes イベント +
+* Fleet コントローラーによって公開されたメトリクス
+
+[source,text]
+----
+fleet dump <flags>
+----
+
+== フラグ
+
+[source,text]
+----
+  -p <path>         Path to the archive file to generate
+----
+
+== 出力
+
+=== 目次
+
+`dump` コマンドは、以下のデータを含む `.tgz` アーカイブを生成します：
+
+* 生の Fleet リソース、YAML形式で：
+** バンドル
+** バンドルデプロイメント
+** バンドルネームスペースマッピング
+** クラスタ
+** ClusterGroups
+** Gitリポジトリ
+** GitRepoRestrictions
+** Helm操作
+
+* 以下のネームスペースのKubernetesイベント：
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** 各ネームスペースにはFleet `Cluster` リソースが含まれています。
+
+* `cattle-fleet-system` ネームスペースに存在する `monitoring-*` サービスによって公開されたメトリクス。
+通常、これは `monitoring-gitjob` および `monitoring-fleet-controller` サービスを含み、必要に応じてそれらの xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[sharded] 対応するものも含まれます。
+
+==== Format
+
+生の {product_name} リソースはそれぞれ異なるファイルに保存され、`<kind>_<namespace>_<name>` と名付けられます。ここで `<kind>` は前のセクションで言及された生のリソース名の一つで、小文字です。
+
+Kubernetesイベントはネームスペースごとにファイルに分割され、各ファイルは `events_<namespace>` と名付けられます。
+各行には1つのイベントが含まれ、各イベントはJSON形式でエンコードされています。
+
+メトリクスはサービスごとにファイルに保存され、各ファイルは `metrics_<service_name>` と名付けられます。
+その内容は、各サービスの `/metrics` エンドポイントから受信した `GET` レスポンスボディそのものです。
+
+== 関連項目
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]

@@ -1,0 +1,67 @@
+= volcado de Fleet
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+Volcar datos de clúster en un archivo.
+
+== Descripción general
+
+Volcar datos de un clúster en un archivo, incluyendo:
+*  {product_name}-recursos gestionados
+* eventos de Kubernetes
+* Métricas expuestas por los controladores de Fleet
+
+[source,text]
+----
+fleet dump <flags>
+----
+
+== Indicadores
+
+[source,text]
+----
+  -p <path>         Path to the archive file to generate
+----
+
+== Salida
+
+=== Contenido
+
+El comando `dump` produce un archivo `.tgz` que contiene los siguientes datos:
+
+* Recursos de Fleet en bruto, en formato YAML:
+** Lotes
+** BundleDeployments
+** BundleNamespaceMappings
+** Clústeres
+** ClusterGroups
+** GitRepos
+** GitRepoRestrictions
+** HelmOps
+
+* Eventos de Kubernetes para los siguientes espacios de nombres:
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** cada espacio de nombres que contiene un recurso Fleet `Cluster`
+
+* Métricas expuestas por los servicios `monitoring-*` que residen en el espacio de nombres `cattle-fleet-system`.
+Esto incluye típicamente servicios `monitoring-gitjob` y `monitoring-fleet-controller`, así como sus
+xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[segmentados] contrapartes, si las hay.
+
+==== Formato
+
+Los recursos {product_name} en bruto se almacenan cada uno en un archivo diferente, nombrado como `<kind>_<namespace>_<name>`, donde `<kind>` es
+uno de los nombres de recursos en bruto mencionados en la sección anterior, en minúsculas.
+
+Los eventos de Kubernetes se dividen en archivos por espacio de nombres, cada archivo nombrado como `events_<namespace>`.
+Contienen un evento por línea, cada evento codificado en JSON.
+
+Las métricas se almacenan en archivos por servicio, cada archivo nombrado `metrics_<service_name>`.
+Sus contenidos son `GET` cuerpos de respuesta recibidos del `/metrics` endpoint de cada servicio, textualmente.
+
+== VÉASE
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]

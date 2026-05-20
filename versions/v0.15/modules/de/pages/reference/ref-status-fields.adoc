@@ -1,0 +1,205 @@
+= Statusfelder
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Anzeigezustände
+
+GitRepos, HelmOps, Cluster und Bundles haben in jeder Phase des Anwenden von Bundles unterschiedliche Zustände.
+
+Da die Zustände der BundleDeployments auf das Bundle, GitRepo, Cluster und ClusterGroup propagiert werden, werden sie auf die gleiche Weise angezeigt. Der Unterschied liegt in der Perspektive auf die Ressourcen.
+
+Wenn man sich das GitRepo ansieht, werden die Zustände aller Ressourcen, die mit dem GitRepo verbunden sind, dort angezeigt. Wenn man sich den Cluster ansieht, werden die Zustände aller Bundles in diesem Cluster angezeigt, die sich über viele GitRepos erstrecken können. Wenn man sich das Bundle ansieht, werden die Zustände aller BundleDeployments in diesem Bundle angezeigt.
+
+=== Bereit-Bedingung
+
+Die `Ready` Bedingung wird verwendet, um zu bestimmen, ob die BundleDeployments in einem `Ready` Zustand sind.
+Die `Ready` Bedingung wird auf `True` gesetzt, wenn alle BundleDeployments im `Ready` Zustand sind.
+Wenn mindestens ein BundleDeployment nicht im `Ready` Zustand ist, wird die `Ready` Bedingung auf `False` gesetzt.
+
+Alle BundleDeployment-Zustände werden im `message` Feld der `Ready` Statusbedingung aggregiert. Um zu verhindern, dass die Nachricht zu lang wird, werden nur die ersten zehn Zustände angezeigt. Das `message` Feld enthält die Anzahl der BundleDeployments in jedem Zustand, gefolgt vom Cluster-Namen, in dem sich das BundleDeployment befindet. `Ready` Status werden aus dem `message` Feld ausgeschlossen.
+
+Beispiel:
+
+[source,yaml]
+----
+status:
+  conditions:
+  - lastUpdateTime: "2025-06-25T14:59:35Z"
+    message: WaitApplied(1) [Cluster fleet-default/downstream4]
+    status: "False"
+    type: Ready
+----
+
+==== Bestimmung des Bereit-Status
+
+{product_name} verwendet das `kstatus` Paket des `sigs.k8s.io/cli-utils` Moduls, um den Bereit-Status der BundleDeployments basierend auf dem Status ihrer Ressourcen zu bestimmen.
+Für Details siehe das link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` Paket-README].
+
+==== Propagation des Bereit-Status
+
+image::PropogationReadyStatus.svg[Propagation des Bereit-Status]
+
+=== Anzeigestatus
+
+Das `status.display` Feld bietet eine Zusammenfassung des Status. Die Status werden eingestuft, und der schlechteste mögliche Status wird als `state` im `status.display` Feld verwendet.
+
+[[state-ranking]]
+==== Statusranking
+
+Dies ist das Ranking, in dem die Status angezeigt werden. Wenn ein Bundle BundleDeployments in verschiedenen Status hat, wird der schlechteste Status im `status.display.state` Feld verwendet.
+Dieser Status wird auch von den Bundles auf andere {product_name} Ressourcen (GitRepos, Cluster, ClusterGroups) propagiert.
+
+Von am besten bis am schlechtesten:
+
+* Bereit
+* NichtBereit
+* Ausstehend
+* OutOfSync
+* Geändert
+* WaitApplied
+* ErrApplied
+
+== Bundles
+
+=== Bundle-Status
+
+* *Bereit* : Bundles wurden bereitgestellt, und alle Ressourcen sind bereit. Wenn nicht, enthält das `message` Feld der `Ready` Bedingung eine Aggregation der BundleDeployment-Status.
+* *NichtBereit* : BundleDeployments wurden bereitgestellt, aber einige Ressourcen sind nicht bereit (zum Beispiel werden Container-Images heruntergeladen oder Dienste haben die Bereitschaft nicht gemeldet).
+* *Ausstehend* : Bundles sind zur Verarbeitung durch den Fleet-Controller in der Warteschlange.
+  Dies kann auftreten, wenn der Rollout pausiert ist (siehe xref:how-tos-for-users/rollout.adoc[Rollout-Strategie]).
+* *OutOfSync* : Bundles werden vom Fleet-Controller synchronisiert, aber aktualisierte BundleDeployments wurden noch nicht erstellt, sodass nachgelagerte Agenten keine Änderungen synchronisieren können.
+  Dies kann auch auftreten, wenn der Rollout pausiert ist (siehe xref:how-tos-for-users/rollout.adoc[Rollout-Strategie]).
+* *Modifiziert* : Bundles sind bereitgestellt und Ressourcen sind bereit, aber einige bereitgestellte Ressourcen wurden extern geändert und nicht von Git.
+* *WaitApplied* : Bundles sind synchronisiert, warten aber auf die Bereitstellung. Eine anhaltende Anzeige dieses Zustands kann auf einen unerreichbaren Ziel-Cluster hinweisen.
+* *FehlerAngewendet* : Bundles wurden erfolgreich synchronisiert, aber es traten Fehler während der Bereitstellung auf.
+
+== Cluster
+
+=== Cluster-spezifische Zustände
+
+* *WaitCheckIn* : Warten auf den Agenten, um Registrierungsinformationen und Clusterstatus zu melden.
+
+=== Zustände von Bundles
+
+* *Bereit* : Alle Bundles in diesem Cluster sind bereitgestellt, und Ressourcen sind bereit.
+* *NichtBereit* : Einige Bundles in diesem Cluster sind nicht bereit.
+* *Ausstehend* : Einige Bundles sind ausstehend.
+* *OutOfSync* : Einige Bundles sind nicht synchron.
+* *Modifiziert* : Einige Bundles sind modifiziert.
+* *WaitApplied* : Einige Bundles warten darauf, angewendet zu werden.
+* *FehlerAngewendet* : Einige Bundles haben Fehler.
+
+== GitRepo
+
+* *Bereit* : `True`, wenn die gewünschten und aktuellen Zustände übereinstimmen. Wenn `False`, enthält die Nachricht:
+** einen Fehler vom GitJob-Controller,
+** einen Fehler vom Bundle (zum Beispiel, Vorlagenfehler) oder
+** eine aggregierte Liste von Bundles, die nicht in `Ready` sind.
+* *GitPolling* : Gibt an, ob das Polling oder das initiale Klonen im Gange ist. `True`, wenn das Polling erfolgreich oder deaktiviert ist.
+* *Abgleich* : Der Controller gleicht derzeit Änderungen ab.
+* *Blockiert* : Der Controller stieß auf einen Fehler oder hat keinen Fortschritt erzielt.
+* *Akzeptiert* : GitRepo-Beschränkungen wurden angewendet und externe Helm-Geheimnisse existieren.
+
+== HelmOp-Bedingungen
+
+* *Bereit* : `True`, wenn alle BundleDeployments erfolgreich bereitgestellt wurden; `False`, wenn einige nicht bereit sind.
+* *Akzeptiert* : `False`, wenn die Helm-Optionen ungültig sind, Chart-Versionen nicht aufgelöst werden können, das Polling fehlgeschlagen ist oder die Erstellung des Bundles fehlgeschlagen ist.
+* *Abgefragt* : `True`, wenn das Polling erfolgreich war. `False` andernfalls, mit einer Fehlermeldung.
+
+== status.display
+
+Die `status.display` Felder werden zwischen GitRepos und GitOps geteilt. Beide Ressourcen enthalten ein `status.display` Feld, das den Zustand der Ressource zusammenfasst. Der Wert von `state` kann je nach Ressourcentyp variieren.
+
+* `readyBundleDeployments` : Ein String in der Form `%d/%d`, der die Anzahl der bereitgestellten versus der gesamten BundleDeployments zeigt.
+* `state` : Stellt den Zustand des GitRepo dar (zum Beispiel `GitUpdating`) oder den höchsten BundleState gemäß dem <<state-ranking,Statusranking>>. Wenn `Ready`, wird er auf einen leeren Wert gesetzt.
+* `message` : Enthält relevante Nachrichten zu Implementierungsbedingungen.
+* `error` : `true`, wenn eine Fehlermeldung vorhanden ist.
+
+== Liste der Ressourcen
+
+Ressourcen, die in Ziel-Cluster bereitgestellt werden, werden unter `GitRepos` und `HelmOps` kategorisiert.
+
+=== GitRepos
+
+Die `status.ResourceCounts` Liste für GitRepos wird aus `bundleDeployments` abgeleitet.
+
+Das `perClusterResourceCounts` Feld bietet clusterbezogene Statistiken über die bereitgestellten Ressourcen.
+
+[source,yaml]
+----
+perClusterResourceCounts:
+    fleet-default/imported-0:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+    fleet-default/imported-1:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+    fleet-default/imported-2:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+  readyClusters: 3
+  resourceCounts:
+    desiredReady: 27
+    missing: 0
+    modified: 0
+    notReady: 0
+    orphaned: 0
+    ready: 27
+    unknown: 0
+    waitApplied: 0
+----
+
+Dies hilft, auf einen Blick zu erkennen, welche Cluster unvollständige oder inkonsistente Implementierungen haben.
+
+=== BundleDeployment
+
+Die `BundleDeployment` Ressource umfasst zwei zusätzliche Felder für eine bessere Sichtbarkeit:
+
+* `incompleteState`: das auf wahr gesetzt wird, wenn der Status von nicht-bereiten oder modifizierten Ressourcen mehr als 10 Elemente aufweist.
+* `resourceCounts`: das die Anzahl der Ressourcen nach ihrem Status zählt.
+
+=== HelmOps
+
+Die `status.ResourceCounts` Liste für HelmOps wird aus `bundleDeployments` abgeleitet.
+
+== Ressourcenzählungen
+
+Dies zeigt, wie sich die Ressourcenzählungen zwischen den Ressourcen verbreiten.
+
+=== GitRepos
+
+Die bereitgestellten Ressourcen sind unter `GitRepos` in `status.Resources` aufgeführt, abgeleitet von `bundleDeployments`.
+
+=== HelmOps
+
+Ähnlich werden die bereitgestellten Ressourcen für `HelmOps` in `status.Resources` aufgeführt, die aus `bundleDeployments` abgeleitet sind.
+
+=== Cluster
+
+In Clustern wird `status.ResourceCounts` aus GitRepos abgeleitet.
+
+=== ClusterGroups
+
+In Clustergruppen wird `status.ResourceCounts` aus GitRepos abgeleitet.
+
+== Klassendiagramm
+
+image::ClusterGroups_classDiagram.svg[Propagation des Bereit-Status]

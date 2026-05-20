@@ -1,0 +1,47 @@
+= 実験的機能を有効にする方法
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+{product_name}は、デフォルトで無効になっている実験的機能をサポートしており、ユーザーによって有効にすることができます。
+
+実験的機能の有効化または無効化は、`rancher/fleet`をデプロイする際に利用可能な追加の環境変数を使用して行います。
+
+詳細については、Rancherのxref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name}インストールオプション設定]を参照してください。
+
+== 利用可能な実験的機能
+
+{product_name}は現在、各環境変数を通じて切り替え可能な以下の実験的機能をサポートしています：
+
+* xref:experimental-features/scheduling.adoc[スケジューリング]
+* xref:experimental-features/experimental-downstream-resource.adoc[ダウンストリームクラスターへのリソースの自動伝播]
+
+== 実験的機能を有効にする
+
+=== {product_name}をスタンドアロンでインストールする際の有効化
+
+必要なのは、次のようなものを渡すことだけです：
+
+[source,bash]
+----
+--set-string extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string extraEnv[0].value=true
+----
+
+あなたの`helm install`または`helm upgrade`コマンドに。
+
+[NOTE]
+====
+`--set-string`を使用する必要があります。そうしないと、ブール値が期待通りに機能しません。
+====
+
+=== Rancherで{product_name}をインストールする際の有効化
+
+Rancherをインストールする際に、{product_name}で実験的機能を有効にすることもできます。
+
+パラメータは同じですが、`fleet.`プレフィックスを追加する必要があります：
+
+[source,bash]
+----
+--set-string fleet.extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string fleet.extraEnv[0].value=true
+----

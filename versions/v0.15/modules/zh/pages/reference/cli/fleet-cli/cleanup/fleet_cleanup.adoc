@@ -1,0 +1,21 @@
+= Fleet清理
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+清理过时的资源
+
+----
+fleet cleanup [flags]
+----
+
+== 选项
+
+----
+  -h, --help   help for cleanup
+----
+
+== 另请参阅
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - 管理 {product_name} 操作
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Fleet清理集群注册]     - 清理过时的集群注册
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Fleet清理git作业]     - 清理过时的git作业

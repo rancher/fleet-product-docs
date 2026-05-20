@@ -1,0 +1,77 @@
+= アンインストール
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+[CAUTION]
+====
+CRDを削除すると、すべてのデプロイされたワークロードが削除されます。
+====
+
+
+== {product_name} スタンドアロン
+
+{product_name}は2つのHelmチャートとしてパッケージ化されているため、アンインストールは適切なHelmチャートをアンインストールすることで実行されます。
+
+ただし、{product_name}は https://kubernetes.io/docs/concepts/overview/working-with-objects/finalizers/[finalizers]を使用しているため、{product_name}コントローラーがクリーンアップする時間を与えるために、最初にワークロードをアンインストールしてください。
+
+[source,shell]
+----
+kubectl delete clusters.fleet.cattle.io -A
+kubectl delete gitrepos -A
+kubectl delete bundles -A
+----
+
+注意、ワークロードを含むネームスペースを削除する方が簡単な場合があります。例えば：
+
+[source,shell]
+----
+kubectl delete ns fleet-local
+kubectl delete ns fleet-default
+----
+
+カスタムリソースはHelm 3によってアンインストールされないため、最初にそれらを削除してください：
+
+[source,shell]
+----
+kubectl delete crd gitrepos.fleet.cattle.io bundles.fleet.cattle.io contents.fleet.cattle.io \
+  bundledeployments.fleet.cattle.io imagescans.fleet.cattle.io \
+  bundlenamespacemappings.fleet.cattle.io gitreporestrictions.fleet.cattle.io \
+  clusters.fleet.cattle.io clustergroups.fleet.cattle.io \
+  clusterregistrations.fleet.cattle.io clusterregistrationtokens.fleet.cattle.io
+----
+
+次に、{product_name}をアンインストールするには、以下のコマンドを実行します：
+
+[,shell]
+----
+helm -n cattle-fleet-system uninstall fleet
+helm -n cattle-fleet-system uninstall fleet-crd
+----
+
+[NOTE]
+====
+アンインストールが停止した場合、finalizersが原因である可能性が高いです。リソースのステータスフィールド（例えばネームスペース上）には、finalizersが削除されるのを待っているリソースが一覧表示されます。finalizersは、コントローラーがもはや実行されていない場合、kubectlを使用して手動で削除できます。
+====
+
+
+その後、{product_name}に関連するネームスペースとその内容も削除できます：
+
+[source,shell]
+----
+kubectl delete ns cattle-fleet-system
+kubectl delete ns cattle-fleet-clusters-system
+kubectl delete ns -l "fleet.cattle.io/managed=true"
+----
+
+== {product_name}Rancherの
+
+{product_name}Rancherをアンインストールせずに、Rancherのをアンインストールすることはできません。ただし、GitOps機能は無効にできます。
+無効にすると、gitjobデプロイメントはRancherサーバーのローカルクラスタにデプロイされなくなり、継続的デリバリはRancher UIに表示されません。
+
+ifeval::["{product}" == "fleet"]
+詳細情報はRancherのドキュメントにあります： https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-experimental-features/continuous-delivery.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+詳細情報はRancherのドキュメントにあります： https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/experimental-features/continuous-delivery.html.
+endif::[]

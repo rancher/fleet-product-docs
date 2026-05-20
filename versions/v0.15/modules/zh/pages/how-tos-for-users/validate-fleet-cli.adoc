@@ -1,0 +1,67 @@
+= 验证 Fleet CLI 部署
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+在使用 Fleet CLI 应用包后，您可以通过检查`Bundle`及其相关的`BundleDeployments`来验证部署。
+
+每个{product_name}管理的集群列出：
+
+* 部署到该集群的包。
+* 它们的就绪状态。
+* 任何错误或同步问题。
+
+要验证您的`fleet apply`是否创建了包以及它是否部署到正确数量的目标，请运行：
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -A
+----
+
+image::validate-deployment-ss.png[显示 Fleet 部署验证的截图]
+
+您将看到以下字段：
+
+* `BUNDLEDEPLOYMENTS-READY` — 显示总共多少目标已准备好。
+* `STATUS` — 可能显示*就绪*、*已修改*或基于发布的其他状态。
+
+[NOTE]
+====
+如果`BUNDLEDEPLOYMENTS-READY`显示`1/1`，则该包已成功部署到一个集群。
+====
+
+要获取包如何呈现和应用的详细视图，请运行：
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -n fleet-local my-nginx-bundle -o yaml
+----
+
+在`status`部分查找以下字段：
+
+[source,yaml]
+----
+status:
+  display:
+    readyClusters: 1/1
+  summary:
+    desiredReady: 1
+    ready: 1
+  conditions:
+    type: Ready
+    status: "True"
+----
+
+这表明：
+
+* 该包已安排到一个集群。
+* 目标集群已确认并应用了资源。
+* 控制器将部署标记为已就绪。
+
+您还可以验证相应的`BundleDeployment`对象，因为每个`BundleDeployment`对应一个目标集群：
+
+[source,bash]
+----
+kubectl get bundledeployments.fleet.cattle.io -A
+----
+
+有关更多信息，请参见xref:reference/ref-status-fields.adoc[状态字段]。

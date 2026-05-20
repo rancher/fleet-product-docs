@@ -1,0 +1,96 @@
+= 監視
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== ステータスフィールド
+
+{product_name}はカスタムリソースのステータスフィールドを介してほとんどの情報を報告します。
+これらのフィールドは、Rancher UIによってリソースの状態に関する情報を表示するためにも使用されます。
+
+ステータスフィールドおよび条件に関する詳細は、xref:reference/ref-status-fields.adoc[ステータスフィールドリファレンス]を参照してください。
+
+== K8sイベント
+
+{product_name}は、ユーザーが購読できるK8sイベントを生成します。これはイベントのリストです。
+
+* `Created`- 新しいgitクローンジョブが作成されました
+* `GotNewCommit`- gitリポジトリに新しいコミットがあります
+* `JobDeleted`- 成功したgitクローンジョブが削除されました
+* `FailedValidatingSecret`- 必要なシークレットが欠けているため、gitクローンジョブを作成できません
+* `FailedToApplyRestrictions`- GitRepoリソースがGitRepoRestrictionリソースのルールに違反しています
+* `FailedToCheckCommit`- gitサーバーから最新のコミットを取得できません
+* `FailedToGetGitJob`- gitクローンジョブから情報を取得できません
+* `Failed`- ポーリングは無効になっており、Webhookを介してトリガーされますが、gitサーバーから最新のコミットを取得できません
+
+== Metrics
+
+{product_name}はPrometheusメトリクスを公開します。これらのサービスから取得できます。
+
+* `monitoring-fleet-controller.cattle-fleet-system.svc.cluster.local:8080/metrics`
+* `monitoring-gitjob.cattle-fleet-system.svc.cluster.local:8081/metrics`
+
+https://book.kubebuilder.io/reference/metrics-reference[エクスポートされたメトリクスのコレクション]には、コントローラーランタイムからのすべての情報が含まれています。これには、調整されたリソースの数、エラーの数、および調整にかかった時間が含まれます。
+
+=== Grafana
+
+GrafanaとPrometheusを使用する場合（例えば、 https://github.com/prometheus-community/helm-charts),から）、{product_name}メトリクスにアクセスするためのセットアップが必要です。
+
+. `ServiceMonitor`リソースを作成して{product_name}メトリクスをスクレイプします。以下に例を示します。
++
+[source,yaml]
+----
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Create this in the same namespace as your application
+  namespace: cattle-fleet-system
+  name: fleet-controller-monitor
+  labels:
+    # This label makes the ServiceMonitor discoverable by the Prometheus Operator
+    release: monitoring  # <-- ADD THIS LABEL!
+spec:
+  selector:
+    matchLabels:
+      # This label must exist on the service you want to scrape
+      app: fleet-controller # Assumed label, verify this
+  namespaceSelector:
+    matchNames:
+      # We are only looking for the service in its own namespace
+      - cattle-fleet-system
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Create this in the same namespace as your application
+  namespace: cattle-fleet-system
+  name: fleet-gitjob-monitor
+  labels:
+    # This label makes the ServiceMonitor discoverable by the Prometheus Operator
+    release: monitoring  # <-- ADD THIS LABEL!
+spec:
+  selector:
+    matchLabels:
+      # This label must exist on the service you want to scrape
+      app: gitjob
+  namespaceSelector:
+    matchNames:
+      # We are only looking for the service in its own namespace
+      - cattle-fleet-system
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+----
++
+そして、{product_name}のネームスペース、例えば+cattle-fleet-system+にマニフェストを適用します:
++
+[source,bash]
+----
+kubectl create -f servicemonitor.yaml -n cattle-fleet-system
+----
+
+. Grafanaのダッシュボードを作成し、それをGrafanaにインポートしてください。ダッシュボードは https://github.com/rancher/fleet-dashboards[fleet-dashboardsリポジトリ]にあります。READMEの指示に従って、それらを作成してください。

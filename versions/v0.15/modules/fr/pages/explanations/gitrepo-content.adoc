@@ -1,0 +1,436 @@
+= Contenu du dépôt Git
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} créera des bundles à partir d'un dépôt Git. Cela se produit soit explicitement en spécifiant des chemins, soit lorsqu'un `fleet.yaml` est trouvé.
+
+Le dossier pourrait contenir un chart Helm, ou en référencer un. Cela pourrait être un manifeste Kubernetes simple, ou un dossier Kustomize. Chaque bundle est converti en un seul chart Helm pour le déploiement.
+
+Le fichier `fleet.yaml` contient toutes les options pour le déploiement.
+
+== Noms des bundles
+
+Par défaut, les noms des bundles seront également générés à partir du nom du GitRepo et du chemin à partir duquel le bundle est créé. Cependant, le nom d'un bundle peut être remplacé en utilisant le champ `name` dans un fichier `fleet.yaml`.
+
+Les cycles de vie des bundles sont suivis entre les versions par le champ Helm `releaseName` ajouté à chaque bundle. Si le releaseName n'est pas spécifié dans `fleet.yaml`, il est généré à partir de `GitRepo.name + path`. Les noms longs sont tronqués et un préfixe `-<hash>` est ajouté (les noms des bundles sont limités à 53 caractères).
+
+== Comment les dépôts sont scannés
+
+**Le dépôt Git n'a pas de structure explicitement requise**. Il est important de réaliser que les ressources scannées seront enregistrées en tant que ressource dans Kubernetes, donc vous devez vous assurer que les répertoires que vous scannez dans Git ne contiennent pas de ressources arbitrairement grandes. En ce moment, il y a une limitation selon laquelle les ressources déployées doivent **gzip à moins de 1 Mo**.
+Plusieurs chemins peuvent être définis pour un `GitRepo` et chaque chemin est scanné indépendamment.
+En interne, chaque chemin scanné deviendra un xref:/explanations/concepts.adoc[bundle] que {product_name} gérera, déploiera et surveillera indépendamment.
+
+{product_name} recherche les fichiers suivants pour déterminer comment les ressources seront déployées.
+[cols="1,1,2", options="header"]
+|===
+| Fichier | Emplacement | Signification
+| Chart.yaml | / relatif à `path` ou chemin personnalisé depuis `fleet.yaml` | Les ressources seront déployées sous forme de chart Helm. Référez-vous au `fleet.yaml` pour plus d'options.
+| kustomization.yaml | / relatif à `path` ou chemin personnalisé depuis `fleet.yaml` | Les ressources seront déployées en utilisant Kustomize. Référez-vous au `fleet.yaml` pour plus d'options.
+| fleet.yaml | Tout sous-chemin | Si un fleet.yaml est trouvé, un nouveau xref::/explanations/concepts.adoc[bundle] sera défini. Cela permet de mélanger des charts, Kustomize et du YAML brut dans le même dépôt.
+| .yaml | Tout sous-chemin | Si un `Chart.yaml` ou `kustomization.yaml` n'est pas trouvé, tout fichier `.yaml` ou `.yml` sera supposé être une ressource Kubernetes et sera déployé.
+| overlays/+{name}+ | / relatif à `path` | Lors du déploiement en utilisant du YAML brut (pas Kustomize ou Helm), `overlays` est un répertoire spécial pour les personnalisations.
+|===
+
+=== Analyse alternative, explicitement définie par l'utilisateur
+
+En plus de la méthode décrite précédemment, {product_name} prend également en charge une approche plus directe, pilotée par l'utilisateur, pour définir des Bundles.
+
+Dans ce mode, {product_name} chargera toutes les ressources trouvées dans le répertoire de base spécifié. Il tentera uniquement de localiser un fichier `fleet.yaml` à la racine de ce répertoire si un fichier d'options n'est pas explicitement fourni.
+Contrairement à la méthode de scan traditionnelle, celle-ci n'est pas récursive et ne tente pas de trouver des définitions de Bundle autres que celles explicitement spécifiées par l'utilisateur.
+
+==== Exemple de structure de répertoire
+
+[source,bash]
+----
+driven
+     |___helm
+     |      |__ fleet.yaml
+     |
+     |___simple
+     |      |__ configmap.yaml
+     |      |__ service.yaml
+     |
+     |___kustomize
+            |__ base
+            |      |__ kustomization.yaml
+            |      |__ secret.yaml
+            |
+            |__ overlays
+            |         |__ dev
+            |         |     |__ kustomization.yaml
+            |         |     |__ secret.yaml
+            |         |__ prod
+            |         |     |__ kustomization.yaml
+            |         |     |__ secret.yaml
+            |         |__ test
+            |               |__ kustomization.yaml
+            |               |__ secret.yaml
+            |__ dev.yaml
+            |__ prod.yaml
+            |__ test.yaml
+----
+
+==== Définition GitRepo correspondante
+
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: driven
+  namespace: fleet-local
+spec:
+  repo: https://github.com/0xavi0/fleet-test-data
+  branch: driven-scan-example
+  bundles:
+  - base: driven/helm
+  - base: driven/simple
+  - base: driven/kustomize
+    options: dev.yaml
+  - base: driven/kustomize
+    options: test.yaml
+----
+
+Dans l'exemple ci-dessus, l'utilisateur définit explicitement quatre Bundles à générer.
+
+* Dans le premier cas, le répertoire de base est spécifié comme `driven/helm`. Comme indiqué dans la structure du répertoire, ce chemin contient un fichier `fleet.yaml`, qui sera utilisé pour configurer le Bundle.
+* Dans le deuxième cas, le répertoire de base est `driven/simple`, qui ne contient que des manifestes de ressources Kubernetes (`configmap.yaml` et `service.yaml`). Puisqu'aucun fichier `fleet.yaml` ou options n'est spécifié, {product_name} générera un Bundle en utilisant le comportement par défaut{nbsp}: simplement empaqueter toutes les ressources trouvées dans le répertoire.
+* Les troisième et quatrième cas font tous deux référence au même répertoire de base{nbsp}: `driven/kustomize`. Cependant, chacun spécifie un fichier d'options différent (`dev.yaml` et `test.yaml`, respectivement). Ces fichiers d'options définissent une configuration spécifique à l'overlay pour chaque environnement (par exemple, dev, test) en sélectionnant les sous-répertoires d'overlay kustomize appropriés et en les appliquant sur la base partagée.
+
+{product_name} traitera ceux-ci comme des Bundles distincts, même s'ils proviennent du même chemin de base, car les fichiers d'options fournis pointent vers des configurations différentes.
+
+Un exemple des fichiers utilisés dans les troisième et quatrième Bundles serait le suivant{nbsp}: (Ces fichiers suivent exactement le même format que `fleet.yaml`, mais comme nous pouvons maintenant les référencer par leur nom, nous pouvons utiliser celui qui convient le mieux à nos besoins)
+
+[source,yaml]
+----
+namespace: kustomize-dev
+kustomize:
+  dir: "overlays/dev"
+----
+
+Il est important de noter que tout chemin défini dans ces fichiers doit être relatif au répertoire de base utilisé lors de la description du Bundle.
+
+Par exemple, avec la structure mentionnée précédemment, nous définissons le répertoire de base comme `driven/kustomize`. C'est le répertoire que nous devons utiliser comme racine pour les chemins utilisés dans les fichiers Kustomize.
+
+Nous pourrions décider de placer le fichier `dev.yaml` au chemin `driven/kustomize/overlays/dev` (cela est pris en charge), puis de définir le Bundle comme{nbsp}:
+
+[source,yaml]
+----
+bundles:
+    - base: driven/kustomize
+      options: overlays/dev/dev.yaml
+----
+
+Cependant, le chemin défini dans `dev.yaml` doit toujours être relatif à `driven/kustomize`.
+C'est parce que lorsque {product_name} lit les fichiers d'options, il utilise toujours le répertoire de base comme racine.
+
+En d'autres termes, avec l'exemple précédent ..., cela serait incorrect{nbsp}:
+
+[source,yaml]
+----
+namespace: kustomize-dev
+kustomize:
+  dir: "."
+----
+
+Et la définition correcte devrait toujours être{nbsp}:
+
+[source,yaml]
+----
+namespace: kustomize-dev
+kustomize:
+  dir: "overlays/dev"
+----
+
+Avec cette nouvelle façon de définir les Bundles, {product_name} devient beaucoup plus direct et simplifie également l'adoption des déploiements utilisant Kustomize.
+Dans l'exemple, nous pouvons voir un cas d'utilisation complet de Kustomize où pour chaque Bundle, nous pouvons spécifier quelle version nous voulons.
+
+Avec l'option de numérisation précédente, {product_name} ne peut pas déterminer quel YAML nous voulons utiliser pour configurer le Bundle, donc il essaie de le trouver par lui-même (ce qui, parfois, ne fournit pas assez de flexibilité.)
+
+[WARNING]
+====
+Exclure les fichiers non pertinents des bundles numérisés par l'utilisateur
+
+Lors de l'utilisation de ce mode de numérisation de bundle, {product_name} n'exclut pas les fichiers de configuration de bundle qui ne sont pas explicitement référencés dans le GitRepo. Par exemple, dans la structure de répertoire ci-dessus{nbsp}:
+
+* par défaut, ni `prod.yaml` ni `test.yaml` ne seraient exclus du bundle en utilisant `dev.yaml` comme fichier d'options
+* de même, par défaut, ni `dev.yaml` ni `prod.yaml` ne seraient exclus du bundle en utilisant `test.yaml` comme fichier d'options
+
+Cela peut être atténué en utilisant un fichier `.fleetignore` à côté de `{dev,test,prod}.yaml` excluant tous les trois.
+Voir la section suivante pour plus de détails sur les fichiers `.fleetignore`.
+====
+
+=== Exclure des fichiers et des répertoires des bundles
+
+{product_name} prend en charge l'exclusion de fichiers et de répertoires par le biais de fichiers `.fleetignore`, de manière similaire à la façon dont les fichiers `.gitignore` se comportent dans les dépôts Git{nbsp}:
+
+* La syntaxe Glob est utilisée pour faire correspondre des fichiers ou des répertoires, en utilisant le `filepath.Match` de Golang
+* Les lignes vides sont ignorées et peuvent donc être utilisées pour améliorer la lisibilité
+* Des caractères comme les espaces blancs et `#` peuvent être échappés avec un antislash
+* Les espaces de fin sont ignorés, sauf s'ils sont échappés
+* Les commentaires, c'est-à-dire les lignes commençant par `#` non échappé, sont ignorés
+* Une ligne donnée peut correspondre à un fichier ou à un répertoire, même si aucun séparateur n'est fourni
+* Une correspondance peut être trouvée à n'importe quel niveau en dessous du répertoire où se trouve un `.fleetignore`
+* Plusieurs fichiers `.fleetignore` sont pris en charge
+
+[source,bash]
+----
+root/
+├── .fleetignore            # contains `ignore-always.yaml'
+├── something.yaml
+├── bar
+│   ├── .fleetignore        # contains `something.yaml`
+│   ├── ignore-always.yaml
+│   ├── something2.yaml
+│   └── something.yaml
+└── foo
+    ├── ignore-always.yaml
+    └── something.yaml
+----
+
+Non pris en charge{nbsp}:
+
+* Double astérisques (`**`)
+* Inclusions explicites avec `!`
+
+== fleet.yaml
+
+Le `fleet.yaml` est un fichier optionnel qui peut être inclus dans le dépôt Git pour modifier le comportement de déploiement et de personnalisation des ressources. Le `fleet.yaml` est toujours à la racine par rapport au `path` du `GitRepo` et si un sous-répertoire est trouvé avec un `fleet.yaml`, un nouveau xref::/explanations/concepts.adoc[bundle] est défini et sera configuré différemment du bundle parent.
+
+[CAUTION]
+====
+__Dépendances Helm chart__ :
+
+{product_name} gère automatiquement la mise à jour des dépendances de chart Helm, sauf si le drapeau `disableDependencyUpdate` (`false` par défaut) est défini sur `true`.
+
+Si les mises à jour automatiques des dépendances sont désactivées, vous devez exécuter manuellement{nbsp}:
+
+`helm dependencies update $chart` ou `helm dependencies build $chart`
+
+Référez-vous à la documentation {product_name} de Rancher pour plus d'informations.
+====
+
+Les champs disponibles sont documentés dans la xref::/reference/ref-fleet-yaml.adoc[référence fleet.yaml].
+Pour un dépôt Helm privé, les utilisateurs peuvent référencer un secret à partir de la ressource du dépôt Git.
+Voir xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Utilisation des dépôts Helm privés].
+
+== Utilisation des valeurs Helm
+
+__Comment les changements sont appliqués à `values.yaml`__ :
+
+- Les changements appliqués le plus récemment remplacent les valeurs précédentes.
+- Ordre de fusion{nbsp}: `helm.values` → `helm.valuesFiles` → `helm.valuesFrom`
+
+image::FleetValuesStages.svg[flux des étapes de valeurs de Fleet]
+
+L'étape de ciblage peut traiter les valeurs comme des modèles en utilisant les informations du cluster. Plus d'infos{nbsp}: xref:/reference/ref-fleet-yaml.adoc#_values_templating[modèles dans fleet.yaml].
+
+Vous pouvez désactiver cela en utilisant `disablePreProcess`.
+
+
+[Note]
+====
+Identifiants dans les valeurs
+
+Si le chart génère des identifiants, remplacez-les ou le chart peut être redéployé en continu.
+
+Les identifiants chargés via `valuesFrom` sont chiffrés au repos si le chiffrement au repos de Kubernetes est activé.
+====
+
+=== Modélisation
+
+L'étape de ciblage peut traiter les valeurs comme un modèle et remplir les informations à partir de la ressource `clusters.fleet.cattle.io`. Pour plus d'informations, consultez xref:reference/ref-fleet-yaml.adoc#_values_templating[la modélisation des valeurs Helm].
+
+Vous pouvez désactiver cela dans `fleet.yaml`, en définissant `disablePreProcess`. Ceci est utile pour éviter les conflits avec d'autres langages de modélisation.
+
+Il n'est pas nécessaire de référencer le `values.yaml` d'un chart via `valuesFiles:`. Le fichier `values.yaml` contenu dans le chart est toujours utilisé par défaut lorsque l'agent installe le chart.
+
+[Note]
+====
+
+Si le chart génère des certificats ou des mots de passe dans ses modèles, ces valeurs doivent être remplacées. Sinon, le chart pourrait être déployé en continu à mesure que ces valeurs changent.
+
+Les identifiants chargés depuis le cluster en aval avec `valuesFrom` sont par défaut chiffrés au repos, lorsque link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[le chiffrement des données] est activé dans Kubernetes. Les identifiants contenus dans le fichier `values.yaml` par défaut, ou définis via `values:` ou `valuesFiles` ne le sont pas, car ils sont chargés depuis le dépôt lors de la création du bundle.
+
+Les clusters renforcés devraient ajouter les Fleet CRD à la xref:how-tos-for-users/gitrepo-add.adoc#storing-credentials-in-git[liste des ressources chiffrées au repos], sur le cluster en amont, lors du stockage des identifiants dans les bundles.
+
+====
+
+=== Comprendre Helm `values.yaml` vs Fleet `valuesFiles`
+
+L'installation de charts Helm avec Fleet offre plusieurs façons de configurer et de référencer des valeurs, en utilisant le `values.yaml` intégré du chart et des fichiers de valeurs supplémentaires référencés dans `fleet.yaml`. Ces fichiers servent à des fins différentes, et il est important de comprendre comment ils interagissent.
+
+image::helm-value-fleet-yaml.svg[Comprendre Helm values.yaml vs Fleet valuesFiles avec les meilleures pratiques]
+
+**Exemple de structure de répertoire :**
+
+[source,bash]
+----
+.
+├── Chart.yaml
+├── fleet.yaml
+├── README.md
+├── templates/
+│   ├── deployment.yaml
+│   └── service.yaml
+└── values.yaml   # chart defaults
+----
+
+Vous pouvez utiliser le fichier `values.yaml` d'un chart Helm pour{nbsp}:
+
+* Fournir des paramètres par défaut et permettre aux utilisateurs de remplacer les valeurs par défaut sans modifier le graphique lui-même.
+* Définir les valeurs par défaut communes des ressources Kubernetes.
+
+
+[Note]
+====
+Le `values.yaml` d'un chart Helm ne prend pas en charge le templating. Toute substitution se produit lors du rendu du chart avant que Fleet n'applique le chart.
+
+* Vous ne pouvez pas utiliser de variables de style shell (par exemple, pass:[`${var}`]) dans ce fichier.
+* Si pass:[`${var}`] apparaît, Helm le traite comme du texte brut – vous n'avez pas besoin de l'échapper.
+====
+
+=== valuesFiles de Fleet référencés depuis fleet.yaml
+
+Fleet vous permet de référencer des fichiers de valeurs supplémentaires via `fleet.yaml`. Ces fichiers remplacent ou étendent les valeurs par défaut du chart.
+
+* Une entrée `valuesFiles` équivaut à copier-coller le contenu de ce fichier dans la section des valeurs de `fleet.yaml`.
+* C'est principalement une fonctionnalité de commodité pour diviser les valeurs en plusieurs fichiers.
+* Contrairement au `values.yaml` du chart Helm, les fichiers de valeurs de Fleet prennent en charge le templating, ce qui permet une configuration dynamique par environnement.
+
+**Exemple fleet.yaml:**
+[source,yaml]
+----
+helm:
+  valuesFiles:
+    - values.prod.yaml   # overrides baseline
+----
+
+Vous pouvez utiliser `valuesFiles` de Fleet référencé depuis `fleet.yaml` pour{nbsp}:
+
+* Appliquer des remplacements spécifiques à l'environnement (dev, staging, prod).
+* Activer des fonctionnalités avancées non incluses dans les valeurs par défaut du chart.
+
+
+[Note]
+====
+**Meilleure pratique**{nbsp}:  Que vous utilisiez Helm `values.yaml`, `fleet.yaml` ou `valuesFiles`, ne stockez jamais d'identifiants dans ces fichiers. L'approche recommandée et plus sûre est d'utiliser `valuesFrom`, qui référence les Secrets ou ConfigMaps Kubernetes. Bien que cela nécessite de créer les Secrets sur les clusters en aval, cela garantit que les données sensibles sont stockées en toute sécurité.
+====
+
+=== Utiliser ValuesFrom
+
+Ces exemples illustrent le style et le format pour utiliser `valuesFrom`.
+
+[Note]
+====
+**Propagation des ConfigMaps et des Secrets vers des clusters en aval**{nbsp}: Les ConfigMaps et les Secrets doivent généralement être créés directement dans les clusters en aval.
+
+Cependant, à partir de {product_name} v0.14.0, ils peuvent également être référencés via le champ `downstreamResources` d'un HelmOp pour être automatiquement propagés vers les clusters en aval ciblés.
+
+Consultez xref:/experimental-features/experimental-downstream-resource.adoc[ressources en aval expérimentales] pour plus d'informations.
+====
+
+Exemple de ConfigMap{nbsp}:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: configmap-values
+  namespace: default
+data:
+  values.yaml: |-
+    replication: true
+    replicas: 2
+    serviceType: NodePort
+----
+
+Exemple de Secret{nbsp}:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-values
+  namespace: default
+stringData:
+  values.yaml: |-
+    replication: true
+    replicas: 3
+    serviceType: NodePort
+----
+
+Les référencer{nbsp}:
+
+[source,yaml]
+----
+helm:
+  chart: simple-chart
+  valuesFrom:
+    - secretKeyRef:
+        name: secret-values
+        namespace: default
+        key: values.yaml
+    - configMapKeyRef:
+        name: configmap-values
+        namespace: default
+        key: values.yaml
+  values:
+    replicas: "4"
+----
+
+== Personnalisation par cluster
+
+Le `GitRepo` définit quels clusters un dépôt déploie. Le `fleet.yaml` définit les personnalisations par cible.
+
+Tous les clusters et groupes dans le même espace de noms sont évalués par rapport aux cibles. La première correspondance s'applique.
+
+[source,yaml]
+----
+targetCustomizations:
+- name: all
+  clusterSelector: {}
+- name: none
+  clusterSelector: null
+----
+
+Correspondance par nom de cluster{nbsp}:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: prod
+  clusterName: fleetname
+----
+Voir xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[personnalisation par cluster].
+
+== Personnalisation des ressources YAML brutes
+
+[source,shell]
+----
+# Base files
+deployment.yaml
+svc.yaml
+
+# Overlay files
+overlays/custom/configmap.yaml
+overlays/custom/svc.yaml
+overlays/custom/deployment_patch.yaml
+----
+
+Règles:
+
+* Les noms correspondants remplacent les fichiers de base.
+* Les fichiers `_patch.` appliquent des correctifs (JSON/stratégique/JSONPatch).
+
+== État du cluster et du bundle
+
+Voir xref:/reference/ref-status-fields.adoc[champs d'état].
+
+== CRs de GitRepo imbriqués
+
+Les CRs de GitRepo imbriqués sont pris en charge.
+
+Reportez-vous à{nbsp}: https://github.com/rancher/fleet-examples/tree/master/single-cluster/multi-gitrepo

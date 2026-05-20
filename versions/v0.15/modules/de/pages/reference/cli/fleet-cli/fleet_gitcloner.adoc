@@ -1,0 +1,27 @@
+= Fleet Git-Kloner
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Kloniert ein Git-Repository
+
+----
+fleet gitcloner [REPO] [PATH] [flags]
+----
+
+== Optionen
+
+----
+  -b, --branch string                 git branch
+      --ca-bundle-file string         CA bundle file
+  -h, --help                          help for gitcloner
+      --insecure-skip-tls             do not verify tls certificates
+      --known-hosts-file string       known hosts file
+      --password-file string          password file for basic auth
+      --revision string               git revision
+      --ssh-private-key-file string   ssh private key file path
+  -u, --username string               user name for basic auth
+----
+
+== SIEHE AUCH
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Verwalten von {product_name} Operationen

@@ -1,0 +1,96 @@
+= Observabilidade
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Campos de Status
+
+{product_name} relata a maior parte das informações por meio de campos de status em seus recursos personalizados.
+Esses campos também são usados pela interface do Rancher para exibir informações sobre o estado dos recursos.
+
+Veja xref:reference/ref-status-fields.adoc[referência de campos de status] para mais informações sobre campos de status e condições.
+
+== Eventos do K8s
+
+{product_name} irá gerar eventos do K8s aos quais um usuário pode se inscrever. Esta é a lista de eventos:
+
+* `Created`- um novo trabalho de clonagem git é criado
+* `GotNewCommit`- um repositório git tem um novo commit
+* `JobDeleted`- um trabalho de clonagem git bem-sucedido é removido
+* `FailedValidatingSecret`- um trabalho de clonagem git não pode ser criado, porque um segredo necessário está faltando
+* `FailedToApplyRestrictions`- o recurso GitRepo viola as regras do recurso GitRepoRestriction
+* `FailedToCheckCommit`- não é possível obter o último commit do servidor git
+* `FailedToGetGitJob`- não é possível recuperar informações do trabalho de clonagem git
+* `Failed`- a verificação periódica está desativada, acionada via webhook, mas não é possível obter o último commit do servidor git
+
+== Métricas
+
+{product_name} publica métricas do Prometheus. Elas podem ser recuperadas desses serviços:
+
+* `monitoring-fleet-controller.cattle-fleet-system.svc.cluster.local:8080/metrics`
+* `monitoring-gitjob.cattle-fleet-system.svc.cluster.local:8081/metrics`
+
+A https://book.kubebuilder.io/reference/metrics-reference[coleção de métricas exportadas] inclui todas as informações do controller-runtime, como o número de recursos reconciliados, o número de erros e o tempo que levou para reconciliar.
+
+=== Grafana
+
+Ao usar Grafana e Prometheus (por exemplo, a partir de https://github.com/prometheus-community/helm-charts),), é necessária alguma configuração para acessar {product_name} métricas.
+
+. Crie um recurso `ServiceMonitor` para coletar métricas {product_name}. Veja um exemplo:
++
+[source,yaml]
+----
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Create this in the same namespace as your application
+  namespace: cattle-fleet-system
+  name: fleet-controller-monitor
+  labels:
+    # This label makes the ServiceMonitor discoverable by the Prometheus Operator
+    release: monitoring  # <-- ADD THIS LABEL!
+spec:
+  selector:
+    matchLabels:
+      # This label must exist on the service you want to scrape
+      app: fleet-controller # Assumed label, verify this
+  namespaceSelector:
+    matchNames:
+      # We are only looking for the service in its own namespace
+      - cattle-fleet-system
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Create this in the same namespace as your application
+  namespace: cattle-fleet-system
+  name: fleet-gitjob-monitor
+  labels:
+    # This label makes the ServiceMonitor discoverable by the Prometheus Operator
+    release: monitoring  # <-- ADD THIS LABEL!
+spec:
+  selector:
+    matchLabels:
+      # This label must exist on the service you want to scrape
+      app: gitjob
+  namespaceSelector:
+    matchNames:
+      # We are only looking for the service in its own namespace
+      - cattle-fleet-system
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+----
++
+E aplique o manifesto no namespace de {product_name}, por exemplo, em +cattle-fleet-system+:
++
+[source,bash]
+----
+kubectl create -f servicemonitor.yaml -n cattle-fleet-system
+----
+
+. Construa os painéis do Grafana e importe-os para o Grafana. Você pode encontrar os painéis no repositório https://github.com/rancher/fleet-dashboards[fleet-dashboards]. Siga as instruções do README para construí-los.

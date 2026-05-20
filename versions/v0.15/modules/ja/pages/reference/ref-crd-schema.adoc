@@ -1,0 +1,78 @@
+= {product_name} CRDスキーマの概要
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+この表は、*{product_name}*で使用されるカスタムリソース定義（CRD）の目的とトップレベルのスキーマプロパティをまとめています。各CRDは、{product_name}がアプリケーション、デプロイメント、およびクラスターの設定をどのように管理するかを定義します。
+
+[cols="1,4,2,2", options="header"]
+|===
+| CRD | 説明 | トップレベルプロパティ | リファレンス
+
+| *バンドル v1alpha1*
+| バンドルは、アプリケーションのリソースとそのデプロイメントオプションを含みます。ターゲットクラスターにHelmチャートとしてデプロイされます。GitRepoがスキャンされると、1つ以上のバンドルが生成されます。バンドルは、1つ以上のクラスターにデプロイされるリソースのコレクションであり、{product_name}で使用される基本的なデプロイメントユニットを表します。バンドルの内容には、Kubernetesマニフェスト、Kustomize設定、またはHelmチャートが含まれる場合があります。ソースに関係なく、内容はエージェントによって動的にHelmチャートにレンダリングされ、ダウンストリームクラスターにHelmリリースとしてインストールされます。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/bundle_v1alpha1.json[バンドル v1alpha1]
+
+| *バンドルデプロイメント v1alpha1*
+| バンドルデプロイメントは、{product_name}によって内部的に使用され、直接使用すべきではありません。バンドルがクラスターにデプロイされると、そのバンドルのインスタンスはバンドルデプロイメントと呼ばれます。それは、特定のクラスターにおけるそのバンドルの状態を、クラスター固有のカスタマイズと共に表します。Fleet agentは、管理しているクラスターのために作成されたバンドルデプロイメントリソースのみを認識しています。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/bundledeployment_v1alpha1.json[バンドルデプロイメント v1alpha1]
+
+| *BundleNamespaceMapping v1alpha1*
+| バンドルネームスペースマッピングは、他のネームスペースのクラスターにバンドルをマッピングします。
+| `apiVersion, bundleSelector, kind, metadata, namespaceSelector`
+| link:reference/crds/bundlenamespacemapping_v1alpha1.json[バンドルネームスペースマッピング v1alpha1]
+
+| *クラスター v1alpha1*
+| クラスターはKubernetesクラスターに対応しています。{product_name}は、ダウンストリームクラスターと呼ばれるターゲットクラスターにバンドルをデプロイします。単一クラスターのデプロイメントでは、Fleetクラスターはマネージャーとダウンストリームクラスターの両方として機能します。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/cluster_v1alpha1.json[クラスター v1alpha1]
+
+| *ClusterGroup v1alpha1*
+| クラスターグループは、クラスターのグループをターゲットにするために使用される再利用可能なセレクターです。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clustergroup_v1alpha1.json[ClusterGroup v1alpha1]
+
+| *ClusterRegistration v1alpha1*
+| ClusterRegistrationは、{product_name}によって内部的に使用され、直接使用すべきではありません。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clusterregistration_v1alpha1.json[ClusterRegistration v1alpha1]
+
+| *ClusterRegistrationToken v1alpha1*
+| ClusterRegistrationTokenは、エージェントが新しいクラスターを登録するために使用します。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clusterregistrationtoken_v1alpha1.json[ClusterRegistrationToken v1alpha1]
+
+| *Content v1alpha1*
+| Contentは、{product_name}によって内部的に使用され、直接使用すべきではありません。これは、特定のターゲットクラスター向けのバンドルからリソースを含みます。
+| `apiVersion, content, kind, metadata, sha256sum`
+| link:reference/crds/content_v1alpha1.json[Content v1alpha1]
+
+| *GitRepo v1alpha1*
+| GitRepoは、{product_name}によって監視されるGitリポジトリを説明します。リソースには、リポジトリまたはその一部をターゲットクラスターにデプロイするために必要な情報が含まれています。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/gitreporestriction_v1alpha1.json[GitRepo v1alpha1]
+
+| *GitRepoRestriction v1alpha1*
+| GitRepoRestrictionは、同じネームスペース内でGitRepoオプションを制限することができます。
+| `allowedClientSecretNames, allowedRepoPatterns, allowedServiceAccounts, allowedTargetNamespaces, apiVersion, defaultClientSecretName, defaultServiceAccount, kind, metadata`
+| link:reference/crds/gitreporestriction_v1alpha1.json[GitRepoRestriction v1alpha1]
+
+| *HelmOp v1alpha1*
+| HelmOpは、チャートをターゲットクラスターにデプロイするために必要なHelmチャート情報を説明します。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/helmop_v1alpha1.json[HelmOp v1alpha1]
+
+| *ImageScan v1alpha1*
+| グループ`fleet.cattle.io`のImageScan（v1alpha1）のJSONスキーマです。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/imagescan_v1alpha1.json[ImageScan v1alpha1]
+
+| *Schedule v1alpha1*
+| Scheduleは、デプロイメントが許可または制限されるタイミングを決定するデプロイメントスケジュールを表します。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/schedule_v1alpha1.json[Schedule v1alpha1]
+
+|===
+
+詳細については、 https://github.com/rancher/fleet/blob/main/charts/fleet-crd/templates/crds.yaml[fleet-crds.yaml]を参照してください。

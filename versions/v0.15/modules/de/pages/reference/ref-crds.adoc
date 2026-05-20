@@ -1,0 +1,2896 @@
+= Spezifikation der benutzerdefinierten Ressourcen
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:doctype: book
+
+== Ressourcen
+
+* <<Bundle,Bundle>>
+* <<BundleDeployment,BundleDeployment>>
+* <<BundleNamespaceMapping,BundleNamespaceMapping>>
+* <<Cluster,Cluster>>
+* <<ClusterGroup,ClusterGroup>>
+* <<ClusterRegistration,ClusterRegistration>>
+* <<ClusterRegistrationToken,ClusterRegistrationToken>>
+* <<Content,Inhalt>>
+* <<GitRepo,GitRepo>>
+* <<GitRepoRestriction,GitRepoRestriction>>
+* <<ImageScan,ImageScan>>
+
+== Unterressourcen
+
+* <<BundleDisplay,BundleDisplay>>
+* <<BundleList,BundleList>>
+* <<BundleRef,BundleRef>>
+* <<BundleResource,BundleResource>>
+* <<BundleSpec,BundleSpec>>
+* <<BundleStatus,BundleStatus>>
+* <<BundleSummary,BundleSummary>>
+* <<BundleTarget,BundleTarget>>
+* <<BundleTargetRestriction,BundleTargetRestriction>>
+* <<NonReadyResource,NonReadyResource>>
+* <<Partition,Partition>>
+* <<PartitionStatus,PartitionStatus>>
+* <<ResourceKey,ResourceKey>>
+* <<RolloutStrategy,RolloutStrategy>>
+* <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+* <<BundleDeploymentList,BundleDeploymentList>>
+* <<BundleDeploymentOptions,BundleDeploymentOptions>>
+* <<BundleDeploymentResource,BundleDeploymentResource>>
+* <<BundleDeploymentSpec,BundleDeploymentSpec>>
+* <<BundleDeploymentStatus,BundleDeploymentStatus>>
+* <<ComparePatch,ComparePatch>>
+* <<ConfigMapKeySelector,ConfigMapKeySelector>>
+* <<DiffOptions,DiffOptions>>
+* <<HelmOptions,HelmOptions>>
+* <<IgnoreOptions,IgnoreOptions>>
+* <<KustomizeOptions,KustomizeOptions>>
+* <<LocalObjectReference,LocalObjectReference>>
+* <<ModifiedStatus,ModifiedStatus>>
+* <<NonReadyStatus,NonReadyStatus>>
+* <<Operation,Aktion>>
+* <<SecretKeySelector,SecretKeySelector>>
+* <<ValuesFrom,ValuesFrom>>
+* <<YAMLOptions,YAMLOptions>>
+* <<BundleNamespaceMappingList,BundleNamespaceMappingList>>
+* <<AgentStatus,AgentStatus>>
+* <<ClusterDisplay,ClusterDisplay>>
+* <<ClusterList,ClusterList>>
+* <<ClusterSpec,ClusterSpec>>
+* <<ClusterStatus,ClusterStatus>>
+* <<ClusterGroupDisplay,ClusterGroupDisplay>>
+* <<ClusterGroupList,ClusterGroupList>>
+* <<ClusterGroupSpec,ClusterGroupSpec>>
+* <<ClusterGroupStatus,ClusterGroupStatus>>
+* <<ClusterRegistrationList,ClusterRegistrationList>>
+* <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+* <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+* <<ClusterRegistrationTokenList,ClusterRegistrationTokenList>>
+* <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+* <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+* <<ContentList,ContentList>>
+* <<CommitSpec,CommitSpec>>
+* <<CorrectDrift,CorrectDrift>>
+* <<GitRepoDisplay,GitRepoDisplay>>
+* <<GitRepoList,GitRepoList>>
+* <<GitRepoResource,GitRepoResource>>
+* <<GitRepoResourceCounts,GitRepoResourceCounts>>
+* <<GitRepoSpec,GitRepoSpec>>
+* <<GitRepoStatus,GitRepoStatus>>
+* <<GitTarget,GitTarget>>
+* <<OCIRegistrySpec,OCIRegistrySpec>>
+* <<ResourcePerClusterState,ResourcePerClusterState>>
+* <<GitRepoRestrictionList,GitRepoRestrictionList>>
+* <<AlphabeticalPolicy,AlphabeticalPolicy>>
+* <<ImagePolicyChoice,ImagePolicyChoice>>
+* <<ImageScanList,ImageScanList>>
+* <<ImageScanSpec,ImageScanSpec>>
+* <<ImageScanStatus,ImageScanStatus>>
+* <<SemVerPolicy,SemVerPolicy>>
+* <<FleetYAML,FleetYAML>>
+* <<ImageScanYAML,ImageScanYAML>>
+
+=== Bundle
+
+Das Bundle enthält die Ressourcen einer Anwendung und deren Implementierungsoptionen. Es wird als Helm-Chart in Ziel-Cluster bereitgestellt.
+
+Wenn ein GitRepo gescannt wird, erzeugt es ein oder mehrere Bundles. Bundles sind eine Sammlung von Ressourcen, die in ein oder mehrere Cluster bereitgestellt werden. Das Bundle ist die grundlegende Implementierungseinheit, die in {product_name} verwendet wird. Der Inhalt eines Bundles kann Kubernetes-Manifeste, Kustomize-Konfigurationen oder Helm-Charts sein. Unabhängig von der Quelle werden die Inhalte dynamisch von dem Agenten in ein Helm-Chart gerendert und als Helm-Release in das Downstream-Cluster installiert.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleSpec,BundleSpec>>
+| true
+
+| status
+|
+| <<BundleStatus,BundleStatus>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDisplay
+
+BundleDisplay enthält die Anzahl der bereitstehenden, gewünschten Cluster und einen zusammenfassenden Zustand für das Bundle.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| readyClusters
+| BereiteCluster ist eine Zeichenkette in der Form "%d/%d", die die Anzahl der Cluster beschreibt, die bereit sind, im Vergleich zur Anzahl der Cluster, die bereit sein sollen.
+| Zeichenfolge
+| false
+
+| Bundesland
+| Zustand ist ein zusammenfassender Zustand für das Bundle, berechnet über die Ressourcen, die nicht bereit sind.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleList
+
+BundleListe enthält eine Liste von Bundles
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<Bundle,Bundle>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleRef
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Bundle-Name
+| Zeichenfolge
+| false
+
+| Selector
+| Selector, der die Labels des Bundles abgleicht.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleResource
+
+BundleResource repräsentiert den Inhalt einer einzelnen Ressource aus dem Bundle, wie ein YAML-Manifest.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Name der Ressource, kann den internen Pfad des Bundles enthalten.
+| Zeichenfolge
+| false
+
+| Inhalt
+| Der Inhalt der Ressource kann komprimiert sein.
+| Zeichenfolge
+| false
+
+| encoding
+| Die Kodierung ist entweder leer oder "base64+gz".
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| pausiert
+| Wenn auf true gesetzt, wird die Aktualisierung von Bundle-Implementierungen gestoppt. Es wird als nicht synchron markiert.
+| bool
+| false
+
+| rolloutStrategy
+| RolloutStrategie steuert den Rollout von Bundles, indem Partitionen, Kanarienvögel und Prozentsätze für die Clusterverfügbarkeit definiert werden.
+| *<<RolloutStrategy,RolloutStrategy>>
+| false
+
+| Ressourcen
+| Ressourcen enthalten die Ressourcen, die vom Pfad des Bundles gelesen wurden. Dies umfasst den Inhalt heruntergeladener Helm-Charts.
+| []<<BundleResource,BundleResource>>
+| false
+
+| Ziele
+| Ziele beziehen sich auf die Cluster, die bereitgestellt werden sollen. Ziele werden der Reihenfolge nach ausgewertet, und das erste, das übereinstimmt, wird verwendet.
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| Zielbeschränkungen
+| Zielbeschränkungen ist eine Positivliste, die steuert, ob eine Bundle-Implementierung für ein Ziel erstellt wird.
+| []<<BundleTargetRestriction,BundleTargetRestriction>>
+| false
+
+| dependsOn
+| AbhängigVon bezieht sich auf die Bundles, die sich in einem akzeptierten Zustand befinden müssen, bevor dieses Bundle bereitgestellt werden kann.
+| []<<BundleRef,BundleRef>>
+| false
+
+| contentsId 
+| InhaltsID speichert die Inhalts-ID beim Bereitstellen von Inhalten über ein OCI-Registry. 
+| Zeichenfolge 
+| false
+
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Bedingungen
+| Bedingungen ist eine Liste von Wrangler-Bedingungen, die den Zustand des Bundles beschreiben.
+| []genericcondition.GenericCondition
+| false
+
+| Zusammenfassung
+| Zusammenfassung enthält die Anzahl der Bundle-Implementierungen in jedem Zustand und eine Liste der Ressourcen, die nicht bereit sind.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| newlyCreated
+| NeuErstellt ist die Anzahl der Bundle-Implementierungen, die erstellt, aber nicht aktualisiert wurden.
+| int
+| false
+
+| nicht verfügbar
+| Nicht verfügbar ist die Anzahl der Bundle-Implementierungen, die nicht bereit sind oder bei denen die AppliedDeploymentID im Status nicht mit der DeploymentID aus der Spezifikation übereinstimmt.
+| int
+| true
+
+| nichtVerfügbarePartitionen
+| Nicht verfügbare Partitionen ist die Anzahl der nicht verfügbaren Partitionen.
+| int
+| true
+
+| maxUnavailable
+| MaxNichtVerfügbar ist die maximale Anzahl nicht verfügbarer Bundle-Implementierungen. Siehe Rollout-Konfiguration.
+| int
+| true
+
+| maxUnavailablePartitions
+| MaxNichtVerfügbarePartitionen ist die maximale Anzahl nicht verfügbarer Partitionen. Die Rollout-Konfiguration definiert eine maximale Anzahl oder einen Prozentsatz an nicht verfügbaren Partitionen.
+| int
+| true
+
+| Partitionen
+| PartitionStatus listet den Status jeder Partition auf.
+| []<<PartitionStatus,PartitionStatus>>
+| false
+
+| display
+| Display enthält die Anzahl der Cluster, die bereit bzw. erwünscht sind, sowie einen zusammenfassenden Zustand der Ressourcen des Bundles.
+| <<BundleDisplay,BundleDisplay>>
+| false
+
+| resourceKey
+| ResourceKey listet Ressourcen auf, die wahrscheinlich bereitgestellt werden. Die tatsächliche Liste der Ressourcen in einem Cluster kann abweichen, abhängig vom Helm-Chart, der Wertvorlage usw.
+| []<<ResourceKey,ResourceKey>>
+| false
+
+| ociReference 
+| OCIReference ist der OCI-Verweis, der verwendet wird, um Inhalte zu speichern; dies dient nur zu Informationszwecken. 
+| Zeichenfolge 
+| false
+
+| observedGeneration
+| ObservedGeneration ist die aktuelle Generation des Bundles.
+| int64
+| true
+
+| resourcesSha256Sum
+| ResourcesSHA256Sum entspricht der JSON-Serialisierung des .Spec.Resources-Feldes.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleSummary
+
+BundleSummary enthält die Anzahl der Bundle-Implementierungen in jedem Zustand und eine Liste der Ressourcen, die nicht bereit sind. Es wird im Status des Bundles, der Clustergroup, des Clusters und des Git-Repos verwendet.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| notReady
+| NotReady ist die Anzahl der Bundle-Implementierungen, die bereitgestellt wurden, bei denen einige Ressourcen nicht bereit sind.
+| int
+| false
+
+| waitApplied
+| WarteAngewendet ist die Anzahl der Bundle-Implementierungen, die vom {product_name} Controller und dem Downstream-Cluster synchronisiert wurden, aber auf die Bereitstellung warten.
+| int
+| false
+
+| errApplied
+| FehlerAngewendet ist die Anzahl der Bundle-Implementierungen, die vom {product_name} Controller und dem Downstream-Cluster synchronisiert wurden, aber beim Bereitstellen des Bundles einige Fehler aufgetreten sind.
+| int
+| false
+
+| outOfSync
+| NichtSynchronisiert ist die Anzahl der Bundle-Implementierungen, die vom {product_name} Controller synchronisiert wurden, aber noch nicht vom Downstream-Agenten.
+| int
+| false
+
+| geändert
+| Geändert ist die Anzahl der Bundle-Implementierungen, die bereitgestellt wurden und bei denen alle Ressourcen bereit sind, aber einige Änderungen aus dem Git-Repository noch nicht synchronisiert wurden.
+| int
+| false
+
+| bereit
+| Bereit ist die Anzahl der Bundle-Implementierungen, die bereitgestellt wurden, bei denen alle Ressourcen bereit sind.
+| int
+| true
+
+| Ausstehend
+| Ausstehend ist die Anzahl der Bundle-Implementierungen, die vom {product_name} Controller verarbeitet werden.
+| int
+| false
+
+| desiredReady
+| GewünschtBereit ist die Anzahl der Bundle-Implementierungen, die bereit sein sollten.
+| int
+| true
+
+| nonReadyResources
+| NichtBereitCluster ist eine Liste von Zuständen, die für ein Bundle ausgefüllt wird, das nicht bereit ist.
+| []<<NonReadyResource,NonReadyResource>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleTarget
+
+BundleTarget erklärt Cluster, auf die bereitgestellt werden soll. {product_name} wird die Bundle-Implementierungsoptionen aus den Anpassungen in diese Struktur zusammenführen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Name des Ziels. Dieser Wert dient hauptsächlich zur Anzeige und Protokollierung. Wenn nicht angegeben, wird ein Standardname im Format "target000" verwendet.
+| Zeichenfolge
+| false
+
+| clusterName
+| ClusterName, um einen bestimmten Cluster anhand seines Namens auszuwählen.
+| Zeichenfolge
+| false
+
+| clusterSelector
+| ClusterSelector ist ein Selektor zum Abgleichen von Clustern. Die Struktur ist das Standardformat metav1.LabelSelector. Wenn clusterGroupSelector oder clusterGroup angegeben ist, wird clusterSelector nur verwendet, um die Auswahl weiter zu verfeinern, nachdem clusterGroupSelector und clusterGroup ausgewertet wurden.
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| ClusterGroup zum Abgleichen einer bestimmten Clustergruppe nach Namen.
+| Zeichenfolge
+| false
+
+| clusterGroupSelector
+| ClusterGroupSelector ist ein Selektor zum Abgleichen von Clustergruppen.
+| *metav1.LabelSelector
+| false
+
+| doNotDeploy
+| DoNotDeploy, wenn auf true gesetzt, wird nicht an dieses Ziel bereitgestellt.
+| bool
+| false
+
+| namespaceLabels 
+| NamespaceLabels sind Labels, die dem Namespace, der von {product_name} erstellt wurde, hinzugefügt werden. 
+| map[string]string 
+| false 
+
+| namespaceAnnotations 
+| NamespaceAnnotations sind Annotationen, die dem Namespace, der von {product_name} erstellt wurde, hinzugefügt werden. 
+| map[string]string 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleTargetRestriction
+
+BundleTargetRestriction wird intern von {product_name} verwendet und sollte nicht geändert werden. Es fungiert als Zulassungsliste, um die Erstellung von BundleDeployments aus Zielen, die durch TargetCustomizations in fleet.yaml erstellt wurden, zu verhindern.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+|
+| Zeichenfolge
+| false
+
+| clusterName
+|
+| Zeichenfolge
+| false
+
+| clusterSelector
+|
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+|
+| Zeichenfolge
+| false
+
+| clusterGroupSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== NonReadyResource
+
+NonReadyResource enthält Informationen über ein Bundle, das für einen bestimmten Zustand wie "ErrApplied" nicht bereit ist. Es enthält eine Liste von Ressourcen, die entweder nicht bereit sind oder modifiziert wurden, sowie deren Zustände.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Name ist der Name der Ressource.
+| Zeichenfolge
+| false
+
+| bundleState
+| Der Zustand ist der Zustand der Ressource, wie z.B. "NotReady" oder "ErrApplied".
+| BundleState
+| false
+
+| message
+| Message enthält Informationen, warum das Bundle nicht bereit ist.
+| Zeichenfolge
+| false
+
+| modifiedStatus
+| ModifiedStatus listet den Zustand jeder modifizierten Ressource auf.
+| []<<ModifiedStatus,ModifiedStatus>>
+| false
+
+| nonReadyStatus
+| NonReadyStatus listet den Zustand jeder Ressource auf, die nicht bereit ist.
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== Partition
+
+Partition definiert eine separate Rollout-Strategie für eine Gruppe von Clustern.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Ein benutzerfreundlicher Name, der der Partition für die Anzeige zugewiesen wird (optional).
+| Zeichenfolge
+| false
+
+| maxUnavailable
+| Eine Anzahl oder ein Prozentsatz von Clustern, die in dieser Partition nicht verfügbar sein können, bevor diese Partition als abgeschlossen betrachtet wird. Standard: 10 %
+| *intstr.IntOrString
+| false
+
+| clusterName
+| ClusterName ist der Name eines Clusters, der in diese Partition aufgenommen werden soll.
+| Zeichenfolge
+| false
+
+| clusterSelector
+| Selector, der Cluster-Labels zuordnet, die in diese Partition aufgenommen werden sollen.
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| Ein Clustergruppenname, der in diese Partition aufgenommen werden soll.
+| Zeichenfolge
+| false
+
+| clusterGroupSelector
+| Selector, der Clustergruppen-Labels zuordnet, die in diese Partition aufgenommen werden sollen.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== PartitionStatus
+
+PartitionStatus ist der Status einer einzelnen Rollout-Partition.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Name ist der Name der Partition.
+| Zeichenfolge
+| false
+
+| count
+| Anzahl ist die Anzahl der Cluster in der Partition.
+| int
+| false
+
+| maxUnavailable
+| MaxUnavailable ist die maximale Anzahl von nicht verfügbaren Clustern in der Partition.
+| int
+| false
+
+| unavailable
+| Unavailable ist die Anzahl der nicht verfügbaren Cluster in der Partition.
+| int
+| false
+
+| Zusammenfassung
+| Zusammenfassung ist ein zusammengefasster Zustand der Partition, berechnet anhand der Ressourcen, die nicht bereit sind.
+| <<BundleSummary,BundleSummary>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ResourceKey
+
+ResourceKey listet Ressourcen auf, die wahrscheinlich bereitgestellt werden.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Art
+| Art ist die k8s API-Art der Ressource.
+| Zeichenfolge
+| false
+
+| apiVersion
+| APIVersion ist die k8s API-Version der Ressource.
+| Zeichenfolge
+| false
+
+| namespace
+| Namespace ist der Namespace der Ressource.
+| Zeichenfolge
+| false
+
+| name
+| Name ist der Name der Ressource.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== RolloutStrategy
+
+RolloverStrategy steuert den Rollout des Bundles über Cluster hinweg.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| maxUnavailable
+| Eine Anzahl oder ein Prozentsatz von Clustern, die während einer Aktualisierung eines Bundles nicht verfügbar sein können. Dies folgt dem gleichen grundlegenden Ansatz wie eine Implementierungs-Rollout-Strategie. Sobald die Zahl der nicht verfügbaren Cluster erreicht ist, wird die Aktualisierung pausiert. Der Standardwert beträgt 100 %, was sich nicht auf die Aktualisierung auswirkt. Standardwert: 100 %
+| *intstr.IntOrString
+| false
+
+| maxUnavailablePartitions
+| Eine Anzahl oder ein Prozentsatz der Clusterpartitionen, die während einer Aktualisierung eines Bundles nicht verfügbar sein können. Standard: 0
+| *intstr.IntOrString
+| false
+
+| autoPartitionSize
+| Eine Anzahl oder ein Prozentsatz, wie Cluster automatisch partitioniert werden, wenn keine spezifische Partitionierungsstrategie konfiguriert ist. Standard: 25 %
+| *intstr.IntOrString
+| false
+
+| autoPartitionThreshold
+| Die minimale Anzahl von Clustern, die vorhanden sein müssen, bevor die automatische Partitionierung aktiviert wird. Wenn die Anzahl der Zielcluster kleiner ist als dieser Wert, werden alle Cluster in einer einzigen Partition platziert. Standard: 200
+| *int
+| false
+
+| maxNew
+| Die maximale Anzahl neuer BundleDeployments, die in einer einzigen Rekonsiliation erstellt werden können. Dies begrenzt die Rate, mit der neue Deployments vorbereitet werden, wenn ein Bundle erstmals auf viele Cluster angewendet wird. Standard: 50
+| *int
+| false
+
+| Partitionen
+| Eine Liste von Definitionen von Partitionen.  Wenn einige Zielcluster nicht mit der Konfiguration übereinstimmen, werden sie am Ende zu Partitionen hinzugefügt, die der autoPartitionSize folgen.
+| []<<Partition,Partition>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeployment
+
+BundleDeployment wird intern von {product_name} verwendet und sollte nicht direkt verwendet werden. Wenn ein Bundle in ein Cluster bereitgestellt wird, wird eine Instanz eines Bundles als BundleDeployment bezeichnet. Ein BundleDeployment repräsentiert den Zustand dieses Bundles in einem bestimmten Cluster mit seinen clusterspezifischen Anpassungen. Der {product_name} Agent ist nur über BundleDeployment-Ressourcen informiert, die für den Cluster erstellt werden, den der Agent verwaltet.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleDeploymentSpec,BundleDeploymentSpec>>
+| false
+
+| status
+|
+| <<BundleDeploymentStatus,BundleDeploymentStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeploymentDisplay
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| deployed → bereitgestellt
+|
+| Zeichenfolge
+| false
+
+| überwacht
+|
+| Zeichenfolge
+| false
+
+| Bundesland
+|
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeploymentList
+
+BundleDeploymentList enthält eine Liste von BundleDeployment
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<BundleDeployment,BundleDeployment>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeploymentOptions
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| defaultNamespace
+| DefaultNamespace ist der Namespace, der für Ressourcen verwendet wird, die keinen Namespace angeben. Dieses Feld wird nicht verwendet, um die Implementierung auf einen bestimmten Namespace durchzusetzen oder zu sperren.
+| Zeichenfolge
+| false
+
+| namespace
+| TargetNamespace, falls vorhanden, weist alle Ressourcen diesem Namespace zu, und wenn eine clusterweite Ressource existiert, schlägt die Implementierung fehl.
+| Zeichenfolge
+| false
+
+| Kustomize
+| Kustomize-Optionen für die Bereitstellung, wie das Verzeichnis, das die kustomization.yaml-Datei enthält.
+| *<<KustomizeOptions,KustomizeOptions>>
+| false
+
+| Helm
+| Helm-Optionen für die Bereitstellung, wie den Chart-Namen, das Repository und die Werte.
+| *<<HelmOptions,HelmOptions>>
+| false
+
+| serviceAccount
+| ServiceAccount, der für die Durchführung dieser Implementierung verwendet wird.
+| Zeichenfolge
+| false
+
+| forceSyncGeneration
+| ForceSyncGeneration wird verwendet, um eine erneute Implementierung zu erzwingen
+| int64
+| false
+
+| yaml
+| YAML-Optionen, wenn Sie rohes YAML verwenden, sind dies Namen, die auf overlays/{name} Dateien abgebildet werden, die verwendet werden, um eine Ressource zu ersetzen oder zu patchen.
+| *<<YAMLOptions,YAMLOptions>>
+| false
+
+| diff
+| Diff kann verwendet werden, um den modifizierten Zustand von Objekten zu ignorieren, die zur Laufzeit geändert werden.
+| *<<DiffOptions,DiffOptions>>
+| false
+
+| keepResources
+| KeepResources kann verwendet werden, um die bereitgestellten Ressourcen beim Entfernen des Bundles zu behalten
+| bool
+| false
+
+| deleteNamespace 
+| DeleteNamespace kann verwendet werden, um den bereitgestellten Namespace beim Entfernen des Bundles zu löschen 
+| bool 
+| false
+
+| ignore
+| IgnoreOptions kann verwendet werden, um Felder beim Überwachen des Bundles zu ignorieren.
+| <<IgnoreOptions,IgnoreOptions>>
+| false
+
+| correctDrift
+| CorrectDrift gibt an, wie die Driftkorrektur funktionieren soll.
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| namespaceLabels
+| NamespaceLabels sind Labels, die dem Namespace, der von {product_name} erstellt wurde, hinzugefügt werden.
+| map[string]string
+| false
+
+| namespaceAnnotations
+| NamespaceAnnotations sind Annotationen, die dem Namespace, der von {product_name} erstellt wurde, hinzugefügt werden.
+| map[string]string
+| false
+
+| deleteCRDResources
+| DeleteCRDResources löscht CRDs. Warnung! Dies wird auch alle Ihre benutzerdefinierten Ressourcen löschen.
+| bool
+| false
+|===
+
+[Note]
+====
+Wenn Sie nicht möchten, dass Fleet das `helm.sh/resource-policy: keep` anwendet, konfigurieren Sie die `deleteCRDResource`-Option auf `true` in `fleet.yaml`.
+====
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeploymentResource
+
+BundleDeploymentResource enthält die Metadaten einer implementierten Ressource.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Art
+|
+| Zeichenfolge
+| false
+
+| apiVersion
+|
+| Zeichenfolge
+| false
+
+| namespace
+|
+| Zeichenfolge
+| false
+
+| name
+|
+| Zeichenfolge
+| false
+
+| erstelltAm
+|
+| metav1.Time
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeploymentSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| pausiert
+| Paused, wenn auf true gesetzt, verhindert, dass BundleDeployments aktualisiert werden. Wenn true, werden BundleDeployments als nicht synchron markiert, wenn Änderungen erkannt werden.
+| bool
+| false
+
+| stagedOptions
+| StagedOptions sind die Implementierungsoptionen, die für die nächste Implementierung vorbereitet werden.
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| stagedDeploymentID
+| StagedDeploymentID ist die ID der vorbereiteten Implementierung.
+| Zeichenfolge
+| false
+
+| Optionen
+| Optionen sind die Implementierungsoptionen, die derzeit angewendet werden.
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| deploymentID
+| DeploymentID ist die ID der derzeit angewendeten Implementierung.
+| Zeichenfolge
+| false
+
+| dependsOn
+| DependsOn bezieht sich auf die Bundles, die bereit sein müssen, bevor dieses Bundle implementiert werden kann.
+| []<<BundleRef,BundleRef>>
+| false
+
+| correctDrift
+| CorrectDrift gibt an, wie die Driftkorrektur funktionieren soll.
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| ociContents 
+| OCIContents ist wahr, wenn der Inhalt dieser Implementierung in einem OCI-Registry gespeichert ist. 
+| bool 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleDeploymentStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Bedingungen
+|
+| []genericcondition.GenericCondition
+| false
+
+| appliedDeploymentID
+|
+| Zeichenfolge
+| false
+
+| release
+| Release ist die Helm-Release-ID
+| Zeichenfolge
+| false
+
+| bereit
+|
+| bool
+| false
+
+| nonModified
+|
+| bool
+| false
+
+| nonReadyStatus
+|
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+
+| modifiedStatus
+|
+| []<<ModifiedStatus,ModifiedStatus>>
+| false
+
+| display
+|
+| <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+| false
+
+| syncGeneration
+|
+| *int64
+| false
+
+| Ressourcen
+| Die Ressourcen listen die Metadaten der Ressourcen auf, die gemäß dem Verlauf der Helm-Releases implementiert wurden.
+| []<<BundleDeploymentResource,BundleDeploymentResource>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ComparePatch
+
+ComparePatch vergleicht eine Ressource und entfernt Felder aus der Überprüfung auf Änderungen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Art
+| Kind ist die Art der Ressource, die übereinstimmen soll.
+| Zeichenfolge
+| false
+
+| apiVersion
+| APIVersion ist die apiVersion der Ressource, die übereinstimmen soll.
+| Zeichenfolge
+| false
+
+| namespace
+| Namespace ist der Namespace der Ressource, die übereinstimmen soll.
+| Zeichenfolge
+| false
+
+| name
+| Name ist der Name der Ressource, die übereinstimmen soll.
+| Zeichenfolge
+| false
+
+| operations
+| Operationen entfernen einen JSON-Pfad von der Ressource.
+| []<<Operation,Operation>>
+| false
+
+| jsonPointers
+| JSONPointers ignorieren Unterschiede an einem bestimmten JSON-Pfad.
+| []string
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ConfigMapKeySelector
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| namespace
+|
+| Zeichenfolge
+| false
+
+| key
+|
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== DiffOptions
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| comparePatches
+| ComparePatches vergleicht eine Ressource und entfernt Felder aus der Überprüfung auf Änderungen.
+| []<<ComparePatch,ComparePatch>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== HelmOptions
+
+HelmOptions für die Implementierung. Für Helm-basierte Bundles können alle Optionen verwendet werden, andernfalls werden einige Optionen ignoriert. Zum Beispiel funktioniert ReleaseName mit allen Bundle-Typen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Chart
+| Ein Chart kann sich auf jede go-getter-URL oder OCI-Registry-basierte Helm-Chart-URL beziehen. Das Chart wird heruntergeladen.
+| Zeichenfolge
+| false
+
+| Repo
+| Repo ist der Name des HTTPS-Helm-Repos, von dem das Chart heruntergeladen werden soll.
+| Zeichenfolge
+| false
+
+| releaseName
+| ReleaseName legt einen benutzerdefinierten Release-Namen fest, um das Chart zu implementieren. Wenn nicht angegeben, wird ein Release-Name generiert, indem GitRepo.name + GitRepo.path kombiniert wird.
+| Zeichenfolge
+| false
+
+| version
+| Version des herunterzuladenden Charts
+| Zeichenfolge
+| false
+
+| timeoutSeconds
+| TimeoutSeconds ist die Zeit, die auf Helm-Operationen gewartet wird.
+| int
+| false
+
+| values
+| Werte, die an Helm übergeben werden. Es ist möglich, die Schlüssel und Werte als Go-Template-Strings anzugeben.
+| *GenericMap
+| false
+
+| valuesFrom
+| ValuesFrom lädt die Werte aus ConfigMaps und Secrets.
+| []<<ValuesFrom,ValuesFrom>>
+| false
+
+| force
+| Force ermöglicht das Überschreiben von unveränderlichen Ressourcen. Das könnte gefährlich sein.
+| bool
+| false
+
+| takeOwnership
+| TakeOwnership lässt Helm die Überprüfung seiner eigenen Annotationen überspringen
+| bool
+| false
+
+| maxHistory
+| MaxHistory begrenzt die maximale Anzahl an Revisionen, die pro Release von Helm gespeichert werden.
+| int
+| false
+
+| valuesFiles
+| ValuesFiles ist eine Liste von Dateien, aus denen Werte geladen werden sollen.
+| []string
+| false
+
+| waitForJobs
+| WaitForJobs, wenn gesetzt und timeoutSeconds angegeben, wartet, bis alle Jobs abgeschlossen sind, bevor das GitRepo als bereit markiert wird. Es wird so lange gewartet, wie timeoutSeconds
+| bool
+| false
+
+| atomic
+| Atomic setzt das --atomic Flag, wenn Helm ein Upgrade durchführt
+| bool
+| false
+
+| disablePreProcess
+| DisablePreProcess deaktiviert die Template-Verarbeitung in Werten
+| bool
+| false
+
+| disableDNS
+| DisableDNS kann verwendet werden, um die EnableDNS-Option von Helm anzupassen, die standardmäßig {product_name} auf `true` setzt.
+| bool
+| false
+
+| skipSchemaValidation
+| SkipSchemaValidation ermöglicht das Überspringen der Schema-Validierung gegen die Chart-Werte
+| bool
+| false
+
+| disableDependencyUpdate 
+| DisableDependencyUpdate ermöglicht das Überspringen des Updates der Chart-Abhängigkeiten 
+| bool 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== IgnoreOptions
+
+IgnoreOptions definiert Bedingungen, die beim Überwachen des Bundles ignoriert werden sollen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Bedingungen
+| Conditions ist eine Liste von Bedingungen, die beim Überwachen des Bundles ignoriert werden sollen.
+| []map[string]string
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== KustomizeOptions
+
+KustomizeOptionen für eine Implementierung.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| dir
+| Dir verweist auf einen benutzerdefinierten Ordner für Kustomize-Ressourcen. Dieser Ordner muss eine kustomization.yaml-Datei enthalten.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== LocalObjectReference
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Name einer Ressource im gleichen Namespace wie der Referent.
+| Zeichenfolge
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ModifiedStatus
+
+ModifiedStatus wird verwendet, um den Status einer modifizierten Ressource zu berichten. Es zeigt an, ob die Modifikation eine Erstellung, eine Löschung oder ein Patch war.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Art
+|
+| Zeichenfolge
+| false
+
+| apiVersion
+|
+| Zeichenfolge
+| false
+
+| namespace
+|
+| Zeichenfolge
+| false
+
+| name
+|
+| Zeichenfolge
+| false
+
+| fehlen
+|
+| bool
+| false
+
+| existieren 
+| Existiert ist wahr, wenn die Ressource existiert, aber nicht uns gehört. Dies kann geschehen, wenn eine Ressource von einem anderen Bundle übernommen wurde, während das ursprüngliche Bundle noch existiert und daher meldet, dass sie nicht sein Eigentum ist. 
+| bool 
+| false
+
+| delete
+|
+| bool
+| false
+
+| Patch
+|
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== NonReadyStatus
+
+NonReadyStatus wird verwendet, um den Status einer Ressource zu berichten, die nicht bereit ist. Es enthält eine Zusammenfassung.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| uid
+|
+| types.UID
+| false
+
+| Art
+|
+| Zeichenfolge
+| false
+
+| apiVersion
+|
+| Zeichenfolge
+| false
+
+| namespace
+|
+| Zeichenfolge
+| false
+
+| name
+|
+| Zeichenfolge
+| false
+
+| Zusammenfassung
+|
+| summary.Zusammenfassung
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== Aktion
+
+Betrieb eines ComparePatch, normalerweise "entfernen".
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| op
+| Op ist normalerweise "entfernen"
+| Zeichenfolge
+| false
+
+| Pfad
+| Pfad ist der JSON-Pfad zum Entfernen.
+| Zeichenfolge
+| false
+
+| value
+| Wert ist normalerweise leer.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== SecretKeySelector
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| namespace
+|
+| Zeichenfolge
+| false
+
+| key
+|
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ValuesFrom
+
+Definieren Sie Helm-Werte, die aus ConfigMap, Secret oder extern stammen können. Gutschrift: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| configMapKeyRef
+| Die Referenz zu einer ConfigMap mit Release-Werten.
+| *<<ConfigMapKeySelector,ConfigMapKeySelector>>
+| false
+
+| secretKeyRef
+| Die Referenz zu einem Secret mit Release-Werten.
+| *<<SecretKeySelector,SecretKeySelector>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== YAMLOptionen
+
+YAMLOptionen, wenn Sie rohes YAML verwenden, sind dies Namen, die auf Dateien in overlays/{name} abgebildet sind, die verwendet werden, um eine Ressource zu ersetzen oder zu patchen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| overlays
+| Overlays ist eine Liste von Namen, die auf Ordner in "overlays/" abgebildet sind. Wenn Sie die Datei ./subdir/resource.yaml anpassen möchten, wird eine Datei ./overlays/myoverlay/subdir/resource.yaml die Basisdatei ersetzen. Eine Datei mit dem Namen ./overlays/myoverlay/subdir/resource_patch.yaml wird die Basisdatei patchen.
+| []string
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleNamespaceMapping
+
+BundleNamespaceMapping ordnet Bundles in anderen Namespaces zu Clustern zu.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| bundleSelector
+|
+| *metav1.LabelSelector
+| false
+
+| namespaceSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== BundleNamespaceMappingList
+
+BundleNamespaceMappingList enthält eine Liste von BundleNamespaceMapping.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<BundleNamespaceMapping,BundleNamespaceMapping>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== AgentStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| lastSeen
+| LastSeen ist die letzte Zeit, zu der der Agent sich gemeldet hat, um den Status der Clusterressource zu aktualisieren.
+| metav1.Time
+| true
+
+| namespace
+| Namespace ist der Namespace des Agenten-Deployments, z.B. "cattle-fleet-system".
+| Zeichenfolge
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== Cluster
+
+Cluster entspricht einem Kubernetes-Cluster. {product_name} stellt Pakete an die Ziel-Cluster bereit. Cluster, in die {product_name} Manifeste bereitstellt, werden als Downstream-Cluster bezeichnet. Im Fall eines einzelnen Cluster-Anwendungsfalls ist der {product_name} Kubernetes-Cluster sowohl der Manager als auch der Downstream-Cluster gleichzeitig.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterSpec,ClusterSpec>>
+| false
+
+| status
+|
+| <<ClusterStatus,ClusterStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterDisplay
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| readyBundles
+| BereitePakete ist eine Zeichenfolge in der Form "%d/%d", die die Anzahl der Pakete beschreibt, die bereit sind, im Vergleich zur Anzahl der Pakete, die bereit sein sollen.
+| Zeichenfolge
+| false
+
+| Bundesland
+| Zustand des Clusters, entweder einer der Paketzustände oder "WarteAufCheckIn".
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterList
+
+ClusterListe enthält eine Liste von Clustern
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<Cluster,Cluster>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| pausiert
+| Wenn auf true gesetzt, wird jede BundleDeployment-Aktualisierung beendet.
+| bool
+| false
+
+| clientID
+| ClientID ist eine eindeutige Zeichenfolge, die den Cluster identifiziert. Sie kann entweder vordefiniert oder beim Importieren des Clusters generiert werden.
+| Zeichenfolge
+| false
+
+| kubeConfigSecret
+| KubeConfigSecret ist der Name des Geheimnisses, das die kubeconfig für den Downstream-Cluster enthält. Es kann optional eine APIServerURL und CA enthalten, um die Werte in der configmap des Fleet-Controllers zu überschreiben.
+| Zeichenfolge
+| false
+
+| kubeConfigSecretNamespace
+| KubeConfigSecretNamespace ist der Namespace des Geheimnisses, das die kubeconfig für den Downstream-Cluster enthält. Wenn nicht gesetzt, wird angenommen, dass das Geheimnis im Namespace gefunden werden kann, in dem sich das Cluster-Objekt befindet.
+| Zeichenfolge
+| false
+
+| redeployAgentGeneration
+| AgentNeuDeployGenerierung kann verwendet werden, um das erneute Bereitstellen des Agenten zu erzwingen.
+| int64
+| false
+
+| agentEnvVars
+| AgentEnvVars sind zusätzliche Umgebungsvariablen, die der Implementierung des Agenten hinzugefügt werden sollen.
+| []corev1.EnvVar
+| false
+
+| agentNamespace
+| Der AgentNamespace ist standardmäßig der Systemnamespace, z. B. cattle-fleet-system.
+| Zeichenfolge
+| false
+
+| privateRepoURL
+| PrivateRepoURL präfixiert den Bildnamen und überschreibt eine globale Repo-URL aus der Agenten-Konfiguration.
+| Zeichenfolge
+| false
+
+| templateValues
+| TemplateValues definiert eine cluster-spezifische Zuordnung von Werten, die an die Werte-Templating in fleet.yaml gesendet werden sollen.
+| *GenericMap
+| false
+
+| agentTolerations
+| AgentTolerations definiert eine zusätzliche Menge von Toleranzen, die zur Agenten-Implementierung hinzugefügt werden sollen.
+| []corev1.Toleration
+| false
+
+| agentAffinity
+| AgentAffinity überschreibt die Standardaffinität für die Implementierung des Agenten im Cluster. Wenn dieser Wert nil ist, wird die Standardaffinität verwendet.
+| *corev1.Affinity
+| false
+
+| agentResources
+| AgentResources legt die Ressourcen für die Implementierung des Agenten im Cluster fest.
+| *corev1.ResourceRequirements
+| false
+
+| hostNetwork 
+| HostNetwork setzt das StatefulSet des Agenten auf die Einstellung hostNetwork: true. Ermöglicht die Bereitstellung von netzwerkbezogenen Paketen (CNI-Konfiguration). 
+| *bool 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Bedingungen
+|
+| []genericcondition.GenericCondition
+| false
+
+| namespace
+| Der Namespace ist der Namespace des Clusters, er enthält das Dienstkonto des Clusters sowie alle BundleDeployments. Beispiel: "cluster-fleet-local-cluster-294db1acfa77-d9ccf852678f"
+| Zeichenfolge
+| false
+
+| Zusammenfassung
+| Zusammenfassung ist eine Zusammenfassung der BundleDeployments. Die Ressourcenanzahlen werden aus der GitRepo-Ressource kopiert.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| resourceCounts
+| ResourceCounts ist eine Zusammenfassung der GitRepoResourceCounts.
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| readyGitRepos
+| ReadyGitRepos ist die Anzahl der Git-Repos für diesen Cluster, die bereit sind.
+| int
+| true
+
+| desiredReadyGitRepos
+| DesiredReadyGitRepos ist die Anzahl der Git-Repos für diesen Cluster, die bereit sein sollen.
+| int
+| true
+
+| agentEnvVarsHash
+| AgentEnvVarsHash ist ein Hash der Umgebungsvariablen des Agents, der zur Erkennung von Änderungen verwendet wird.
+| Zeichenfolge
+| false
+
+| agentPrivateRepoURL
+| AgentPrivateRepoURL ist die private Repo-URL für den Agenten, die derzeit verwendet wird.
+| Zeichenfolge
+| false
+
+| agentHostNetwork 
+| AgentHostNetwork definiert den beobachteten Zustand der Einstellung spec.hostNetwork, die derzeit verwendet wird. 
+| bool 
+| false
+
+| agentDeployedGeneration
+| AgentDeployedGeneration ist die Generation des Agents, die derzeit bereitgestellt ist.
+| *int64
+| false
+
+| agentMigrated
+| AgentMigrated wird immer auf true gesetzt, nachdem ein Cluster importiert wurde. Wenn false, wird eine Migration ausgelöst. Alte Agenten haben dies nicht in ihrem Status.
+| bool
+| false
+
+| agentNamespaceMigrated
+| AgentNamespaceMigrated wird nach dem Importieren eines Clusters immer auf true gesetzt. Wenn false, wird eine Migration ausgelöst. Alte {product_name} Agenten haben dies nicht in ihrem Status.
+| bool
+| false
+
+| cattleNamespaceMigrated
+| CattleNamespaceMigrated wird nach dem Importieren eines Clusters immer auf true gesetzt. Wenn false, wird eine Migration ausgelöst. Alte {product_name} Agenten haben dies nicht in ihrem Status.
+| bool
+| false
+
+| agentAffinityHash
+| AgentAffinityHash ist ein Hash der Affinitätskonfiguration des Agenten, der verwendet wird, um Änderungen zu erkennen.
+| Zeichenfolge
+| false
+
+| agentResourcesHash
+| AgentResourcesHash ist ein Hash der Ressourcen-Konfiguration des Agenten, der verwendet wird, um Änderungen zu erkennen.
+| Zeichenfolge
+| false
+
+| agentTolerationsHash
+| AgentTolerationsHash ist ein Hash der Toleranzkonfiguration des Agenten, der verwendet wird, um Änderungen zu erkennen.
+| Zeichenfolge
+| false
+
+| agentConfigChanged
+| AgentConfigChanged wird auf true gesetzt, wenn sich eine der Agenten-Konfiguration ändert, wie die API-Server-URL oder die CA. Das Setzen auf true löst einen erneuten Import des Clusters aus.
+| bool
+| false
+
+| apiServerURL
+| APIServerURL ist die derzeit verwendete URL des API-Servers, den der Cluster verwendet, um sich mit dem Upstream zu verbinden.
+| Zeichenfolge
+| false
+
+| apiServerCAHash
+| APIServerCAHash ist ein Hash der CA des Upstream-API-Servers, der verwendet wird, um Änderungen zu erkennen.
+| Zeichenfolge
+| false
+
+| agentTLSMode 
+| AgentTLSMode unterstützt zwei Werte: `system-store` und `strict`. Wenn auf `system-store` gesetzt, weist es den Agenten an, CA-Bündel aus dem Speicher des Betriebssystems zu vertrauen. Wenn auf `strict` gesetzt, darf der Agent nur mit einem Server verbinden, der die genau konfigurierte CA verwendet, wenn der Agent erstellt oder aktualisiert wird. 
+| Zeichenfolge 
+| false
+
+| display
+| Die Anzeige enthält die Anzahl der bereiten Pakete, Knoten und einen zusammenfassenden Zustand.
+| <<ClusterDisplay,ClusterDisplay>>
+| false
+
+| Agent
+| AgentStatus enthält Informationen über den Agenten.
+| <<AgentStatus,AgentStatus>>
+| false
+
+| garbageCollectionInterval 
+| GarbageCollectionInterval bestimmt, wie oft Agenten veraltete Helm-Releases bereinigen. 
+| *metav1.Duration 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterGroup
+
+ClusterGroup ist ein wiederverwendbarer Selektor, um eine Gruppe von Clustern anzusprechen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterGroupSpec,ClusterGroupSpec>>
+| true
+
+| status
+|
+| <<ClusterGroupStatus,ClusterGroupStatus>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterGroupDisplay
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| readyClusters
+| ReadyClusters ist eine Zeichenkette in der Form "%d/%d", die die Anzahl der Cluster beschreibt, die bereit sind, im Vergleich zu der Anzahl der Cluster, die bereit sein sollen.
+| Zeichenfolge
+| false
+
+| readyBundles
+| ReadyBundles ist eine Zeichenfolge in der Form "%d/%d", die die Anzahl der Pakete beschreibt, die bereit sind, im Vergleich zur Anzahl der Pakete, die bereit sein sollen.
+| Zeichenfolge
+| false
+
+| Bundesland
+| Status ist ein zusammenfassender Zustand für die Clustergruppe, der "NichtBereit" anzeigt, wenn es nicht bereite Ressourcen gibt.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterGroupList
+
+ClusterGruppenListe enthält eine Liste von ClusterGruppen
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<ClusterGroup,ClusterGroup>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterGroupSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Selektor
+| Selektor ist ein Label-Selektor, der verwendet wird, um Cluster für diese Gruppe auszuwählen.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterGroupStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| clusterCount
+| ClusterAnzahl ist die Anzahl der Cluster in der Clustergruppe.
+| int
+| true
+
+| nonReadyClusterCount
+| NichtBereiteClusterAnzahl ist die Anzahl der Cluster, die nicht bereit sind.
+| int
+| true
+
+| nonReadyClusters
+| NichtBereiteCluster ist eine Liste von Clusternamen, die nicht bereit sind.
+| []string
+| false
+
+| Bedingungen
+| Bedingungen ist eine Liste von Bedingungen und deren Status für die Clustergruppe.
+| []genericcondition.GenericCondition
+| false
+
+| Zusammenfassung
+| Zusammenfassung ist eine Zusammenfassung der BundleDeployments und deren Ressourcen in der Clustergruppe.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| display
+| Display enthält die Anzahl der bereiten und gewünschten bereiten Cluster sowie einen zusammenfassenden Zustand für die Ressourcen des Bundles.
+| <<ClusterGroupDisplay,ClusterGroupDisplay>>
+| false
+
+| resourceCounts
+| ResourceCounts enthält die Anzahl der Ressourcen in jedem Zustand über alle Pakete in der Clustergruppe.
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistration
+
+ClusterRegistration wird intern von {product_name} verwendet und sollte nicht direkt verwendet werden.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationList
+
+ClusterRegistrierungsListe enthält eine Liste von ClusterRegistrierungen
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<ClusterRegistration,ClusterRegistrierung>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| clientID
+| ClientID ist eine eindeutige Zeichenfolge, die den Cluster identifiziert. Der Agent verwendet entweder die konfigurierte ID oder die kubeSystem.UID.
+| Zeichenfolge
+| false
+
+| clientRandom
+| ClientRandom ist eine zufällige Zeichenfolge, die der Agent generiert. Wenn der Fleet-Controller eine Registrierung gewährt, erstellt er ein Registrierungs-Secret mit dieser Zeichenfolge im Namen.
+| Zeichenfolge
+| false
+
+| clusterLabels
+| ClusterLabels werden während der Registrierung in die Clusterressource kopiert.
+| map[string]string
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| clusterName
+| ClusterName wird nur gesetzt, nachdem die Registrierung vom Fleet-Controller verarbeitet wird.
+| Zeichenfolge
+| false
+
+| gewährt
+| Gewährt wird auf true gesetzt, wenn das anfordernde Dienstkonto vorhanden ist und dessen Token-Secret existiert. Dies geschieht direkt vor der Erstellung des Registrierungsecrets, der Rollen und der Rollenzuweisungen.
+| bool
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationToken
+
+ClusterRegistrationToken wird von Agenten verwendet, um einen neuen Cluster zu registrieren.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationTokenList
+
+ClusterregistrierungstokenListe enthält eine Liste von Clusterregistrierungstoken.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<ClusterRegistrationToken,ClusterRegistrationToken>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationTokenSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| ttl
+| TTL ist die Lebensdauer des Tokens. Es wird verwendet, um die Ablaufzeit zu berechnen. Wenn das Token abläuft, wird es gelöscht.
+| *metav1.Duration
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ClusterRegistrationTokenStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| läuft ab
+| Läuft ab ist der Zeitpunkt, an dem das Token abläuft.
+| *metav1.Time
+| false
+
+| secretName
+| SecretName ist der Name des Secrets, das das Token enthält.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== Inhalt
+
+Content wird intern von {product_name} verwendet und sollte nicht direkt verwendet werden. Es enthält die Ressourcen eines Bundles für einen bestimmten Zielcluster.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| Inhalt
+| Der Inhalt ist ein Byte-Array, das die Manifeste eines Bundles enthält. Die Bundle-Ressourcen werden in die Inhaltsressource des BundleDeployments kopiert, damit der Downstream-Agent sie bereitstellen kann.
+| []byte
+| false
+
+| sha256sum
+| SHA256-Checksumme des Inhaltsfeldes
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ContentList
+
+Die Inhaltsliste enthält eine Liste von Inhalten
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<Content,Inhalt>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== CommitSpec
+
+Die Commit-Spezifikation gibt an, wie Änderungen im Git-Repository festgeschrieben werden sollen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| authorName
+| Der Autorname gibt den Namen an, der beim Erstellen eines Commits angegeben werden soll.
+| Zeichenfolge
+| true
+
+| authorEmail
+| Die Autoren-E-Mail gibt die E-Mail-Adresse an, die beim Erstellen eines Commits angegeben werden soll.
+| Zeichenfolge
+| true
+
+| messageTemplate
+| Die Nachrichtenvorlage bietet eine Vorlage für die Commit-Nachricht, in die die Details der vorgenommenen Änderung interpoliert werden.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== CorrectDrift
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Aktiviert
+| Die Korrekturabweichung wird aktiviert, wenn der Wert true ist.
+| bool
+| false
+
+| force
+| Die Option --force wird verwendet, wenn der Wert true ist, um einen Helm-Rollback zu erzwingen. Dies wird versuchen, alle Ressourcen in der Veröffentlichung neu zu erstellen.
+| bool
+| false
+
+| keepFailHistory
+| KeepFailHistory verfolgt fehlgeschlagene Rollbacks in der Helm-Historie.
+| bool
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepo
+
+GitRepository beschreibt ein Git-Repository, das von {product_name} überwacht wird. Die Ressource enthält die notwendigen Informationen, um das Repository oder Teile davon in Zielcluster bereitzustellen.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| Spezifikation
+|
+| <<GitRepoSpec,GitRepoSpec>>
+| false
+
+| status
+|
+| <<GitRepoStatus,GitRepoStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoDisplay
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| readyBundleDeployments
+| BereiteBundleImplementierungen ist eine Zeichenkette in der Form "%d/%d", die die Anzahl der bereitgestellten BundleImplementierungen im Verhältnis zur Gesamtzahl der BundleImplementierungen beschreibt.
+| Zeichenfolge
+| false
+
+| Bundesland
+| Status ist der Status des GitRepo, z.B. "GitAktualisierung" oder der maximale BundleStatus gemäß StatusRang.
+| Zeichenfolge
+| false
+
+| message
+| Nachricht enthält die relevante Nachricht aus den Bereitstellungsbedingungen.
+| Zeichenfolge
+| false
+
+| error
+| Fehler ist wahr, wenn eine Nachricht vorhanden ist.
+| bool
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoList
+
+GitRepoListe enthält eine Liste von GitRepo
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<GitRepo,GitRepo>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoResource
+
+GitRepoResource enthält Metadaten über die Ressourcen eines Bundles.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| apiVersion
+| APIVersion ist die API-Version der Ressource.
+| Zeichenfolge
+| false
+
+| Art
+| Art ist die k8s-Art der Ressource.
+| Zeichenfolge
+| false
+
+| type
+| Typ ist der Typ der Ressource, z.B. "apiextensions.k8s.io.customresourcedefinition" oder "configmap".
+| Zeichenfolge
+| false
+
+| id
+| ID ist der Name der Ressource, z.B. "namespace1/my-config" oder "backingimagemanagers.storage.io".
+| Zeichenfolge
+| false
+
+| namespace
+| Namespace der Ressource.
+| Zeichenfolge
+| false
+
+| name
+| Name der Ressource.
+| Zeichenfolge
+| false
+
+| incompleteState
+| UnvollständigerZustand ist wahr, wenn eine Zusammenfassung eines Bundles 10 oder mehr nicht bereite Ressourcen enthält oder wenn eine nicht bereite Ressource 10 oder mehr nicht bereite oder modifizierte Zustände aufweist.
+| bool
+| false
+
+| Bundesland
+| Zustand ist der Zustand der Ressource, z.B. "Unbekannt", "WarteAnwendung", "FehlerAnwendung" oder "Bereit".
+| Zeichenfolge
+| false
+
+| error
+| Fehler ist wahr, wenn ein Fehler im PerClusterState wahr ist.
+| bool
+| false
+
+| transitioning
+| Transitioning ist wahr, wenn in irgendeinem PerClusterState der Wert von 'transitioning' auf true gesetzt ist.
+| bool
+| false
+
+| message
+| Nachricht ist die erste Nachricht aus den PerClusterStates.
+| Zeichenfolge
+| false
+
+| perClusterState
+| PerClusterState ist eine Liste von Zuständen für jeden Cluster. Abgeleitet aus den Zusammenfassungen der nicht bereiten Ressourcen.
+| []<<ResourcePerClusterState,ResourcePerClusterState>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoResourceCounts
+
+GitRepoResourceCounts enthält die Anzahl der Ressourcen in jedem Zustand.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| bereit
+| Bereit ist die Anzahl der Ressourcen, die bereit sind.
+| int
+| true
+
+| desiredReady
+| GewünschteBereit ist die Anzahl der Ressourcen, die bereit sein sollten.
+| int
+| true
+
+| waitApplied
+| WarteAnwendung ist die Anzahl der Ressourcen, die darauf warten, angewendet zu werden.
+| int
+| true
+
+| modifiziert
+| Modifiziert ist die Anzahl der Ressourcen, die geändert wurden.
+| int
+| true
+
+| verwaist
+| Verwaist ist die Anzahl der verwaisten Ressourcen.
+| int
+| true
+
+| fehlend
+| Fehlend ist die Anzahl der fehlenden Ressourcen.
+| int
+| true
+
+| unbekannt
+| Unbekannt ist die Anzahl der Ressourcen in einem unbekannten Zustand.
+| int
+| true
+
+| notReady
+| NichtBereit ist die Anzahl der Ressourcen, die nicht bereit sind. Ressourcen sind nicht bereit, wenn sie keinem anderen Zustand entsprechen.
+| int
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoSpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| repo
+| Repo ist eine URL zu einem Git-Repo, das geklont und indiziert werden soll.
+| Zeichenfolge
+| false
+
+| Zweig
+| Zweig Der Git-Zweig, dem gefolgt werden soll.
+| Zeichenfolge
+| false
+
+| Revision
+| Revision Ein spezifischer Commit oder Tag, auf den zugegriffen werden soll.
+| Zeichenfolge
+| false
+
+| targetNamespace
+| Stellen Sie sicher, dass alle Ressourcen in diesem Namespace erstellt werden. Jede cluster-scope Ressource wird abgelehnt, wenn dies gesetzt ist. Zusätzlich wird dieser Namespace bei Bedarf erstellt.
+| Zeichenfolge
+| false
+
+| clientSecretName
+| ClientSecretName ist der Name des Client-Geheimnisses, das verwendet werden soll, um sich mit dem Repo zu verbinden. Es wird erwartet, dass das Geheimnis vom Typ "kubernetes.io/basic-auth" oder "kubernetes.io/ssh-auth" ist.
+| Zeichenfolge
+| false
+
+| helmSecretName
+| HelmSecretName enthält das Auth-Geheimnis für ein privates Helm-Repository.
+| Zeichenfolge
+| false
+
+| helmSecretNameForPaths
+| HelmSecretNameForPaths enthält das Auth-Geheimnis für das private Helm-Repository für jeden Pfad.
+| Zeichenfolge
+| false
+
+| helmRepoURLRegex
+| HelmRepoURLRegex Helm-Anmeldeinformationen werden verwendet, wenn das Helm-Repo mit diesem Regex übereinstimmt. Anmeldeinformationen werden immer verwendet, wenn dies leer oder nicht angegeben ist.
+| Zeichenfolge
+| false
+
+| caBundle
+| CABundle ist ein PEM-codiertes CA-Bündel, das verwendet wird, um das Zertifikat des Repos zu validieren.
+| []byte
+| false
+
+| insecureSkipTLSVerify
+| InsecureSkipTLSverify verwendet unsicheres HTTPS, um das Repo zu klonen.
+| bool
+| false
+
+| paths
+| Paths sind die Verzeichnisse relativ zum Stammverzeichnis des Git-Repos, die Ressourcen enthalten, die angewendet werden sollen. Path-Globbing wird unterstützt, zum Beispiel ["charts/*"] wird alle Ordner als Unterverzeichnis von charts/ übereinstimmen. Wenn leer, ist "/" der Standard.
+| []string
+| false
+
+| pausiert
+| Paused, wenn wahr, bewirkt, dass Änderungen in Git nicht an die Cluster weitergegeben werden, sondern stattdessen Ressourcen als OutOfSync markiert werden.
+| bool
+| false
+
+| serviceAccount
+| ServiceAccount, der im Downstream-Cluster für die Implementierung verwendet wird.
+| Zeichenfolge
+| false
+
+| targets
+| Targets ist eine Liste von Targets, auf die dieses Repo bereitstellen wird.
+| []<<GitTarget,GitTarget>>
+| false
+
+| pollingInterval
+| PollingInterval gibt an, wie oft nach neuen Updates in Git gesucht werden soll.
+| *metav1.Duration
+| false
+
+| forceSyncGeneration
+| Erhöhen Sie diese Zahl, um eine erneute Bereitstellung der Inhalte aus Git zu erzwingen.
+| int64
+| false
+
+| imageScanInterval
+| ImageScanInterval ist das Intervall zum Synchronisieren gescannter Bilder und zum Zurückschreiben in das Git-Repo.
+| *metav1.Duration
+| false
+
+| imageScanCommit
+| Commit gibt an, wie in das Git-Repo committet werden soll, wenn ein neues Bild gescannt und zurück ins Git-Repo geschrieben wird.
+| <<CommitSpec,CommitSpec>>
+| false
+
+| keepResources
+| KeepResources gibt an, ob die erstellten Ressourcen nach dem Löschen des GitRepo beibehalten werden müssen.
+| bool
+| false
+
+| deleteNamespace 
+| DeleteNamespace gibt an, ob der erstellte Namensraum nach dem Löschen des GitRepo gelöscht werden muss. 
+| bool 
+| false
+
+| correctDrift
+| CorrectDrift gibt an, wie die Driftkorrektur funktionieren soll.
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| disablePolling 
+| Deaktiviert das Git-Polling. Wenn aktiviert, werden nur Webhooks verwendet. 
+| bool 
+| false
+
+| ociRegistry 
+| OCIRegistry gibt die mit dem OCI-Registry verbundenen Parameter an. 
+| *[OCIRegistrySpec](#ociregistryspec) 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| observedGeneration
+| ObservedGeneration ist die aktuelle Generation der Ressource im Cluster. Es wird von k8s metadata.Generation kopiert. Der Wert wird für alle Änderungen erhöht, außer für Änderungen an .metadata oder .status.
+| int64
+| true
+
+| updateGeneration 
+| Die Aktualisierungsgeneration wird erzwungen, wenn spec.forceSyncGeneration gesetzt ist. 
+| int64 
+| false
+
+| commit 
+| Commit ist der Git-Commit-Hash des letzten ausgeführten Git-Jobs. 
+| Zeichenfolge 
+| false
+
+| webhookCommit 
+| WebhookCommit ist der neueste Git-Commit-Hash, der von einem Webhook empfangen wurde. 
+| Zeichenfolge 
+| false
+
+| readyClusters
+| ReadyClusters ist die niedrigste Anzahl von Clustern, die über alle Bundles dieses GitRepo bereit sind.
+| int
+| true
+
+| desiredReadyClusters
+| DesiredReadyClusters ist die Anzahl von Clustern, die für die Bundles dieses GitRepo bereit sein sollten.
+| int
+| true
+
+| gitJobStatus
+| GitJobStatus ist der Status des letzten ausgeführten Git-Jobs, z.B. "Aktuell", wenn es keinen Fehler gab.
+| Zeichenfolge
+| false
+
+| Zusammenfassung
+| Zusammenfassung enthält die Anzahl der Bundle-Implementierungen in jedem Zustand und eine Liste von nicht bereiten Ressourcen.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| display
+| Anzeige enthält eine für Menschen lesbare Zusammenfassung des Status.
+| <<GitRepoDisplay,GitRepoDisplay>>
+| false
+
+| Bedingungen
+| Bedingungen sind eine Liste von Wrangler-Bedingungen, die den Zustand des GitRepo beschreiben.
+| []genericcondition.GenericCondition
+| false
+
+| Ressourcen
+| Ressourcen enthalten Metadaten über die Ressourcen jedes Bundles.
+| []<<GitRepoResource,GitRepoResource>>
+| false
+
+| resourceCounts
+| ResourceCounts enthält die Anzahl der Ressourcen in jedem Zustand über alle Bundles.
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| resourceErrors
+| ResourceErrors ist eine sortierte Liste von Fehlern aus den Ressourcen.
+| []string
+| false
+
+| lastSyncedImageScanTime
+| LastSyncedImageScanTime ist die Zeit des letzten Bildscans.
+| metav1.Time
+| false
+
+| lastPollingTriggered 
+| LastPollingTime ist die letzte Zeit, zu der die Abfrageprüfung ausgelöst wurde. 
+| metav1.Time 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitTarget
+
+GitTarget ist ein Cluster oder eine Clustergruppe, auf die bereitgestellt werden soll.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name
+| Name ist der Name dieses Ziels.
+| Zeichenfolge
+| false
+
+| clusterName
+| ClusterName ist der Name eines Clusters.
+| Zeichenfolge
+| false
+
+| clusterSelector
+| ClusterSelector ist ein Label-Selector, um Cluster auszuwählen.
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| ClusterGroup ist der Name einer Clustergruppe im selben Namespace wie die Cluster.
+| Zeichenfolge
+| false
+
+| clusterGroupSelector
+| ClusterGroupSelector ist ein Label-Selector, um Clustergruppen auszuwählen.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+=== OCIRegistrySpec
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Referenz 
+| Referenz der OCI-Registry 
+| Zeichenfolge 
+| false
+
+| authSecretName 
+| AuthSecretName enthält das Auth-Secret, in dem die OCI-Registry-Anmeldeinformationen gespeichert sind. 
+| Zeichenfolge 
+| false
+
+| basicHTTP 
+| BasicHTTP verwendet HTTP-Verbindungen zur OCI-Registry, wenn aktiviert. 
+| bool 
+| false
+
+| insecureSkipTLS 
+| InsecureSkipTLS ermöglicht Verbindungen zur OCI-Registry ohne Zertifikate, wenn aktiviert. 
+| bool 
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+=== ResourcePerClusterState
+
+ResourcePerClusterState wird für jede nicht bereite Ressource der Bundles generiert.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Bundesland
+| State ist der Zustand der Ressource.
+| Zeichenfolge
+| false
+
+| error
+| Error ist wahr, wenn die Ressource sich in einem Fehlerzustand befindet, kopiert aus der Zusammenfassung des Bundles für nicht bereite Ressourcen.
+| bool
+| false
+
+| Transitioning
+| Transitioning ist wahr, wenn sich die Ressource in einem Übergangszustand befindet, kopiert aus der Zusammenfassung des Bundles für nicht bereite Ressourcen.
+| bool
+| false
+
+| message
+| Die Nachricht kombiniert die Nachrichten aus der Zusammenfassung des Bundles. Nachrichten werden mit dem Trennzeichen ';' verbunden.
+| Zeichenfolge
+| false
+
+| Patch
+| Patch für modifizierte Ressourcen.
+| *GenericMap
+| false
+
+| clusterId
+| ClusterID ist die ID des Clusters.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoRestriction
+
+GitRepoRestriction ist eine Ressource, die optional verwendet werden kann, um die Optionen von GitRepos im selben Namespace einzuschränken.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| defaultServiceAccount
+| DefaultServiceAccount überschreibt das Standard-Servicekonto des GitRepos.
+| Zeichenfolge
+| false
+
+| allowedServiceAccounts
+| AllowedServiceAccounts ist eine Liste von Servicekonten, die GitRepos verwenden dürfen.
+| []string
+| false
+
+| allowedRepoPatterns
+| AllowedRepoPatterns ist eine Liste von Regex-Mustern, die die gültigen Werte des Repo-Feldes eines GitRepos einschränken.
+| []string
+| false
+
+| defaultClientSecretName
+| DefaultClientSecretName überschreibt das Standard-Client-Geheimnis des GitRepos.
+| Zeichenfolge
+| false
+
+| allowedClientSecretNames
+| AllowedClientSecretNames ist eine Liste von Client-Geheimnisnamen, die GitRepos verwenden dürfen.
+| []string
+| false
+
+| allowedTargetNamespaces
+| AllowedTargetNamespaces beschränkt TargetNamespace auf die angegebenen Namensräume. Wenn AllowedTargetNamespaces gesetzt ist, muss TargetNamespace gesetzt werden.
+| []string
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== GitRepoRestrictionList
+
+GitRepoEinschränkungsliste enthält eine Liste von GitRepoEinschränkungen
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<GitRepoRestriction,GitRepoRestriction>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+=== AlphabetischeRichtlinie
+
+AlphabetischeRichtlinie spezifiziert eine alphabetische Sortierungsrichtlinie.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| order
+| Die Reihenfolge gibt die Sortierreihenfolge der Tags an. Sind die Buchstaben des Alphabets als Tags vorhanden, würde die aufsteigende Reihenfolge Z auswählen, während die absteigende Reihenfolge A auswählt.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ImagePolicyChoice
+
+ImagePolicyWahl ist eine Vereinigung aller Arten von Richtlinien, die bereitgestellt werden können.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| semver
+| SemVer gibt einen semantischen Versionsbereich an, um gegen die verfügbaren Tags zu überprüfen.
+| *<<SemVerPolicy,SemVerPolicy>>
+| false
+
+| alphabetisch
+| Alphabetische Reihe von Regeln, die für die alphabetische Sortierung der Tags verwendet werden sollen.
+| *<<AlphabeticalPolicy,AlphabetischeRichtlinie>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ImageScan
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+
+| status
+|
+| <<ImageScanStatus,ImageScanStatus>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ImageScanList
+
+ImageScanListe enthält eine Liste von ImageScan
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Metadaten
+|
+| metav1.ListMeta
+| false
+
+| Elemente
+|
+| []<<ImageScan,ImageScan>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ImageScanSpec
+
+Die API wird von https://github.com/fluxcd/image-reflector-controller übernommen
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| tagName
+| TagName ist die Tag-Referenz, die im Manifest angegeben werden muss, um Felder zu ersetzen
+| Zeichenfolge
+| false
+
+| gitrepoName
+| GitRepo-Referenzname
+| Zeichenfolge
+| false
+
+| Image
+| Image ist der Name des Image-Repositorys
+| Zeichenfolge
+| false
+
+| interval
+| Interval ist die Zeitspanne, die zwischen den Scans des Image-Repositories gewartet werden soll.
+| metav1.Duration
+| false
+
+| secretRef
+| SecretRef kann der Name eines Secrets gegeben werden, das Anmeldeinformationen für das Image-Registry enthält. Das Secret sollte mit `kubectl create secret docker-registry` oder dem Äquivalent erstellt werden.
+| *corev1.LocalObjectReference
+| false
+
+| Aussetzen:
+| Dieses Flag weist den Controller an, nachfolgende Image-Scans auszusetzen. Es gilt nicht für bereits gestartete Scans. Die Standardeinstellung ist false.
+| bool
+| false
+
+| Richtlinie
+| Die Richtlinie legt die Einzelheiten fest, die bei der Auswahl des aktuellsten Images zu beachten sind.
+| <<ImagePolicyChoice,ImagePolicyChoice>>
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== ImageScanStatus
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| Bedingungen
+|
+| []genericcondition.GenericCondition
+| false
+
+| lastScanTime
+| LastScanTime ist der letzte Zeitpunkt, zu dem das Image gescannt wurde
+| metav1.Time
+| false
+
+| latestImage
+| LatestImage gibt das erste Element in der Liste der vom Image-Repository gescannten Bilder zurück, wenn es nach der Richtlinie gefiltert und sortiert wird.
+| Zeichenfolge
+| false
+
+| latestTag
+| Das letzte Tag ist das letzte Tag, das nach der Richtlinie gefiltert wurde.
+| Zeichenfolge
+| false
+
+| latestDigest
+| LatestDigest ist der Digest des letzten Tags.
+| Zeichenfolge
+| false
+
+| observedGeneration
+|
+| int64
+| false
+
+| canonicalImageName
+| CanonicalName ist der Name des Image-Repositories, bei dem alle impliziten Teile explizit gemacht werden; z. B. `docker.io/library/alpine` anstelle von `alpine`.
+| Zeichenfolge
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+
+=== SemVerPolicy
+
+SemVerRichtlinie spezifiziert eine semantische Versionsrichtlinie.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| range
+| Range gibt einen semver-Bereich für das Image-Tag an; die höchste Version innerhalb des Bereichs, die ein Tag ist, ergibt das neueste Bild.
+| Zeichenfolge
+| true
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+=== FleetYAML
+
+FleetYAML ist die oberste Struktur der FleetYAML-Datei. Die fleet.yaml-Datei fügt Optionen zu einem Bundle hinzu. Jedes Verzeichnis mit einer fleet.yaml wird automatisch in ein Bundle umgewandelt.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name 
+| Name des Bundles, das erstellt werden soll. 
+| Zeichenfolge 
+| false
+
+| Etiketten 
+| Labels werden in das Bundle kopiert und können in einem dependsOn.selector verwendet werden. 
+| map[string]string 
+| false
+
+| BundleSpec 
+|
+| <<BundleSpec,BundleSpec>>
+| false
+
+| targetCustomizations 
+| TargetCustomizations werden verwendet, um zu bestimmen, wie Ressourcen pro Ziel modifiziert werden sollen. Ziele werden in der Reihenfolge bewertet, und das erste, das mit einem Cluster übereinstimmt, wird für dieses Cluster verwendet. 
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| imageScans 
+| ImageScans sind optional und werden verwendet, um Container-Image-Referenzen im Git-Repo zu aktualisieren. 
+| []<<ImageScanYAML,ImageScanYAML>>
+| false
+
+| overrideTargets 
+| OverrideTargets überschreibt Ziele, die in der GitRepo-Ressource definiert sind. Wenn overrideTargets bereitgestellt wird, erbt das Bundle keine Ziele von der GitRepo. 
+| []<<GitTarget,GitTarget>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>
+
+=== ImageScanYAML
+
+ImageScanYAML ist ein einzelner Eintrag in der ImageScan-Liste aus fleet.yaml.
+
+|===
+| Feld | Beschreibung | Schema | required
+
+| name 
+| Name des Image-Scans. Nicht verwendet. 
+| Zeichenfolge 
+| false
+
+| ImageScanSpec 
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+|===
+
+<<Resources,Zurück zu benutzerdefinierten Ressourcen>>

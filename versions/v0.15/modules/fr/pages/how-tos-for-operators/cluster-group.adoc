@@ -1,0 +1,24 @@
+= Créer des groupes de clusters
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Les clusters dans un espace de noms peuvent être regroupés dans un groupe de clusters. Un groupe de clusters est essentiellement un sélecteur nommé.
+Le seul paramètre pour un groupe de clusters est essentiellement le sélecteur.
+Lorsque vous atteignez une certaine échelle, les groupes de clusters deviennent une manière plus raisonnable de gérer vos clusters.
+Les groupes de clusters ont pour but de donner un état agrégé des déploiements et également une manière plus simple de gérer les cibles.
+
+Un groupe de clusters est créé en créant une ressource `ClusterGroup` comme ci-dessous.
+
+[,yaml]
+----
+kind: ClusterGroup
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: production-group
+  namespace: clusters
+spec:
+  # This is the standard metav1.LabelSelector format to match clusters by labels
+  selector:
+    matchLabels:
+      env: prod
+----

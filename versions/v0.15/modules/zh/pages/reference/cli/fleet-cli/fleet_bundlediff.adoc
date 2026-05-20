@@ -1,0 +1,68 @@
+= Fleet捆绑差异
+:revdate: 2026-03-05
+:page-revdate: {revdate}
+
+显示资源状态的捆绑差异。
+
+此命令提取并显示来自`Bundle`或`BundleDeployment`的差异补丁，这些资源已被修改。差异显示期望状态（来自Git或Helm）与集群中实际状态之间的差异。
+
+对于`BundleDeployment`，该命令显示来自`ModifiedStatus`字段的补丁信息，该字段包含指示已部署资源上发生了哪些更改的JSON补丁。
+
+对于`Bundle`，该命令汇总来自目标集群中所有相关`BundleDeployment`的差异信息。
+
+默认情况下，该命令在所有名称空间中搜索`BundleDeployment`。
+使用`-n`标志将搜索限制在特定名称空间。在按名称查询`BundleDeployment`时，名称空间标志是必需的。
+
+[source,bash]
+----
+fleet bundlediff [flags]
+----
+
+== 选项
+
+[source,text]
+----
+-b, --bundle string              Name of the Bundle to show diffs for all its BundleDeployments
+    --bundle-deployment string   Name of the BundleDeployment to show diffs for
+    --fleet-yaml                 Output in fleet.yaml format (comparePatches)
+    --json                       Output in JSON format
+-h, --help                       help for bundlediff
+-n, --namespace string           Namespace to restrict the search to
+    --zap-devel                  Development mode defaults (encoder=consoleEncoder, logLevel=Debug, stackTraceLevel=Warn).
+                                 Production mode defaults (encoder=jsonEncoder, logLevel=Info, stackTraceLevel=Error). (default true)
+    --zap-encoder encoder        Zap log encoding (one of 'json' or 'console')
+    --zap-log-level level        Zap level that controls logging verbosity. Can be 'debug', 'info',
+                                 'error', or any integer value greater than 0 for custom debug levels.
+    --zap-stacktrace-level level Zap level at and above which stack traces are captured
+                                 (one of 'info', 'error', or 'panic')
+    --zap-time-encoding          Zap time encoding (one of 'epoch', 'millis', 'nano',
+                                 'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
+----
+
+== 示例
+
+[source,bash]
+----
+# Show diffs for all Bundles across all namespaces (grouped by Bundle)
+fleet bundlediff
+
+# Show all BundleDeployments for a specific Bundle
+fleet bundlediff --bundle my-bundle
+
+# Show a specific BundleDeployment in a cluster namespace
+fleet bundlediff --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Output in JSON format
+fleet bundlediff --json
+
+# Output as a fleet.yaml diff snippet for a specific BundleDeployment
+# This generates a diff: section you can add to your fleet.yaml in Git
+fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Show diffs only in a specific namespace
+fleet bundlediff -n cluster-fleet-local-local-abc123
+----
+
+== 另请参见
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}] - 管理{product_name}操作

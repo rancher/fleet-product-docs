@@ -1,0 +1,393 @@
+:doctype: book
+
+= Enregistrer les clusters en aval
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Présentation
+
+Il existe deux styles spécifiques pour enregistrer des clusters. Ces styles seront appelés *enregistrement initié par l'agent* et *enregistrement initié par le gestionnaire*. En général, on opterait pour l'enregistrement initié par l'agent, mais dans certains cas d'utilisation spécifiques, l'enregistrement initié par le gestionnaire constitue un meilleur flux de travail.
+
+=== Enregistrement initié par l'agent
+
+L'initiation par l'agent fait référence à un modèle dans lequel le cluster en aval installe un agent avec un <<_create_cluster_registration_tokens,jeton d'enregistrement de cluster>> et éventuellement un ID client. L'agent du cluster effectuera ensuite une demande API au {product_name} gestionnaire et initiera le processus d'enregistrement. En utilisant ce processus, le gestionnaire ne fera jamais de demande API sortante vers les clusters en aval et n'aura donc jamais besoin d'un accès réseau direct. 
+
+Il n'est pas couramment utilisé dans Rancher. Rancher n'a pas besoin de faire une demande API sortante vers le cluster en aval, car il utilise un tunnel pour fournir cette connectivité.
+
+=== Enregistrement initié par le gestionnaire
+
+L'enregistrement initié par le gestionnaire est un processus dans lequel vous enregistrez un cluster Kubernetes existant avec le {product_name} gestionnaire et le {product_name} gestionnaire effectuera un appel API au cluster en aval pour déployer l'agent. Ce style peut imposer des exigences d'accès réseau supplémentaires car le Fleet Manager doit être en mesure de communiquer avec le serveur API du cluster en aval pour le processus d'enregistrement.
+Après que le cluster soit enregistré, il n'est plus nécessaire pour le gestionnaire de contacter l'API du cluster en aval.  Ce style est plus compatible si vous souhaitez gérer la création de tous vos clusters Kubernetes via GitOps en utilisant quelque chose comme https://github.com/kubernetes-sigs/cluster-api[cluster-api] ou https://github.com/rancher/rancher[Rancher].
+
+
+[options="header"]
+|===
+| Fonctionnalité | Enregistrement initié par l'agent | Enregistrement initié par le gestionnaire (mode Rancher)
+
+| **Initiateur d'enregistrement**
+| Le cluster en aval initie le processus d'enregistrement en déployant l'agent.
+| Le Fleet Manager (cluster en amont) initie le processus d'enregistrement.
+
+| **Condition préalable{nbsp}: Action d'administration en amont**
+| **Exige une action administrative manuelle** pour créer une ressource `ClusterRegistrationToken` en amont. Ce jeton est requis pour l'autorisation de l'agent.
+| Nécessite la création d'une ressource `Cluster` dans le Fleet Manager qui référence un **Secret Kubernetes contenant un kubeconfig valide** pour le cluster en aval.
+
+| **Mécanisme principal**
+| Installation de l'agent Fleet via Helm sur le cluster en aval en utilisant le **jeton d'enregistrement de cluster** généré manuellement.
+| Le Fleet Controller utilise le **kubeconfig** fourni pour effectuer un appel API au serveur API du cluster en aval et déployer l'agent.
+
+| **Direction du réseau d'enregistrement**
+| La communication s'écoule **du** cluster géré vers le Fleet Controller (en amont). C'est un mécanisme PULL pour les informations d'identification d'enregistrement.
+| Le Gestionnaire initie une connexion (PUSH) au serveur API du cluster en aval pour déployer l'agent.
+
+| **Exigence réseau (Gestionnaire)**
+| Le Fleet Manager **n'a pas besoin d'accès réseau direct entrant** au serveur API du cluster en aval. Les clusters peuvent fonctionner dans des réseaux privés/derrière des NAT.
+| Le Fleet Manager **doit pouvoir communiquer directement** avec le serveur API du cluster en aval pendant la phase d'enregistrement.
+
+| **Exigence réseau (Agent)**
+| Le cluster en aval doit pouvoir effectuer des **appels HTTPS sortants** vers le Fleet Manager.
+| Le cluster en aval doit pouvoir effectuer des appels HTTPS sortants vers le Fleet Manager (après le déploiement, pour la communication et la synchronisation des données).
+
+| **Synchronisation des données (Pull)**
+| L'agent récupère des paquets de configuration et des mises à jour d'agent depuis le Fleet Controller (partie du modèle de tirage en deux étapes).
+| L'agent récupère des ensembles de configuration et des mises à jour d'agent depuis le Fleet Controller.
+
+| **Gestion des agents (Push/Redeploy)**
+| Le contrôleur en amont **manque** généralement l'accès réseau direct/les identifiants nécessaires pour des actions de gestion proactives (PUSH) sur le déploiement de l'agent.
+| Le mécanisme de déploiement initial accorde un accès explicite au gestionnaire. Cette infrastructure peut être utilisée pour des actions de gestion administrative (par exemple, déclencher un déploiement en utilisant le kubeconfig).
+
+| **Champ de contrôle de redéploiement de l'agent**
+| Le champ `redeployAgentGeneration` (sur `ClusterSpec`) n'est **pas utilisé** par le contrôleur en amont pour déclencher le redéploiement, car le gestionnaire n'a pas l'accès API nécessaire pour manipuler directement le déploiement de l'agent en aval.
+| Le champ `redeployAgentGeneration` sur le `ClusterSpec` **peut être incrémenté pour forcer le redéploiement** de l'agent par le Fleet Controller.
+
+| **Adoption de l'agent après enregistrement**
+| Après l'enregistrement initial en utilisant le token, l'agent est adopté dans le cycle de vie de gestion standard via des ensembles créés par le contrôleur `manageagent`.
+| 
+
+| **Contexte Rancher**
+| Cette méthode n'est **pas couramment utilisée** lors de l'enregistrement de clusters via le tableau de bord Rancher.
+| Cette méthode **est utilisée** lors de l'ajout d'un cluster via le tableau de bord Rancher (souvent via un agent Rancher jouant le rôle de proxy pour le kubeconfig du cluster en aval vers l'amont).
+
+| **État du jeton après enregistrement**
+| L'agent oublie le jeton d'enregistrement après succès{nbsp}; un nouveau jeton doit être généré pour la réinscription.
+| N/A{nbsp}; la gestion du jeton d'enregistrement/kubeconfig est gérée en interne par le Fleet Manager.
+
+|===
+
+
+== Initié par l'agent
+
+Un cluster en aval est enregistré en installant un agent via helm et en utilisant le *jeton d'enregistrement de cluster* et éventuellement un *ID client* ou des *étiquettes de cluster*.
+
+La ressource de cluster en amont n'a pas de champ +kubecConfigSecret+, car le Fleet Manager n'a pas besoin de communiquer avec le serveur API du cluster en aval. Cependant, un ensemble pour l'agent est créé et l'agent se mettra à jour à partir de l'ensemble. Le bundle utilise un schéma de nommage différent, donc le cluster en aval se retrouvera avec deux charts Helm.
+
+[IMPORTANT]
+====
+Il n'est pas nécessaire de configurer le Fleet Manager pour xref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[multi cluster], car l'agent en aval que nous installons via Helm se connectera directement à l'API Kubernetes du cluster en amont.
+
+L'enregistrement initié par l'agent n'est normalement pas utilisé avec Rancher.
+====
+
+
+=== Jeton d'enregistrement de cluster et ID client
+
+Le *jeton d'enregistrement de cluster* est un identifiant qui autorisera l'agent du cluster en aval à initier le processus d'enregistrement. Ce paramètre est obligatoire.
+Le xref:explanations/architecture.adoc#_security[jeton d'enregistrement de cluster] se manifeste sous la forme d'un fichier `values.yaml` qui sera transmis au processus `helm install`.
+Alternativement, on peut passer le jeton directement à la commande d'installation Helm via `--set token="$token"`.
+
+Il existe deux styles d'enregistrement d'un agent. Vous pouvez faire créer dynamiquement le cluster pour cet agent, auquel cas vous voudrez probablement spécifier *les étiquettes de cluster* lors de l'enregistrement.  Ou vous pouvez faire enregistrer l'agent à un cluster prédéfini dans le Fleet Manager {product_name}, auquel cas vous aurez besoin d'un *ID client*.  La première approche est généralement la plus simple.
+
+=== Installer l'agent pour un nouveau cluster
+
+L'agent {product_name} est installé en tant que chart Helm. Voici des explications sur la façon de déterminer et de définir ses paramètres.
+
+Tout d'abord, suivez les <<_create_cluster_registration_tokens,instructions du jeton d'enregistrement de cluster>> pour obtenir le `values.yaml` qui contient le jeton d'enregistrement pour s'authentifier auprès du cluster {product_name}.
+
+Deuxièmement, vous pouvez optionnellement définir des étiquettes qui seront attribuées au cluster nouvellement créé lors de l'enregistrement. Après que l'enregistrement soit terminé, un agent ne peut pas changer les étiquettes du cluster. Pour ajouter des étiquettes de cluster, ajoutez `--set-string labels.KEY=VALUE` à la commande Helm ci-dessous. Pour ajouter les étiquettes `foo=bar` et `bar=baz`, vous ajouteriez `--set-string labels.foo=bar --set-string labels.bar=baz` à la ligne de commande.
+
+[,shell]
+----
+# Leave blank if you do not want any labels
+CLUSTER_LABELS="--set-string labels.example=true --set-string labels.env=dev"
+----
+
+Troisièmement, définissez des variables avec l'URL du serveur API du cluster {product_name} et le CA, que le cluster en aval utilisera pour se connecter.
+
+[,shell]
+----
+API_SERVER_URL=https://<API_URL>:6443
+API_SERVER_CA_DATA=...
+----
+
+Si le serveur API n'écoute pas sur le port https (443), le `API_SERVER_URL` doit inclure le port, par exemple `https://<API_URL>:6443`. L'URL peut être trouvée dans le fichier `.kube/config`.
+
+La valeur dans `API_SERVER_CA_DATA` peut être obtenue à partir d'un fichier `.kube/config` contenant des données valides pour se connecter au cluster en amont (sous la clé `certificate-authority-data`). Alternativement, elle peut être obtenue depuis le cluster en amont lui-même, en recherchant le nom du secret ServiceAccount par défaut (généralement préfixé par `default-token-`, dans l'espace de noms par défaut), sous la clé `ca.crt`.
+
+[CAUTION]
+====
+
+*Utilisez le bon espace de noms et le bon nom de version* :
+Pour le chart de l'agent, l'espace de noms doit être `cattle-fleet-system` et le nom de version `fleet-agent`.
+====
+
+
+[CAUTION]
+.Contexte Kubectl
+====
+
+*Assurez-vous que vous installez dans le bon cluster*{nbsp}:
+Helm utilisera le contexte par défaut dans `${HOME}/.kube/config` pour déployer l'agent. Utilisez `--kubeconfig` et `--kube-context` pour changer le cluster sur lequel Helm installe.
+====
+
+
+[CAUTION]
+.{product_name} dans Rancher
+====
+Rancher propose des charts Helm séparés pour {product_name} et utilise un dépôt différent.
+====
+
+
+Ajoutez le dépôt Helm de Fleet.
+
+[,shell]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Enfin, installez l'agent en utilisant Helm.
+
+[tabs]
+====
+Installez::
++
+[,shell]
+----
+helm -n cattle-fleet-system install --create-namespace --wait \
+    --set clientID="$CLUSTER_CLIENT_ID" \
+    --values values.yaml \
+    fleet-agent fleet/fleet-agent
+----
+
+Valider::
++
+Vous pouvez vérifier l'état des pods Fleet en exécutant les commandes ci-dessous :
++
+[,shell]
+----
+# Ensure kubectl is pointing to the right cluster kubectl -n cattle-fleet-system logs -l app=fleet-agent kubectl -n cattle-fleet-system get pods -l app=fleet-agent
+----
+
+====
+
+L'agent devrait maintenant être déployé.
+
+De plus, vous devriez voir un nouveau cluster enregistré dans le {product_name} Manager.  Voici un exemple de vérification qu'un nouveau cluster a été enregistré dans le `clusters` xref:explanations/namespaces.adoc[espace de noms].  Veuillez vous assurer que votre `${HOME}/.kube/config` est pointé vers le Fleet Manager pour exécuter cette commande.
+
+[,shell]
+----
+kubectl -n clusters get clusters.fleet.cattle.io
+----
+
+----
+NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAST-SEEN              STATUS
+cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
+----
+
+=== Installer l'agent pour un cluster prédéfini
+
+Les identifiants de client servent à prédéfinir des clusters dans le {product_name} gestionnaire avec des étiquettes et des dépôts existants qui leur sont destinés.
+Un identifiant de client n'est pas requis et n'est qu'une approche pour gérer les clusters.
+L'*identifiant de client* est une chaîne unique qui identifiera le cluster.
+Cette chaîne est générée par l'utilisateur et est opaque pour le {product_name} gestionnaire et l'agent.  On suppose qu'elle est suffisamment unique. Pour des raisons de sécurité, il ne devrait pas être facile de deviner cette valeur, car un cluster pourrait alors usurper l'identité d'un autre.  L'identifiant de client est facultatif et, s'il n'est pas spécifié, le champ UID de la ressource de l'espace de noms `kube-system` sera utilisé comme identifiant de client. Lors de l'enregistrement, si l'identifiant de client est trouvé sur une ressource `Cluster` dans le {product_name} gestionnaire, il associera l'agent à ce `Cluster`.  Si aucune ressource `Cluster` n'est trouvée avec cet identifiant de client, une nouvelle ressource `Cluster` sera créée avec l'identifiant de client spécifique.
+
+L'{product_name}agent est installé sous forme de chart Helm. Les seuls paramètres pour l'installation du chart Helm devraient être le jeton d'enregistrement du cluster, qui est représenté par le fichier `values.yaml` et l'identifiant de client.  L'identifiant de client est facultatif.
+
+Tout d'abord, créez un `Cluster` dans le {product_name} gestionnaire avec l'identifiant de client aléatoire que vous avez choisi.
+
+[,yaml]
+----
+kind: Cluster
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: my-cluster
+  namespace: clusters
+spec:
+  clientID: "really-random"
+----
+
+Deuxièmement, suivez les [instructions du token d'enregistrement du cluster]((#create-cluster-registration-tokens) pour obtenir le fichier `values.yaml` à utiliser.
+
+Troisièmement, configurez votre environnement pour utiliser l'identifiant de client.
+
+[,shell]
+----
+CLUSTER_CLIENT_ID="really-random"
+----
+
+[NOTE]
+====
+
+*Utilisez le bon espace de noms et le bon nom de version*{nbsp}:
+Pour le chart de l'agent, l'espace de noms doit être `cattle-fleet-system` et le nom de version `fleet-agent`.
+====
+
+
+[NOTE]
+====
+
+*Assurez-vous que vous installez dans le bon cluster*{nbsp}:
+Helm utilisera le contexte par défaut dans `${HOME}/.kube/config` pour déployer l'agent. Utilisez `--kubeconfig` et `--kube-context` pour changer le cluster sur lequel Helm installe.
+====
+
+
+Ajoutez le dépôt Helm de Fleet.
+
+[,shell]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Enfin, installez l'agent en utilisant Helm.
+
+[tabs]
+====
+Installez::
++
+[,shell]
+----
+helm -n cattle-fleet-system install --create-namespace --wait \
+    --set clientID="$CLUSTER_CLIENT_ID" \
+    --values values.yaml \
+    fleet-agent fleet/fleet-agent
+----
+
+Valider::
++
+Vous pouvez vérifier l'état des pods Fleet en exécutant les commandes ci-dessous{nbsp}:
++
+[,shell]
+----
+# Ensure kubectl is pointing to the right cluster kubectl -n cattle-fleet-system logs -l app=fleet-agent kubectl -n cattle-fleet-system get pods -l app=fleet-agent
+----
+
+====
+
+L'agent devrait maintenant être déployé.
+
+De plus, vous devriez voir un nouveau cluster enregistré dans le {product_name} Manager.  Voici un exemple de vérification qu'un nouveau cluster a été enregistré dans le `clusters` xref:explanations/namespaces.adoc[espace de noms].  Veuillez vous assurer que votre `${HOME}/.kube/config` est pointé vers le Fleet Manager pour exécuter cette commande.
+
+[,shell]
+----
+kubectl -n clusters get clusters.fleet.cattle.io
+----
+
+----
+NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAST-SEEN              STATUS
+my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
+----
+
+=== Créer des tokens d'enregistrement de cluster
+
+[IMPORTANT]
+====
+
+*Pas nécessaire pour l'enregistrement initié par le Manager*{nbsp}:
+Pour les enregistrements initiés par le Manager, le token est géré par le {product_name} Manager et n'a pas besoin d'être créé et obtenu manuellement.
+====
+
+
+Pour un enregistrement initié par un agent, le cluster en aval doit avoir un xref:explanations/architecture.adoc#_security[token d'enregistrement de cluster].
+Les tokens d'enregistrement de cluster sont utilisés pour établir une nouvelle identité pour un cluster. En interne, les jetons d'enregistrement de cluster sont gérés en créant des comptes de service Kubernetes qui ont les permissions de créer `ClusterRegistrationRequests` dans un espace de noms spécifique.  Une fois le cluster enregistré, un nouveau `ServiceAccount` est créé pour ce cluster, utilisé comme l'identité unique du cluster. L'agent est conçu pour oublier le token d'enregistrement du cluster après l'enregistrement. Bien que l'agent ne maintienne pas de référence au token d'enregistrement du cluster après un enregistrement réussi, veuillez noter que d'autres scripts de démarrage du système le font généralement.
+
+Puisque le token d'enregistrement du cluster est oublié, si vous devez réenregistrer un cluster, vous devez donner au cluster un nouveau token d'enregistrement.
+
+==== TTL du token
+
+Les tokens d'enregistrement de cluster peuvent être réutilisés par n'importe quel cluster dans un espace de noms.  Les tokens peuvent se voir attribuer un TTL afin qu'ils expirent après un certain temps.
+
+==== Créer un nouveau token
+
+Le `ClusterRegistationToken` est un type d'espace de noms et doit être créé dans le même espace de noms dans lequel vous créerez les ressources `GitRepo` et `ClusterGroup`. Pour des détails approfondis sur l'utilisation des espaces de noms dans {product_name}, reportez-vous à la documentation sur xref:explanations/namespaces.adoc[namespaces].  Créer un nouveau token avec le YAML ci-dessous.
+
+[,yaml]
+----
+kind: ClusterRegistrationToken
+apiVersion: "fleet.cattle.io/v1alpha1"
+metadata:
+    name: new-token
+    namespace: clusters
+spec:
+    # A duration string for how long this token is valid for. A value <= 0 or null means infinite time.
+    ttl: 240h
+----
+
+Après la création du `ClusterRegistrationToken`, {product_name} créera un `Secret` correspondant avec le même nom.
+Comme la création du `Secret` est effectuée de manière asynchrone, vous devrez attendre qu'il soit disponible avant de l'utiliser.
+
+Une façon de le faire est via la ligne de commande suivante{nbsp}:
+
+[,shell]
+----
+while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
+----
+
+==== Obtention de la valeur du token (Agent values.yaml)
+
+La valeur du token contient du contenu YAML pour un fichier `values.yaml` qui doit être passé à `helm install` pour installer l'{product_name}agent sur un cluster en aval.
+
+Cette valeur est contenue dans le champ `values` du `Secret` mentionné ci-dessus. Pour obtenir le contenu YAML de l'exemple ci-dessus, on peut exécuter la ligne de commande suivante{nbsp}:
+
+[,shell]
+----
+kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' | base64 --decode > values.yaml
+----
+
+Une fois que le `values.yaml` est prêt, il peut être utilisé plusieurs fois par les clusters pour s'enregistrer jusqu'à ce que le TTL expire.
+
+== Initié par le Manager
+
+Le flux d'enregistrement initié par le Manager est réalisé en créant une ressource `Cluster` dans le {product_name} Manager qui fait référence à un Kubernetes `Secret` contenant un fichier kubeconfig valide dans le champ de données appelé `value`.
+
+[IMPORTANT]
+====
+Si vous utilisez {product_name} en mode autonome _sans Rancher_, il doit être installé comme décrit dans xref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[détails d'installation].
+
+L'enregistrement initié par le Manager est utilisé lorsque vous ajoutez un cluster depuis le tableau de bord Rancher.
+====
+
+
+=== Créer un Secret Kubeconfig
+
+Le format de ce secret est destiné à correspondre au https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[format] du secret kubeconfig utilisé dans https://github.com/kubernetes-sigs/cluster-api[cluster-api].
+Cela signifie que vous pouvez utiliser `cluster-api` pour créer un cluster qui est enregistré dynamiquement avec {product_name}.
+
+[,yaml]
+----
+title="Kubeconfig Secret Example"
+kind: Secret
+apiVersion: v1
+metadata:
+  name: my-cluster-kubeconfig
+  namespace: clusters
+data:
+  value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
+----
+
+== Créer une ressource de grappe
+
+La ressource du cluster doit faire référence au secret kubeconfig.
+
+[,yaml]
+----
+title="Cluster Resource Example"
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: clusters
+  labels:
+    demo: "true"
+    env: dev
+spec:
+  kubeConfigSecret: my-cluster-kubeconfig
+----

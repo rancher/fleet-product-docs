@@ -1,0 +1,205 @@
+= Campos de Estado
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Estados de visualización
+
+GitRepos, HelmOps, Clusters y paquetes tienen diferentes estados en cada fase de aplicación de paquetes.
+
+Dado que los estados de las ampliaciones de paquete se propagan al paquete, GitRepo, Cluster y ClusterGroup, los encontrarás mostrados de la misma manera. La diferencia radica en la perspectiva sobre los recursos.
+
+Al observar el GitRepo, se muestran allí los estados de todos los recursos relacionados con el GitRepo. Al observar el Cluster, se muestran los estados de todos los Bundles en ese Cluster, que pueden abarcar muchos GitRepos. Al observar el paquete, se muestran los estados de todas las ampliaciones de paquete en él.
+
+=== Condición de Listo
+
+La condición `Ready` se utiliza para determinar si los BundleDeployments están en un estado `Ready`.
+La condición `Ready` se establece en `True` si todos los BundleDeployments están en el estado `Ready`.
+Si al menos un BundleDeployment no está en el estado `Ready`, la condición `Ready` se establece en `False`.
+
+Todos los estados de las ampliaciones de paquete se agregan en el campo `message` de la condición de estado `Ready`. Para evitar que el mensaje se vuelva demasiado largo, solo se muestran los primeros diez estados. El campo `message` contiene el número de ampliaciones de paquete en cada estado, seguido del nombre del Cluster donde se encuentra la ampliación de paquete. Se excluyen los estados `Ready` del campo `message`.
+
+Por ejemplo:
+
+[source,yaml]
+----
+status:
+  conditions:
+  - lastUpdateTime: "2025-06-25T14:59:35Z"
+    message: WaitApplied(1) [Cluster fleet-default/downstream4]
+    status: "False"
+    type: Ready
+----
+
+==== Determinación del Estado de Listo
+
+{product_name} utiliza el paquete `kstatus` del módulo `sigs.k8s.io/cli-utils` para determinar el estado de Listo de las ampliaciones de paquete en función del estado de sus recursos.
+Para más detalles, consulta el README del paquete link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus`].
+
+==== Propagación del Estado de Listo
+
+image::PropogationReadyStatus.svg[Propagación del estado de Listo]
+
+=== Estado de visualización
+
+El campo `status.display` proporciona un resumen del estado. Los estados están clasificados, y el peor estado posible se utiliza como `state` en el campo `status.display`.
+
+[[state-ranking]]
+==== Clasificación de estados
+
+Esta es la clasificación en la que se muestran los estados. Si un paquete tiene ampliaciones de paquete en diferentes estados, se utiliza el peor estado en el campo `status.display.state`.
+Este estado también se propaga de los paquetes a otros recursos {product_name} (GitRepos, Clusters, ClusterGroups).
+
+De mejor a peor:
+
+* Preparado
+* NotReady
+* Pendiente
+* OutOfSync
+* Modificado
+* EsperandoAplicación
+* ErrApplied
+
+== Lotes
+
+=== Estados de paquete
+
+* *Listo* : Los paquetes han sido ampliados y todos los recursos están listos. Si no, el campo `message` de la condición `Ready` contiene una agregación de los estados de las ampliaciones de paquete.
+* *NoListo* : Las ampliaciones de paquete han sido ampliadas, pero algunos recursos no están listos (por ejemplo, las imágenes de contenedor se están descargando o los servicios no han informado que están listos).
+* *Pendiente* : Los paquetes están en cola para ser procesados por el controlador de Fleet.
+  Esto puede ocurrir si la ampliación está en pausa (Consulta xref:how-tos-for-users/rollout.adoc[Estrategia de Ampliación]).
+* *OutOfSync* : Los paquetes se sincronizan desde el controlador de Fleet, pero no se han creado aún las ampliaciones de paquete actualizadas, por lo que los agentes en sentido descendente no pueden sincronizar los cambios.
+  Esto también puede ocurrir si la ampliación está en pausa (Consulta xref:how-tos-for-users/rollout.adoc[Estrategia de Ampliación]).
+* *Modificado* : Los paquetes han sido ampliados y los recursos están listos, pero algunos recursos ampliados fueron modificados externamente y no desde Git.
+* *EsperandoAplicación* : Los paquetes están sincronizados pero esperando ser ampliados. La visualización persistente de este estado puede indicar un clúster de destino inalcanzable.
+* *ErrAplicado* : Los paquetes se sincronizaron con éxito pero se encontraron errores durante la ampliación.
+
+== Clústeres
+
+=== Estados Específicos del Clúster
+
+* *EsperandoRegistro* : Esperando a que el agente informe la información de registro y el estado del clúster.
+
+=== Estados de los paquetes
+
+* *Listo* : Todos los paquetes en este clúster han sido ampliados y los recursos están listos.
+* *NoListo* : Algunos paquetes en este clúster no están listos.
+* *Pendiente* : Algunos paquetes están pendientes.
+* *OutOfSync* : Algunos paquetes están fuera de sincronización.
+* *Modificado* : Algunos paquetes están modificados.
+* *EsperandoAplicación* : Algunos paquetes están esperando ser aplicados.
+* *ErrAplicado* : Algunos paquetes tienen errores.
+
+== GitRepo
+
+* *Listo* : `True` si los estados deseados y actuales coinciden. Si `False`, el mensaje contiene:
+** un error del controlador de GitJob,
+** un error del paquete (por ejemplo, fallo en la plantilla), o
+** una lista agregada de paquetes que no están en `Ready`.
+* *GitPolling* : Indica si el sondeo o la clonación inicial están en progreso. `True` si el sondeo tiene éxito o está deshabilitado.
+* *Conciliando* : El controlador está actualmente conciliando cambios.
+* *Detenido* : El controlador encontró un error o no pudo avanzar.
+* *Aceptado* : Se aplicaron restricciones de GitRepo y existen secretos externos de Helm.
+
+== Condiciones de HelmOp
+
+* *Listo* : `True` si todas las ampliaciones de paquete se han ampliado con éxito; `False` si alguna no está lista.
+* *Aceptado* : `False` si las opciones de Helm son inválidas, las versiones de los gráficos no se pueden resolver, el sondeo falló o la creación del paquete falló.
+* *Sondeado* : `True` si el sondeo tuvo éxito. `False` en caso contrario, con un mensaje de error.
+
+== status.display
+
+Los campos `status.display` se comparten entre GitRepos y GitOps. Ambos recursos contienen un campo `status.display` que resume el estado del recurso. El valor de `state` puede diferir dependiendo del tipo de recurso.
+
+* `readyBundleDeployments` : Una cadena con el formato `%d/%d` que muestra el número de ampliaciones de paquete listas frente al total.
+* `state` : Representa el estado del GitRepo (por ejemplo, `GitUpdating`) o el estado de paquete más alto según el <<state-ranking,Rango de Estado>>. Si `Ready`, se establece en un valor vacío.
+* `message` : Contiene mensajes de condición de ampliación relevantes.
+* `error` : `true` si existe un mensaje de error.
+
+== Lista de Recursos
+
+Los recursos ampliados en los clústeres de destino se clasifican bajo `GitRepos` y `HelmOps`.
+
+=== GitRepos
+
+La lista `status.ResourceCounts` para GitRepos se deriva de `bundleDeployments`.
+
+El campo `perClusterResourceCounts` proporciona estadísticas por clúster sobre los recursos ampliados.
+
+[source,yaml]
+----
+perClusterResourceCounts:
+    fleet-default/imported-0:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+    fleet-default/imported-1:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+    fleet-default/imported-2:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+  readyClusters: 3
+  resourceCounts:
+    desiredReady: 27
+    missing: 0
+    modified: 0
+    notReady: 0
+    orphaned: 0
+    ready: 27
+    unknown: 0
+    waitApplied: 0
+----
+
+Esto ayuda a identificar de un vistazo qué clústeres tienen ampliaciones incompletas o inconsistentes.
+
+=== Ampliación de Paquete
+
+El recurso `BundleDeployment` incluye dos campos adicionales para una mejor visibilidad:
+
+* `incompleteState`: que se establece en verdadero si el estado de los recursos no listos o modificados tiene más de 10 elementos.
+* `resourceCounts`: que cuenta el número de recursos según su estado.
+
+=== HelmOps
+
+La lista `status.ResourceCounts` para HelmOps se deriva de `bundleDeployments`.
+
+== Cuentas de Recursos
+
+Esto muestra cómo las cuentas de recursos se propagan entre los recursos.
+
+=== GitRepos
+
+Los recursos ampliados se enumeran bajo `GitRepos` en `status.Resources`, derivados de `bundleDeployments`.
+
+=== HelmOps
+
+De manera similar, los recursos ampliados para `HelmOps` se enumeran en `status.Resources`, derivados de `bundleDeployments`.
+
+=== Clústeres
+
+En Clusters, `status.ResourceCounts` se deriva de GitRepos.
+
+=== ClusterGroups
+
+En Grupos de Clústeres, `status.ResourceCounts` se deriva de GitRepos.
+
+== Diagrama de Clases
+
+image::ClusterGroups_classDiagram.svg[Propagación del estado de Listo]

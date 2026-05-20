@@ -1,0 +1,21 @@
+= Fleetのクリーンアップ
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+古いリソースを整理する
+
+----
+fleet cleanup [flags]
+----
+
+== オプション
+
+----
+  -h, --help   help for cleanup
+----
+
+== 関連項目
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name}の運用を管理する
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Fleetのクリーンアップ クラスター登録]     - 古いクラスター登録を整理する
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Fleetのクリーンアップ Gitジョブ]     - 古いGitジョブを整理する

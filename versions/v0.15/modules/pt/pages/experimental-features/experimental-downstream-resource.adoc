@@ -1,0 +1,55 @@
+= Copiando automaticamente recursos para clusters downstream
+:revdate: 04-11-2025
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Este é um recurso experimental.
+====
+
+A partir da versão {product_name} v0.14.0, {product_name} suporta a propagação de recursos externos para clusters downstream.
+
+Isso simplifica o tratamento de dependências de charts, como valores provenientes de recursos externos.
+Veja também xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
+
+== Como ela funciona
+
+HelmOps suporta um novo campo `downstreamResources`, que pode ser usado para referenciar recursos por tipo e nome.
+Esses recursos devem:
+
+* Podem ser segredos ou config maps. Nenhum outro `kind`s é atualmente suportado.
+* Existir antes de serem referenciados pelo HelmOp e viver no mesmo namespace que o HelmOp que os referencia.
+
+Exemplo:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+[...] # metadata
+spec:
+  helm:
+    [...] # Helm options
+  downstreamResources:
+    - kind: Secret
+      name: my-secret
+    - kind: ConfigMap
+      name: my-config
+----
+
+Isso instrui o controlador Fleet a copiar esses recursos para cada cluster downstream alvo, antes de implantar a carga de trabalho (neste caso especificada através de um chart Helm) para o referido cluster downstream.
+
+Quando um cluster não é mais alvo, o agente Fleet também excluirá esses recursos do cluster. No entanto, eles permanecerão no cluster upstream.
+
+[NOTE]
+====
+Se os recursos referenciados através de `downstreamResources` devem permanecer nos clusters downstream mesmo após não serem mais alvo, xref:/reference/ref-bundle.adoc[keepResources] deve ser definido como `true` no HelmOp.
+====
+
+== Monitoramento
+
+A partir da versão v0.15.0, {product_name} monitora as alterações feitas em segredos e configmaps que estão listados em `DownstreamResources`. Ele também verifica se um segredo ou configmap foi criado após o Bundle ter sido criado.
+
+Quando um segredo ou configmap referenciado é criado ou atualizado no cluster upstream, o Fleet propagará essas alterações para os clusters downstream e reimplantará a carga de trabalho.
+
+Isso permite que as implantações utilizem as versões mais recentes desses recursos referenciados, que podem representar configuração, valores do Helm, etc.

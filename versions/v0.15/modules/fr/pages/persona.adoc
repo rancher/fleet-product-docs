@@ -1,0 +1,30 @@
+= Personas clés et leurs rôles
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+[cols="1,2,2", options="header"]
+|===
+|Persona |Missions |Principaux avantages
+
+|Ingénieurs de plateforme
+a|* Configurer et gérer {product_name} l'installation à travers les clusters.
+* Définir et appliquer les déploiements d'applications et de stratégies multi-clusters.
+* Gérer les configurations GitRepo et `fleet.yaml`.
+* Effectuer des mises à jour et des retours à l'état initial à l'échelle du cluster.
+a|* Contrôle centralisé à travers les clusters.
+* Amélioration de la normalisation et de la conformité.
+
+|Développeurs d'applications
+a|* Structurer les charts Helm ou les manifests d'application dans Git.
+* Définir les cibles de déploiement et les environnements dans `fleet.yaml`.
+* Surveiller l'état des déploiements via l'interface utilisateur ou le CLI.
+a|* Flux de travail basés sur GitOps.
+* Déploiements plus rapides, automatisés et cohérents à travers les environnements.
+
+|Administrateurs de sécurité
+a|* Définir et appliquer des stratégies de sécurité sous forme de code.
+* Déployer des outils et des configurations de sécurité.
+* Auditer et gérer la posture de sécurité à travers les clusters.
+a|* Réduction des risques et gestion centralisée de la conformité.
+* Configuration de sécurité automatisée et cohérente.
+|===

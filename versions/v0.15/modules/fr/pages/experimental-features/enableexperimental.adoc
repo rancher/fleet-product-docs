@@ -1,0 +1,47 @@
+= Procédure pour activer les fonctionnalités expérimentales
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+{product_name} prend en charge des fonctionnalités expérimentales qui sont désactivées par défaut et peuvent être activées par l'utilisateur.
+
+L'activation ou la désactivation des fonctionnalités expérimentales se fait à l'aide de variables d'environnement supplémentaires qui sont disponibles lors du déploiement de `rancher/fleet`.
+
+Pour plus d'informations, consultez Configurer les options d'installation de xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} dans Rancher]
+
+== Fonctionnalités expérimentales disponibles
+
+{product_name} prend actuellement en charge les fonctionnalités expérimentales suivantes, activées via leurs variables d'environnement respectives{nbsp}:
+
+* xref:experimental-features/scheduling.adoc[Planification]
+* xref:experimental-features/experimental-downstream-resource.adoc[Propagation automatisée des ressources vers les clusters en aval]
+
+== Activation d'une fonctionnalité expérimentale
+
+=== Activation lors de l'installation de {product_name} en mode autonome
+
+Tout ce que vous avez à faire est de passer quelque chose comme{nbsp}:
+
+[source,bash]
+----
+--set-string extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string extraEnv[0].value=true
+----
+
+à votre commande `helm install` ou `helm upgrade`.
+
+[NOTE]
+====
+Vous devez utiliser `--set-string` car sinon la valeur booléenne ne fonctionnera pas comme prévu.
+====
+
+=== Activation lors de l'installation de {product_name} avec Rancher
+
+Vous pouvez également activer les fonctionnalités expérimentales dans {product_name} lors de l'installation de Rancher.
+
+Les paramètres sont les mêmes, mais vous devez ajouter le préfixe `fleet.`{nbsp}:
+
+[source,bash]
+----
+--set-string fleet.extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string fleet.extraEnv[0].value=true
+----

@@ -1,0 +1,105 @@
+= 配置
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+主要是内部配置项的参考列表。
+
+[[configure-install-options-in-rancher]]
+== 在 Rancher 中配置 {product_name} 安装选项
+
+Rancher 在 `rancher-config` 名称空间中的一个名为 `cattle-system` 的 ConfigMap 中查找 Helm 值。
+任何 {product_name} 的 Helm chart 值可以在 chart 的名称下指定。请注意，Fleet 键的值是一个字符串。
+
+添加一些选项后，`rancher-config` 可能看起来像这样：
+
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    controller:
+      reconciler:
+        workers:
+          gitrepo: "50"
+          bundle: "50"
+          bundledeployment: "50"
+  priorityClassName: rancher-critical
+----
+
+`rancher-config` 资源由 Rancher chart 创建，并且可以应用补丁：
+
+[source,shell]
+----
+kubectl patch cm -n cattle-system rancher-config --type merge \
+  --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
+----
+
+== Helm 图表
+
+Helm charts 至少接受在 `values.yaml` 中所示的选项及其默认值：
+
+* https://github.com/rancher/fleet/blob/main/charts/fleet/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
+
+== 环境变量
+
+控制器可以使用这些环境变量启动：
+
+* `CATTLE_DEV_MODE` - 用于调试 wrangler，不可用
+* `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY` - 配置 `fleet apply` 的并发捆绑创建例程的数量。默认值为 4.也可以通过 `--bundle-creation-max-concurrency` CLI 标志进行设置
+* `FLEET_CLUSTER_ENQUEUE_DELAY` - 调整检查非就绪集群的频率
+* `FLEET_CPU_PPROF_PERIOD` - 用于开启 https://github.com/rancher/fleet/blob/main/docs/performance.md[性能分析]
+
+== 配置
+
+在 agent 和 Fleet Manager 的集群配置中。更改这些可能导致完全重新部署。
+
+配置 https://github.com/rancher/fleet/blob/main/internal/config/config.go#L57[结构] 在两个配置映射中使用：
+
+* cattle-fleet-system/fleet-agent
+* cattle-fleet-system/fleet-controller
+
+== 标签
+
+Fleet 使用的标签：
+
+* `fleet.cattle.io/agent=true` - 代理部署亲和性设置的 NodeSelector 标签
+* `fleet.cattle.io/non-managed-agent` - 管理的代理捆绑不会针对具有此标签的集群
+* `fleet.cattle.io/repo-name` - 用于 Bundle 以引用 git repo 资源
+* `fleet.cattle.io/bundle-namespace` - 用于 BundleDeployment 以引用 Bundle 资源
+* `fleet.cattle.io/bundle-name` - 用于 BundleDeployment 以引用 Bundle 资源
+* `fleet.cattle.io/managed=true` - 带有此标签的集群命名空间将被清理。如果其他资源带有该标签，则将被清理。在 Rancher 中用于识别 Fleet 名称空间。
+* `fleet.cattle.io/bootstrap-token` - 未使用
+* `fleet.cattle.io/shard-id=<shard-id>` - 舰队控制器 pod 的分片 ID。
+* `fleet.cattle.io/shard-default=true` - 如果这是管理没有分片引用标签的资源的控制器，则为真。
+* `fleet.cattle.io/shard-ref=<shard-id>` - 引用由 {product_name} 分配给资源的分片 ID，继承自 `GitRepo`，确定哪个 {product_name} 控制器部署将协调它们。
+ ** 如果未提供此标签或其值为空，则无分片的 {product_name} 控制器将处理该资源。
+ ** 如果此标签的值与已部署的 {product_name} 控制器的任何分片 ID 不匹配，则该资源将不会被处理。
+
+== 注解
+
+Fleet 使用的注释：
+
+* `fleet.cattle.io/agent-namespace`
+* `fleet.cattle.io/bundle-id`
+* `fleet.cattle.io/cluster`, `fleet.cattle.io/cluster-namespace` - 用于集群命名空间以引用集群注册命名空间和集群名称
+* `fleet.cattle.io/cluster-group`
+* `fleet.cattle.io/cluster-registration-namespace`
+* `fleet.cattle.io/cluster-registration`
+* `fleet.cattle.io/commit`
+* `fleet.cattle.io/managed` - 看起来未使用
+* `fleet.cattle.io/service-account`
+
+== {product_name} 代理配置
+
+容忍、亲和性和资源可以为 {product_name} 代理自定义。在创建 xref:reference/ref-crds.adoc#_clusterspec[Cluster] 时可以提供这些字段，更多关于如何创建集群的信息请参见 xref:how-tos-for-operators/cluster-registration.adoc[注册下游集群]。如果未提供这些字段，将使用默认配置。
+
+如果您更改资源限制，请确保限制允许 Fleet agent 正常工作。
+
+请记住，如果您将 {product_name} 降级到 v0.7.0 之前的版本，{product_name} 将回退到内置默认值。
+如果代理有自定义亲和力，他们将重新部署。如果 {product_name} 版本号没有变化，重新部署可能不会立即进行。

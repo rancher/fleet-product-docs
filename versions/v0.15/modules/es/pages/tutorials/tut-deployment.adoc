@@ -1,0 +1,465 @@
+:doctype: book
+
+= Creación de una ampliación
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Para desplegar cargas de trabajo en clústeres en sentido descendente, primero crea un repositorio de Git, luego crea un recurso GitRepo y aplícalo.
+
+Este tutorial utiliza el repositorio https://github.com/rancher/fleet-examples[fleet-examples].
+
+[NOTE]
+====
+Para más detalles sobre cómo estructurar el repositorio y configurar la ampliación de cada bundle, consulta xref:explanations/gitrepo-content.adoc[GitRepo Contents].
+Para más detalles sobre las opciones disponibles por repositorio de Git, consulta xref:how-tos-for-users/gitrepo-add.adoc[Agregar un GitRepo].
+====
+
+
+== Ejemplos de un solo clúster
+
+Todos los ejemplos desplegarán contenido en clústeres sin personalizaciones por clúster. Este es un buen punto de partida para entender los conceptos básicos de estructurar repositorios de Git para{product_name}.
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Un ejemplo utilizando Helm. Estamos desplegando el https://github.com/rancher/fleet-examples/tree/master/single-cluster/helm[ejemplo de helm] en el clúster local.
++
+El repositorio contiene un gráfico de helm y un `fleet.yaml` opcional para configurar la ampliación:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-helm-example
+
+# Custom helm options
+helm:
+  # The release name to use. If empty a generated release name will be used
+  releaseName: guestbook
+
+  # The directory of the chart in the repo.  Also any valid go-getter supported
+  # URL can be used there is specify where to download the chart from.
+  # If repo below is set this value if the chart name in the repo
+  chart: ""
+
+  # An https to a valid Helm repository to download the chart from
+  repo: ""
+
+  # Used if repo is set to look up the version of the chart
+  version: ""
+
+  # Force recreate resource that can not be updated
+  force: false
+
+  # How long for helm to wait for the release to be active. If the value
+  # is less that or equal to zero, we will not wait in Helm
+  timeoutSeconds: 0
+
+  # Custom values that will be passed as values.yaml to the installation
+  values:
+    replicas: 2
+----
+
+Helm Multi Chart::
++
+Un https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-multi-chart[ejemplo que despliega múltiples gráficos] desde un solo repositorio. Esto es similar al ejemplo anterior, pero desplegará tres gráficos de helm desde las subcarpetas, cada uno configurado por su propio `fleet.yaml`.
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-multi-chart
+EOF
+----
+
+Helm y Kustomize::
++
+Un ejemplo utilizando https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-kustomize[Kustomize para modificar un gráfico de Helm de terceros]. Desplegará la aplicación de ejemplo de Kubernetes guestbook empaquetada como un gráfico de Helm descargado de una fuente de terceros y modificará el gráfico de helm utilizando Kustomize. La aplicación se desplegará en el espacio de nombres fleet-helm-kustomize-example. 
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-kustomize
+EOF
+----
+
+Kustomize::
++
+Un https://github.com/rancher/fleet-examples/blob/master/single-cluster/kustomize[ejemplo utilizando Kustomize]. 
++
+Ten en cuenta que el `fleet.yaml` tiene una clave `kustomize:` para especificar la vía al `kustomization.yaml` requerido:
++
+.fleet.yaml
+[source,yaml]
+----
+kustomize:
+  # To use a kustomization.yaml different from the one in the root folder
+  dir: ""
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/kustomize
+EOF
+----
+
+Manifiestos::
++
+Un https://github.com/rancher/fleet-examples/tree/master/single-cluster/manifests[ejemplo utilizando YAML de Kubernetes en bruto].
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/manifests
+EOF
+----
+====
+
+== Ejemplos de múltiples clústeres
+
+Los ejemplos a continuación desplegarán un repositorio git múltiple en varios clústeres a la vez y configurarán la aplicación de manera diferente para cada objetivo.
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Un ejemplo utilizando Helm. Estamos desplegando el https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[ejemplo de helm] y personalizándolo por clúster objetivo.
++
+El repositorio contiene un gráfico de helm y un `fleet.yaml` opcional para configurar la ampliación. El `fleet.yaml` se utiliza para configurar diferentes opciones de ampliación, dependiendo de las etiquetas del clúster:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-helm-example
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
++
+Para crear la ampliación, aplicamos el recurso personalizado al clúster en sentido ascendente. El espacio de nombres `fleet-default`, por defecto, contiene los recursos del clúster en sentido descendente. El gráfico se desplegará en todos los clústeres en el espacio de nombres fleet-default, que tienen recursos de clúster etiquetados que coinciden con cualquier entrada bajo `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Al aplicar el recurso gitrepo al clúster en sentido ascendente, fleet comenzará a monitorear el repositorio y crear despliegues:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm Externo::
++
+Un https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-external[ejemplo utilizando un gráfico de Helm que se descarga de una fuente de terceros y personalizándolo por clúster objetivo]. La personalización es similar al ejemplo anterior.
++
+Para crear la ampliación, aplicamos el recurso personalizado al clúster en sentido ascendente. El espacio de nombres `fleet-default`, por defecto, contiene los recursos del clúster en sentido descendente. El gráfico se desplegará en todos los clústeres en el espacio de nombres fleet-default, que tienen recursos de clúster etiquetados que coinciden con cualquier entrada bajo `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-external
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-external
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Al aplicar el recurso gitrepo al clúster en sentido ascendente, fleet comenzará a monitorear el repositorio y crear despliegues:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm y Kustomize::
++
+Un ejemplo utilizando https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-kustomize[Kustomize para modificar un gráfico de Helm de terceros]. Desplegará la aplicación de ejemplo de Kubernetes guestbook empaquetada como un gráfico de Helm descargado de una fuente de terceros y modificará el gráfico de Helm utilizando Kustomize. La aplicación se desplegará en el espacio de nombres fleet-helm-kustomize-example. 
++
+La aplicación se personalizará de la siguiente manera por entorno: 
++
+  * Clústeres de desarrollo: Solo se despliega el líder de redis y no los seguidores. 
+  * Clústeres de prueba: Escala la ampliación frontal a 3 
+  * Clústeres de producción: Escala la ampliación frontal a 3 y establece el tipo de servicio en LoadBalancer 
++
+El `fleet.yaml` se utiliza para controlar qué superposiciones se utilizan, dependiendo de las etiquetas del clúster:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-kustomize-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  kustomize:
+    dir: overlays/dev
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  kustomize:
+    dir: overlays/test
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  kustomize:
+    dir: overlays/prod
+----
++
+Para crear la ampliación, aplicamos el recurso personalizado al clúster de origen. El espacio de nombres `fleet-default`, por defecto, contiene los recursos del clúster de destino. El gráfico se desplegará en todos los clústeres en el espacio de nombres fleet-default, que tienen recursos de clúster etiquetados que coinciden con cualquier entrada bajo `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Al aplicar el recurso gitrepo al clúster de origen, fleet comenzará a monitorear el repositorio y crear despliegues:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Kustomize::
++
+Un https://github.com/rancher/fleet-examples/blob/master/multi-cluster/kustomize[ejemplo utilizando Kustomize] y personalizándolo por clúster objetivo.
++
+La personalización en `fleet.yaml` es idéntica al ejemplo de "Helm & Kustomize".
++
+Para crear la ampliación, aplicamos el recurso personalizado al clúster en sentido ascendente. El espacio de nombres `fleet-default`, por defecto, contiene los recursos del clúster en sentido descendente. El gráfico se desplegará en todos los clústeres en el espacio de nombres fleet-default, que tienen recursos de clúster etiquetados que coinciden con cualquier entrada bajo `targets:`.
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+EOF
+----
++
+Al aplicar el recurso gitrepo al clúster en sentido ascendente, fleet comenzará a monitorear el repositorio y crear despliegues: 
+
+Manifiestos::
++
+Un https://github.com/rancher/fleet-examples/tree/master/multi-cluster/manifests[ejemplo utilizando YAML de Kubernetes en bruto y personalizándolo por clúster objetivo]. La aplicación se personalizará de la siguiente manera por entorno:
++
+* Clústeres de desarrollo: Solo se despliega el líder de redis y no los seguidores. 
+* Clústeres de prueba: Escala la ampliación frontal a 3 
+* Clústeres de producción: Escala la ampliación frontal a 3 y establece el tipo de servicio en LoadBalancer 
++
+El `fleet.yaml` se utiliza para controlar qué superposiciones 'yaml' se utilizan, dependiendo de las etiquetas del clúster: 
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-manifest-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  yaml:
+    overlays:
+    # Refers to overlays/noreplication folder
+    - noreplication
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  yaml:
+    overlays:
+    # Refers to overlays/scale3 folder
+    - scale3
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  yaml:
+    # Refers to overlays/servicelb, scale3 folders
+    overlays:
+    - servicelb
+    - scale3
+----
++
+Para crear la ampliación, aplicamos el recurso personalizado al clúster en sentido ascendente. El espacio de nombres `fleet-default`, por defecto, contiene los recursos del clúster en sentido descendente. El gráfico se desplegará en todos los clústeres en el espacio de nombres fleet-default, que tienen recursos de clúster etiquetados que coinciden con cualquier entrada bajo `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: manifests
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/manifests
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+====

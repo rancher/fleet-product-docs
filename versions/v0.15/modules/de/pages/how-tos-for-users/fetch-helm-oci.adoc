@@ -1,0 +1,65 @@
+= Holen Sie sich Helm-Charts aus OCI-Registrierungen
+:revdate: 2025-09-01
+:page-revdate: {revdate}
+
+{product_name} unterstützt das Abrufen von Helm-Charts, die in OCI-Registrierungen gespeichert sind. OCI-Registrierungen werden häufig verwendet, um Container-Images zu speichern und zu verteilen. Durch die Verwendung von OCI-Registrierungen für Helm-Charts können Sie dieselben Verpackungs-, Authentifizierungs- und Verteilungsmethoden anwenden, die Sie bereits für Container-Images verwenden.
+
+Die Verwendung von OCI-Registrierungen für Helm-Charts hilft Ihnen:
+
+* Charts zusammen mit Container-Images in derselben OCI-Registrierung speichern.
+* Verwenden Sie die gleiche Authentifizierung und Zugriffskontrolle, die Sie bereits für Container-Images einsetzen.
+* Charts mit Standard-OCI-Befehlen pushen und pullen, wodurch ihre Verteilung über verschiedene Umgebungen erleichtert wird.
+* Charts in OCI-Registrierungen verwalten, die für hohe Verfügbarkeit und globale Verteilung ausgelegt sind.
+
+Für weitere Informationen zu HelmOps mit OCI-Registrierungen, siehe xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOps].
+
+image::fetch-Helm-from-OCI.svg[Ein visuelles Asset, das den Ablauf des Abrufens von Helm-Charts aus einer OCI-Registrierung darstellt]
+
+{product_name}{product_name} zieht dann die Charts direkt aus der OCI-Registrierung und stellt sie in Downstream-Clustern bereit.
+Dieser Ansatz vermeidet die Notwendigkeit, ein separates Chart-Repository zu pflegen, und nutzt Ihre bestehende Registry-Infrastruktur.
+
+== Helm-Chart in fleet.yaml
+
+Um ein Helm-Chart aus einer OCI-Registrierung abzurufen, verweisen Sie in einer `fleet.yaml` Datei auf das Chart mit dem `repo` Feld:
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+----
+
+Sie können das `version` Feld verwenden, um auf eine bestimmte Chart-Version zu verweisen:
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+  version: 0.1.0
+----
+
+{product_name} zieht das Chart aus der OCI-Registrierung und stellt es in den Zielclustern bereit.
+
+[NOTE]
+====
+Das `repo` Feld ist die kanonische Methode, um OCI-Registrierungs-URLs in einer `fleet.yaml` Datei anzugeben. Es ist konsistent mit der Art und Weise, wie OCI-Registrierungen in HelmOp-Ressourcen referenziert werden.
+====
+
+=== Veraltet: OCI-URL in `helm.chart`
+
+Vor dieser Änderung erwartete {product_name}, dass die OCI-URL im `chart`-Feld anstelle von `repo` platziert wird:
+
+[source,yaml]
+----
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"  # <1>
+  version: 0.1.0
+----
+<1> Veraltet: verwenden Sie stattdessen `helm.repo`.
+
+Dieses Formular funktioniert weiterhin aus Gründen der Rückwärtskompatibilität, ist jedoch veraltet und erzeugt eine Warnung in den {product_name}-Protokollen. Migrieren Sie vorhandene `fleet.yaml`-Dateien, um `helm.repo` für OCI-URLs zu verwenden.
+
+== Verwendung authentifizierter OCI-Registrierungen
+
+Wenn die OCI-Registrierung eine Authentifizierung erfordert, verweisen Sie auf ein Kubernetes-Geheimnis in der GitRepo-Ressource. {product_name} verwendet dieses Geheimnis, um das Chart abzurufen und es in den Zielclustern bereitzustellen.
+
+Für weitere Informationen siehe xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml mit Authentifizierung].

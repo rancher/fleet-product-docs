@@ -1,0 +1,55 @@
+= リソースをダウンストリームのクラスターに自動的にコピーする
+:revdate: 2025-11-04
+:page-revdate: {revdate}
+
+[WARNING]
+====
+これは実験的な機能です。
+====
+
+{product_name} v0.14.0以降、{product_name}は外部リソースをダウンストリームのクラスターに伝播することをサポートします。
+
+これにより、外部リソース由来の値などを含むチャートの依存関係の処理が簡素化されます。
+xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom]も参照してください。
+
+== 動作方法
+
+HelmOpsは、新しい`downstreamResources`フィールドをサポートしており、それを使用してリソースを種類と名前で参照できます。
+これらのリソースは次の条件を満たす必要があります：
+
+* シークレットまたはコンフィグマップであること。現在、他の`kind`はサポートされていません。
+* HelmOpから参照される前に存在し、HelmOpがそれらを参照するのと同じネームスペースにある必要があります。
+
+例:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+[...] # metadata
+spec:
+  helm:
+    [...] # Helm options
+  downstreamResources:
+    - kind: Secret
+      name: my-secret
+    - kind: ConfigMap
+      name: my-config
+----
+
+これは、Fleetコントローラーに対して、ワークロード（この場合はHelmチャートを通じて指定された）を指定されたダウンストリームクラスターにデプロイする前に、これらのリソースを各ターゲットダウンストリームクラスターにコピーするよう指示します。
+
+クラスターがもはやターゲットでない場合、Fleet agentはそのクラスターからこれらのリソースも削除します。ただし、アップストリームのクラスターには残ります。
+
+[NOTE]
+====
+`downstreamResources`を通じて参照されるリソースが、もはやターゲットでなくなった後もダウンストリームのクラスターに残るべき場合、HelmOpのxref:/reference/ref-bundle.adoc[keepResources]を`true`に設定する必要があります。
+====
+
+== 監視
+
+v0.15.0以降、{product_name}は`DownstreamResources`にリストされているシークレットとコンフィグマップに対する変更を監視します。また、バンドルが作成された後にシークレットまたはコンフィグマップが作成されたかどうかも確認します。
+
+アップストリームのクラスターで参照されたシークレットまたはコンフィグマップが作成または更新されると、Fleetはそれらの変更をダウンストリームのクラスターに伝播し、ワークロードを再デプロイします。
+
+これにより、デプロイメントは、構成、Helmの値などを表す可能性のある、参照されたリソースの最新バージョンを利用できるようになります。

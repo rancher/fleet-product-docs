@@ -1,0 +1,168 @@
+= Fleet CLIのインストールと使用
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+{product_name} CLIは、ローカルマシンから{product_name}と直接対話することを可能にするコマンドラインインタフェース（CLI）です。これにより、`bundles`を必要とせずに`GitRepo`を作成、適用、検査することができます。典型的な使用例は次のとおりです：
+
+* バンドルの内容をテストおよびプレビューすること。
+* Helmチャート、Kubernetesマニフェスト、および`fleet.yaml`ファイルから直接バンドルを作成すること。
+* バンドルがターゲットとするクラスターを確認すること。
+* クラスターに{product_name}をインストールせずにデプロイメントを検証すること。
+
+[NOTE]
+====
+クラスターに`fleet apply`をインストールせずに{product_name}を使用することができます。ただし、クラスターとの対話（例えば、`fleet target`、`fleet deploy`）には、{product_name}をインストールする必要があります。
+
+詳細については、xref:how-tos-for-operators/installation.adoc[Fleetのインストール]を参照してください。
+====
+
+== Install Fleet CLI
+
+Fleet CLIは、link:https://github.com/rancher/fleet/releases[Fleet GitHubリリースページ]からダウンロードできるスタンドアロンのバイナリです。
+
+=== Linux/macOS
+
+[source,bash]
+----
+curl -L -o fleet https://github.com/rancher/fleet/releases/latest/download/fleet-linux-amd64
+
+# Make it executable and move to PATH
+chmod +x fleet
+sudo mv fleet /usr/local/bin/
+----
+
+=== Windows（PowerShell）
+
+[source,powershell]
+----
+Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
+----
+
+=== インストールを確認してください
+
+[source,bash]
+----
+fleet --version
+----
+
+== 前提条件
+
+次のツールがインストールされ、構成されていることを確認してください：
+
+* 動作するKubernetesクラスター（例えば、k3s、kind、またはクラウドプロバイダー）。
+* `kubectl`があなたのクラスターに対して構成されています。
+* Helmがインストールされています。
+* Fleet CLIはインストールされており、ターミナルでアクセス可能です。
+
+=== 前提条件の確認
+
+[source,bash]
+----
+kubectl get nodes
+helm version
+fleet --version
+----
+
+== 主要コマンド
+
+{product_name}は、バンドルを作成、プレビュー、およびデプロイするためのいくつかのCLIコマンドを提供します。これらのコマンドは、デバッグやバンドルライフサイクルの理解に役立ちます。
+
+* `fleet apply`:Helmチャート、Kubernetesマニフェスト、またはKustomizeフォルダーなどのローカルファイルからバンドルを作成またはプレビューします。
+このコマンドはクラスターへのアクセスを必要としないため、{product_name}や`kubectl`がインストールされていなくても動作します。
++
+例:
+[source,bash]
+----
+fleet apply my-bundle ./manifests
+----
+* `fleet target`:バンドルファイルを読み込み、`targets`、`targetOverrides`、`clusterGroups`、およびラベルセレクターなどのセレクターとターゲティングルールに基づいて、どのクラスターが受信するかを評価します。
++
+例:
+[source,bash]
+----
+fleet target my-bundle ./manifests
+----
+* `fleet deploy`:`fleet target`の出力、またはダンプされた`bundledeployment`/contentリソースを取得し、それをクラスターにデプロイします—ちょうど`fleet-agent`が行うように。
++
+これらのシナリオで使用できます：
+** `fleet apply -o - name ./folder`を使用して、作成する前にバンドルのYAMLを確認します。詳細については、xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[CLIを使用したバンドルライフサイクルの調査]を参照してください。
+** ターゲットと共に使用して、セレクターをデバッグし、どのダウンストリームクラスターがターゲットにされているかを確認します。
+** `fleet deploy --dry-run`を使用して、適用せずにデプロイされるリソースを表示します。
+
+image::fleetCLI-key-components.svg[Fleet CLIの主要コマンドの動作を説明する図]
+
+== Fleet CLIを使用してサンプルバンドルをデプロイする
+
+CLIを使用してローカルに適用することで、GitReposを使用せずにワークロードをデプロイできます。例えば、link:https://github.com/rancher/fleet-examples[Fleetのサンプルリポジトリ]を使用します：
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-examples
+cd fleet-examples/single-cluster
+----
+
+現在のクラスターに適用します：
+
+[source,bash]
+----
+fleet apply -o my-cool-bundle manifests
+----
+
+このコマンドは、ネームスペースに`Bundle`リソースを作成します。
+
+== Helmチャートをバンドルに変換する
+
+Fleet CLIを使用してHelmチャートをバンドルに変換できます。例えば、*external-secrets*オペレーターのチャートを変換するには：
+
+[source,bash]
+----
+cat > targets.yaml <<EOF
+targets:
+- clusterSelector: {}
+EOF
+
+mkdir app
+cat > app/fleet.yaml <<EOF
+defaultNamespace: external-secrets
+helm:
+  repo: https://charts.external-secrets.io
+  chart: external-secrets
+EOF
+
+fleet apply --compress --targets-file=targets.yaml -n fleet-default -o - external-secrets app > eso-bundle.yaml
+
+kubectl apply -f eso-bundle.yaml
+----
+
+デプロイ先のすべてのクラスターに一致するクラスターセレクターを`targets.yaml`で使用してください。
+
+詳細については、link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster Deployment with the Help of External Secrets]を参照してください。
+
+== トラブルシューティング
+
+バンドルが準備できていない場合：
+
+* `fleet-controller`および`fleet-agent`ポッドが実行中か確認してください。
+* `fleet-local`クラスターが登録されていることを確認してください。
+* エラーメッセージがあるかバンドルを検査してください：
++
+[source,bash]
+----
+kubectl describe bundle -n fleet-local <bundle-name>
+----
+* Helmの所有権の競合が発生した場合は、バンドルを削除して再適用してください。
+
+=== エージェントとコントローラーのステータスを確認する
+
+バンドルやデプロイメントの問題をトラブルシューティングする前に、Fleet agentがダウンストリームクラスターに登録されて実行中であることを確認してください。
+詳細については、xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments]を参照してください。
+
+特定のクラスターでバンドルが準備できていない場合は、次のことを確認してください：
+
+* 管理クラスターで：
+** `fleet-controller`および`gitjob`ポッド（または`helmops`、設定に応じて）が実行中であることを確認してください。
+** クラスターのステータスが*Ready*を示していることを確認してください。
+** バンドルのステータスを確認してください。デプロイメントが失敗した場合はエラーメッセージが含まれているはずです。
+* バンドルが準備できていないターゲットクラスターで：
+** このターゲットクラスターが登録されており、`fleet-agent`ポッドが実行中であることを確認してください。
+** 最終手段として、`fleet-agent`ポッドのログを確認してください。

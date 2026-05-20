@@ -1,0 +1,67 @@
+= Validar a implantação do Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+Após aplicar um pacote usando o Fleet CLI, você pode validar a implantação inspecionando o `Bundle` e o `BundleDeployments` associado.
+
+Cada cluster {product_name}gerenciado por lista:
+
+* Quais pacotes estão implantados nele.
+* O status de prontidão deles.
+* Quaisquer erros ou problemas de sincronização.
+
+Para validar se seu `fleet apply` criou um pacote e se ele foi implantado no número correto de alvos, execute:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -A
+----
+
+image::validate-deployment-ss.png[Uma captura de tela mostrando a validação da implantação do Fleet]
+
+Você verá os seguintes campos:
+
+* `BUNDLEDEPLOYMENTS-READY` — Mostra quantos alvos estão prontos do total.
+* `STATUS` — Pode mostrar *Pronto*, *Modificado* ou outras condições com base na implantação.
+
+[NOTE]
+====
+Se `BUNDLEDEPLOYMENTS-READY` mostrar `1/1`, o pacote foi implantado com sucesso em um cluster.
+====
+
+Para obter uma visão detalhada de como o pacote foi renderizado e aplicado, execute:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -n fleet-local my-nginx-bundle -o yaml
+----
+
+Procure os seguintes campos na seção `status`:
+
+[source,yaml]
+----
+status:
+  display:
+    readyClusters: 1/1
+  summary:
+    desiredReady: 1
+    ready: 1
+  conditions:
+    type: Ready
+    status: "True"
+----
+
+Isso indica que:
+
+* O pacote foi agendado para um cluster.
+* O cluster alvo confirmou e aplicou os recursos.
+* O controlador marcou a implantação como pronta.
+
+Você também pode verificar o objeto `BundleDeployment` correspondente, uma vez que cada `BundleDeployment` corresponde a um cluster alvo:
+
+[source,bash]
+----
+kubectl get bundledeployments.fleet.cattle.io -A
+----
+
+Para mais informações, consulte xref:reference/ref-status-fields.adoc[Status Fields].

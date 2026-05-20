@@ -1,0 +1,236 @@
+= 多用户设置
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} 在可能的情况下使用 Kubernetes RBAC。
+
+RBAC 的一个附加功能是 xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] 资源，可以用于控制名称空间中的 GitRepo 资源。
+
+多用户 Fleet 设置如下：
+
+* 租户不共享名称空间，每个租户在上游集群中拥有一个或多个名称空间，可以在其中创建 GitRepo 资源。
+* 租户无法部署集群范围的资源，并且仅限于下游集群上的一组名称空间。
+* 集群位于单独的名称空间中。
+
+image::FleetSharedClusters.svg[共享集群]
+
+[CAUTION]
+.重要信息
+====
+
+租户的隔离并不完全，依赖于正确设置的 Kubernetes RBAC。如果没有操作员的手动设置，租户仍然可以部署集群范围的资源。即使在现有的 {product_name} 限制下，用户仅限于名称空间，但名称空间本身并没有提供太多隔离。例如，他们仍然可以消耗任意多的资源。
+
+然而，现有的 {product_name} 限制允许用户共享集群，并且在不冲突的情况下部署资源。
+====
+
+
+== 示例 {product_name} 独立
+
+这将创建一个用户 'fleetuser'，他只能管理 'project1' 名称空间中的 GitRepo 资源。
+
+[,bash]
+----
+ kubectl create serviceaccount fleetuser
+ kubectl create namespace project1
+ kubectl create -n project1 role fleetuser --verb=get --verb=list --verb=create --verb=delete --resource=gitrepos.fleet.cattle.io
+ kubectl create -n project1 rolebinding fleetuser --serviceaccount=default:fleetuser --role=fleetuser
+----
+
+如果我们想要授予对多个名称空间的访问权限，可以使用一个集群角色和两个角色绑定：
+
+[,bash]
+----
+ kubectl create clusterrole fleetuser --verb=get --verb=list --verb=create --verb=delete --resource=gitrepos.fleet.cattle.io
+ kubectl create -n project1 rolebinding fleetuser --serviceaccount=default:fleetuser --clusterrole=fleetuser
+ kubectl create -n project2 rolebinding fleetuser --serviceaccount=default:fleetuser --clusterrole=fleetuser
+----
+
+这确保了租户无法干扰其他租户的 GitRepo 资源，因为他们无法访问其他租户的名称空间。
+
+== Rancher 中的隔离工作区
+
+属于公司特定组/组织的用户，可能希望禁用对同一公司其他组/组织用户的集群可见性。
+
+为了实现这种隔离，Rancher 提供了 `GlobalRoles` 以允许用户对某些 Kubernetes 资源的权限。`GlobalRoles` 能够限制对集群中特定名称空间的访问，这得益于 `NamespacedRules`。
+
+当创建一个新的 Fleet 工作区时，会在 Rancher 本地群集内自动生成一个具有相同名称的名称空间。
+为了让用户在特定工作区中查看和部署 Fleet 资源，他们需要至少以下权限：
+
+* 在本地群集中列出/获取 `fleetworkspace` 集群范围的资源
+* 在本地群集的工作区的后端名称空间中创建 Fleet 资源（如 `bundles`、`gitrepos`、...）的权限。
+
+让我们授予在 `project1` 和 `project2` Fleet 工作区中部署 Fleet 资源的权限：
+
+ifeval::["{product}" == "fleet"]
+* 要创建 `project1` 和 `project2` Fleet 工作区，您可以在 https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#accessing-fleet-in-the-rancher-ui[Rancher UI] 中进行，或使用以下 YAML 资源：
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+* 要创建 `project1` 和 `project2` Fleet 工作区，您可以在 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_accessing_suse_rancher_prime_continuous_delivery_in_the_rancher_ui[Rancher UI] 中进行，或使用以下 YAML 资源：
+
+endif::[]
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project1
+----
+
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project2
+----
+
+* 创建一个 `GlobalRole`，授予在 `project1` 和 `project2` Fleet 工作区中部署 Fleet 资源的权限：
+
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: GlobalRole
+metadata:
+  name: fleet-projects1and2
+namespacedRules:
+  project1:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - bundles
+        - clusterregistrationtokens
+        - gitreporestrictions
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+  project2:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - bundles
+        - clusterregistrationtokens
+        - gitreporestrictions
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+rules:
+  - apiGroups:
+      - management.cattle.io
+    resourceNames:
+      - project1
+      - project2
+    resources:
+      - fleetworkspaces
+    verbs:
+      - '*'
+----
+
+ifeval::["{product}" == "fleet"]
+将 `GlobalRole` 分配给用户或组，更多信息请参见 https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher 文档]。
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+将 `GlobalRole` 分配给用户或组，更多信息请参见 https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher 文档]。
+endif::[]
+
+用户现在可以访问 Rancher 中的 `Continuous Delivery` 选项卡，并可以向 `project1` 和 `project2` 工作区部署资源。
+
+为了拥有一个组织良好的环境，每个工作区应有其相关的 `GlobalRole`，以帮助分离职责和满足客户所需的隔离。这样，每个用户可以根据需要被分配到一个或多个 `GlobalRoles`。
+
+== 允许访问集群
+
+这假设所有由 'fleetuser' 创建的 GitRepos 都具有 `team: one` 标签。可以使用不同的标签，以选择集群中的不同名称空间。
+
+在每个用户的名称空间中，作为管理员创建一个 xref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`]。
+
+[,yaml]
+....
+kind: BundleNamespaceMapping
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: mapping
+  namespace: project1
+
+# Bundles to match by label.
+# The labels are defined in the fleet.yaml # labels field or from the
+# GitRepo metadata.labels field
+bundleSelector:
+  matchLabels:
+    team: one
+    # or target one repo
+    #fleet.cattle.io/repo-name: simpleapp
+
+# Namespaces, containing clusters, to match by label
+namespaceSelector:
+  matchLabels:
+    kubernetes.io/metadata.name: fleet-default
+    # the label is on the namespace
+    #workspace: prod
+....
+
+GitRepo 资源中的 xref:how-tos-for-users/gitrepo-targets.adoc[`target` 部分] 可用于仅向匹配集群的子集进行部署。
+
+== 限制对下游集群的访问
+
+管理员可以通过在每个名称空间中创建一个 `GitRepoRestriction` 进一步限制租户。
+
+[,yaml]
+....
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: project1
+
+allowedTargetNamespaces:
+  - project1simpleapp
+....
+
+这将拒绝创建集群范围的资源，这可能会干扰其他租户并限制部署到 'project1simpleapp' 名称空间。
+
+== 一个示例 GitRepo 资源
+
+一个由租户创建的 GitRepo 资源，没有管理员访问权限，可能看起来像这样：
+
+[,yaml]
+....
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: simpleapp
+  namespace: project1
+  labels:
+    team: one
+
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - bundle-diffs
+
+  targetNamespace: project1simpleapp
+
+  # do not match the upstream/local cluster, won't work
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+....
+
+这包括 `team: one` 标签和所需的 `targetNamespace`。
+
+与之前的 `BundleNamespaceMapping` 一起，它将针对 'fleet-default' 名称空间中具有 `env: dev` 标签的所有集群。
+
+[NOTE]
+====
+
+`BundleNamespaceMappings` 不适用于本地群集，因此请确保不要将其作为目标。
+====
+

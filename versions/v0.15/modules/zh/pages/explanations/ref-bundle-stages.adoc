@@ -1,0 +1,69 @@
+= 捆绑生命周期
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+捆绑是用于协调来自 git 的资源的内部资源。当扫描 GitRepo 时，它将生成一个或多个捆绑。
+
+为了演示 {product_name} 捆绑的生命周期，我们将使用 https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[多集群/helm] 作为案例研究。
+
+. 用户将创建一个指向多集群/helm 储存库的 xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo]。
+. 该 `gitjob-controller` 将从 GitRepo 同步更改，并检测来自轮询或 xref:how-tos-for-users/webhook.adoc[webhook 事件] 的更改。每次提交更改时，`gitjob-controller` 将创建一个作业，克隆 git 储存库，读取储存库中的内容，如 `fleet.yaml` 和其他清单，并创建 {product_name} xref:reference/ref-status-fields.adoc#_bundles[捆绑]。
++
+[NOTE]
+====
+作业 pod 的镜像名称 `rancher/tekton-utils` 将与 GitRepo 在同一名称空间下。
+====
++
+. 然后 `fleet-controller` 从捆绑中同步更改。根据目标，`fleet-controller` 将创建 `BundleDeployment` 资源，这些资源是捆绑和目标集群的组合。
+. 然后 `fleet-agent` 将从 `BundleDeployment` 控制平面拉取 {product_name}。代理将捆绑清单作为 https://helm.sh/docs/intro/install/[Helm 图表] 从 `BundleDeployment` 部署到下游集群。
+. `fleet-agent` 将继续监控应用程序捆绑，并按以下顺序报告状态：++捆绑部署++ > ++捆绑++ > +GitRepo+ > ++集群++。
+
+该图显示了捆绑在部署之前经历的不同渲染阶段。
+
+image::FleetBundleStages.svg[捆绑阶段]
+
+[[examining-the-bundle-lifecycle-with-the-cli]]
+== 使用 CLI 检查捆绑生命周期
+
+几个 Fleet CLI 命令有助于调试捆绑。
+
+image::fleetCLI-key-components.svg[解释 Fleet CLI 关键命令如何工作的图]
+
+=== fleet apply
+
+xref:reference/cli/fleet-cli/fleet_apply.adoc[应用] 将一个包含 Kubernetes 资源的文件夹（如 Helm 图表、清单或 kustomize 文件夹）渲染为 {product_name} 捆绑资源。
+
+----
+git clone https://github.com/rancher/fleet-test-data
+cd fleet-test-data
+fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
+----
+
+有关如何使用 `fleet apply` 创建捆绑的更多信息，请参见 xref:how-tos-for-users/bundle-add.adoc[捆绑部分]。
+
+[[fleet-target]]
+=== fleet target
+
+xref:reference/cli/fleet-cli/fleet_target.adoc[目标] 从文件中读取捆绑，并与实时集群一起工作，以打印出 `bundledeployment` 和 `content` 资源，这些资源将由 fleetcontroller 创建。它以名称空间作为参数，因此可以在该名称空间中查找例如集群资源。它还可以转储在“目标”过程中使用的数据结构，以便检查关于标签和集群名称所做的决策。
+
+=== 舰队部署
+
+xref:reference/cli/fleet-cli/fleet_deploy.adoc[部署] 接收 `fleet target` 的输出，或转储的 bundledeployment/content 资源，并将其部署到集群，就像 Fleet agent 一样。它支持干运行模式，以打印出将要创建的资源，而不是使用 helm 安装它们。由于该命令不会创建输入资源，因此正在运行的 Fleet agent 可能会对该部署进行垃圾回收。
+
+部署命令可用于将捆绑带到隔离的集群。
+
+=== Lifecycle CLI
+
+Fleet CLI 命令帮助您调试和理解捆绑生命周期。以下示例使用 CLI 展示完整的捆绑生命周期：
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-test-data
+cd fleet-test-data
+fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
+fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
+fleet deploy --input-file bd.yaml --dry-run
+----
+
+有关应用的信息，请参阅 xref:how-tos-for-users/bundle-add.adoc[创建捆绑资源]。
+

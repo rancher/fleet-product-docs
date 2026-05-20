@@ -1,0 +1,440 @@
+= 创建 GitRepo 资源
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+:doctype: book
+
+== 创建 GitRepo 实例
+
+通过在 Kubernetes 中创建一个 `GitRepo` 资源来注册 Git 储存库。请参考 xref:tutorials/tut-deployment.adoc[创建部署]教程以获取示例。
+
+xref:explanations/gitrepo-content.adoc[Git 储存库内容] 详细说明了 Git 储存库的内容。
+
+GitRepo 自定义资源的可用字段在 xref:reference/ref-gitrepo.adoc[GitRepo 资源参考] 中有文档记录。添加私有 Git 储存库
+[NOTE]
+====
+{product_name} 在克隆 <<_adding_a_private_git_repository,添加私有 Git 储存库>> 或 <<_using_private_helm_repositories,使用私有 Helm 储存库>> 时，不支持 SSH 代理身份验证。
+. 使用用户名和密码或个人访问词元进行 HTTPS 身份验证。
+====
+
+
+=== 正确的名称空间
+
+Git 储存库通过 {product_name} 管理器使用 `GitRepo` 自定义资源类型添加。`GitRepo` 类型是名称空间的。默认情况下，Rancher 将创建两个 {product_name} 工作区：
+
+* `fleet-default` 包含所有已通过 Rancher 注册的下游群集。
+* `fleet-local`默认情况下，将包含本地群集。
+
+如果您在 {product_name}xref:explanations/concepts.adoc[单集群] 风格中使用，名称空间将始终是 *fleet-local*。查看 xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[集群注册] 以获取有关 `fleet-local` 名称空间的更多信息。
+
+对于 xref:explanations/concepts.adoc[多集群] 风格，请确保使用正确的储存库，以映射到正确的目标集群。
+
+== 覆盖工作负载的名称空间
+
+`targetNamespace` 字段将覆盖包中的任何名称空间。如果部署包含群集范围的资源，则会失败。
+
+它优先于所有其他名称空间定义：
+
+`gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
+
+工作负载名称空间定义可以在`allowedTargetNamespaces`资源中使用`GitRepoRestriction`进行限制。
+
+== 添加私有 Git 储存库
+
+{product_name} 支持以下私有储存库的身份验证机制： +
+* HTTP 基本认证 +
+* SSH 认证密钥 +
+* Github 应用
+
+要使用其中任何一种，您必须在 ++GitRepo 的++ 名称空间中创建一个密钥。
+
+例如，要生成一个私有 SSH 密钥：
+
+[source,bash]
+----
+ssh-keygen -t rsa -b 4096 -m pem -C "user@email.com"
+----
+
+
+[NOTE]
+====
+私钥格式必须为 `EC PRIVATE KEY`、`RSA PRIVATE KEY` 或 `PRIVATE KEY`，并且不应包含密码短语。
+====
+
+将您的私钥放入密钥中，使用 GitRepo 所在的名称空间：
+
+[source,bash]
+----
+kubectl create secret generic ssh-key -n namespace-of-your-gitrepo --from-file=ssh-privatekey=/file/to/private/key  --type=kubernetes.io/ssh-auth
+----
+
+现在必须在储存库定义中指定 `clientSecretName`：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample-ssh
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "git@github.com:rancher/fleet-examples"
+  # or
+  # repo: "ssh://git@github.com/rancher/fleet-examples"
+  clientSecretName: ssh-key
+  paths:
+  - simple
+----
+
+[CAUTION]
+====
+
+不支持带密码短语的私钥。
+====
+
+
+[CAUTION]
+====
+
+密钥必须为 PEM 格式。
+====
+
+
+=== 已知主机
+
+{product_name} 支持将 `known_hosts` 放入 ssh 密钥中。以下是如何添加它的示例：
+
+获取公钥哈希（以 GitHub 为例）
+
+[source,bash]
+----
+ssh-keyscan -H github.com
+----
+
+并将其添加到密钥中：
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ssh-key
+type: kubernetes.io/ssh-auth
+stringData:
+  ssh-privatekey: <private-key>
+  known_hosts: |-
+    |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+----
+
+[[strict-host-key-checks]]
+==== 严格的主机密钥检查
+
+图表值 `insecureSkipHostKeyChecks` 定义了 Fleet 在建立 SSH 连接时如何处理 `known_hosts`。
+
+当该值设置为 `false` 时，Fleet 将强制执行严格的主机密钥检查，这意味着它将无法与没有匹配的 `known_hosts` 条目的主机建立任何 SSH 连接。
+
+这是从 Fleet v0.13 开始的默认行为。
+
+`known_hosts` 条目优先来源于在 `GitRepo` 资源中引用的秘密，例如 `helmSecretName` 用于访问 Helm 图表或 `clientSecretName` 用于克隆 Git 储存库。
+
+请注意，如果在 `GitRepo` 中没有引用秘密，这与 Fleet 寻找 `gitcredential` 秘密是兼容的。
+
+如果不存在这样的秘密，或者在该秘密中没有可用的 `known_hosts` 条目，则 Fleet 将使用其自己的 `known-hosts` 配置映射，该映射在安装时新创建，并包含最广泛使用的 git 提供商的静态条目。
+
+有关默认条目来源及如何在安装时填充其他条目的更多详细信息，请 xref:how-tos-for-operators/installation.adoc#additional-ssh-known-hosts[点击这里]。
+
+如果没有可用的秘密，则缺少配置映射被视为 Fleet 部署不完整的症状，并将被报告为此。
+
+Fleet 一次只使用一个 `known_hosts` 条目的单一来源。这意味着，即使一个秘密包含无效（或不足）的条目，Fleet 也不会在配置映射中查找有效条目。这适用于在 `GitRepo` 中引用的秘密，以及在 `GitRepo` 中未引用秘密时可能存在的 `gitcredential` 秘密。
+
+=== 使用 HTTP 身份验证
+
+创建一个包含用户名和密码的秘密。如果需要，您可以用个人访问令牌替换密码。另请参见 xref:troubleshooting.adoc#_http_secrets_in_github[Github 中的 HTTP 秘密]。
+
+[source,bash]
+----
+kubectl create secret generic basic-auth-secret -n namespace-of-your-gitrepo --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
+----
+
+
+与 SSH 一样，通过 `clientSecretName` 在您的 GitRepo 资源中引用该秘密。
+
+
+[source,yaml]
+----
+ spec:
+   repo: https://github.com/fleetrepoci/gitjob-private.git
+   branch: main
+   clientSecretName: basic-auth-secret
+----
+
+[CAUTION]
+====
+使用 BitBucket 和访问词元时，用户名必须是 `x-token-auth`。
+====
+
+=== 使用 GitHub 应用程序
+
+以下字段是启用 {product_name} 使用 GitHub 应用程序进行身份验证所需的：
+
+[options="header"]
+|===
+| 名称 | 秘密字段名称 | 在哪里找到它
+
+| 应用程序 ID
+| `github_app_id`
+| 在您的应用程序设置页面下，位于 `App ID`（数字值）。
+
+| 应用安装 ID
+| `github_app_installation_id`
+| 在应用的安装页面 URL 中。例如，如果您在 `foo/bar` 储存库上安装了应用，请导航到该储存库的 **设置 → _集成_ → _应用程序_**，打开应用页面；其 URL 看起来像 `https://github.com/settings/installations/<digits>`：这些数字就是您的应用安装 ID。
+
+| 私用密钥
+| `github_app_private_key`
+| 在创建 GitHub 应用时生成，或从应用设置页面获取，其中有一个 `Generate a private key` 按钮可用。
+|===
+
+有关创建GitHub应用的更多详细信息，请参见 https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app[GitHub 文档]。
+
+手头有必要的数据后，创建一个包含这些字段的密钥：
+
+[source,bash]
+----
+kubectl -n namespace-of-your-gitrepo create secret generic github-app-secret \
+    --from-literal=github_app_id=<app-id> \
+    --from-literal=github_app_installation_id=<installation-id> \
+    --from-literal=github_app_private_key="<private-key>"
+----
+
+使用字面量而不是文件作为私钥可以帮助防止在执行时出现 PEM 解码错误。
+在创建密钥之前，可以从导出环境变量的文件中获取私钥，以防止密钥本身出现在外壳历史记录中。
+
+用双引号包围值或环境变量名称（例如 `--from-literal=github_app_private_key="$MY_VAR"`）可确保其完整内容被考虑，包括可能的换行符。
+
+确保通过 `clientSecretName` 在您的 GitRepo 资源中引用该密钥。
+
+=== 使用自定义 CA 包
+
+使用自定义证书颁发机构签名的证书验证储存库可以通过在 `GitRepo` 中指定 `cabundle` 字段来完成。
+
+[IMPORTANT]
+====
+ifeval::["{product}" == "fleet"]
+请注意，如果存在指定 CA 包的密钥，例如如果 {product_name} 与 Rancher 一起安装（请参见关于 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[使用私有 CA 签名证书] 和 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[其他受信任的 CA] 的相关页面），{product_name} 如果在 `GitRepo` 中未指定 CA 包，将使用这些 CA 包。
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+请注意，如果存在指定 CA 包的密钥，例如如果 {product_name} 与 Rancher 一起安装（请参见关于 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[使用私有 CA 签名证书] 和 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[其他受信任的 CA] 的相关页面），{product_name} 如果在 `GitRepo` 中未指定 CA 包，将使用这些 CA 包。
+endif::[]
+====
+
+== 使用私有 Helm 储存库
+
+[CAUTION]
+====
+凭据将无条件用于 gitrepo 资源引用的所有 Helm 储存库。
+确保您不会通过混合公共和私有储存库泄露凭据。使用 <<Use different helm credentials for each path,每个路径不同的 helm 凭据>>，或将它们拆分为不同的 gitrepos，或使用 `helmRepoURLRegex` 限制凭据的范围到某些服务器。
+====
+
+
+对于私有 Helm 储存库，用户可以引用具有以下键的密钥：
+
+. 如果 Helm HTTP 储存库在基本身份验证后面，则使用 `username` 和 `password` 进行基本 http 身份验证。
+. 如果 Helm 储存库使用自定义 CA，则使用 `cacerts` 作为自定义 CA 包。
+
+[IMPORTANT]
+====
+ifeval::["{product}" == "fleet"]
+请注意，如果存在指定 CA 包的密钥，例如如果 {product_name} 与 Rancher 一起安装（请参见关于 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[使用私有 CA 签名证书] 和 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[其他受信任的 CA] 的相关页面），{product_name} 如果在 `GitRepo` 中未指定 CA 包，将使用这些 CA 包。
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+请注意，如果存在指定 CA 包的密钥，例如如果 {product_name} 与 Rancher 一起安装（请参见关于 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[使用私有 CA 签名证书] 和 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[其他受信任的 CA] 的相关页面），{product_name} 如果在 `GitRepo` 中未指定 CA 包，将使用这些 CA 包。
+endif::[]
+====
+
+. `ssh-privatekey` 用于 ssh 私钥，如果储存库使用 ssh 协议。当前不支持带有密码短语的私钥。
+
+例如，要在 kubectl 中添加一个秘密，请运行
+
+`kubectl create secret -n $namespace generic helm --from-literal=username=foo --from-literal=password=bar --from-file=cacerts=/path/to/cacerts --from-file=ssh-privatekey=/path/to/privatekey.pem`
+
+创建秘密后，指定该秘密给 `gitRepo.spec.helmSecretName`。确保秘密在与 gitrepo 相同的名称空间下创建。
+
+=== 为每个路径使用不同的 helm 凭据
+
+{product_name} 允许您为 Git 储存库中每个 Helm 图表路径定义唯一的凭据，使用 helmSecretNameForPaths 字段。
+
+
+[IMPORTANT]
+====
+如果提供了 `gitRepo.spec.helmSecretName`，则将忽略 `gitRepo.spec.helmSecretNameForPaths`。
+====
+
+创建一个名为 `secrets-path.yaml` 的文件，指定您在 `GitRepo` 中每个路径的凭据。每个键可以是：
+
+* 一个精确路径，必须与捆绑目录的完整路径匹配（包含 `fleet.yaml` 文件的文件夹）。该路径可能比 `paths:` 下的条目有更多的段。
+* 一个 _通配符_，匹配一个或多个路径，当凭据需要在多个路径/捆绑中重用时非常有用。
+
+请参考 link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match 文档] 以获取支持的语法示例。
+
+[NOTE]
+====
+如果在 Git 储存库中有多个通配符匹配给定路径，{product_name} 将按字典顺序排列通配符，并使用第一个匹配的凭据。
+
+_示例_：对于储存库路径 `world-domination/ui_charts` 和包含以下键的秘密，将使用 _第二个_ 通配符下的凭据：
+
+[source,yaml]
+----
+world-domination/*_charts: # will not be used
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+world-domination/*: # will be used, as `/*` will be sorted before `/*_charts`
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+====
+
+如果 GitRepo 中列出的路径未包含在此文件中，无论是通过精确路径还是通配符匹配，{product_name} 都不会为其使用凭据。
+
+[NOTE]
+====
+该文件应命名为 `secrets-path.yaml`；否则 {product_name} 将无法使用它。
+====
+
+.示例 `GitRepo` 资源
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: gitrepo
+  namespace: fleet-local
+spec:
+  helmSecretNameForPaths: test-multipasswd
+  repo: https://github.com/0xavi0/fleet-examples
+  branch: helm-multi-passwd
+  paths:
+  - single-cluster/test-multipasswd
+----
+
+.示例 `secrets-path.yaml`
+[source,yaml]
+----
+single-cluster/test-multipasswd/passwd:
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+
+.另一个具有两个不同路径的示例
+[source,yaml]
+----
+path-one: # path path-one must exist in the repository
+  username: user
+  password: pass
+path-two: # path path-two must exist in the repository
+  username: user2
+  password: pass2
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCiAgICBNSUlEblRDQ0FvV2dBd0lCQWdJVUNwMHB2...
+  sshPrivateKey: ICAgIC0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQogICAgTUlJRFF6Q0NBaXNDRkgxTm5Y...
+----
+
+每个路径支持的字段：
+
+[cols="1,1",options="header"]
+|===
+|字段 |说明
+
+|`username`
+|注册表或储存库用户名
+
+|`password`
+|注册表或储存库密码
+
+|`caBundle`
+|Base64 编码的 CA 证书包
+
+|`sshPrivateKey`
+|Base64 编码的 SSH 私钥
+
+|`insecureSkipVerify`
+|跳过 TLS 验证的布尔数据类型
+|===
+
+.要创建密钥，请运行：
+[source,bash]
+----
+kubectl create secret generic test-multipasswd -n fleet-local --from-file=secrets-path.yaml
+----
+
+[NOTE]
+====
+密钥必须在与 `GitRepo` 资源相同的名称空间中创建。
+====
+
+ifeval::["{product}" == "fleet"]
+如果您使用 link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] 并希望将此密钥包含在备份中，请使用 `resources.cattle.io/backup: true` 标记它：
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+如果您使用 link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] 并希望将此密钥包含在备份中，请使用 `resources.cattle.io/backup: true` 标记它：
+
+endif::[]
+[source,bash]
+----
+kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=true
+----
+
+[NOTE]
+====
+确保备份已加密以保护敏感凭据。
+====
+
+[[storing-credentials-in-git]]
+== 在 Git 中存储凭据
+
+建议不要在 Git 中存储凭据。即使储存库得到妥善保护，克隆等过程中，密钥仍然面临风险。
+作为变通方案，像 SOPS 这样的工具可以加密凭据。
+
+相反，在下游集群中引用密钥。对于清单样式和 kustomize 样式的包，请在清单中执行此操作，例如，通过 link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[挂载密钥] 或 link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[将其作为环境变量引用]。
+Helm 样式的包可以使用 xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] 从下游集群中的密钥读取值。
+
+在使用 Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[静态加密] 并在 Git 中存储凭据时，配置上游集群以包含多个 {product_name} CRD 在加密资源列表中：
+
+[source]
+----
+- secrets
+- bundles.fleet.cattle.io
+- bundledeployments.fleet.cattle.io
+- contents.fleet.cattle.io
+----
+
+== 备份和恢复
+
+在备份和恢复 {product_name} 时，如果存在 GitRepos 或 HelmOps 的工作负载，请考虑：
+
+=== Kubernetes API 服务器的可用性
+
+下游集群中的 {product_name} 代理监控上游集群中的特定名称空间。
+在恢复操作期间，上游集群中的更改可能会影响下游集群中的部署，这可能会根据上游的不完整状态被更新或删除。
+
+为防止这种情况，在恢复运行时使 Kubernetes API 服务器对下游集群不可访问。在所有资源重新创建之前，代理不应访问上游集群。
+
+=== 正在暂停
+
+一个 xref:reference/ref-gitrepo.adoc[暂停] 的 GitRepo 将暂停捆绑包和捆绑包部署。也就是说：
+
+* 从暂停的 GitRepo 中删除捆绑包部署：{product_name} 将不会重新创建捆绑包部署，直到 GitRepo 被取消暂停。
+* 从暂停的 GitRepo 中删除捆绑包：{product_name} 将删除来自该捆绑包的捆绑包部署，并且在 GitRepo 被取消暂停之前不会重新创建捆绑包（也不会重新创建捆绑包部署）。
+
+暂停 GitRepo 仅防止捆绑包和捆绑包部署的创建或更新。它仅影响 _控制器_ 操作，而不影响 {product_name} _代理_ 操作。
+为防止在删除捆绑包部署时删除捆绑包中的用户资源，请使用 xref:reference/ref-bundle.adoc[保留资源]。
+
+== 查错
+
+请参阅 {product_name} 故障排除部分 xref:troubleshooting.adoc[故障排除文档]。

@@ -1,0 +1,440 @@
+= GitRepoリソースを作成します。
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+:doctype: book
+
+== GitRepoインスタンスを作成します。
+
+Gitリポジトリは、Kubernetesで`GitRepo`リソースを作成することによって登録されます。例についてはxref:tutorials/tut-deployment.adoc[デプロイメント作成チュートリアル]を参照してください。
+
+xref:explanations/gitrepo-content.adoc[Gitリポジトリの内容]には、Gitリポジトリの内容に関する詳細があります。
+
+GitRepoカスタムリソースの利用可能なフィールドは、xref:reference/ref-gitrepo.adoc[GitRepoリソースリファレンス]に文書化されています。プライベートGitリポジトリの追加。
+[NOTE]
+====
+{product_name}は、<<_adding_a_private_git_repository,プライベートGitリポジトリの追加>>または<<_using_private_helm_repositories,プライベートHelmリポジトリの使用>>をクローンする際にSSHプロキシサーバー認証をサポートしていません。
+. ユーザー名とパスワード、または個人用アクセストークンを使用してHTTPS認証を行ってください。
+====
+
+
+=== 適切なネームスペース
+
+Gitリポジトリは、{product_name}マネージャーに`GitRepo`カスタムリソースタイプを使用して追加されます。`GitRepo`タイプはネームスペース化されています。デフォルトでは、Rancherは2つの{product_name}ワークスペースを作成します。
+
+* `fleet-default`には、Rancherを通じて既に登録されているすべてのダウンストリームクラスターが含まれています。
+* `fleet-local`には、デフォルトでローカルクラスタが含まれます。
+
+{product_name}をxref:explanations/concepts.adoc[単一クラスター]スタイルで使用している場合、ネームスペースは常に*fleet-local*になります。xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[クラスター登録]を確認して、`fleet-local`ネームスペースについての詳細を確認してください。
+
+xref:explanations/concepts.adoc[マルチクラスター]スタイルの場合、適切なリポジトリが正しいターゲットクラスターにマッピングされることを確認してください。
+
+== ワークロードのネームスペースをオーバーライドします。
+
+`targetNamespace`フィールドは、バンドル内の任意のネームスペースをオーバーライドします。デプロイメントにクラスター範囲のリソースが含まれている場合、失敗します。
+
+すべての他のネームスペース定義に優先します。
+
+`gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
+
+ワークロードのネームスペース定義は、`allowedTargetNamespaces`を`GitRepoRestriction`リソースで制限できます。
+
+== プライベートGitリポジトリの追加
+
+{product_name}はプライベートリポジトリのために以下の認証メカニズムをサポートしています： +
+* HTTP基本認証 +
+* SSH認証キー +
+* Githubアプリ
+
+それらのいずれかを使用するには、++GitRepoの++ネームスペースにシークレットを作成する必要があります。
+
+例えば、プライベートSSHキーを生成するには：
+
+[source,bash]
+----
+ssh-keygen -t rsa -b 4096 -m pem -C "user@email.com"
+----
+
+
+[NOTE]
+====
+プライベートキーの形式は`EC PRIVATE KEY`、`RSA PRIVATE KEY`または`PRIVATE KEY`でなければならず、パスフレーズを含めてはいけません。
+====
+
+プライベートキーをシークレットに入れ、GitRepoが存在するネームスペースを使用してください：
+
+[source,bash]
+----
+kubectl create secret generic ssh-key -n namespace-of-your-gitrepo --from-file=ssh-privatekey=/file/to/private/key  --type=kubernetes.io/ssh-auth
+----
+
+今、`clientSecretName`はリポジトリ定義で指定する必要があります：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample-ssh
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "git@github.com:rancher/fleet-examples"
+  # or
+  # repo: "ssh://git@github.com/rancher/fleet-examples"
+  clientSecretName: ssh-key
+  paths:
+  - simple
+----
+
+[CAUTION]
+====
+
+パスフレーズ付きのプライベートキーはサポートされていません。
+====
+
+
+[CAUTION]
+====
+
+キーはPEM形式でなければなりません。
+====
+
+
+=== 既知のホスト
+
+{product_name}はsshシークレットに`known_hosts`を入れることをサポートしています。追加する方法の例は以下の通りです：
+
+公開鍵ハッシュを取得します（例としてgithubを使用）
+
+[source,bash]
+----
+ssh-keyscan -H github.com
+----
+
+それをシークレットに追加します：
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ssh-key
+type: kubernetes.io/ssh-auth
+stringData:
+  ssh-privatekey: <private-key>
+  known_hosts: |-
+    |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
+----
+
+[[strict-host-key-checks]]
+==== 厳格なホストキーのチェック
+
+チャート値`insecureSkipHostKeyChecks`は、SSH接続を確立する際の`known_hosts`に関するFleetの動作を定義します。
+
+その値が`false`に設定されている場合、Fleetは厳格なホストキーのチェックを強制し、対応する`known_hosts`エントリが見つからないホストへのSSH接続を確立できなくなります。
+
+これはFleet v0.13以降のデフォルトの動作です。
+
+`known_hosts` のエントリは、`GitRepo` リソースで参照されるシークレットから優先的に取得されます。例えば、Helm チャートにアクセスするための `helmSecretName` や、git リポジトリをクローンするための `clientSecretName` です。
+
+シークレットが `GitRepo` に参照されていない場合、Fleet は `gitcredential` シークレットを探すことができることに注意してください。
+
+そのようなシークレットが存在しない場合、またはそのシークレットに `known_hosts` エントリが利用できない場合、Fleet は独自の `known-hosts` 設定マップを使用します。この設定マップは、最も広く使用されている git プロバイダーの静的エントリを持つ新しく作成されたものです。
+
+デフォルトのエントリがどこから来るのか、インストール時に追加のエントリをどのように入力するかについての詳細は、xref:how-tos-for-operators/installation.adoc#additional-ssh-known-hosts[こちら]をご覧ください。
+
+シークレットが利用できない場合、設定マップが存在しないことは、Fleet の不完全なデプロイメントの症状と見なされ、そう報告されます。
+
+Fleet は、一度に単一の `known_hosts` エントリのソースのみを使用します。これは、シークレットに無効（または不十分な）エントリが含まれている場合でも、Fleet が設定マップ内の有効なエントリを探さないことを意味します。これは、`GitRepo` で参照されるシークレットや、`GitRepo` にシークレットが参照されていない場合の可能な `gitcredential` シークレットにも適用されます。
+
+=== HTTP 認証の使用
+
+ユーザー名とパスワードを含むシークレットを作成します。必要に応じて、パスワードを個人用アクセストークンに置き換えることができます。また、xref:troubleshooting.adoc#_http_secrets_in_github[GitHub の HTTP シークレット] もご覧ください。
+
+[source,bash]
+----
+kubectl create secret generic basic-auth-secret -n namespace-of-your-gitrepo --type=kubernetes.io/basic-auth --from-literal=username=$user --from-literal=password=$pat
+----
+
+
+SSH と同様に、`clientSecretName` を介して GitRepo リソース内でシークレットを参照します。
+
+
+[source,yaml]
+----
+ spec:
+   repo: https://github.com/fleetrepoci/gitjob-private.git
+   branch: main
+   clientSecretName: basic-auth-secret
+----
+
+[CAUTION]
+====
+BitBucket とアクセストークンを使用する場合、ユーザー名は `x-token-auth` でなければなりません。
+====
+
+=== GitHub アプリの使用
+
+次のフィールドは、GitHub アプリを使用して {product_name} が GitHub に認証するために必要です：
+
+[options="header"]
+|===
+| 名前 | シークレットフィールド名 | どこで見つけるか
+
+| アプリ ID
+| `github_app_id`
+| アプリの設定ページで、`App ID`（数値）にあります。
+
+| アプリインストールID
+| `github_app_installation_id`
+| アプリのインストールページのURLにて。例えば、`foo/bar`リポジトリにアプリをインストールした場合、そのリポジトリの**設定 → _統合_ → _アプリケーション_**に移動し、アプリのページを開いてください。そのURLは`https://github.com/settings/installations/<digits>`のようになります：その数字がアプリインストールIDです。
+
+| 秘密鍵
+| `github_app_private_key`
+| GitHub アプリを作成する際に生成されるか、アプリの設定ページから取得できます。そこには`Generate a private key`ボタンがあります。
+|===
+
+GitHubアプリの作成に関する詳細は、 https://docs.github.com/en/apps/creating-github-apps/registering-a-github-app/registering-a-github-app[GitHubのドキュメント]を参照してください。
+
+必要なデータが揃ったら、それらのフィールドを含むシークレットを作成します：
+
+[source,bash]
+----
+kubectl -n namespace-of-your-gitrepo create secret generic github-app-secret \
+    --from-literal=github_app_id=<app-id> \
+    --from-literal=github_app_installation_id=<installation-id> \
+    --from-literal=github_app_private_key="<private-key>"
+----
+
+プライベートキーにファイルの代わりにリテラルを使用することで、実行時のPEMデコードエラーを防ぐことができます。
+シークレットを作成する前に、プライベートキーをファイルから環境変数としてエクスポートすることで、シェルの履歴にキー自体が表示されないようにできます。
+
+値または環境変数名（例：`--from-literal=github_app_private_key="$MY_VAR"`）を二重引用符で囲むことで、その内容全体が考慮され、改行が含まれる可能性もあります。
+
+そのシークレットをGitRepoリソース内で`clientSecretName`を介して参照してください。
+
+=== カスタムCAバンドルの使用
+
+カスタム証明書機関によって署名された証明書を使用してリポジトリを検証するには、`cabundle`フィールドを`GitRepo`に指定します。
+
+[IMPORTANT]
+====
+ifeval::["{product}" == "fleet"]
+CAバンドルを指定するシークレットが存在する場合、例えば{product_name}がRancherでインストールされている場合（それぞれのページを参照してください： https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[プライベートCA署名証明書の使用]および https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[追加の信頼されたCA]）、{product_name}は`GitRepo`にCAバンドルが指定されていない場合、それらのCAバンドルを使用します。
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+CAバンドルを指定するシークレットが存在する場合、例えば{product_name}がRancherでインストールされている場合（それぞれのページを参照してください： https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[プライベートCA署名証明書の使用]および https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[追加の信頼されたCA]）、{product_name}は`GitRepo`にCAバンドルが指定されていない場合、それらのCAバンドルを使用します。
+endif::[]
+====
+
+== プライベートHelmリポジトリの使用
+
+[CAUTION]
+====
+資格情報は、GitRepoリソースによって参照されるすべてのHelmリポジトリに無条件に使用されます。
+公開リポジトリとプライベートリポジトリを混在させることで、資格情報が漏洩しないよう注意してください。<<Use different helm credentials for each path,各パスに異なるhelmの資格情報を使用する>>か、異なるgitリポジトリに分割するか、または`helmRepoURLRegex`を使用して資格情報の範囲を特定のサーバーに制限してください。
+====
+
+
+プライベートHelmリポジトリの場合、ユーザーは次のキーを持つシークレットを参照できます：
+
+. Helm HTTPリポジトリが基本認証で保護されている場合、基本HTTP認証用の`username`と`password`を使用します。
+. HelmリポジトリがカスタムCAを使用している場合のカスタムCAバンドルとしての`cacerts`。
+
+[IMPORTANT]
+====
+ifeval::["{product}" == "fleet"]
+CAバンドルを指定するシークレットが存在する場合、例えば{product_name}がRancherでインストールされている場合（それぞれのページを参照してください： https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[プライベートCA署名証明書の使用]および https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/installation-references/helm-chart-options#additional-trusted-cas[追加の信頼されたCA]）、{product_name}は`GitRepo`にCAバンドルが指定されていない場合、それらのCAバンドルを使用します。
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+CAバンドルを指定するシークレットが存在する場合、例えば{product_name}がRancherでインストールされている場合（それぞれのページを参照してください： https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[プライベートCA署名証明書の使用]および https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/references/helm-chart-options.html#_additional_trusted_cas[追加の信頼されたCA]）、{product_name}は`GitRepo`にCAバンドルが指定されていない場合、それらのCAバンドルを使用します。
+endif::[]
+====
+
+. `ssh-privatekey`は、リポジトリがSSHプロトコルを使用している場合のSSHプライベートキーです。パスフレーズ付きのプライベートキーは、現在サポートされていません。
+
+例えば、kubectlにシークレットを追加するには、次のコマンドを実行します。
+
+`kubectl create secret -n $namespace generic helm --from-literal=username=foo --from-literal=password=bar --from-file=cacerts=/path/to/cacerts --from-file=ssh-privatekey=/path/to/privatekey.pem`
+
+シークレットが作成された後、`gitRepo.spec.helmSecretName`にシークレットを指定します。シークレットがgitリポジトリと同じネームスペース内に作成されていることを確認してください。
+
+=== 各パスに異なるhelmの資格情報を使用してください。
+
+{product_name}は、helmSecretNameForPathsフィールドを使用して、Gitリポジトリ内の各Helmチャートパスに対してユニークな資格情報を定義することを可能にします。
+
+
+[IMPORTANT]
+====
+`gitRepo.spec.helmSecretNameForPaths`が提供されている場合、`gitRepo.spec.helmSecretName`は無視されます。
+====
+
+あなたの`secrets-path.yaml`内の各パスに対する資格情報を指定するための、`GitRepo`という名前のファイルを作成してください。各キーは次のいずれかです：
+
+* 正確なパス、すなわち`fleet.yaml`ファイルを含むバンドルディレクトリへの完全なパスと一致する必要があります。パスは`paths:`の下のエントリよりも多くのセグメントを持つことができます。
+* 1つ以上のパスと一致する_glob_、複数のパス/バンドル間で資格情報を再利用する必要がある場合に便利です。
+
+サポートされている構文の例については、link:https://pkg.go.dev/path/filepath#Match[Go filepath.Match documentation]を参照してください。
+
+[NOTE]
+====
+Gitリポジトリ内の特定のパスに対して複数のglobが一致する場合、{product_name}はglobを辞書式に並べ、最初に一致したものの資格情報を使用します。
+
+_例_：リポジトリのパス`world-domination/ui_charts`と次のキーを含むシークレットの場合、_second_のglobの下の資格情報が使用されます：
+
+[source,yaml]
+----
+world-domination/*_charts: # will not be used
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+world-domination/*: # will be used, as `/*` will be sorted before `/*_charts`
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+====
+
+GitRepoにリストされているパスがこのファイルに含まれていない場合、正確なパスまたはglobマッチングを通じて、{product_name}はそれに対して資格情報を使用しません。
+
+[NOTE]
+====
+ファイルは`secrets-path.yaml`という名前である必要があります。そうでないと、{product_name}はそれを使用できません。
+====
+
+.例`GitRepo`リソース
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: gitrepo
+  namespace: fleet-local
+spec:
+  helmSecretNameForPaths: test-multipasswd
+  repo: https://github.com/0xavi0/fleet-examples
+  branch: helm-multi-passwd
+  paths:
+  - single-cluster/test-multipasswd
+----
+
+.例 `secrets-path.yaml`
+[source,yaml]
+----
+single-cluster/test-multipasswd/passwd:
+  username: fleet-ci
+  password: foo
+  insecureSkipVerify: true
+----
+
+.2つの異なるパスを持つ別の例
+[source,yaml]
+----
+path-one: # path path-one must exist in the repository
+  username: user
+  password: pass
+path-two: # path path-two must exist in the repository
+  username: user2
+  password: pass2
+  caBundle: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCiAgICBNSUlEblRDQ0FvV2dBd0lCQWdJVUNwMHB2...
+  sshPrivateKey: ICAgIC0tLS0tQkVHSU4gQ0VSVElGSUNBVEUtLS0tLQogICAgTUlJRFF6Q0NBaXNDRkgxTm5Y...
+----
+
+パスごとにサポートされているフィールド：
+
+[cols="1,1",options="header"]
+|===
+|フィールド |説明
+
+|`username`
+|レジストリまたはリポジトリのユーザー名
+
+|`password`
+|レジストリまたはリポジトリのパスワード
+
+|`caBundle`
+|Base64エンコードされたCA証明書バンドル
+
+|`sshPrivateKey`
+|Base64エンコードされたSSHプライベートキー
+
+|`insecureSkipVerify`
+|TLS検証をスキップするためのブール値
+|===
+
+.シークレットを作成するには、次のコマンドを実行してください：
+[source,bash]
+----
+kubectl create secret generic test-multipasswd -n fleet-local --from-file=secrets-path.yaml
+----
+
+[NOTE]
+====
+シークレットは`GitRepo`リソースと同じネームスペースで作成する必要があります。
+====
+
+ifeval::["{product}" == "fleet"]
+link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher]を使用し、このシークレットをバックアップに含めたい場合は、`resources.cattle.io/backup: true`でラベル付けしてください：
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html]を使用し、このシークレットをバックアップに含めたい場合は、`resources.cattle.io/backup: true`でラベル付けしてください：
+
+endif::[]
+[source,bash]
+----
+kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=true
+----
+
+[NOTE]
+====
+バックアップが機密資格情報を保護するために暗号化されていることを確認してください。
+====
+
+[[storing-credentials-in-git]]
+== Gitに資格情報を保存する
+
+資格情報をGitに保存しないことをお勧めします。リポジトリが適切に保護されていても、クローン作成中などにシークレットが危険にさらされる可能性があります。
+回避策として、SOPSのようなツールを使用して資格情報を暗号化できます。
+
+代わりに、下流クラスターでシークレットを参照してください。マニフェストスタイルおよびkustomizeスタイルのバンドルの場合、マニフェスト内でこれを行います。例えば、link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[シークレットをマウントする]か、link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[環境変数として参照する]ことによって。
+Helmスタイルのバンドルは、下流クラスターのシークレットから値を読み取るためにxref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom]を使用できます。
+
+Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[静止時の暗号化]を使用し、Gitに資格情報を保存する場合、アップストリームクラスターを構成して、暗号化リソースリストにいくつかの{product_name} CRDを含める必要があります。
+
+[source]
+----
+- secrets
+- bundles.fleet.cattle.io
+- bundledeployments.fleet.cattle.io
+- contents.fleet.cattle.io
+----
+
+== バックアップと復元
+
+既存のワークロード（GitReposやHelmOpsなど）を使用して{product_name}をバックアップおよび復元する際は、次の点を考慮してください：
+
+=== Kubernetes APIサーバーの可用性
+
+ダウンストリームクラスターの{product_name}エージェントは、アップストリームクラスターのクラスター固有のネームスペースを監視します。
+復元操作中に、アップストリームクラスターで行われた変更がダウンストリームクラスターのデプロイメントに影響を与える可能性があり、不完全な状態に基づいて更新または削除されることがあります。
+
+これを防ぐために、復元が実行されている間はKubernetes APIサーバーをダウンストリームクラスターからアクセスできないようにしてください。すべてのリソースが再作成されるまで、エージェントはアップストリームクラスターにアクセスしてはいけません。
+
+=== 一時停止中
+
+xref:reference/ref-gitrepo.adoc[一時停止中]のGitRepoは、バンドルとバンドルデプロイメントを一時停止します。つまり：
+
+* 一時停止中のGitRepoからバンドルデプロイメントを削除すること：{product_name}は、GitRepoが一時停止解除されるまでバンドルデプロイメントを再作成しません。
+* 一時停止中のGitRepoからバンドルを削除すること：{product_name}は、そのバンドルからのバンドルデプロイメントを削除し、GitRepoが一時停止解除されるまでバンドル（およびバンドルデプロイメント）を再作成しません。
+
+GitRepoを一時停止することは、バンドルとバンドルデプロイメントの作成や更新を防ぐだけです。これは_コントローラー_操作にのみ影響し、{product_name} _エージェント_操作には影響しません。
+バンドルデプロイメントを削除する際にバンドル内のユーザーリソースが削除されないようにするには、xref:reference/ref-bundle.adoc[keepResources]を使用してください。
+
+== トラブルシューティング
+
+{product_name}トラブルシューティングセクションを参照してください xref:troubleshooting.adoc[トラブルシューティングドキュメント]。

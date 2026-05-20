@@ -1,0 +1,89 @@
+= スケジューリング
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+[WARNING]
+====
+これは実験的な機能です。
+====
+
+{product_name}は（バージョン0.13以降、実験モードで）新しい更新が既存のデプロイメントに許可される**スケジュールされたインターバル**の定義をサポートします。
+
+これにより、ユーザーは**変更が適用されるタイミング**を制御でき、更新がGitリポジトリにプッシュされるタイミングとは独立して行うことができます。
+
+クラスターに対する変更が許可される時間ウィンドウを定義したい理由は多くあります。次に例を示します。
+
+* 営業時間外
+* 特定の時間に更新をスケジュールするため
+* 環境間での更新ウィンドウを区別するため（例：開発と本番）
+
+更新スケジューリングは現在、`Cluster`レベルで適用されています。
+
+どの`Schedule`が影響を受けるかを指定する`Clusters`リソースが定義されています。これらのクラスターは、定義された`Schedule`によって許可されている場合にのみ、新しい更新をインストールします。
+
+Gitリポジトリ内で{product_name}によって検出された変更は、`Bundle`レベルで依然として適用されます。ただし、各影響を受けるクラスターで変更をデプロイする責任を持つ**エージェント**は、クラスターが対応する`Schedule`によって現在許可されている場合にのみ、デプロイメントを開始します。
+
+これは、リポジトリで変更が検出されると、それが`Bundle`に適用され、ステータスが*更新待機中*に移行し、`Cluster`エージェントがアクティブで、対応する`Schedule`に従ってデプロイメントを実行することが許可されるまで続くことを意味します。
+
+`Cluster`が`Schedule`に関連付けられていない場合、更新は即座に適用されます。
+
+== スケジュールリソース
+
+では、`Schedule`を定義する方法と利用可能なフィールドを見てみましょう。
+
+`Schedule`は本質的に次のように定義されます：
+
+* 開始時間を示す**cron式**
+* **期間**
+* 適用される**ターゲット**（クラスター）
+
+こちらは、シンプルなターゲット定義を使用した`Schedule`の基本的な例です：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-local
+spec:
+  schedule: "0 0 22 * * *"
+  duration: 1h
+  targets:
+    clusters:
+      - name: local
+        clusterName: local
+----
+
+これは、毎日**22:00:00**に始まる**1時間の時間ウィンドウ**を定義し、`fleet-local`ネームスペースの*ローカル*というクラスターに適用されます。
+`Schedule`のターゲットは、`Schedule`と同じ**ネームスペース**を使用します。
+
+言い換えれば：*ローカル* `Cluster`は、**22:00:00から23:00:00**の変更のみを受け入れます。
+
+次に、`Schedule`が**ダウンストリームクラスター**に*env=dev*というラベルを付けて更新をデプロイするために使用される別の例を見てみましょう：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-default
+spec:
+  schedule: "0 0 */3 * * *"
+  duration: 1h 
+  targets:
+    clusters:
+      - name: targets-dev
+        clusterSelector:
+          matchLabels:
+            env: dev
+----
+
+この場合、`Schedule`は*env=dev*というラベルが付けられた`Clusters`への更新を、**3時間ごと**に許可し、その有効期間は**1時間**です。
+
+ターゲット`Clusters`の定義方法は、`GitRepo`リソースのターゲットが定義される方法と**同じ**です。
+
+詳細については、xref:how-tos-for-users/gitrepo-targets.adoc[GitRepoターゲット]を参照してください。これも`Schedule`ターゲットに適用されます。
+
+xref:reference/ref-schedule.adoc[スケジュール]の完全なCRDを表示できます。

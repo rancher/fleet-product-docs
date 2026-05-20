@@ -1,0 +1,105 @@
+= Configuración
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Una lista de referencia de opciones de configuración, en su mayoría internas.
+
+[[configure-install-options-in-rancher]]
+== Configurar {product_name} Opciones de Instalación en Rancher
+
+Rancher busca valores de Helm en un ConfigMap llamado `rancher-config` en el espacio de nombres `cattle-system`.
+Cualquier valor de gráfico de Helm para {product_name} puede especificarse bajo el nombre del gráfico. Ten en cuenta que el valor de la clave Fleet es una cadena.
+
+Un `rancher-config` podría verse así, después de añadir algunas opciones:
+
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    controller:
+      reconciler:
+        workers:
+          gitrepo: "50"
+          bundle: "50"
+          bundledeployment: "50"
+  priorityClassName: rancher-critical
+----
+
+El recurso `rancher-config` es creado por el gráfico de Rancher y puede ser parcheado:
+
+[source,shell]
+----
+kubectl patch cm -n cattle-system rancher-config --type merge \
+  --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
+----
+
+== Charts de Helm
+
+Los gráficos de Helm aceptan, al menos, las opciones como se muestra con su valor por defecto en `values.yaml`:
+
+* https://github.com/rancher/fleet/blob/main/charts/fleet/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
+
+== Variables de entorno
+
+Los controladores pueden iniciarse con estas variables de entorno:
+
+* `CATTLE_DEV_MODE` - utilizado para borrar wrangler, no utilizable
+* `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY` - configura el número de rutinas de creación de paquetes concurrentes para `fleet apply`. El valor por defecto es 4. También se puede establecer a través de la bandera CLI `--bundle-creation-max-concurrency`
+* `FLEET_CLUSTER_ENQUEUE_DELAY` - ajustar con qué frecuencia se comprueban los clústeres no listos
+* `FLEET_CPU_PPROF_PERIOD` - utilizado para activar https://github.com/rancher/fleet/blob/main/docs/performance.md[perfilado de rendimiento]
+
+== Configuración
+
+En la configuración del clúster para el agente y Fleet Manager. Cambiar estos puede llevar a re-despliegues completos.
+
+La configuración https://github.com/rancher/fleet/blob/main/internal/config/config.go#L57[estructura] se utiliza en ambos mapas de configuración:
+
+* cattle-fleet-system/fleet-agent
+* cattle-fleet-system/fleet-controller
+
+== Etiquetas
+
+Etiquetas utilizadas por Fleet:
+
+* `fleet.cattle.io/agent=true` - etiqueta NodeSelector para la configuración de afinidad de ampliación del agente
+* `fleet.cattle.io/non-managed-agent` - el paquete de agente gestionado no dirigirá clústeres con esta etiqueta
+* `fleet.cattle.io/repo-name` - utilizado en el paquete para hacer referencia al recurso del repositorio git
+* `fleet.cattle.io/bundle-namespace` - utilizado en BundleDeployment para hacer referencia al recurso del paquete
+* `fleet.cattle.io/bundle-name` - utilizado en BundleDeployment para hacer referencia al recurso del paquete
+* `fleet.cattle.io/managed=true` - los espacios de nombres del clúster con esta etiqueta serán limpiados. Otros recursos serán limpiados si están en una etiqueta. Utilizado en Rancher para identificar espacios de nombres de Fleet.
+* `fleet.cattle.io/bootstrap-token` - no utilizado
+* `fleet.cattle.io/shard-id=<shard-id>` - El ID de fragmento de un pod del controlador de Fleet.
+* `fleet.cattle.io/shard-default=true` - verdadero si este es el controlador que gestiona recursos sin una etiqueta de referencia de fragmento.
+* `fleet.cattle.io/shard-ref=<shard-id>` - hace referencia al ID de fragmento asignado por {product_name} a los recursos, heredado de un `GitRepo`, que determina qué ampliación del controlador {product_name} los reconciliará.
+ ** Si esta etiqueta no se proporciona o tiene un valor vacío, entonces el controlador {product_name} sin fragmento procesará el recurso.
+ ** Si esta etiqueta tiene un valor que no coincide con ningún ID de fragmento para el cual se ha desplegado un controlador {product_name}, entonces el recurso no será procesado.
+
+== Anotaciones
+
+Anotaciones utilizadas por Fleet:
+
+* `fleet.cattle.io/agent-namespace`
+* `fleet.cattle.io/bundle-id`
+* `fleet.cattle.io/cluster`, `fleet.cattle.io/cluster-namespace` - utilizado en un espacio de nombres de clúster para hacer referencia al espacio de nombres de registro del clúster y al nombre del clúster
+* `fleet.cattle.io/cluster-group`
+* `fleet.cattle.io/cluster-registration-namespace`
+* `fleet.cattle.io/cluster-registration`
+* `fleet.cattle.io/commit`
+* `fleet.cattle.io/managed` - aparece no utilizado
+* `fleet.cattle.io/service-account`
+
+== {product_name} Configuración del agente
+
+Las tolerancias, la afinidad y los recursos pueden personalizarse para el {product_name} agente. Estos campos pueden ser proporcionados al crear un xref:reference/ref-crds.adoc#_clusterspec[Cluster], consulta xref:how-tos-for-operators/cluster-registration.adoc[Registrando Cluster en sentido descendente] para más información sobre cómo crear Clusters. Se utilizará la configuración predeterminada si no se proporcionan estos campos.
+
+Si cambias los límites de recursos, asegúrate de que los límites permitan que el Fleet agent funcione normalmente.
+
+Ten en cuenta que si degradas {product_name} a una versión anterior a la v0.7.0, {product_name} volverá a los valores predeterminados integrados.
+Los agentes se volverán a desplegar si tenían afinidad personalizada. Si el número de versión de {product_name} no cambia, el re-despliegue puede no ser inmediato.

@@ -1,0 +1,465 @@
+:doctype: book
+
+= Criando uma implantação
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Para implantar cargas de trabalho em clusters downstream, primeiro crie um repositório Git, depois crie um recurso GitRepo e aplique-o.
+
+Este tutorial usa o repositório https://github.com/rancher/fleet-examples[fleet-examples].
+
+[NOTE]
+====
+Para mais detalhes sobre como estruturar o repositório e configurar a implantação de cada conjunto, veja xref:explanations/gitrepo-content.adoc[GitRepo Contents].
+Para mais detalhes sobre as opções disponíveis para cada repositório Git, veja xref:how-tos-for-users/gitrepo-add.adoc[Adicionando um GitRepo].
+====
+
+
+== Exemplos de Cluster Único
+
+Todos os exemplos implantarão conteúdo em clusters sem personalizações por cluster. Este é um bom ponto de partida para entender o básico de como estruturar repositórios Git para{product_name}.
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Um exemplo usando Helm. Estamos implantando o https://github.com/rancher/fleet-examples/tree/master/single-cluster/helm[exemplo helm] no cluster local.
++
+O repositório contém um chart Helm e um `fleet.yaml` opcional para configurar a implantação:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-helm-example
+
+# Custom helm options
+helm:
+  # The release name to use. If empty a generated release name will be used
+  releaseName: guestbook
+
+  # The directory of the chart in the repo.  Also any valid go-getter supported
+  # URL can be used there is specify where to download the chart from.
+  # If repo below is set this value if the chart name in the repo
+  chart: ""
+
+  # An https to a valid Helm repository to download the chart from
+  repo: ""
+
+  # Used if repo is set to look up the version of the chart
+  version: ""
+
+  # Force recreate resource that can not be updated
+  force: false
+
+  # How long for helm to wait for the release to be active. If the value
+  # is less that or equal to zero, we will not wait in Helm
+  timeoutSeconds: 0
+
+  # Custom values that will be passed as values.yaml to the installation
+  values:
+    replicas: 2
+----
+
+Helm Multi Chart::
++
+Um https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-multi-chart[exemplo implantando múltiplos chart Helm] de um único repositório. Isso é semelhante ao exemplo anterior, mas implantará três charts Helm das subpastas, cada um configurado por seu próprio `fleet.yaml`.
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-multi-chart
+EOF
+----
+
+Helm & Kustomize::
++
+Um exemplo usando https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-kustomize[Kustomize para modificar um chart Helm de terceiros]. Ele implantará o aplicativo de exemplo guestbook do Kubernetes, empacotado como um chart Helm baixado de uma fonte de terceiros e modificará o chart Helm usando Kustomize. O aplicativo será implantado no namespace fleet-helm-kustomize-example. 
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-kustomize
+EOF
+----
+
+Kustomize::
++
+Um https://github.com/rancher/fleet-examples/blob/master/single-cluster/kustomize[exemplo usando Kustomize]. 
++
+Observe que o `fleet.yaml` possui uma chave `kustomize:` para especificar o caminho para o `kustomization.yaml` necessário:
++
+.fleet.yaml
+[source,yaml]
+----
+kustomize:
+  # To use a kustomization.yaml different from the one in the root folder
+  dir: ""
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/kustomize
+EOF
+----
+
+Manifests::
++
+Um https://github.com/rancher/fleet-examples/tree/master/single-cluster/manifests[exemplo usando YAML Kubernetes bruto].
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/manifests
+EOF
+----
+====
+
+== Exemplos de Múltiplos Clusters
+
+Os exemplos abaixo implantarão vários repositórios Git em vários clusters ao mesmo tempo e configurarão o aplicativo de forma diferente para cada alvo.
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Um exemplo usando Helm. Estamos implantando o https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[exemplo Helm] e personalizando-o para cada cluster alvo.
++
+O repositório contém um chart Helm e um `fleet.yaml` opcional para configurar a implantação. O `fleet.yaml` é usado para configurar diferentes opções de implantação, dependendo dos rótulos do cluster:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-helm-example
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
++
+Para criar a implantação, aplicamos o recurso personalizado ao cluster upstream. O namespace `fleet-default`, por padrão, contém os recursos do cluster downstream. O chart será implantado em todos os clusters no namespace fleet-default, que possuem recursos de cluster rotulados que correspondem a qualquer entrada sob `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Ao aplicar o recurso gitrepo ao cluster upstream, o fleet começará a monitorar o repositório e criar implantações:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm Externo::
++
+Um https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-external[exemplo usando um Helm chart que é baixado de uma fonte de terceiros e personalizando-o para cada cluster de destino]. A personalização é semelhante ao exemplo anterior.
++
+Para criar a implantação, aplicamos o recurso personalizado ao cluster upstream. O namespace `fleet-default`, por padrão, contém os recursos do cluster downstream. O chart será implantado em todos os clusters no namespace fleet-default, que possuem recursos de cluster rotulados que correspondem a qualquer entrada sob `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-external
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-external
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Ao aplicar o recurso gitrepo ao cluster upstream, o fleet começará a monitorar o repositório e criar implantações:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm & Kustomize::
++
+Um exemplo usando https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-kustomize[Kustomize para modificar um chart Helm de terceiros]. Ele implantará o aplicativo de exemplo guestbook do Kubernetes, empacotado como um Helm chart baixado de uma fonte de terceiros e modificará o Helm chart usando Kustomize. O aplicativo será implantado no namespace fleet-helm-kustomize-example. 
++
+O aplicativo será personalizado da seguinte forma por ambiente: 
++
+  * Clusters Dev: Apenas o líder do redis é implantado e não os seguidores. 
+  * Clusters de teste: Escale a implantação frontal para 3 
+  * Clusters de produção: Escale a implantação frontal para 3 e defina o tipo de serviço como LoadBalancer 
++
+O `fleet.yaml` é usado para controlar quais sobreposições são utilizadas, dependendo dos rótulos do cluster:
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-kustomize-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  kustomize:
+    dir: overlays/dev
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  kustomize:
+    dir: overlays/test
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  kustomize:
+    dir: overlays/prod
+----
++
+Para criar a implantação, aplicamos o recurso personalizado ao cluster upstream. O namespace `fleet-default`, por padrão, contém os recursos do cluster downstream. O chart será implantado em todos os clusters no namespace fleet-default, que possuem recursos de cluster rotulados que correspondem a qualquer entrada sob `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+Ao aplicar o recurso gitrepo ao cluster upstream, o fleet começará a monitorar o repositório e criar implantações:
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Kustomize::
++
+Um https://github.com/rancher/fleet-examples/blob/master/multi-cluster/kustomize[exemplo usando Kustomize] e personalizando-o para cada cluster de destino.
++
+A personalização em `fleet.yaml` é idêntica ao exemplo "Helm & Kustomize".
++
+Para criar a implantação, aplicamos o recurso personalizado ao cluster upstream. O namespace `fleet-default`, por padrão, contém os recursos do cluster downstream. O chart será implantado em todos os clusters no namespace fleet-default, que possuem recursos de cluster rotulados que correspondem a qualquer entrada sob `targets:`.
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+EOF
+----
++
+Ao aplicar o recurso gitrepo ao cluster upstream, o fleet começará a monitorar o repositório e criar implantações: 
+
+Manifests::
++
+Um https://github.com/rancher/fleet-examples/tree/master/multi-cluster/manifests[exemplo usando YAML Kubernetes bruto e personalizando-o para cada cluster de destino]. O aplicativo será personalizado da seguinte forma por ambiente:
++
+* Clusters Dev: Apenas o líder do redis é implantado e não os seguidores. 
+* Clusters de teste: Escale a implantação frontal para 3 
+* Clusters de produção: Escale a implantação frontal para 3 e defina o tipo de serviço como LoadBalancer 
++
+O `fleet.yaml` é usado para controlar quais sobreposições 'yaml' são utilizadas, dependendo dos rótulos do cluster: 
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-manifest-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  yaml:
+    overlays:
+    # Refers to overlays/noreplication folder
+    - noreplication
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  yaml:
+    overlays:
+    # Refers to overlays/scale3 folder
+    - scale3
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  yaml:
+    # Refers to overlays/servicelb, scale3 folders
+    overlays:
+    - servicelb
+    - scale3
+----
++
+Para criar a implantação, aplicamos o recurso personalizado ao cluster upstream. O namespace `fleet-default`, por padrão, contém os recursos do cluster downstream: O chart será implantado em todos os clusters no namespace fleet-default, que possuem recursos de cluster rotulados que correspondem a qualquer entrada sob `targets:`.
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: manifests
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/manifests
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+====

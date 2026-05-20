@@ -1,0 +1,362 @@
+= Solución de problemas
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Esta sección contiene comandos y consejos para solucionar problemas{product_name}.
+
+== Dónde buscar las causas raíz de los problemas
+
+Las primeras cosas que hay que comprobar cuando {product_name} se comporta de manera inesperada son:
+
+* Los registros de `fleet-controller` en el clúster de gestión: ¿ha {product_name} fallado en reconciliar el estado actual de algún recurso (paquete, ampliación de paquete) con su estado esperado?
+* Registros de pods de `gitjob` en el clúster de gestión: ¿ha {product_name} encontrado algún problema al crear trabajos para generar nuevos paquetes para nuevos commits encontrados en los repositorios git monitorizados?
+* estado del `GitRepo` para el cual los recursos no están desplegados correctamente:
+    ** ¿Cuántos `Ready Bundle Deployments` lista?
+    ** ¿Cuántas ampliaciones de paquete se listan como esperadas? ¿Cuántas deberías ver?
+        *** Ten en cuenta que un `GitRepo` crea un paquete por vía; cada paquete conduce a tantas ampliaciones de paquete como clústeres objetivo haya. Una discrepancia entre `Desired Ready Clusters` y sus propias expectativas podría indicar un problema de direccionamiento.
+    ** ¿Qué recursos están listados en el estado de `GitRepo's`?
+    ** ¿Qué commit aparece en el estado de `GitRepo's`?
+
+Si el problema es específico de un clúster objetivo, los usuarios deben comprobar los registros del agente de Fleet en ese clúster: ¿ha {product_name} fallado en desplegar una ampliación de paquete en ese clúster?
+
+La siguiente sección explica cómo realizar todas estas comprobaciones.
+
+Algunos de ellos pueden ser automatizados a través de xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor] y xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze].
+
+== Cómo...
+
+=== ¿Obtener el registro de `fleet-controller`?
+
+En el clúster de gestión local donde se despliega el `fleet-controller`, ejecute el siguiente comando con el nombre de su pod `fleet-controller` específico rellenado:
+
+ $ kubectl logs -l app=fleet-controller -n cattle-fleet-system
+
+=== ¿Recoger el registro del `fleet-agent`?
+
+Vaya a cada clúster en sentido descendente y ejecute el siguiente comando para el clúster local con el nombre de su pod `fleet-agent` específico rellenado:
+
+----
+# Downstream cluster
+$ kubectl logs -l app=fleet-agent -n cattle-fleet-system
+# Local cluster
+$ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
+----
+
+=== ¿Recoger registros de error detallados de `GitRepos` y `Bundles`?
+
+Normalmente, los errores deberían aparecer en la interfaz de usuario de Rancher. Sin embargo, si no hay suficiente información mostrada sobre el error allí, puedes investigar más intentando uno o más de los siguientes según sea necesario:
+
+* Para obtener más información sobre el paquete, haga clic en `bundle` y se habilitará el modo YAML.
+* Para obtener más información sobre el GitRepo, haga clic en `GitRepo`, luego haga clic en `View Yaml` en la parte superior derecha de la pantalla. Después de ver el YAML, verifique `status.conditions`; aquí debería mostrarse un mensaje de error detallado.
+* Verifique el `fleet-controller` en busca de errores de sincronización.
+* Verifique el registro del `fleet-agent` en el clúster en sentido descendente si encuentra problemas al desplegar el paquete.
+
+=== ¿Obtener el estado detallado de `GitRepos` y `Bundles`?
+
+Para depuración e informes de errores, el JSON en bruto de los campos de estado de los recursos es lo más útil.
+Esto se puede acceder en la interfaz de usuario de Rancher, o a través de `kubectl`:
+
+[,shell]
+----
+kubectl get bundle -n fleet-local fleet-agent-local -o=jsonpath={.status}
+kubectl get gitrepo -n fleet-default gitrepo-name -o=jsonpath={.status}
+----
+
+Para descargar más recursos además de los campos de especificación:
+
+[,shell]
+----
+kubectl get clusters.fleet.cattle.io -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.metadata.labels}{"\t"}{.status}{"\n"}{end}'
+kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+----
+
+=== ¿Verifique un error de renderizado de gráfico en `Kustomize`?
+
+Verifique los registros de xref:troubleshooting.adoc#_fetch_the_log_from_fleet_controller[`fleet-controller`] y los registros de xref:troubleshooting.adoc#_fetch_the_log_from_the_fleet_agent[`fleet-agent`].
+
+=== ¿Verifique errores sobre observar o revisar el `GitRepo`, o sobre el repositorio Helm descargado en `fleet.yaml`?
+
+Verifique los registros del `gitjob-controller` utilizando el siguiente comando con el nombre de su pod `gitjob` específico rellenado:
+
+ $ kubectl logs -f $gitjob-pod-name -n cattle-fleet-system
+
+Tenga en cuenta que hay dos contenedores dentro del pod: el contenedor `step-git-source` que clona el repositorio git, y el contenedor `fleet` que aplica paquetes basados en dicho repositorio.
+
+Los pods generalmente tendrán imágenes nombradas `rancher/tekton-utils` con el nombre `gitRepo` como prefijo. Compruebe los registros de estos pods de trabajo de Kubernetes en el clúster de gestión local de la siguiente manera, rellenando con el nombre de su pod `gitRepoName` específico y el espacio de nombres correspondiente:
+
+ $ kubectl logs -f $gitRepoName-pod-name -n namespace
+
+=== ¿Compruebe el estado del `fleet-controller`?
+
+Puede comprobar el estado de los pods `fleet-controller` ejecutando los comandos a continuación:
+
+[,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller
+kubectl -n cattle-fleet-system get pods -l app=fleet-controller
+----
+
+[,bash]
+----
+NAME                                READY   STATUS    RESTARTS   AGE
+fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
+----
+
+=== ¿Active el registro de depuración para `fleet-controller` y `fleet-agent`?
+
+Disponible en Rancher v2.6.3 ({product_name} v0.3.8), se ha añadido la capacidad de activar el registro de depuración.
+
+* Vaya al *Tablero*, luego haga clic en el *clúster local* en el menú de navegación de la izquierda
+* Seleccione *Aplicaciones y Mercado*, luego *Aplicaciones Instaladas* del menú desplegable
+* Desde allí, actualizará el chart {product_name} con el valor `debug=true`. También puede establecer `debugLevel=5` si lo desea.
+
+==== A través de Opciones de Instalación de Fleet
+
+Puede crear un mapa de configuración `rancher-config` en el espacio de nombres `cattle-system` con xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Opciones de Instalación de Fleet].
+
+Por ejemplo, para activar el registro de depuración para `fleet-controller` y `fleet-agent`, puede crear un mapa de configuración con el siguiente contenido:
+
+[source,yaml]
+====
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    debug: true
+    debugLevel: 1
+    propagateDebugSettingsToAgents: true
+====
+
+Modificar la configuración reinstalará Fleet y volverá a desplegar los agentes.
+
+=== Registrar Cambios de Recursos a lo Largo del Tiempo
+
+A veces es útil registrar los cambios de un recurso a lo largo del tiempo. Puede hacer esto observando el recurso y guardando la salida en archivos.
+
+[source,bash]
+====
+for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.fleet.cattle.io; do
+  {
+    kubectl get -A --show-managed-fields -w --output-watch-events -o yaml $kind > $kind-watch.yaml &
+    pid=$!
+    sleep 60
+    kill $pid
+  } &
+done ; wait
+====
+
+== *Soluciones Adicionales para Otros Problemas de {product_name}*
+
+=== Convenciones de nomenclatura para CRDs
+
+. Para términos de CRD como `clusters` y `gitrepos`, debe hacer referencia al nombre completo de la CRD. Por ejemplo, el nombre completo de la CRD del clúster es `cluster.fleet.cattle.io`, y el nombre completo de la CRD de gitrepo es `gitrepo.fleet.cattle.io`.
+. `Bundles`, que se crean a partir del `GitRepo`, siguen el patrón `$gitrepoName-$path` en el mismo espacio de trabajo/espacio de nombres donde se creó el `GitRepo`. Tenga en cuenta que `$path` es el directorio de ruta en el repositorio git que contiene el `bundle` (`fleet.yaml`).
+. `BundleDeployments`, que se crean a partir del `bundle`, siguen el patrón `$bundleName-$clusterName` en el espacio de nombres `clusters-$workspace-$cluster-$generateHash`. Tenga en cuenta que `$clusterName` es el clúster al que se desplegará el paquete.
+
+=== Secretos HTTP en Github
+
+Al probar {product_name} con repositorios git privados, notará que los secretos HTTP ya no son compatibles en Github. Para solucionar este problema, siga estos pasos:
+
+. Cree un https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[token de acceso personal] en Github.
++
+ifeval::["{product}" == "fleet"]
+. En Rancher, cree un https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/secrets[secreto] HTTP con su token de acceso personal de Github. Su nombre de usuario es opcional.
+endif::[]
++
+ifeval::["{product}" == "continuous-delivery"]
+. En Rancher, cree un https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/security/secrets-hub.html[secreto] HTTP con su token de acceso personal de Github. Su nombre de usuario es opcional.
+endif::[]
++
+. Utilice su token como el secreto.
+
+=== {product_name} falla con un código de respuesta incorrecto: 403
+
+Si su GitJob devuelve el error a continuación, el problema puede ser que {product_name} no puede acceder al repositorio Helm que especificó en su xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]:
+
+----
+time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
+----
+
+Realice los siguientes pasos para evaluar:
+
+* Verifique que su repositorio sea accesible desde su máquina de desarrollo y que pueda descargar el chart de Helm con éxito.
+* Verifique que sus credenciales para el repositorio git sean válidas
+
+=== Repositorio de charts de Helm: certificado firmado por una autoridad desconocida
+
+Si su GitJob devuelve el error a continuación, puede que haya añadido la cadena de certificados incorrecta:
+
+----
+time="2021-11-11T05:55:08Z" level=fatal msg="Get \"https://helm.intra/virtual-helm/index.yaml\": x509: certificate signed by unknown authority"
+----
+
+Por favor, verifique su certificado con el siguiente comando:
+
+[,bash]
+----
+context=playground-local
+kubectl get secret -n fleet-default helm-repo -o jsonpath="{['data']['cacerts']}" --context $context | base64 -d | openssl x509 -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7a:1e:df:79:5f:b0:e0:be:49:de:11:5e:d9:9c:a9:71
+        Signature Algorithm: sha512WithRSAEncryption
+        Issuer: C = CH, O = MY COMPANY, CN = NOP Root CA G3
+...
+----
+
+=== {product_name} ampliación atascada en estado modificado
+
+Cuando despliegue paquetes a {product_name}, algunos de los componentes se modifican, lo que provoca que se active la bandera "modificado" en el entorno {product_name}.
+
+Para ignorar la bandera modificada debido a las diferencias entre la instalación de Helm generada por `fleet.yaml` y el recurso en su clúster, añada un `diff.comparePatches` al `fleet.yaml` de su ampliación, como se muestra en este ejemplo:
+
+[,yaml]
+----
+defaultNamespace: <namespace name>
+helm:
+  releaseName: <release name>
+  repo: <repo name>
+  chart: <chart name>
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    operations:
+    - {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
+    - {"op":"remove", "path":"/spec/template/spec/nodeSelector"}
+    jsonPointers: # jsonPointers allows to ignore diffs at certain json path
+    - "/spec/template/spec/priorityClassName"
+    - "/spec/template/spec/tolerations"
+----
+
+Para determinar qué operaciones deben eliminarse, observe los registros de `fleet-agent` en el clúster objetivo. Debería ver entradas similares a las siguientes:
+
+[,text]
+----
+level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monitoring-monitoring-kube-state-metrics modified {\"spec\":{\"template\":{\"spec\":{\"hostNetwork\":false}}}}"
+----
+
+Basado en el registro anterior, puede añadir la siguiente entrada para eliminar la operación:
+
+[,json]
+----
+{"op":"remove", "path":"/spec/template/spec/hostNetwork"}
+----
+
+==== La sincronización de GitRepo falla sin reintento
+
+Un `GitRepo` puede dejar de sincronizarse y permanecer en un estado **Fallido**. En este caso, los registros del controlador de GitJob pueden mostrar tiempos de espera de red o tiempos de espera de solicitudes de etcd. Este problema es más probable cuando {product_name} está bajo alta carga.
+
+{product_name} reintenta aplicar operaciones cuando detecta un conflicto de versión de recurso. El número de intentos de reintento está controlado por la variable de entorno `FLEET_APPLY_CONFLICT_RETRIES`.
+
+El valor por defecto es `1`. Esto significa que {product_name} solo intenta la creación o actualización del paquete una vez, sin reintentar si ocurre un conflicto. Si los conflictos ocurren con frecuencia bajo alta carga, aumente este valor para permitir intentos de reintento adicionales. Configura esta variable como una variable de entorno en la ampliación de GitJob. 
+
+Por ejemplo, al instalar con Helm:
+
+[source,bash]
+----
+--set-string extraEnv[0].name=FLEET_APPLY_CONFLICT_RETRIES \
+--set-string extraEnv[0].value=3
+----
+
+Esta configuración establece el recuento de reintentos en `3` en lugar del valor predeterminado `1`.
+
+=== `GitRepo` o `Bundle` atascados en estado modificado
+
+*Modificado* significa que hay una discrepancia entre el estado actual y el estado deseado, la fuente de verdad, que reside en el repositorio git.
+
+. Consulte la xref:how-tos-for-users/bundle-diffs.adoc[documentación de diferencias de paquetes] para más información.
+. También puedes forzar la actualización del `GitRepo` para realizar una resincronización manual. Selecciona **GitRepo** en la barra de navegación izquierda, luego selecciona **Forzar actualización**.
+
+[NOTE]
+====
+Cuando se cambia una propiedad que puede afectar los IDs de los Bundles creados (como cambiar las vías de los Bundles), pueden ocurrir inconsistencias en el estado del Bundle recién creado, a veces quedándose atascado en el estado Modificado para algunos recursos.
+
+En tales casos, también se recomienda realizar una actualización forzada del GitRepo afectado.
+====
+
+=== El Bundle tiene un Horizontal Pod Autoscaler (HPA) en estado modificado.
+
+Para los bundles con un HPA, el estado esperado es `Modified`, ya que el bundle contiene campos que difieren del estado del Bundle en la ampliación - generalmente `ReplicaSet`.
+
+Debes definir un parche en el `fleet.yaml` para ignorar este campo de acuerdo con xref:troubleshooting.adoc#_gitrepo_or_bundle_stuck_in_modified_state[`GitRepo` o `Bundle` atascado en estado modificado].
+
+Aquí hay un ejemplo de tal parche para la ampliación `nginx` en el espacio de nombres `default`:
+
+[,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: nginx
+    namespace: default
+    operations:
+    - {"op": "remove", "path": "/spec/replicas"}
+----
+
+=== ¿Qué pasa si el clúster no está disponible, o está en un estado `WaitCheckIn`?
+
+Necesitarás reimportar y reiniciar el proceso de registro: Selecciona *Clúster* en la barra de navegación izquierda, luego selecciona *Forzar actualización*.
+
+[CAUTION]
+====
+
+*Estado de WaitCheckIn para Rancher v2.5*:
+
+ifeval::["{product}" == "fleet"]
+El clúster mostrará en estado `WaitCheckIn` porque el `fleet-controller` está intentando comunicarse con {product_name} utilizando la IP del servicio de Rancher. Sin embargo, {product_name} debe comunicarse directamente con Rancher a través del DNS del servicio de Kubernetes utilizando el descubrimiento de servicios, no a través del proxy. Para más información, consulta la https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/rancher-behind-an-http-proxy/install-rancher[documentación de Rancher].
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+El clúster mostrará en estado `WaitCheckIn` porque el `fleet-controller` está intentando comunicarse con {product_name} utilizando la IP del servicio de Rancher. Sin embargo, {product_name} debe comunicarse directamente con Rancher a través del DNS del servicio de Kubernetes utilizando el descubrimiento de servicios, no a través del proxy. Para más información, consulta la https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/installation-and-upgrade/other-installation-methods/http-proxy/install-rancher.html [documentación de Rancher].
+endif::[]
+====
+
+
+=== GitRepo se queja con `gzip: invalid header`.
+
+Cuando veas un error como el siguiente ....
+
+[,sh]
+----
+Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid header
+----
+
+... El contenido del chart de helm es incorrecto. Descarga manualmente el chart a tu máquina local y verifica el contenido.
+
+=== El agente ya no está registrado.
+
+Puedes forzar una re-ampliación de un agente para un clúster dado configurando `redeployAgentGeneration`.
+
+[,sh]
+----
+kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
+----
+
+=== ¿Migrar el clúster local al espacio de trabajo del clúster por defecto {product_name}?
+
+Los usuarios pueden crear nuevos espacios de trabajo y mover clústeres entre espacios de trabajo.
+Actualmente no es posible mover el clúster local de `fleet-local` a otro espacio de trabajo.
+
+=== El paquete no se pudo desplegar: "el recurso ya existe" Error
+
+Si tu paquete encuentra el siguiente mensaje de error durante la ampliación:
+
+[,sh]
+----
+not installed: rendered manifests contain a resource that already
+exists. Unable to continue with install: ClusterRole "grafana-clusterrole"
+in namespace "" exists and cannot be imported into the current release: invalid
+ownership metadata; annotation validation error: key "meta.helm.sh/release-namespace"
+must equal "ns-2": current value is "ns-1"
+----
+
+Este error ocurre porque ya existe un recurso Helm con el mismo `releaseName` en el clúster. Para resolver este problema, necesitas cambiar el `releaseName` del recurso que deseas crear para evitar el conflicto.

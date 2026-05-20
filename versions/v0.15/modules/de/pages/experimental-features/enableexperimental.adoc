@@ -1,0 +1,47 @@
+= Wie man experimentelle Funktionen aktiviert
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+{product_name} unterstützt experimentelle Funktionen, die standardmäßig deaktiviert sind und vom Benutzer aktiviert werden können.
+
+Das Aktivieren oder Deaktivieren experimenteller Funktionen erfolgt über zusätzliche Umgebungsvariablen, die beim Bereitstellen von `rancher/fleet` verfügbar sind.
+
+Für weitere Informationen siehe Konfigurieren der xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} Installationsoptionen in Rancher]
+
+== Verfügbare experimentelle Funktionen
+
+{product_name} unterstützt derzeit die folgenden experimentellen Funktionen, die über ihre jeweiligen Umgebungsvariablen umgeschaltet werden können:
+
+* xref:experimental-features/scheduling.adoc[Planung]
+* xref:experimental-features/experimental-downstream-resource.adoc[Automatisierte Verbreitung von Ressourcen an Downstream-Cluster]
+
+== Aktivieren einer experimentellen Funktion
+
+=== Aktivieren bei der Installation von {product_name} als Stand‐alone
+
+Alles, was Sie tun müssen, ist, etwas wie folgt zu übergeben:
+
+[source,bash]
+----
+--set-string extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string extraEnv[0].value=true
+----
+
+an Ihren `helm install` oder `helm upgrade` Befehl.
+
+[NOTE]
+====
+Sie müssen `--set-string` verwenden, da der boolesche Datentyp sonst nicht wie erwartet funktioniert.
+====
+
+=== Aktivieren bei der Installation von {product_name} mit Rancher
+
+Sie können die experimentellen Funktionen in {product_name} auch aktivieren, wenn Sie Rancher installieren.
+
+Die Parameter sind die gleichen, aber Sie müssen das `fleet.` Präfix hinzufügen:
+
+[source,bash]
+----
+--set-string fleet.extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string fleet.extraEnv[0].value=true
+----

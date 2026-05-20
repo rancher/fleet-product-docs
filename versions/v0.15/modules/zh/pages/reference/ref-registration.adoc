@@ -1,0 +1,165 @@
+= 集群注册原理
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== 集群注册是如何工作的？
+
+本文描述了更技术性的集群注册细节。本文忽略了代理发起的注册，因为它不常用。
+xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[代理发起的注册] 是 xref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["\`ClusterRegistrationToken` 首先"]，这意味着预创建集群是可选的。
+
+请参见 xref:how-tos-for-operators/cluster-registration.adoc[注册下游集群] 以了解如何注册集群。
+
+=== 集群优先
+
+`fleet-controller` 启动并可能 "启动" 本地群集资源。在 Rancher 中，本地群集资源的创建由 fleetcluster 控制器处理，但否则处理是相同的。
+
+本地群集或任何下游集群的处理是相同的。它首先创建一个集群资源，该资源指向一个 kubeconfig 秘密。
+
+=== 为下游集群创建启动密钥
+
+在此步骤中，基于 `Cluster` 资源创建一个 `ClusterRegistationToken` 和一个 "导入" 服务账户。
+
+{product_name} 控制器创建一个 xref:explanations/architecture.adoc#_security[`ClusterRegistrationToken`] 并等待其完成。`ClusterRegistationToken` 触发 "导入" 服务账户的创建，该账户可以创建 `ClusterRegistrations` 并读取系统注册命名空间中的任何密钥（例如 "cattle-fleet-clusters-system"）。`import.go` 控制器将自我入队，直到 "导入" 服务账户存在，因为该账户是创建 `fleet-agent-bootstrap` 密钥所需的。
+
+=== 创建 {product_name} 代理部署
+
+{product_name} 控制器现在将在下游集群上创建 {product_name} 代理部署和启动密钥。
+
+启动密钥包含上游集群的 API 服务器 URL，并用于构建 kubeconfig 以访问上游集群。这两个值来自 {product_name} 控制器配置的 configmap。该配置映射是 helm 图表的一部分。
+
+=== {product_name} 代理开始注册，升级为请求账户。
+
+代理使用 "import" 账户升级为请求账户。
+
+立即，{product_name} 代理检查 `fleet-agent-bootstrap` 密钥。如果启动密钥中包含 "import" kubeconfig，代理将开始注册。
+
+然后代理在管理集群的 fleet-default 中创建最终的 `ClusterRegistration` 资源，带有一个随机数。该随机数将用于注册秘密的名称。
+
+{product_name} 控制器触发并尝试授予 `ClusterRegistration` 请求，以创建代理的服务账户并使用客户端的新 kubeconfig 创建 'c-*' 注册秘密。注册秘密的名称是 `hash("clientID-clientRandom")`。
+
+新的 kubeconfig 使用 "request" 账户。"request" 账户可以访问集群状态、`BundleDeployments` 和 `Contents`。
+
+image::FleetRegistrationToken.svg[静态, 600]
+
+[[registered-watches-for-bundledeployments]]
+=== {product_name} 代理已注册，监视 `BundleDeployments`。
+
+此时，代理已完全注册，并将 "request" 账户持久化到 `fleet-agent` 密钥中。
+API 服务器 URL 和 CA 从启动密钥中复制，这些值继承自 {product_name} 控制器的 Helm 图表值。
+
+启动密钥已被删除。当代理重启时，它将不会重新注册，因为启动密钥缺失。
+
+代理开始监视其 xref:explanations/namespaces.adoc#_cluster_namespaces[集群名称空间] 的 `BundleDeployments`.此时，代理已准备好部署工作负载。
+
+=== 注意
+
+* 注册从 "import" 账户开始，并转向 "request" 账户。
+* fleet-default 名称空间包含所有集群注册，"import"账户使用单独的名称空间。
+* 一旦代理注册，`fleet-controller`将在集群或命名空间更改时触发。`manageagent`控制器将创建一个包以采用现有的代理部署。代理将更新到该包，并且由于"generation"环境变量发生变化，它将重新启动。
+* 如果没有启动密钥，代理将不会重新注册。
+
+== 图示
+
+=== 注册流程
+
+[mermaid, format=svg]
+....
+graph TD
+    subgraph "上游（管理集群）"
+        direction LR
+        subgraph "流程 1:代理发起"
+            direction TB
+            A0（可选：管理员创建带有clientID的集群）--> A1
+            A1（管理员创建<br>集群注册令牌）--> A2{Fleet Controller Creates Secret<br>for a temporary 'import' ServiceAccount}
+        end
+        subgraph "流程 2:管理者发起（针对现有集群）"
+            direction TB
+            B1（管理员为现有集群创建Kubeconfig密钥<br>）--> B2（管理员创建引用Kubeconfig密钥的集群资源<br>。<br>可以在此定义clientID）
+            B2 --> B3{Fleet Controller uses admin-provided<br>kubeconfig to deploy agent}
+        end
+    end
+    subgraph "下游（托管集群）"
+        direction LR
+        subgraph "代理安装（流程 1）"
+            direction TB
+            A3（管理员通过Helm安装Fleet代理<br>，使用'import'令牌密钥。<br>可以提供clientID）
+        end
+        subgraph "代理部署（流程 2）"
+             direction TB
+             B4（代理和启动密钥已部署。<br>启动包含'import' kubeconfig。）
+        end
+    end
+    subgraph "通用注册阶段（身份握手）"
+        direction TB
+        C1（代理pod启动，使用其本地的'agent' SA。<br>找到并使用启动密钥中的'import' kubeconfig<br>与上游通信。）
+        C1 --> C2（使用其'import'身份，代理在上游创建<br>集群注册资源）
+        C2 --> C3{Upstream Controller creates a permanent<br>'request' ServiceAccount & a new,<br>long-term kubeconfig/secret for it.}
+        C3 --> C4（代理接收并持久化<br>'request' SA凭证。<br>临时启动密钥被删除。）
+        C4 --> C5{Upstream Controller creates a dedicated<br>Cluster Namespace for this agent.}
+        C5 --> C6（✅ 代理完全注册。<br>使用其'request'身份监视<br>其命名空间中的工作负载。）
+    end
+    %% 样式
+    style A0 fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style A1 fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style B1 fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style A3 fill:#d1fae5,stroke:#10b981,stroke-width:2px
+    style B2 fill:#e0f2fe,stroke:#0ea5e9,stroke-width:2px
+    style A2 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style B3 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style B4 fill:#fef3c7,stroke:#f59e0b,stroke-width:2px
+    style C1 fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px
+    style C2 fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px
+    style C3 fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px
+    style C4 fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px
+    style C5 fill:#f3e8ff,stroke:#8b5cf6,stroke-width:2px
+    style C6 fill:#dcfce7,stroke:#22c55e,stroke-width:2px,font-weight:bold
+    %% 连接
+    A2 --> A3
+    B3 --> B4
+    A3 --> C1
+    B4 --> C1
+....
+
+=== 注册过程和控制器
+
+对集群注册过程的详细分析。这显示了在注册新的下游集群或本地集群时控制器、资源和服务账户之间的交互。
+
+需要注意的是，有多种方式可以启动此过程：
+
+* 创建启动配置。{product_name} 为本地代理执行此操作。
+* 创建带有kubeconfig的`Cluster`资源。Rancher为下游集群执行此操作。查看xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[管理者发起的注册]。
+* 创建一个`ClusterRegistrationToken`资源，选择性地为预定义的(`clientID`)集群创建一个`Cluster`资源。查看xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[代理发起的注册]。
+
+image::FleetRegistration.svg[注册]
+
+=== 代理部署期间的密钥
+
+该图显示了在注册期间创建的资源，并重点关注k8s API服务器配置。
+
+该`import.go`控制器在集群创建/更新事件时触发并部署代理。
+
+*此图显示了 API 服务器 URL 和 CA 在注册期间如何通过密钥传播：*
+
+图中的箭头显示了API服务器值如何从Helm值复制到上游集群的集群注册密钥，最后传递到代理的启动密钥。
+
+有一个特殊情况，如果代理是针对本地/"启动"集群，服务器值也存在于kubeconfig密钥中，由集群资源引用。在这种情况下，kubeconfig 密钥除了包含上游服务器 URL 和 CA 外，还包含下游的 kubeconfig。如果设置存在于kubeconfig密钥中，它们将覆盖配置的值。
+
+image::FleetRegistrationSecrets.svg[注册密钥]
+
+== {product_name} Rancher 集群注册
+
+Rancher 安装了 Fleet Helm 图表。API 服务器 URL 和 CA 是 https://github.com/rancher/rancher/blob/release/v2.9/pkg/controllers/dashboard/fleetcharts/controller.go#L111-L112[源自 Rancher 的设置]。
+
+{product_name}将这些值传递给{product_name}代理，以便它可以连接回{product_name}控制器。
+
+=== 将集群导入Rancher
+
+当用户运行`curl | kubectl apply`时，应用的 manifest 包括 Rancher 代理部署。
+
+该部署包含一个密钥`cattle-credentials-`，其中包含API URL和一个词元。
+
+Rancher 代理启动并将下游的 kubeconfig 报告给上游。
+
+然后，Rancher 创建了 Fleet 集群资源，该资源引用了一个 https://github.com/rancher/rancher/blob/871b6d9137246bd93733f01184ea435f40c5d56c/pkg/provisioningv2/kubeconfig/manager.go#L69[kubeconfig 密钥]。
+
+👉{product_name} 将使用此 kubeconfig 在下游集群上部署代理。

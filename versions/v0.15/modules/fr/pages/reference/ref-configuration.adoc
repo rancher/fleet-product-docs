@@ -1,0 +1,105 @@
+= Configuration
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Une liste de références des options de configuration, principalement internes.
+
+[[configure-install-options-in-rancher]]
+== Configurer {product_name} Options d'installation dans Rancher
+
+Rancher recherche les valeurs Helm dans un ConfigMap appelé `rancher-config` dans l'espace de noms `cattle-system`.
+Toute valeur de chart Helm pour {product_name} peut être spécifiée sous le nom du chart. Notez que la valeur de la clé Fleet est une chaîne.
+
+Un `rancher-config` pourrait ressembler à ceci, après avoir ajouté quelques options{nbsp}:
+
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    controller:
+      reconciler:
+        workers:
+          gitrepo: "50"
+          bundle: "50"
+          bundledeployment: "50"
+  priorityClassName: rancher-critical
+----
+
+La ressource `rancher-config` est créée par le chart Rancher et peut être patchée{nbsp}:
+
+[source,shell]
+----
+kubectl patch cm -n cattle-system rancher-config --type merge \
+  --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
+----
+
+== Les Helm charts
+
+Les charts Helm acceptent, au moins, les options telles qu'indiquées avec leur valeur par défaut dans `values.yaml`{nbsp}:
+
+* https://github.com/rancher/fleet/blob/main/charts/fleet/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
+
+== Variables d'environnement
+
+Les contrôleurs peuvent être démarrés avec ces variables d'environnement{nbsp}:
+
+* `CATTLE_DEV_MODE` - utilisé pour déboguer wrangler, non utilisable
+* `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY` - configure le nombre de routines de création de bundles concurrentes pour `fleet apply`. La valeur par défaut est 4. Peut également être défini via le drapeau CLI `--bundle-creation-max-concurrency`
+* `FLEET_CLUSTER_ENQUEUE_DELAY` - ajuste la fréquence à laquelle les clusters non prêts sont vérifiés
+* `FLEET_CPU_PPROF_PERIOD` - utilisé pour activer https://github.com/rancher/fleet/blob/main/docs/performance.md[profilage de performance]
+
+== Configuration
+
+Dans la configuration du cluster pour l'agent et le Fleet Manager. Modifier ces paramètres peut entraîner des déploiements complets.
+
+La configuration https://github.com/rancher/fleet/blob/main/internal/config/config.go#L57[struct] est utilisée dans les deux ConfigMap:
+
+* cattle-fleet-system/fleet-agent
+* cattle-fleet-system/fleet-controller
+
+== Libellés
+
+Étiquettes utilisées par Fleet :
+
+* `fleet.cattle.io/agent=true` - Étiquette NodeSelector pour le paramètre d'affinité de déploiement de l'agent
+* `fleet.cattle.io/non-managed-agent` - le bundle d'agent géré ne ciblera pas les clusters avec cette étiquette
+* `fleet.cattle.io/repo-name` - utilisé sur le Bundle pour référencer la ressource du dépôt git
+* `fleet.cattle.io/bundle-namespace` - utilisé sur BundleDeployment pour référencer la ressource Bundle
+* `fleet.cattle.io/bundle-name` - utilisé sur BundleDeployment pour référencer la ressource Bundle
+* `fleet.cattle.io/managed=true` - les espaces de noms de cluster avec cette étiquette seront nettoyés. D'autres ressources seront nettoyées si elles sont dans une étiquette. Utilisé dans Rancher pour identifier les espaces de noms de Fleet.
+* `fleet.cattle.io/bootstrap-token` - non utilisé
+* `fleet.cattle.io/shard-id=<shard-id>` - l'ID de shard d'un pod de Fleet controller.
+* `fleet.cattle.io/shard-default=true` - vrai si c'est le contrôleur gérant des ressources sans étiquette de référence de shard.
+* `fleet.cattle.io/shard-ref=<shard-id>` - référence l'ID de shard attribué par {product_name} aux ressources, hérité d'un `GitRepo`, qui détermine quel déploiement de contrôleur {product_name} les réconciliera.
+ ** Si cette étiquette n'est pas fournie ou a une valeur vide, alors le contrôleur {product_name} non shardé traitera la ressource.
+ ** Si cette étiquette a une valeur qui ne correspond à aucun ID de shard pour lequel un contrôleur {product_name} est déployé, alors la ressource ne sera pas traitée.
+
+== Annotations
+
+Annotations utilisées par Fleet :
+
+* `fleet.cattle.io/agent-namespace`
+* `fleet.cattle.io/bundle-id`
+* `fleet.cattle.io/cluster`, `fleet.cattle.io/cluster-namespace` - utilisés sur un espace de noms de cluster pour référencer l'espace de noms d'enregistrement du cluster et le nom du cluster
+* `fleet.cattle.io/cluster-group`
+* `fleet.cattle.io/cluster-registration-namespace`
+* `fleet.cattle.io/cluster-registration`
+* `fleet.cattle.io/commit`
+* `fleet.cattle.io/managed` - apparaît non utilisé
+* `fleet.cattle.io/service-account`
+
+== {product_name} Configuration de l'agent Fleet
+
+Les tolérances, l'affinité et les ressources peuvent être personnalisées pour {product_name} l'agent. Ces champs peuvent être fournis lors de la création d'un xref:reference/ref-crds.adoc#_clusterspec[Cluster], voir xref:how-tos-for-operators/cluster-registration.adoc[Enregistrement du Cluster en aval] pour plus d’informations sur la création de clusters. La configuration par défaut sera utilisée si ces champs ne sont pas fournis.
+
+Si vous modifiez les limites de ressources, assurez-vous que les limites permettent au Fleet agent de fonctionner normalement.
+
+Gardez à l’esprit que si vous rétrogradez {product_name} à une version antérieure à v0.7.0, {product_name} reviendra aux valeurs par défaut intégrées.
+Les agents seront redéployés s'ils avaient une affinité personnalisée. Si {product_name} le numéro de version ne change pas, le redéploiement pourrait ne pas être immédiat.

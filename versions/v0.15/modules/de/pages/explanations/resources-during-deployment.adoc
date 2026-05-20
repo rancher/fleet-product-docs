@@ -1,0 +1,7 @@
+= Benutzerdefinierte Ressourcen während der Implementierung
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+Dies zeigt die Ressourcen, einschließlich der internen, die an der Erstellung einer Implementierung aus einem Git-Repository beteiligt sind.
+
+image::FleetResources.svg[Ressourcen]

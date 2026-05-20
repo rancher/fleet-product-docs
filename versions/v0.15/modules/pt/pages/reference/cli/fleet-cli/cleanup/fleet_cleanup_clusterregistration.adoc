@@ -1,0 +1,27 @@
+= Fleet cleanup registro de cluster
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Remover registros de cluster desatualizados
+
+----
+fleet cleanup clusterregistration [flags]
+----
+
+== Opções
+
+----
+      --context string      kubeconfig context for authentication
+      --debug               Turn on debug logging
+      --debug-level int     If debugging is enabled, set klog -v=X
+      --factor string       Factor to increase delay between deletes (default: 1.1)
+  -h, --help                help for clusterregistration
+  -k, --kubeconfig string   kubeconfig for authentication
+      --max string          Maximum delay between deletes (default: 5s)
+      --min string          Minimum delay between deletes (default: 10ms)
+  -n, --namespace string    namespace (default "fleet-local")
+----
+
+== CONSULTE TAMBÉM
+
+* xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - Remover recursos desatualizados

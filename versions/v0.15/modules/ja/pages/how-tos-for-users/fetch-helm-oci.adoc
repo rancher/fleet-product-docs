@@ -1,0 +1,65 @@
+= OCIレジストリからHelmチャートを取得する
+:revdate: 2025-09-01
+:page-revdate: {revdate}
+
+{product_name}はOCIレジストリに保存されたHelmチャートの取得をサポートしています。OCIレジストリは、コンテナイメージを保存および配布するために一般的に使用されます。Helmチャートにそれらを使用することで、コンテナイメージに対してすでに使用しているのと同じパッケージング、認証、および配布方法を適用できます。
+
+HelmチャートにOCIレジストリを使用することで、次のことが可能になります：
+
+* コンテナイメージと同じレジストリにチャートを保存する。
+* すでにコンテナイメージに適用しているのと同じ認証とアクセス制御を使用する。
+* 標準のOCIコマンドを使用してチャートをプッシュおよびプルし、環境間での配布を容易にする。
+* 高可用性とグローバル配布のために設計されたレジストリでチャートを管理する。
+
+OCIレジストリを使用したHelmOpsに関する詳細は、xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOps]を参照してください。
+
+image::fetch-Helm-from-OCI.svg[OCIレジストリからHelmチャートを取得するフローを表示するビジュアルアセット]
+
+例えば、{product_name}を使用して複数のクラスターを管理している場合、開発者は内部OCIレジストリにHelmチャートをプッシュできます。{product_name}はその後、レジストリから直接チャートをプルし、ダウンストリームのクラスターにデプロイします。
+このアプローチは、別のチャートリポジトリを維持することを避け、既存のレジストリインフラストラクチャを再利用します。
+
+== fleet.yamlのHelmチャート
+
+OCIレジストリからHelmチャートを取得するには、`fleet.yaml`ファイルの`repo`フィールドを使用してチャートを参照します：
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+----
+
+特定のチャートバージョンを参照するには、`version`フィールドを使用できます：
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+  version: 0.1.0
+----
+
+{product_name}はOCIレジストリからチャートをプルし、ターゲットクラスターにデプロイします。
+
+[NOTE]
+====
+`repo`フィールドは、`fleet.yaml`ファイル内でOCIレジストリのURLを指定するための標準的な方法です。これは、HelmOpリソース内でOCIレジストリが参照される方法と一貫しています。
+====
+
+=== 非推奨：OCI URLは`helm.chart`にあります。
+
+この変更以前は、{product_name}はOCI URLを`chart`フィールドに配置することを期待しており、`repo`フィールドに配置されることは想定されていませんでした：
+
+[source,yaml]
+----
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"  # <1>
+  version: 0.1.0
+----
+<1> 非推奨: 代わりに`helm.repo`を使用してください。
+
+このフォームは後方互換性のためにまだ機能しますが、非推奨であり、{product_name}のログに警告が表示されます。既存の`fleet.yaml`ファイルをOCI URLのために`helm.repo`を使用するように移行してください。
+
+== 認証されたレジストリの使用
+
+OCIレジストリが認証を必要とする場合、GitRepoリソース内でKubernetesシークレットを参照してください。{product_name}はこのシークレットを使用してチャートをプルし、ターゲットクラスターにデプロイします。
+
+詳細については、xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml（認証付き）]を参照してください。

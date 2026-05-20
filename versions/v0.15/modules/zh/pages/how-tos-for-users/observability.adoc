@@ -1,0 +1,96 @@
+= 可观测性
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== 状态字段
+
+{product_name} 通过其自定义资源的状态字段报告大部分信息。
+这些字段也被 Rancher UI 用于显示资源状态的信息。
+
+有关状态字段和条件的更多信息，请参见 xref:reference/ref-status-fields.adoc[状态字段参考]。
+
+== K8s 事件
+
+{product_name} 将生成用户可以订阅的 K8s 事件。以下是事件列表：
+
+* `Created`- 创建了一个新的 git 克隆作业
+* `GotNewCommit`- git 仓库有了新的提交
+* `JobDeleted`- 成功的 git 克隆作业被去除
+* `FailedValidatingSecret`- 无法创建 git 克隆作业，因为缺少必需的密钥
+* `FailedToApplyRestrictions`- GitRepo 资源违反了 GitRepoRestriction 资源的规则
+* `FailedToCheckCommit`- 无法从 git 服务器获取最新提交
+* `FailedToGetGitJob`- 无法从 git 克隆作业中检索信息
+* `Failed`- 轮询已禁用，通过 webhook 触发，但无法从 git 服务器获取最新提交
+
+== 指标
+
+{product_name} 发布 Prometheus 指标。可以从这些服务中检索：
+
+* `monitoring-fleet-controller.cattle-fleet-system.svc.cluster.local:8080/metrics`
+* `monitoring-gitjob.cattle-fleet-system.svc.cluster.local:8081/metrics`
+
+https://book.kubebuilder.io/reference/metrics-reference[导出指标的集合] 包含来自 controller-runtime 的所有信息，如已调和资源的数量、错误数量以及调和所需的时间。
+
+=== Grafana
+
+使用 Grafana 和 Prometheus 时（例如，从 https://github.com/prometheus-community/helm-charts),），需要一些设置来访问 {product_name} 指标。
+
+. 创建一个 `ServiceMonitor` 资源以抓取 {product_name} 指标。示例如下：
++
+[source,yaml]
+----
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Create this in the same namespace as your application
+  namespace: cattle-fleet-system
+  name: fleet-controller-monitor
+  labels:
+    # This label makes the ServiceMonitor discoverable by the Prometheus Operator
+    release: monitoring  # <-- ADD THIS LABEL!
+spec:
+  selector:
+    matchLabels:
+      # This label must exist on the service you want to scrape
+      app: fleet-controller # Assumed label, verify this
+  namespaceSelector:
+    matchNames:
+      # We are only looking for the service in its own namespace
+      - cattle-fleet-system
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+---
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  # Create this in the same namespace as your application
+  namespace: cattle-fleet-system
+  name: fleet-gitjob-monitor
+  labels:
+    # This label makes the ServiceMonitor discoverable by the Prometheus Operator
+    release: monitoring  # <-- ADD THIS LABEL!
+spec:
+  selector:
+    matchLabels:
+      # This label must exist on the service you want to scrape
+      app: gitjob
+  namespaceSelector:
+    matchNames:
+      # We are only looking for the service in its own namespace
+      - cattle-fleet-system
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 30s
+----
++
+并在 {product_name} 的名称空间中应用清单，例如在 +cattle-fleet-system+ 中：
++
+[source,bash]
+----
+kubectl create -f servicemonitor.yaml -n cattle-fleet-system
+----
+
+. 构建 Grafana 仪表板并将其导入到 Grafana 中。您可以在 https://github.com/rancher/fleet-dashboards[fleet-dashboards 储存库] 中找到这些仪表板。按照 README 中的说明进行构建。

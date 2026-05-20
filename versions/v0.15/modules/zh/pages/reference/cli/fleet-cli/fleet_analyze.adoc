@@ -1,0 +1,86 @@
+= Fleet 分析
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+分析由`fleet monitor`创建的快照
+
+[source,text]
+----
+fleet analyze [flags] MONITOR_FILE
+----
+
+== 选项
+
+[source,text]
+----
+    --compare      Show comparison between snapshots living in different files
+    --detailed     Show detailed analysis with all information
+    --diff         Show changes over time, comparing consecutive snapshot from the same file
+    --issues       Show only resources with issues (useful for quick health checks)
+    --json         Format output as JSON
+    --no-color     Disable color in output
+----
+
+== 用法
+
+[source,bash]
+----
+# Analyze latest snapshot
+fleet analyze monitor.json
+
+# Analyze from stdin
+fleet monitor | fleet analyze
+
+# Show all snapshots in file
+fleet analyze --all monitor.json
+
+# Show changes between consecutive snapshots
+fleet analyze --diff monitor.json
+
+fleet analyze --issues monitor.json
+
+# Detailed analysis with controller info and events
+fleet analyze --detailed monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare before.json after.json
+
+# JSON output for programmatic use
+fleet analyze --json monitor.json
+
+# Disable colored output
+fleet analyze --no-color monitor.json
+----
+
+== 输出模式
+
+- **摘要（默认）**:资源和诊断的高级概述
+- **全部**:多快照文件中所有快照的摘要
+- **差别**:显示连续快照之间的变化
+- **问题**:仅显示检测到问题的资源
+- **详细**:包括控制器信息、API一致性和事件的完整分析
+- **JSON**:机器可读的输出，用于脚本和自动化
+
+== 多快照分析
+
+当您的monitor.json文件包含多个快照（每行一个JSON对象）时：
+
+[source,bash]
+----
+# Show summary of latest snapshot only
+fleet analyze monitor.json
+
+# Show differences between consecutive snapshots
+fleet analyze --diff monitor.json
+
+# Show summary of all snapshots
+fleet analyze --all monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare snapshot2.json snapshot1.json
+----
+
+== 另请参阅
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]

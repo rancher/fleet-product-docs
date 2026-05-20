@@ -1,0 +1,145 @@
+= ネームスペース
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== ワークロードネームスペース
+
+=== バンドルにおけるネームスペースの作成動作
+
+{product_name}バンドルをデプロイする際、指定されたネームスペースは存在しない場合、自動的に作成されます。
+
+=== ワークロードネームスペースの設定
+
+ワークロードネームスペースを設定する際には、特定のオプションが他のオプションやワークロードリソースのネームスペース定義の値を上書きするように設計されていることを認識することが重要です。一部のケースでは、特定のオプションを使用してネームスペースを設定すると、デプロイされるリソースにネームスペースを持たないリソースが含まれている場合にエラーが発生することがあります。これらのオプションがどのように相互作用するかをよりよく理解するために、以下の図を参照してください。特定のオプションの詳細については、xref:reference/ref-gitrepo.adoc[GitRepo]またはxref:reference/ref-fleet-yaml.adoc[fleet.yaml]リファレンスを参照してください。
+
+image::FleetWorkloadNamespaces.png[ワークロードネームスペースの設定]
+
+=== クロスネームスペースデプロイメント
+
+ネームスペースをまたいでデプロイするGitRepoを作成することが可能です。これの主な目的は、中央の特権チームが異なるチームによって管理される多くのクラスターの共通設定を管理できるようにすることです。これを達成する方法は、クラスター内に`BundleNamespaceMapping`リソースを作成することです。
+
+`BundleNamespaceMapping`リソースを作成する場合は、`GitRepos`のみを含み、`Clusters`を含まないネームスペースで行うのが最善です。同じリポジトリにクラスターがあると混乱するようです。クロスネームスペースの`GitRepos`は常に現在のネームスペースに対して評価されます。したがって、同じネームスペースにクラスターがある場合は、それらをカナリアクラスターにすることを検討するかもしれません。
+
+`BundleNamespaceMapping`には2つのフィールドのみがあります。以下の通りです
+
+[,yaml]
+----
+kind: BundleNamespaceMapping
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: not-important
+  namespace: typically-unique
+
+# Bundles to match by label.  The labels are defined in the fleet.yaml
+# labels field or from the GitRepo metadata.labels field
+bundleSelector:
+  matchLabels:
+    foo: bar
+
+# Namespaces to match by label
+namespaceSelector:
+  matchLabels:
+    foo: bar
+----
+
+`BundleNamespaceMappings` `bundleSelector`フィールドが`Bundles`ラベルと一致する場合、その`Bundle`ターゲット基準は、`namespaceSelector`と一致するすべてのネームスペース内のすべてのクラスターに対して評価されます。作成されたバンドルに対して、`fleet.yaml`ファイルまたは`GitRepo`の`metadata.labels`フィールドにラベルを入れることで、Gitからラベルを指定することができます。
+
+=== Gitリポジトリの制限
+
+ネームスペースには複数の`GitRepoRestriction`リソースを含めることができます。そのネームスペースで作成されたすべての`GitRepos`は、制限のリストに対してチェックされます。`GitRepo`が制約の1つに違反した場合、その`BundleDeployment`はエラー状態になり、デプロイされません。
+
+これを使用して、GitRepoの`serviceAccount`および`clientSecretName`フィールドのデフォルトを設定することもできます。
+
+[,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: typically-unique
+allowedClientSecretNames: []
+allowedRepoPatterns: []
+allowedServiceAccounts: []
+allowedTargetNamespaces: []
+defaultClientSecretName: ""
+defaultServiceAccount: ""
+----
+
+==== 許可されたターゲットネームスペース
+
+これを使用して、ダウンストリームクラスターのネームスペースのセットにデプロイメントを制限できます。allowedTargetNamespaces制限が存在する場合、すべての`GitRepos`は`targetNamespace`を指定し、指定されたネームスペースは許可リストに含まれている必要があります。これにより、クラスター全体のリソースの作成も防止されます。
+
+==== 許可されたターゲットネームスペースセレクター
+
+`allowedTargetNamespaceSelector`は、指定されたセレクターに一致するラベルを持つダウンストリームクラスターのネームスペースへのデプロイメントを制限します。このフィールドが`GitRepoRestriction`に設定されている場合、すべての`GitRepos`は`targetNamespace`を指定する必要があります。
+Fleet agentは、バンドルをデプロイする前に、ダウンストリームクラスターのそのネームスペースのラベルをチェックします：
+
+* ネームスペースが存在し、そのラベルがセレクターに一致する場合、デプロイメントが進行します。
+* ネームスペースが存在するが、そのラベルが一致しない場合、`BundleDeployment`は
+* エラー状態に設定され、バンドルはデプロイされません。
+* ダウンストリームクラスターにネームスペースが存在しない場合、デプロイメントはエラーで失敗します。ネームスペースを事前に作成し、正しくラベル付けすることが必要です；このセレクターが設定されている場合、Helmの`createNamespace`オプションは適用されません。
+
+同じネームスペース内の複数の`GitRepoRestriction`リソースは、それぞれの`allowedTargetNamespaceSelector`に貢献します。セレクターは、バンドルデプロイメントに伝播される前にマージされます；ネームスペースはすべてのセレクターを満たす必要があります。
+
+[source,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: project1
+allowedTargetNamespaceSelector:
+  matchLabels:
+    team: frontend
+----
+
+== {product_name}ネームスペース
+
+{product_name}マネージャー内のすべてのタイプはネームスペース化されています。カスタムリソースのネームスペース、例えばGitRepoは、デプロイされたリソースのネームスペースに影響を与えません。
+
+{product_name}マネージャーでネームスペースがどのように使用されるかを理解することは、セキュリティモデルを理解し、{product_name}をマルチテナント方式で使用する方法を理解するために重要です。
+
+image::FleetNamespaces.svg[ネームスペース]
+
+=== GitRepos、バンドル、クラスター、クラスターグループ
+
+`GitRepo`ターゲットのすべてのセレクターは、同じネームスペース内の`Clusters`および`ClusterGroups`に対して評価されます。これは、ネームスペース内の`GitRepo`タイプに`create`または`update`の権限を与えると、そのエンドユーザーはセレクターを変更してそのネームスペース内の任意のクラスターに一致させることができることを意味します。実際には、2つのチームがそれぞれの`GitRepo`登録を自己管理できるようにしたいが、お互いのクラスターをターゲットにできないようにするには、異なるネームスペースに配置する必要があります。
+
+クラスター登録ネームスペースは、Rancherでは「ワークスペース」と呼ばれ、`Cluster`および`ClusterRegistration`リソース、さらに`GitRepos`および`Bundles`を含みます。
+
+Rancherは2つの{product_name}ワークスペースを作成します：*fleet-default*および*fleet-local*。
+
+* `fleet-default`は、Rancherを通じてすでに登録されているすべてのダウンストリームクラスターを含みます。
+* `fleet-local`は、デフォルトでローカルクラスタを含みます。`fleet-local`へのアクセスは制限されています。
+
+[WARNING] 
+.重要情報
+====
+ワークスペース、クラスター登録ネームスペースを削除すると、そのネームスペース内のすべてのクラスターが削除されます。
+これにより、削除されたクラスターからデプロイされたすべてのバンドルがアンインストールされますが、Fleet agentは除外されます。
+====
+
+{product_name}をxref:explanations/concepts.adoc[単一クラスター]スタイルで使用している場合、ネームスペースは常に*fleet-local*になります。 詳細については、<<_cluster_registration_namespace_fleet_local,`fleet-local`ネームスペースセクション>>を参照してください。
+
+xref:explanations/concepts.adoc[マルチクラスター]スタイルの場合、正しいターゲットクラスターにマッピングされる正しいリポジトリを使用していることを確認してください。
+
+=== 内部ネームスペース
+
+==== クラスタ登録ネームスペース: fleet-local
+
+*fleet-local* ネームスペースは、単一クラスタの使用ケースまたは {product_name} マネージャの設定を起動するために使用される特別なネームスペースです。
+ローカルクラスタへのアクセスはオペレーターに制限されるべきです。
+
+{product_name} がインストールされると、`fleet-local` ネームスペースが作成され、`Cluster` という名前の `local` と `ClusterGroup` という名前の `default` が一つずつ作成されます。`GitRepo` にターゲットが指定されていない場合、デフォルトでは `ClusterGroup` という名前の `default` にターゲットされます。これは、`GitRepos`で作成されたすべての`fleet-local`が自動的に`local` `Cluster`をターゲットにすることを意味します。`local` `Cluster` は、{product_name} マネージャが実行されているクラスタを指します。
+
+==== システムネームスペース: cattle-fleet-system
+
+{product_name} コントローラーと {product_name} エージェントはこのネームスペースで実行されます。`GitRepos` に参照されるすべてのサービスアカウントは、ダウンストリームクラスタのこのネームスペースに存在することが期待されます。
+
+==== システム登録ネームスペース: cattle-fleet-clusters-system
+
+このネームスペースは、クラスタ登録プロセスのシークレットを保持します。このネームスペースには、他のリソース、特にシークレットを含めてはなりません。
+
+==== クラスタネームスペース
+
+登録された各クラスタに対して、{product_name} マネージャによってそのクラスタ用のネームスペースが作成されます。これらのネームスペースは `cluster-${namespace}-${cluster}-${random}` の形式で命名されます。このネームスペースの目的は、そのクラスタのすべての `BundleDeployments` がこのネームスペースに配置され、ダウンストリームクラスタがこのネームスペース内の `BundleDeployments` を監視および更新するアクセス権を与えられることです。

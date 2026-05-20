@@ -1,0 +1,16 @@
+= 概述
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::fleet-architecture.svg[静态, 600]
+
+[discrete]
+=== 什么是 {product_name}？
+
+* *集群引擎*：{product_name} 是一个容器管理和部署引擎，旨在为用户提供对本地群集的更多控制，并通过 *GitOps* 进行持续监控。{product_name} 不仅关注可扩展性，还为用户提供高度的控制和可见性，以准确监控群集中安装的内容。
+* *部署管理*：{product_name} 可以从 git 管理原始 Kubernetes YAML、Helm 图表、Kustomize 或三者的任意组合的部署。无论来源如何，所有资源都会动态转换为 Helm 图表，Helm 被用作在集群中部署所有资源的引擎。因此，用户可以享受对其集群的高度控制、一致性和可审计性。
+
+[discrete]
+=== 配置管理
+
+{product_name} 从根本上说是一组 Kubernetes xref:explanations/concepts.adoc[自定义资源定义（CRD）] 和控制器，管理单个 Kubernetes 集群或大规模部署的 Kubernetes 集群的 GitOps。它是一款分布式初始化系统，可让您轻松自定义应用程序，并从单一控制点管理 HA 群集。

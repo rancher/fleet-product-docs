@@ -1,0 +1,118 @@
+:doctype: book
+
+= Limites de ressources
+:revdate: 2026-02-25
+:page-revdate: {revdate}
+
+{product_name} prend en charge la configuration des demandes et des limites de ressources pour l’UC et la mémoire à deux endroits{nbsp}:
+
+* *Contrôleurs du cluster de gestion*{nbsp}: configuré via le champ `resources` du chart Helm, comme décrit sur cette page.
+* *Agents du cluster en aval*{nbsp}: configuré par cluster via le champ `agentResources` sur la ressource `Cluster`.
+
+[NOTE]
+====
+Lors de l'exécution de {product_name} à l'intérieur de Rancher, utilisez le ConfigMap `rancher-config` pour passer les valeurs Helm au lieu d'utiliser Helm directement.
+Les champs `resources` décrits sur cette page s'appliquent toujours. Spécifiez les champs imbriqués sous la clé `fleet` dans le ConfigMap.
+
+Pour plus d'informations, reportez-vous à xref:reference/ref-configuration.adoc[Configuration].
+====
+
+== Ressources par défaut
+
+Définissez une valeur par défaut pour tous les conteneurs de contrôleur en utilisant le champ `resources` de premier niveau{nbsp}:
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 8000m
+    memory: 8Gi
+  requests:
+    cpu: 250m
+    memory: 768Mi
+----
+
+Passez cela à Helm lors de l'installation ou de la mise à niveau{nbsp}:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  --set resources.limits.cpu=8000m \
+  --set resources.limits.memory=8Gi \
+  --set resources.requests.cpu=250m \
+  --set resources.requests.memory=768Mi
+----
+
+== Remplacements par composant
+
+Les conteneurs de contrôleur individuels peuvent remplacer la valeur par défaut avec des paramètres spécifiques au composant.
+Les clés de composant prises en charge sont{nbsp}:
+
+* `fleetController`{nbsp}: le contrôleur principal de Fleet
+* `fleetCleanup`{nbsp}: le contrôleur de nettoyage
+* `fleetAgentmanagement`{nbsp}: le contrôleur de gestion des agents
+* `gitjob`{nbsp}: le contrôleur GitJob
+* `helmops`{nbsp}: le contrôleur HelmOps
+
+Si une clé de composant est présente, sa valeur prend le pas sur la valeur par défaut `resources.limits` et `resources.requests`. 
+
+Pour supprimer les contraintes de ressources d'un conteneur, quelle que soit la configuration par défaut, définissez un composant sur un objet vide `{}`.
+
+Exemple `values.yaml` utilisant des remplacements par composant{nbsp}:
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  fleetController:
+    limits:
+      cpu: 8000m
+      memory: 8Gi
+    requests:
+      cpu: 250m
+      memory: 768Mi
+  gitjob: {}         # no resource constraints for gitjob
+  helmops: {}        # no resource constraints for helmops
+----
+
+Dans cet exemple{nbsp}:
+
+* `fleetController` utilise ses propres limites et demandes.
+* `gitjob` et `helmops` n'ont aucune contrainte de ressources appliquées.
+* `fleetCleanup` et `fleetAgentmanagement` reviennent à la valeur par défaut de niveau supérieur.
+
+Appliquez la configuration avec Helm{nbsp}:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  -f values.yaml
+----
+
+== Ressources de l'agent de cluster en aval
+
+Pour configurer les limites et demandes de ressources pour l'agent Fleet s'exécutant sur un cluster en aval spécifique, définissez `agentResources` sur la ressource `Cluster` correspondante{nbsp}:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: fleet-default
+spec:
+  agentResources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+----
+
+Ceci est indépendant des paramètres du contrôleur du cluster de gestion ci-dessus et s'applique uniquement à l'agent déployé sur ce cluster en aval.

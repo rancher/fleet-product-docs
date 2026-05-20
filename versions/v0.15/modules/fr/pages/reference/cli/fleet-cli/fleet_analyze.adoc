@@ -1,0 +1,86 @@
+= Fleet analyser
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+Analyser les instantanés créés par `fleet monitor`
+
+[source,text]
+----
+fleet analyze [flags] MONITOR_FILE
+----
+
+== Options
+
+[source,text]
+----
+    --compare      Show comparison between snapshots living in different files
+    --detailed     Show detailed analysis with all information
+    --diff         Show changes over time, comparing consecutive snapshot from the same file
+    --issues       Show only resources with issues (useful for quick health checks)
+    --json         Format output as JSON
+    --no-color     Disable color in output
+----
+
+== Syntaxe
+
+[source,bash]
+----
+# Analyze latest snapshot
+fleet analyze monitor.json
+
+# Analyze from stdin
+fleet monitor | fleet analyze
+
+# Show all snapshots in file
+fleet analyze --all monitor.json
+
+# Show changes between consecutive snapshots
+fleet analyze --diff monitor.json
+
+fleet analyze --issues monitor.json
+
+# Detailed analysis with controller info and events
+fleet analyze --detailed monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare before.json after.json
+
+# JSON output for programmatic use
+fleet analyze --json monitor.json
+
+# Disable colored output
+fleet analyze --no-color monitor.json
+----
+
+== Modes de sortie
+
+- **Résumé (par défaut)**{nbsp}: Vue d'ensemble des ressources et des diagnostics
+- **Tous**{nbsp}: Résumé de tous les instantanés dans un fichier multi-instantanés
+- **Diff**{nbsp}: Montre les changements entre les instantanés consécutifs
+- **Problèmes**{nbsp}: Montre uniquement les ressources avec des problèmes détectés
+- **Détaillé**{nbsp}: Analyse complète incluant les informations du contrôleur, la cohérence de l'API et les événements
+- **JSON**{nbsp}: Sortie lisible par machine pour les scripts et l'automatisation
+
+== Analyse multi-instantanés
+
+Lorsque votre fichier monitor.json contient plusieurs instantanés (un objet JSON par ligne){nbsp}:
+
+[source,bash]
+----
+# Show summary of latest snapshot only
+fleet analyze monitor.json
+
+# Show differences between consecutive snapshots
+fleet analyze --diff monitor.json
+
+# Show summary of all snapshots
+fleet analyze --all monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare snapshot2.json snapshot1.json
+----
+
+== VOIR ÉGALEMENT
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]

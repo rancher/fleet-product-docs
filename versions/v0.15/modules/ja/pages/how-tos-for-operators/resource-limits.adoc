@@ -1,0 +1,118 @@
+:doctype: book
+
+= リソース制限
+:revdate: 2026-02-25
+:page-revdate: {revdate}
+
+{product_name}は、CPUおよびメモリのリソース要求と制限を2か所で設定することをサポートしています：
+
+* *管理クラスターコントローラー*：このページに記載されているように、Helmチャートの`resources`フィールドを介して設定します。
+* *ダウンストリームクラスターエージェント*：`Cluster`リソースの`agentResources`フィールドを介して、クラスターごとに設定します。
+
+[NOTE]
+====
+Rancher内で{product_name}を実行する場合は、Helmを直接使用するのではなく、`rancher-config` ConfigMapを使用してHelmの値を渡します。
+このページに記載されている`resources`フィールドは引き続き適用されます。ConfigMap内の`fleet`キーの下にネストされたフィールドを指定します。
+
+詳細については、xref:reference/ref-configuration.adoc[設定]を参照してください。
+====
+
+== デフォルトリソース
+
+最上位の`resources`フィールドを使用して、すべてのコントローラーコンテナのデフォルトを設定します：
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 8000m
+    memory: 8Gi
+  requests:
+    cpu: 250m
+    memory: 768Mi
+----
+
+インストールまたはアップグレード時にこれをHelmに渡します：
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  --set resources.limits.cpu=8000m \
+  --set resources.limits.memory=8Gi \
+  --set resources.requests.cpu=250m \
+  --set resources.requests.memory=768Mi
+----
+
+== コンポーネントごとのオーバーライド
+
+個々のコントローラーコンテナは、コンポーネント固有の設定でデフォルトをオーバーライドできます。
+サポートされているコンポーネントキーは次のとおりです：
+
+* `fleetController` : メインFleetコントローラー
+* `fleetCleanup` : クリーンアップコントローラー
+* `fleetAgentmanagement` : エージェント管理コントローラー
+* `gitjob` : GitJobコントローラー
+* `helmops` : HelmOpsコントローラー
+
+コンポーネントキーが存在する場合、その値はデフォルトの`resources.limits`および`resources.requests`よりも優先されます。
+
+デフォルト設定に関係なくコンテナのリソース制約を削除するには、コンポーネントを空のオブジェクト`{}`に設定します。
+
+コンポーネントごとのオーバーライドを使用した例`values.yaml`：
+
+[source,yaml]
+----
+resources:
+  limits:
+    cpu: 4000m
+    memory: 4Gi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  fleetController:
+    limits:
+      cpu: 8000m
+      memory: 8Gi
+    requests:
+      cpu: 250m
+      memory: 768Mi
+  gitjob: {}         # no resource constraints for gitjob
+  helmops: {}        # no resource constraints for helmops
+----
+
+この例では：
+
+* `fleetController`は独自の制限と要求を使用します。
+* `gitjob`と`helmops`にはリソース制約が適用されていません。
+* `fleetCleanup`と`fleetAgentmanagement`はトップレベルのデフォルトにフォールバックします。
+
+Helmで設定を適用します：
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
+  -f values.yaml
+----
+
+== ダウンストリームクラスターエージェントリソース
+
+特定のダウンストリームクラスターで実行されているFleet agentのリソース制限と要求を設定するには、対応する`Cluster`リソースに`agentResources`を設定します：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: fleet-default
+spec:
+  agentResources:
+    limits:
+      cpu: 1000m
+      memory: 512Mi
+    requests:
+      cpu: 100m
+      memory: 128Mi
+----
+
+これは上記の管理クラスターコントローラー設定とは独立しており、そのダウンストリームクラスターにデプロイされたエージェントのみに適用されます。

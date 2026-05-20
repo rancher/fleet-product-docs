@@ -1,0 +1,190 @@
+= Mapeo a clústeres en sentido descendente
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} en Rancher] permite a los usuarios gestionar clústeres fácilmente como si fueran un solo clúster. Los usuarios pueden desplegar paquetes, que pueden estar compuestos de manifiestos de despliegue o cualquier otro recurso de Kubernetes, a través de clústeres utilizando la configuración de agrupamiento.
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} en Rancher] permite a los usuarios gestionar clústeres fácilmente como si fueran un solo clúster. Los usuarios pueden desplegar paquetes, que pueden estar compuestos de manifiestos de despliegue o cualquier otro recurso de Kubernetes, a través de clústeres utilizando la configuración de agrupamiento.
+endif::[]
+[IMPORTANT]
+====
+
+*Solo Multi-clúster*:
+Este enfoque solo se aplica si estás ejecutando {product_name} en un estilo de multi-clúster. Si no se especifican objetivos, es decir, al usar un solo clúster, los paquetes se dirigen al grupo de clústeres predeterminado.
+====
+
+
+Al desplegar `GitRepos` en clústeres en sentido descendente, los clústeres deben estar mapeados a un objetivo.
+
+== Definiendo Objetivos
+
+Los objetivos de despliegue de `GitRepo` se realizan utilizando el campo `spec.targets` para hacer coincidir clústeres o grupos de clústeres. La especificación YAML es la siguiente.
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: myrepo
+  namespace: clusters
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - simple
+
+  # Targets are evaluated in order and the first one to match is used. If
+  # no targets match then the evaluated cluster will not be deployed to.
+  targets:
+  # The name of target. This value is largely for display and logging.
+  # If not specified a default name of the format "target000" will be used
+  - name: prod
+    # A selector used to match clusters.  The structure is the standard
+    # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
+    # clusterSelector will be used only to further refine the selection after
+    # clusterGroupSelector and clusterGroup is evaluated.
+    clusterSelector:
+      matchLabels:
+        env: prod
+    # A selector used to match cluster groups.
+    clusterGroupSelector:
+      matchLabels:
+        region: us-east
+    # A specific clusterGroup by name that will be selected
+    clusterGroup: group1
+    # A specific cluster by name that will be selected
+    clusterName: cluster1
+----
+
+== Coincidencia de Objetivos
+
+Todos los clústeres y grupos de clústeres en el mismo espacio de nombres que el `GitRepo` serán evaluados contra todos los objetivos.
+Si alguno de los objetivos coincide con el clúster, entonces el `GitRepo` se desplegará en el clúster en sentido descendente. Si no se realiza ninguna coincidencia, entonces el `GitRepo` no se desplegará en ese clúster.
+
+Hay tres enfoques para hacer coincidir clústeres.
+Se pueden usar selectores de clúster, selectores de grupo de clúster o un nombre de grupo de clúster explícito.  Todos los criterios son aditivos, por lo que la coincidencia final se evalúa como "clusterSelector && clusterGroupSelector && clusterGroup".  Si alguno de los tres tiene el valor predeterminado, se descarta del criterio.  El valor predeterminado es nulo o "".  Es importante darse cuenta de que el valor `{}` para un selector significa "coincidir con todo."
+
+[,yaml]
+----
+targets:
+  # Match everything
+  - clusterSelector: {}
+  # Selector ignored
+  - clusterSelector: null
+----
+
+También puedes emparejar clústeres por nombre:
+
+[,yaml]
+----
+targets:
+  - clusterName: fleetname
+----
+
+Al usar {product_name} en Rancher, asegúrate de poner el nombre del recurso `clusters.fleet.cattle.io`.
+
+== Objetivo por defecto
+
+Si no se establece un objetivo para el `GitRepo`, se aplica el valor de objetivos por defecto.  El valor de objetivos por defecto es el siguiente.
+
+[,yaml]
+----
+targets:
+- name: default
+  clusterGroup: default
+----
+
+Esto significa que si deseas configurar una ubicación por defecto a la que irán los GitRepos no configurados, solo tienes que crear un grupo de clústeres llamado por defecto y añadirle clústeres.
+
+== Personalización por clúster
+
+[IMPORTANT]
+====
+
+El `targets:` en el recurso `GitRepo` selecciona clústeres para desplegar. El `targetCustomizations:` en `fleet.yaml` solo anula los valores de Helm y no cambia el objetivo.
+====
+
+
+Para demostrar cómo desplegar manifiestos de Kubernetes en diferentes clústeres con personalización usando {product_name}, utilizaremos https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
+
+*Situación:* El usuario tiene tres clústeres con tres etiquetas diferentes: `env=dev`, `env=test` y `env=prod`. El usuario quiere desplegar una aplicación frontend con una base de datos backend en estos clústeres.
+
+*Comportamiento esperado:*
+
+* Después de desplegar en el clúster `dev`, la replicación de la base de datos no está habilitada.
+* Después de desplegar en el clúster `test`, la replicación de la base de datos está habilitada.
+* Después de desplegar en el clúster `prod`, la replicación de la base de datos está habilitada y los servicios de balanceador de carga están expuestos.
+
+*Ventaja de {product_name}:*
+
+En lugar de desplegar la aplicación en cada clúster, {product_name} te permite desplegar en todos los clústeres siguiendo estos pasos:
+
+. Despliega gitRepo `https://github.com/rancher/fleet-examples.git` y especifica la vía `multi-cluster/helm`.
+. Bajo `multi-cluster/helm`, un chart de Helm desplegará el servicio de la aplicación frontend y el servicio de la base de datos backend.
+. La siguiente regla se definirá en `fleet.yaml`:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
+
+*Resultado:*
+
+{product_name} desplegará el chart de Helm con tu `values.yaml` personalizado en los diferentes clústeres.
+
+
+[NOTE]
+====
+La gestión de la configuración no se limita a los despliegues, sino que puede ampliarse a la gestión general de la configuración. {product_name} es capaz de aplicar la gestión de la configuración a través de la personalización entre cualquier conjunto de clústeres de forma automática.
+====
+
+=== Limitaciones al sobrescribir la configuración del chart de Helm con `targetCustomizations`
+
+Aunque `helm.chart`, `helm.repo` y `helm.version` pueden especificarse en `targetCustomizations`, sobrescribir estos campos tiene limitaciones importantes.
+
+{product_name} recupera el chart de Helm durante la fase inicial de **creación del paquete** utilizando la configuración de `helm` de nivel superior. Esta recuperación es realizada por la cadena de herramientas de Fleet (`GitJob`) antes de que se procesen `targetCustomizations`.
+
+Debido a que el chart se descarga en esta etapa, `targetCustomizations` no puede utilizarse para obtener dinámicamente un chart diferente de:
+
+* un directorio local
+* un repositorio de Helm diferente
+* un registro OCI separado (por ejemplo, uno detrás de un firewall)
+
+Si intentas sobrescribir estos campos, la sobrescritura puede ser ignorada durante la recuperación del chart. En algunos casos, Fleet puede intentar incluir múltiples versiones de charts en el mismo paquete, lo que puede aumentar significativamente el tamaño del paquete y puede exceder los límites de tamaño de etcd.
+
+Si diferentes entornos requieren diferentes charts o registros, utiliza uno de los siguientes enfoques:
+
+* Define archivos `fleet.yaml` separados para cada configuración de chart.
+* Crea recursos `GitRepo` separados para cada entorno.
+
+
+== Ejemplos adicionales
+
+Ejemplos utilizando YAML de Kubernetes en bruto, charts de Helm, Kustomize y combinaciones de los tres se encuentran en el https://github.com/rancher/fleet-examples/[{product_name} repositorio de Ejemplos].

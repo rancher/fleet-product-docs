@@ -1,0 +1,205 @@
+= Campos de Status
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Exibir Estados
+
+GitRepos, HelmOps, Clusters e pacotes têm estados diferentes em cada fase de aplicação de pacotes.
+
+Como os estados das implantações de pacote são propagados para o pacote, GitRepo, Cluster e ClusterGroup, você os encontrará exibidos da mesma forma. A diferença está na perspectiva sobre os recursos.
+
+Ao olhar para o GitRepo, os estados de todos os recursos relacionados ao GitRepo são exibidos lá. Ao olhar para o Cluster, os estados de todos os Bundles nesse Cluster são exibidos, o que pode abranger muitos GitRepos. Ao olhar para o pacote, os estados de todas as implantações de pacote nesse pacote são exibidos.
+
+=== Condição Pronta
+
+A condição `Ready` é usada para determinar se os BundleDeployments estão em um estado `Ready`.
+A condição `Ready` é definida como `True` se todos os BundleDeployments estiverem no estado `Ready`.
+Se pelo menos um BundleDeployment não estiver no estado `Ready`, a condição `Ready` é definida como `False`.
+
+Todos os estados das implantações de pacote são agregados no campo `message` da condição de status `Ready`. Para evitar que a mensagem fique muito longa, apenas os primeiros dez estados são mostrados. O campo `message` contém o número de implantações de pacote em cada estado, seguido pelo nome do Cluster onde a implantação de pacote está localizada. Status `Ready` são excluídos do campo `message`.
+
+Por exemplo:
+
+[source,yaml]
+----
+status:
+  conditions:
+  - lastUpdateTime: "2025-06-25T14:59:35Z"
+    message: WaitApplied(1) [Cluster fleet-default/downstream4]
+    status: "False"
+    type: Ready
+----
+
+==== Determinação do Status Pronto
+
+{product_name} usa o pacote `kstatus` do módulo `sigs.k8s.io/cli-utils` para determinar o status Pronto dos BundleDeployments com base no status de seus recursos.
+Para detalhes, veja o README do pacote link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus`].
+
+==== Propagação do Status Pronto
+
+image::PropogationReadyStatus.svg[Propagação do status Pronto]
+
+=== Exibir Estado
+
+O campo `status.display` fornece um resumo do estado. Os estados são classificados, e o pior estado possível é usado como o `state` no campo `status.display`.
+
+[[state-ranking]]
+==== Classificação de Estado
+
+Esta é a classificação na qual os estados são exibidos. Se um Bundle tiver BundleDeployments em diferentes estados, o pior estado é usado no campo `status.display.state`.
+Este estado também é propagado dos Bundles para outros recursos {product_name} (GitRepos, Clusters, ClusterGroups).
+
+Do melhor para o pior:
+
+* Pronto
+* NotReady
+* Pendente
+* OutOfSync
+* Modificado
+* AguardandoAplicação
+* ErroAplicado
+
+== Bundles
+
+=== Status dos Pacotes
+
+* *Pronto* : Os pacotes foram implantados e todos os recursos estão prontos. Se não, o campo `message` da condição `Ready` contém uma agregação dos estados das implantações de pacote.
+* *NotReady* : As implantações de pacote foram implantadas, mas alguns recursos não estão prontos (por exemplo, imagens de contêiner estão sendo baixadas ou serviços não relataram prontidão).
+* *Pendente* : Os pacotes estão na fila para processamento pelo controlador Fleet.
+  Isso pode ocorrer se o rollout estiver pausado (Consulte xref:how-tos-for-users/rollout.adoc[Estratégia de Rollout]).
+* *OutOfSync* : Os Bundles estão sincronizados a partir do controlador Fleet, mas os BundleDeployments atualizados ainda não foram criados, então os agentes downstream não conseguem sincronizar as alterações.
+  Isso também pode ocorrer se a implementação estiver pausada (Consulte xref:how-tos-for-users/rollout.adoc[Estratégia de Implementação]).
+* *Modificado* : Os Bundles estão implantados e os recursos estão prontos, mas alguns recursos implantados foram modificados externamente e não a partir do Git.
+* *AguardandoAplicação* : Os Bundles estão sincronizados, mas aguardando para serem implantados. A exibição persistente deste estado pode indicar um cluster de destino inacessível.
+* *ErroAplicado* : Pacotes sincronizados com sucesso, mas encontraram erros durante a implantação.
+
+== Clusters
+
+=== Estados Específicos do Cluster
+
+* *WaitCheckIn* : Aguardando o agente relatar informações de registro e status do cluster.
+
+=== Estados dos Pacotes
+
+* *Pronto* : Todos os Bundles neste cluster estão implantados e os recursos estão prontos.
+* *NotReady* : Alguns Bundles neste cluster não estão prontos.
+* *Pendente* : Alguns Bundles estão pendentes.
+* *OutOfSync* : Alguns Bundles estão fora de sincronização.
+* *Modificado* : Alguns Bundles estão modificados.
+* *AguardandoAplicação* : Alguns Bundles estão aguardando para serem aplicados.
+* *ErroAplicado* : Alguns Bundles têm erros.
+
+== GitRepo
+
+* *Pronto* : `True` se os estados desejado e atual coincidirem. Se `False`, a mensagem contém:
+** um erro do controlador GitJob,
+** um erro do pacote (por exemplo, falha de template), ou
+** uma lista agregada de pacotes que não estão em `Ready`.
+* *GitPolling* : Indica se a sondagem ou a clonagem inicial está em andamento. `True` se a sondagem for bem-sucedida ou desativada.
+* *Reconciliação* : O controlador está atualmente reconciliando mudanças.
+* *Parado* : O controlador encontrou um erro ou falhou em avançar.
+* *Aceito* : Restrições do GitRepo foram aplicadas e segredos externos do Helm existem.
+
+== Condições do HelmOp
+
+* *Pronto* : `True` se todos os BundleDeployments foram implantados com sucesso; `False` se algum não estiver pronto.
+* *Aceito* : `False` se as opções do Helm forem inválidas, versões de chart não puderem ser resolvidas, a sondagem falhar, ou a criação do Pacote falhar.
+* *Sondado* : `True` se a sondagem foi bem-sucedida. `False` caso contrário, com uma mensagem de erro.
+
+== status.display
+
+Os campos `status.display` são compartilhados entre GitRepos e GitOps. Ambos os recursos contêm um campo `status.display` que resume o estado do recurso. O valor de `state` pode diferir dependendo do tipo de recurso.
+
+* `readyBundleDeployments` : Uma string na forma `%d/%d` mostrando o número de implantações de pacotes prontas versus o total.
+* `state` : Representa o estado do GitRepo (por exemplo, `GitUpdating`) ou o maior BundleState conforme a <<state-ranking,Classificação de Estado>>. Se `Ready`, é definido como um valor vazio.
+* `message` : Contém mensagens relevantes sobre as condições de implantação.
+* `error` : `true` se existir uma mensagem de erro.
+
+== Lista de Recursos
+
+Recursos implantados em clusters de destino são categorizados sob `GitRepos` e `HelmOps`.
+
+=== GitRepos
+
+A lista `status.ResourceCounts` para GitRepos é derivada de `bundleDeployments`.
+
+O campo `perClusterResourceCounts` fornece estatísticas por cluster sobre os recursos implantados.
+
+[source,yaml]
+----
+perClusterResourceCounts:
+    fleet-default/imported-0:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+    fleet-default/imported-1:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+    fleet-default/imported-2:
+      desiredReady: 9
+      missing: 0
+      modified: 0
+      notReady: 0
+      orphaned: 0
+      ready: 9
+      unknown: 0
+      waitApplied: 0
+  readyClusters: 3
+  resourceCounts:
+    desiredReady: 27
+    missing: 0
+    modified: 0
+    notReady: 0
+    orphaned: 0
+    ready: 27
+    unknown: 0
+    waitApplied: 0
+----
+
+Isso ajuda a identificar quais clusters têm implantações incompletas ou inconsistentes à primeira vista.
+
+=== Implantação de Pacote
+
+O recurso `BundleDeployment` inclui dois campos adicionais para melhor visibilidade:
+
+* `incompleteState`: que é definido como verdadeiro se o status de recursos não prontos ou modificados tiver mais de 10 itens.
+* `resourceCounts`: que conta o número de recursos por seu estado.
+
+=== HelmOps
+
+A lista `status.ResourceCounts` para HelmOps é derivada de `bundleDeployments`.
+
+== Contagem de Recursos
+
+Isso mostra como as contagens de recursos se propagam entre os recursos.
+
+=== GitRepos
+
+Os recursos implantados estão listados sob `GitRepos` em `status.Resources`, derivados de `bundleDeployments`.
+
+=== HelmOps
+
+Da mesma forma, os recursos implantados para `HelmOps` estão listados em `status.Resources`, derivados de `bundleDeployments`.
+
+=== Clusters
+
+Em Clusters, `status.ResourceCounts` é derivado de GitRepos.
+
+=== ClusterGroups
+
+Em Grupos de Cluster, `status.ResourceCounts` é derivado de GitRepos.
+
+== Diagrama de Classe
+
+image::ClusterGroups_classDiagram.svg[Propagação do status Pronto]

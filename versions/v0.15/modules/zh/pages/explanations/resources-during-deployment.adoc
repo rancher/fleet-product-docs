@@ -1,0 +1,7 @@
+= 部署期间的自定义资源
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+这显示了在从 git 储存库创建部署时涉及的资源，包括内部资源。
+
+image::FleetResources.svg[资源]

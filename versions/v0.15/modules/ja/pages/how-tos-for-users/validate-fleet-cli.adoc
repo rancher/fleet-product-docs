@@ -1,0 +1,67 @@
+= Fleet CLI デプロイメントの検証
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+Fleet CLI を使用してバンドルを適用した後、`Bundle` とその関連する `BundleDeployments` を確認することでデプロイメントを検証できます。
+
+各 {product_name} によって管理されているクラスターには、次の項目が表示されます：
+
+* どのバンドルがデプロイされたか。
+* その準備状況。
+* エラーや同期の問題。
+
+`fleet apply` がバンドルを作成し、それが正しい数のターゲットにデプロイされたかどうかを検証するには、次のコマンドを実行します：
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -A
+----
+
+image::validate-deployment-ss.png[Fleet CLI デプロイメントの検証を示すスクリーンショット]
+
+次のフィールドが表示されます：
+
+* `BUNDLEDEPLOYMENTS-READY` — 合計のうち、準備ができているターゲットの数を示します。
+* `STATUS` — *準備完了*、*変更済み*、またはロールアウトに基づく他の条件を示す場合があります。
+
+[NOTE]
+====
+`BUNDLEDEPLOYMENTS-READY` が `1/1` を示す場合、バンドルは 1 つのクラスターに正常にデプロイされた。
+====
+
+バンドルがどのようにレンダリングされ、適用されたかの詳細なビューを取得するには、次のコマンドを実行します：
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -n fleet-local my-nginx-bundle -o yaml
+----
+
+`status` セクションで次のフィールドを探してください：
+
+[source,yaml]
+----
+status:
+  display:
+    readyClusters: 1/1
+  summary:
+    desiredReady: 1
+    ready: 1
+  conditions:
+    type: Ready
+    status: "True"
+----
+
+これは次のことを示します：
+
+* バンドルは 1 つのクラスターにスケジュールされました。
+* ターゲットクラスターはリソースを承認し、適用しました。
+* コントローラーはデプロイメントを準備完了としてマークしました。
+
+対応する `BundleDeployment` オブジェクトも確認できます。各 `BundleDeployment` はターゲットクラスターに対応しています：
+
+[source,bash]
+----
+kubectl get bundledeployments.fleet.cattle.io -A
+----
+
+詳細については、xref:reference/ref-status-fields.adoc[ステータスフィールド]を参照してください。

@@ -1,0 +1,89 @@
+= Programação
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Este é um recurso experimental.
+====
+
+{product_name} suporta (a partir da versão 0.13 e em modo experimental) a definição de **intervalos programados** durante os quais novas atualizações para implantações existentes são permitidas.
+
+Isso permite que os usuários controlem **quando as mudanças são aplicadas**, independentemente de quando as atualizações são enviadas para o repositório Git—se desejado.
+
+Existem muitas razões pelas quais alguém pode querer definir janelas de tempo durante as quais mudanças em um cluster são permitidas. Por exemplo:
+
+* Fora do horário comercial
+* Para agendar atualizações em horários específicos
+* Para diferenciar janelas de atualização entre ambientes (por exemplo, dev vs prod)
+
+O agendamento de atualizações é atualmente aplicado no nível `Cluster`.
+
+Um `Schedule` recurso é definido, que especifica quais `Clusters` são afetados. Esses clusters só instalarão novas atualizações se permitido pelo definido `Schedule`.
+
+Quaisquer mudanças detectadas por {product_name} no repositório Git ainda serão aplicadas no nível `Bundle`. No entanto, o **agente** responsável por implantar as mudanças em cada cluster afetado só iniciará a implantação se o cluster estiver atualmente autorizado a fazê-lo pelo `Schedule` correspondente.
+
+Isso significa que quando uma mudança é detectada no repositório, ela será aplicada ao `Bundle`, e o status mudará para *Esperando Atualização* até que o agente `Cluster` esteja ativo e autorizado a realizar implantações de acordo com seu `Schedule`.
+
+Se um `Cluster` não estiver associado a nenhum `Schedule`, as atualizações serão aplicadas imediatamente.
+
+== Recurso de Agendamento
+
+Agora vamos ver como definir um `Schedule` e quais campos estão disponíveis.
+
+Um `Schedule` é essencialmente definido por:
+
+* Uma **expressão cron** que indica seu horário de início
+* Uma **duração**
+* Os **alvos** (clusters) aos quais se aplica
+
+Aqui está um exemplo básico de um `Schedule` que utiliza uma definição de alvo simples:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-local
+spec:
+  schedule: "0 0 22 * * *"
+  duration: 1h
+  targets:
+    clusters:
+      - name: local
+        clusterName: local
+----
+
+Isso define uma **janela de tempo de 1 hora** que começa todos os dias às **22:00:00**, e se aplica ao cluster chamado *local* no namespace `fleet-local`.
+Os alvos de um `Schedule` usam o **mesmo namespace** que o `Schedule`.
+
+Em outras palavras: o *local* `Cluster` aceitará apenas mudanças de **22:00:00 a 23:00:00**.
+
+Agora vamos olhar para outro exemplo onde o `Schedule` é usado para implantar atualizações em **clusters downstream** rotulados com *env=dev*:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-default
+spec:
+  schedule: "0 0 */3 * * *"
+  duration: 1h 
+  targets:
+    clusters:
+      - name: targets-dev
+        clusterSelector:
+          matchLabels:
+            env: dev
+----
+
+Neste caso, o `Schedule` permite atualizações em `Clusters` rotulados com *env=dev* **a cada 3 horas**, por uma **duração de 1 hora**.
+
+A maneira como você define o alvo `Clusters` é **idêntica** à forma como os alvos são definidos para `GitRepo` recursos.
+
+Para mais informações, consulte xref:how-tos-for-users/gitrepo-targets.adoc[alvos do GitRepo]. O que também se aplica aos `Schedule` alvos.
+
+Você pode visualizar o CRD completo para xref:reference/ref-schedule.adoc[Agendamento].

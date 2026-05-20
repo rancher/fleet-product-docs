@@ -1,0 +1,86 @@
+= Fleet analysieren
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+Analysiere Snapshots, die von `fleet monitor` erstellt wurden
+
+[source,text]
+----
+fleet analyze [flags] MONITOR_FILE
+----
+
+== Optionen
+
+[source,text]
+----
+    --compare      Show comparison between snapshots living in different files
+    --detailed     Show detailed analysis with all information
+    --diff         Show changes over time, comparing consecutive snapshot from the same file
+    --issues       Show only resources with issues (useful for quick health checks)
+    --json         Format output as JSON
+    --no-color     Disable color in output
+----
+
+== Verwendung
+
+[source,bash]
+----
+# Analyze latest snapshot
+fleet analyze monitor.json
+
+# Analyze from stdin
+fleet monitor | fleet analyze
+
+# Show all snapshots in file
+fleet analyze --all monitor.json
+
+# Show changes between consecutive snapshots
+fleet analyze --diff monitor.json
+
+fleet analyze --issues monitor.json
+
+# Detailed analysis with controller info and events
+fleet analyze --detailed monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare before.json after.json
+
+# JSON output for programmatic use
+fleet analyze --json monitor.json
+
+# Disable colored output
+fleet analyze --no-color monitor.json
+----
+
+== Ausgabemodi
+
+- **Zusammenfassung (Standard)**: Überblick über Ressourcen und Diagnosen auf hoher Ebene
+- **Alle**: Zusammenfassung aller Snapshots in einer Multi-Snapshot-Datei
+- **Diff**: Zeigt Änderungen zwischen aufeinanderfolgenden Snapshots an
+- **Probleme**: Zeigt nur Ressourcen mit erkannten Problemen an
+- **Ausführlich**: Vollständige Analyse einschließlich Controller-Informationen, API-Konsistenz und Ereignissen
+- **JSON**: Maschinenlesbare Ausgabe für Skripte und Automatisierung
+
+== Multi-Snapshot-Analyse
+
+Wenn Ihre monitor.json-Datei mehrere Snapshots enthält (ein JSON-Objekt pro Zeile):
+
+[source,bash]
+----
+# Show summary of latest snapshot only
+fleet analyze monitor.json
+
+# Show differences between consecutive snapshots
+fleet analyze --diff monitor.json
+
+# Show summary of all snapshots
+fleet analyze --all monitor.json
+
+# Compare two specific snapshot files
+fleet analyze --compare snapshot2.json snapshot1.json
+----
+
+== SIEHE AUCH
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet Monitor]

@@ -1,0 +1,47 @@
+= Como habilitar recursos experimentais
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+{product_name} suporta recursos experimentais que estão desativados por padrão e podem ser habilitados pelo usuário.
+
+Habilitar ou desabilitar recursos experimentais é feito usando variáveis de ambiente extras que estão disponíveis ao implantar `rancher/fleet`.
+
+Para mais informações, consulte Configurar opções de instalação xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} no Rancher]
+
+== Recursos experimentais disponíveis
+
+{product_name} atualmente suporta os seguintes recursos experimentais, que podem ser alternados por meio de suas respectivas variáveis de ambiente:
+
+* xref:experimental-features/scheduling.adoc[Programação]
+* xref:experimental-features/experimental-downstream-resource.adoc[Propagação automatizada de recursos para clusters downstream]
+
+== Habilitando um recurso experimental
+
+=== Habilitando ao instalar {product_name} de forma independente
+
+Tudo o que você precisa fazer é passar algo como:
+
+[source,bash]
+----
+--set-string extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string extraEnv[0].value=true
+----
+
+para o seu comando `helm install` ou `helm upgrade`.
+
+[NOTE]
+====
+Você tem que usar `--set-string` porque caso contrário o valor booleano não funcionará como esperado.
+====
+
+=== Habilitando ao instalar {product_name} com o Rancher
+
+Você também pode ativar os recursos experimentais no {product_name} ao instalar o Rancher.
+
+Os parâmetros são os mesmos, mas você tem que adicionar o prefixo `fleet.`:
+
+[source,bash]
+----
+--set-string fleet.extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string fleet.extraEnv[0].value=true
+----

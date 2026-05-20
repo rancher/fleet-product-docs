@@ -1,0 +1,25 @@
+= Limpieza de gitjob de Fleet
+:revdate: 23/07/2025
+:page-revdate: {revdate}
+
+Eliminar trabajos git obsoletos
+
+----
+fleet cleanup gitjob [flags]
+----
+
+== Opciones
+
+----
+      --batch-size int      Number of git jobs to retrieve at once (default 5000)
+      --context string      kubeconfig context for authentication
+      --debug               Turn on debug logging
+      --debug-level int     If debugging is enabled, set klog -v=X
+  -h, --help                help for gitjob
+  -k, --kubeconfig string   kubeconfig for authentication
+  -n, --namespace string    namespace (default "fleet-local")
+----
+
+== VÉASE
+
+* xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - Eliminar recursos obsoletos

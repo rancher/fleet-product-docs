@@ -1,0 +1,190 @@
+= Mapeamento para clusters downstream
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} no Rancher] permite que os usuários gerenciem clusters facilmente como se fossem um único cluster. Os usuários podem implantar pacotes, que podem ser compostos por manifestos de implantação ou qualquer outro recurso do Kubernetes, em clusters usando configuração de agrupamento.
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} no Rancher] permite que os usuários gerenciem clusters facilmente como se fossem um único cluster. Os usuários podem implantar pacotes, que podem ser compostos por manifestos de implantação ou qualquer outro recurso do Kubernetes, em clusters usando configuração de agrupamento.
+endif::[]
+[IMPORTANT]
+====
+
+*Somente Multi-cluster*:
+Essa abordagem só se aplica se você estiver executando {product_name} em um estilo de multi-cluster. Se nenhum alvo for especificado, ou seja, ao usar um único cluster, os pacotes visam o grupo de cluster padrão.
+====
+
+
+Ao implantar `GitRepos` em clusters downstream, os clusters devem ser mapeados para um alvo.
+
+== Definindo Alvos
+
+Os alvos de implantação de `GitRepo` são definidos usando o campo `spec.targets` para combinar clusters ou grupos de clusters. A especificação YAML é a seguinte.
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: myrepo
+  namespace: clusters
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - simple
+
+  # Targets are evaluated in order and the first one to match is used. If
+  # no targets match then the evaluated cluster will not be deployed to.
+  targets:
+  # The name of target. This value is largely for display and logging.
+  # If not specified a default name of the format "target000" will be used
+  - name: prod
+    # A selector used to match clusters.  The structure is the standard
+    # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
+    # clusterSelector will be used only to further refine the selection after
+    # clusterGroupSelector and clusterGroup is evaluated.
+    clusterSelector:
+      matchLabels:
+        env: prod
+    # A selector used to match cluster groups.
+    clusterGroupSelector:
+      matchLabels:
+        region: us-east
+    # A specific clusterGroup by name that will be selected
+    clusterGroup: group1
+    # A specific cluster by name that will be selected
+    clusterName: cluster1
+----
+
+== Correspondência de Alvos
+
+Todos os clusters e grupos de clusters no mesmo namespace que o `GitRepo` serão avaliados em relação a todos os alvos.
+Se algum dos alvos corresponder ao cluster, então o `GitRepo` será implantado no cluster downstream. Se nenhuma correspondência for feita, então o `GitRepo` não será implantado naquele cluster.
+
+Existem três abordagens para corresponder clusters.
+Pode-se usar seletores de cluster, seletores de grupo de cluster ou um nome de grupo de cluster explícito.  Todos os critérios são aditivos, então a correspondência final é avaliada como "clusterSelector && clusterGroupSelector && clusterGroup".  Se algum dos três tiver o valor padrão, ele é descartado dos critérios.  O valor padrão é nulo ou "".  É importante perceber que o valor `{}` para um seletor significa "corresponder a tudo."
+
+[,yaml]
+----
+targets:
+  # Match everything
+  - clusterSelector: {}
+  # Selector ignored
+  - clusterSelector: null
+----
+
+Você também pode combinar clusters pelo nome:
+
+[,yaml]
+----
+targets:
+  - clusterName: fleetname
+----
+
+Ao usar {product_name} no Rancher, certifique-se de colocar o nome do recurso `clusters.fleet.cattle.io`.
+
+== Alvo Padrão
+
+Se nenhum alvo for definido para o `GitRepo`, então o valor padrão dos alvos é aplicado.  O valor padrão dos alvos é o seguinte.
+
+[,yaml]
+----
+targets:
+- name: default
+  clusterGroup: default
+----
+
+Isso significa que, se você deseja configurar um local padrão para onde os GitRepos não configurados irão, basta criar um grupo de clusters chamado default e adicionar clusters a ele.
+
+== Personalização por Cluster
+
+[IMPORTANT]
+====
+
+O `targets:` no recurso `GitRepo` seleciona clusters para implantar. O `targetCustomizations:` em `fleet.yaml` substitui apenas os valores do Helm e não altera o direcionamento.
+====
+
+
+Para demonstrar como implantar manifestos do Kubernetes em diferentes clusters com personalização usando {product_name}, usaremos https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
+
+*Situação:* O usuário tem três clusters com três rótulos diferentes: `env=dev`, `env=test` e `env=prod`. O usuário deseja implantar um aplicativo frontend com um banco de dados backend nesses clusters.
+
+*Comportamento esperado:*
+
+* Após implantar no cluster `dev`, a replicação do banco de dados não está habilitada.
+* Após implantar no cluster `test`, a replicação do banco de dados está habilitada.
+* Após implantar no cluster `prod`, a replicação do banco de dados está habilitada e os serviços de balanceador de carga estão expostos.
+
+*Vantagem de {product_name}:*
+
+Em vez de implantar o aplicativo em cada cluster, {product_name} permite que você implante em todos os clusters seguindo estas etapas:
+
+. Implante o gitRepo `https://github.com/rancher/fleet-examples.git` e especifique o caminho `multi-cluster/helm`.
+. Sob `multi-cluster/helm`, um gráfico Helm implantará o serviço do aplicativo frontend e o serviço do banco de dados backend.
+. A seguinte regra será definida em `fleet.yaml`:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
+
+*Resultado:*
+
+{product_name} irá implantar o gráfico Helm com seu `values.yaml` personalizado nos diferentes clusters.
+
+
+[NOTE]
+====
+A gestão de configuração não se limita a implantações, mas pode ser expandida para a gestão de configuração geral. {product_name} é capaz de aplicar a gestão de configuração por meio de personalização entre qualquer conjunto de clusters automaticamente.
+====
+
+=== Limitações ao substituir configurações do gráfico Helm com `targetCustomizations`
+
+Embora `helm.chart`, `helm.repo` e `helm.version` possam ser especificados em `targetCustomizations`, substituir esses campos tem limitações importantes.
+
+{product_name} recupera o gráfico Helm durante a fase inicial de **Criação do pacote** usando a configuração de `helm` de nível superior. Essa recuperação é realizada pela ferramenta Fleet (`GitJob`) antes que `targetCustomizations` sejam processados.
+
+Como o gráfico é baixado nesta fase, `targetCustomizations` não pode ser usado para buscar dinamicamente um gráfico diferente de:
+
+* um diretório local
+* um repositório Helm diferente
+* um registro OCI separado (por exemplo, um atrás de um gateway de segurança)
+
+Se você tentar substituir esses campos, a substituição pode ser ignorada durante a recuperação do gráfico. Em alguns casos, o Fleet pode tentar incluir várias versões de gráficos no mesmo pacote, o que pode aumentar significativamente o tamanho do pacote e pode exceder os limites de tamanho do etcd.
+
+Se diferentes ambientes exigirem gráficos ou registros diferentes, use uma das seguintes abordagens:
+
+* Defina arquivos `fleet.yaml` separados para cada configuração de gráfico.
+* Crie recursos `GitRepo` separados para cada ambiente.
+
+
+== Exemplos adicionais
+
+Exemplos usando YAML Kubernetes bruto, gráficos Helm, Kustomize e combinações dos três estão no repositório de https://github.com/rancher/fleet-examples/[{product_name} Exemplos].

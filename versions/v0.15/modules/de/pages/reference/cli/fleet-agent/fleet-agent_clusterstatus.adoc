@@ -1,0 +1,24 @@
+= Fleet agent Clusterstatus
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Ressourcenstatus kontinuierlich an den Upstream-Cluster melden
+
+----
+fleet-agent clusterstatus [flags]
+----
+
+== Optionen
+
+----
+      --checkin-interval string   How often to post cluster status
+      --debug                     Turn on debug logging
+      --debug-level int           If debugging is enabled, set klog -v=X
+  -h, --help                      help for clusterstatus
+      --kubeconfig string         kubeconfig file for agent's cluster
+      --namespace string          system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
+----
+
+== SIEHE AUCH
+
+* xref:/reference/cli/fleet-agent/fleet-agent.adoc[Fleet agent]     - Verwalten Sie die Operationen mit dem Fleet agent, der mit dem Fleet-Controller kommuniziert

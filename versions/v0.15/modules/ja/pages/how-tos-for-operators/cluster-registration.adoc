@@ -1,0 +1,393 @@
+:doctype: book
+
+= ダウンストリームクラスターの登録
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== 概要
+
+クラスターを登録するための特定の方法が2つあります。これらのスタイルは、*agent-initiated*および*manager-initiated*の登録と呼ばれます。通常はエージェント主導の登録を選択しますが、マネージャー主導の方が適している特定のユースケースもあります。
+
+=== エージェント主導の登録
+
+エージェント主導とは、ダウンストリームクラスターが<<_create_cluster_registration_tokens,クラスター登録トークン>>とオプションでクライアントIDを使用してエージェントをインストールするパターンを指します。その後、クラスターエージェントは{product_name}マネージャーにAPIリクエストを行い、登録プロセスを開始します。このプロセスを使用すると、マネージャーはダウンストリームクラスターに対して外部APIリクエストを行うことはなく、したがって直接ネットワークアクセスを持つ必要はありません。
+
+これはRancherでは一般的に使用されていません。Rancherはダウンストリームクラスターに対して外部APIリクエストを行う必要がなく、トンネルを使用して接続を提供します。
+
+=== マネージャー主導の登録
+
+マネージャー主導の登録は、既存のKubernetesクラスターを{product_name}マネージャーに登録し、{product_name}マネージャーがダウンストリームクラスターにAPIコールを行ってエージェントをデプロイするプロセスです。このスタイルは、Fleetマネージャーが登録プロセスのためにダウンストリームクラスターAPIサーバーと通信できる必要があるため、追加のネットワークアクセス要件を生じる可能性があります。
+クラスターが登録された後、マネージャーがダウンストリームクラスターAPIに連絡する必要はありません。 このスタイルは、 https://github.com/kubernetes-sigs/cluster-api[cluster-api]や https://github.com/rancher/rancher[Rancher]のようなツールを用いて、すべてのKubernetesクラスターの作成をGitOpsで管理する場合に、より適しています。
+
+
+[options="header"]
+|===
+| 機能 | エージェント主導の登録 | マネージャー主導の登録（Rancherモード）
+
+| **登録イニシエーター**
+| ダウンストリームクラスターは、エージェントをデプロイすることによって登録プロセスを開始します。
+| Fleetマネージャー（アップストリームクラスター）が登録プロセスを開始します。
+
+| **必要条件:アップストリーム管理者アクション**
+| **手動の管理者アクション**が必要で、アップストリームに`ClusterRegistrationToken`リソースを作成します。このトークンはエージェントの認証に必要です。
+| ダウンストリームクラスターの有効なkubeconfigを含む`Cluster`Kubernetes **Secret**を参照するリソースをFleet Managerで作成する必要があります。
+
+| **主要なメカニズム**
+| 手動で生成された**クラスター登録トークン**を使用して、ダウンストリームクラスターにHelm経由でFleetエージェントをインストールします。
+| Fleetコントローラーは、提供された**kubeconfig**を使用して、ダウンストリームクラスターのAPIサーバーにAPIコールを行い、エージェントをデプロイします。
+
+| **登録ネットワークの方向**
+| 通信は**管理されたクラスターから**Fleetコントローラー（アップストリーム）に流れます。これは登録資格情報のためのプルメカニズムです。
+| マネージャーはエージェントをデプロイするためにダウンストリームクラスターAPIサーバーへの接続（プッシュ）を開始します。
+
+| **ネットワーク要件（マネージャー）**
+| Fleet Managerは **ダウンストリームクラスターAPIへの直接の受信ネットワークアクセス**を必要としません。クラスターはプライベートネットワークやNATの背後で実行できます。
+| Fleet Managerは登録フェーズ中に**ダウンストリームのクラスターAPIサーバーと直接通信できる**必要があります。
+
+| **ネットワーク要件（エージェント）**
+| ダウンストリームクラスターはFleet Managerへの**外向きHTTPSコール**を行うことができる必要があります。
+| ダウンストリームクラスターはFleet Managerへの外向きHTTPSコールを行うことができる必要があります（デプロイ後、通信とデータ同期のため）。
+
+| **データ同期（プル）**
+| エージェントはFleetコントローラーから設定バンドルとエージェントの更新をプルします（2段階プルモデルの一部）。
+| エージェントはFleetコントローラーから設定バンドルとエージェントの更新をプルします。
+
+| **エージェント管理（プッシュ/再デプロイ）**
+| アップストリームコントローラーは通常、エージェントデプロイメントに対するプロアクティブな管理アクション（プッシュ）に必要な直接的なネットワークアクセス/資格情報を**持っていません**。
+| 初期デプロイメントメカニズムは、マネージャーに明示的なアクセスを付与します。このインフラストラクチャは、管理アクション（例：kubeconfigを使用してデプロイメントをトリガーする）に使用できます。
+
+| **エージェント再デプロイ制御フィールド**
+| `redeployAgentGeneration`フィールド（`ClusterSpec`上）は、アップストリームコントローラーによって再デプロイをトリガーするために**使用されていません**。マネージャーは、ダウンストリームエージェントデプロイメントを直接操作するために必要なAPIアクセスを持っていません。
+| `redeployAgentGeneration`フィールドは、`ClusterSpec`上でFleet Controllerによってエージェントの再展開を**強制するためにインクリメントできます**。
+
+| **エージェント採用登録後**
+| トークンを使用して初期登録を行った後、エージェントは`manageagent`コントローラーによって作成されたバンドルを介して標準管理ライフサイクルに組み込まれます。
+| 
+
+| **Rancherコンテキスト**
+| この方法は、Rancherダッシュボードを通じてクラスターを登録する際には**一般的に使用されません**。
+| この方法は、Rancherダッシュボードを介してクラスターを追加する際に**使用されます**（しばしば、ダウンストリームのkubeconfigをアップストリームにプロキシするRancherエージェントを介して）。
+
+| **登録後トークンステータス**
+| エージェントは成功後に登録トークンを忘れます。再登録のためには新しいトークンを生成する必要があります。
+| 該当なし；登録トークン/kubeconfig管理はFleet Managerによって内部的に処理されます。
+
+|===
+
+
+== エージェント主導
+
+ダウンストリームクラスターは、ヘルムを介してエージェントをインストールし、*クラスター登録トークン*とオプションで*クライアントID*または*クラスターラベル*を使用して登録されます。
+
+アップストリームのクラスターリソースには+kubecConfigSecret+フィールドがなく、Fleet ManagerはダウンストリームクラスターAPIサーバーと通信する必要がありません。しかし、エージェントのためのバンドルが作成され、エージェントはそのバンドルから更新されます。バンドルは異なる命名スキームを使用するため、ダウンストリームクラスターには2つのHelmチャートが存在することになります。
+
+[IMPORTANT]
+====
+Fleet Managerをxref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[マルチクラスター]のために設定する必要はありません。Helmを介してインストールするダウンストリームエージェントは、アップストリームクラスターのKubernetes APIに直接接続します。
+
+エージェント主導の登録は、通常Rancherでは使用されません。
+====
+
+
+=== クラスター登録トークンとクライアントID
+
+*クラスター登録トークン*は、ダウンストリームクラスターエージェントが登録プロセスを開始することを許可する資格情報です。これは必須です。
+xref:explanations/architecture.adoc#_security[クラスター登録トークン]は、`values.yaml`ファイルとして表現され、`helm install`プロセスに渡されます。
+代わりに、トークンを`--set token="$token"`を介してhelm installコマンドに直接渡すことができます。
+
+エージェントを登録するスタイルは2つあります。このエージェントのためにクラスターを動的に作成することができ、その場合、登録時に*クラスターラベル*を指定したいと思うでしょう。 または、エージェントを{product_name}マネージャーの事前定義されたクラスターに登録させることができ、その場合は*クライアントID*が必要です。 前者のアプローチは通常最も簡単です。
+
+=== 新しいクラスター用にエージェントをインストールする
+
+{product_name}エージェントはHelmチャートとしてインストールされます。以下は、そのパラメータを決定し設定する方法の説明です。
+
+まず、<<_create_cluster_registration_tokens,クラスター登録トークンの指示>>に従って、`values.yaml`を取得します。これには、{product_name}クラスターに対して認証するための登録トークンが含まれています。
+
+次に、オプションとして、登録時に新しく作成されたクラスターに割り当てられるラベルを定義できます。登録が完了した後、エージェントはクラスターのラベルを変更することはできません。クラスターラベルを追加するには、以下のHelmコマンドに`--set-string labels.KEY=VALUE`を追加します。ラベル`foo=bar`と`bar=baz`を追加するには、コマンドラインに`--set-string labels.foo=bar --set-string labels.bar=baz`を追加します。
+
+[,shell]
+----
+# Leave blank if you do not want any labels
+CLUSTER_LABELS="--set-string labels.example=true --set-string labels.env=dev"
+----
+
+第三に、下流クラスターが接続に使用するために、{product_name}クラスターのAPIサーバーURLとCAで変数を設定します。
+
+[,shell]
+----
+API_SERVER_URL=https://<API_URL>:6443
+API_SERVER_CA_DATA=...
+----
+
+APIサーバーがhttpsポート（443）でリスン(する)していない場合、`API_SERVER_URL`にはポートを含める必要があります。例えば、`https://<API_URL>:6443`のように。URLは`.kube/config`ファイルにあります。
+
+`API_SERVER_CA_DATA`の値は、上流クラスターに接続するための有効なデータを持つ`.kube/config`ファイルから取得できます（`certificate-authority-data`キーの下）。また、上流クラスター内から、デフォルトのServiceAccountシークレット名（通常は`default-token-`で始まり、デフォルトのネームスペースにあります）を調べることで取得できます。`ca.crt`キーの下。
+
+[CAUTION]
+====
+
+*適切なネームスペースとリリース名を使用してください*:
+エージェントチャートのネームスペースは`cattle-fleet-system`で、リリース名は`fleet-agent`でなければなりません。
+====
+
+
+[CAUTION]
+.Kubectlコンテキスト
+====
+
+*正しいクラスターにインストールしていることを確認してください*:
+Helmは`${HOME}/.kube/config`のデフォルトコンテキストを使用してエージェントをデプロイします。`--kubeconfig`と`--kube-context`を使用して、Helmがインストールするクラスターを変更します。
+====
+
+
+[CAUTION]
+.{product_name}Rancher内の
+====
+Rancherは{product_name}用の別々のHelmチャートを持ち、異なるリポジトリを使用します。
+====
+
+
+FleetのHelmリポジトリを追加します。
+
+[,shell]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+最後に、Helmを使用してエージェントをインストールします。
+
+[tabs]
+====
+クライアントマシンに::
++
+[,shell]
+----
+helm -n cattle-fleet-system install --create-namespace --wait \
+    --set clientID="$CLUSTER_CLIENT_ID" \
+    --values values.yaml \
+    fleet-agent fleet/fleet-agent
+----
+
+確認::
++
+以下のコマンドを実行して、Fleetポッドのステータスを確認できます。
++
+[,shell]
+----
+# Ensure kubectl is pointing to the right cluster kubectl -n cattle-fleet-system logs -l app=fleet-agent kubectl -n cattle-fleet-system get pods -l app=fleet-agent
+----
+
+====
+
+エージェントは今やデプロイされているはずです。
+
+さらに、{product_name}マネージャーに新しいクラスターが登録されているのが見えるはずです。 以下は、新しいクラスターが`clusters` xref:explanations/namespaces.adoc[ネームスペース]に登録されたことを確認する例です。 このコマンドを実行するには、`${HOME}/.kube/config`がFleetマネージャーを指していることを確認してください。
+
+[,shell]
+----
+kubectl -n clusters get clusters.fleet.cattle.io
+----
+
+----
+NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAST-SEEN              STATUS
+cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
+----
+
+=== 事前定義されたクラスターのためのエージェントをインストール
+
+クライアントIDは、既存のラベルとそれにターゲットを絞ったリポジトリを持つ{product_name}マネージャーでクラスターを事前定義する目的で使用されます。
+クライアントIDは必須ではなく、クラスターを管理するための一つのアプローチです。
+*クライアントID*は、クラスターを識別するためのユニークな文字列です。
+この文字列はユーザー生成であり、{product_name}マネージャーとエージェントには不透明です。 十分にユニークであると想定されています。セキュリティ上の理由から、この値を簡単に推測できるべきではありません。そうでないと、一つのクラスターが別のクラスターを偽装する可能性があります。 クライアントIDはオプションであり、指定されていない場合は、`kube-system`名前空間リソースのUIDフィールドがクライアントIDとして使用されます。登録時に、クライアントIDが`Cluster`リソースの{product_name}マネージャーに見つかった場合、そのエージェントはその`Cluster`に関連付けられます。 そのクライアントIDを持つ`Cluster`リソースが見つからない場合、新しい`Cluster`リソースが特定のクライアントIDで作成されます。
+
+{product_name}エージェントはHelmチャートとしてインストールされます。ヘルムチャートのインストールに必要なパラメータは、クラスター登録トークンのみであり、これは`values.yaml`ファイルで表され、クライアントIDです。 クライアントIDはオプションです。
+
+まず、選択したランダムなクライアントIDで`Cluster`を{product_name}マネージャーに作成します。
+
+[,yaml]
+----
+kind: Cluster
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: my-cluster
+  namespace: clusters
+spec:
+  clientID: "really-random"
+----
+
+次に、[クラスター登録トークンの指示](#create-cluster-registration-tokens)に従って、使用する`values.yaml`ファイルを取得します。
+
+次に、クライアントIDを使用するように環境をセットアップします。
+
+[,shell]
+----
+CLUSTER_CLIENT_ID="really-random"
+----
+
+[NOTE]
+====
+
+*適切なネームスペースとリリース名を使用してください*:
+エージェントチャートのネームスペースは`cattle-fleet-system`で、リリース名は`fleet-agent`でなければなりません。
+====
+
+
+[NOTE]
+====
+
+*正しいクラスターにインストールしていることを確認してください*:
+Helmは`${HOME}/.kube/config`のデフォルトコンテキストを使用してエージェントをデプロイします。`--kubeconfig`と`--kube-context`を使用して、Helmがインストールするクラスターを変更します。
+====
+
+
+FleetのHelmリポジトリを追加します。
+
+[,shell]
+----
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+最後に、Helmを使用してエージェントをインストールします。
+
+[tabs]
+====
+クライアントマシンに::
++
+[,shell]
+----
+helm -n cattle-fleet-system install --create-namespace --wait \
+    --set clientID="$CLUSTER_CLIENT_ID" \
+    --values values.yaml \
+    fleet-agent fleet/fleet-agent
+----
+
+確認::
++
+以下のコマンドを実行して、Fleetポッドのステータスを確認できます。
++
+[,shell]
+----
+# Ensure kubectl is pointing to the right cluster kubectl -n cattle-fleet-system logs -l app=fleet-agent kubectl -n cattle-fleet-system get pods -l app=fleet-agent
+----
+
+====
+
+エージェントは今やデプロイされているはずです。
+
+さらに、{product_name}マネージャーに新しいクラスターが登録されているのが見えるはずです。 以下は、新しいクラスターが`clusters` xref:explanations/namespaces.adoc[ネームスペース]に登録されたことを確認する例です。 このコマンドを実行するには、`${HOME}/.kube/config`がFleetマネージャーを指していることを確認してください。
+
+[,shell]
+----
+kubectl -n clusters get clusters.fleet.cattle.io
+----
+
+----
+NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAST-SEEN              STATUS
+my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
+----
+
+=== クラスター登録トークンを作成します。
+
+[IMPORTANT]
+====
+
+*マネージャーが開始した登録には不要です*：
+マネージャーが開始した登録の場合、トークンは{product_name}マネージャーによって管理され、手動で作成および取得する必要はありません。
+====
+
+
+エージェントが開始した登録の場合、ダウンストリームのクラスターにはxref:explanations/architecture.adoc#_security[クラスター登録トークン]が必要です。
+クラスター登録トークンは、クラスターの新しいアイデンティティを確立するために使用されます。内部的に、クラスター登録トークンは、特定の名前空間内で`ClusterRegistrationRequests`を作成する権限を持つKubernetesサービスアカウントを作成することによって管理されます。 クラスターが登録されると、そのクラスターのために新しい`ServiceAccount`が作成され、クラスターのユニークなアイデンティティとして使用されます。エージェントは、登録後にクラスター登録トークンを忘れるように設計されています。エージェントは成功した登録後にクラスター登録トークンへの参照を保持しませんが、通常は他のシステムブートストラップスクリプトが保持しますのでご注意ください。
+
+クラスター登録トークンが忘れられるため、クラスターを再登録する必要がある場合は、新しい登録トークンをクラスターに与える必要があります。
+
+==== トークンのTTL
+
+クラスター登録トークンは、ネームスペース内の任意のクラスターによって再利用できます。 トークンにはTTLを設定でき、特定の時間が経過した後に期限切れになります。
+
+==== 新しいトークンを作成します。
+
+`ClusterRegistationToken`はネームスペース型であり、`GitRepo`および`ClusterGroup`リソースを作成するのと同じネームスペースで作成する必要があります。{product_name}でネームスペースがどのように使用されるかの詳細については、xref:explanations/namespaces.adoc[ネームスペース]に関するドキュメントを参照してください。 以下のYAMLで新しいトークンを作成します。
+
+[,yaml]
+----
+kind: ClusterRegistrationToken
+apiVersion: "fleet.cattle.io/v1alpha1"
+metadata:
+    name: new-token
+    namespace: clusters
+spec:
+    # A duration string for how long this token is valid for. A value <= 0 or null means infinite time.
+    ttl: 240h
+----
+
+`ClusterRegistrationToken`が作成されると、{product_name}は同じ名前の対応する`Secret`を作成します。
+`Secret`の作成は非同期で行われるため、使用する前に利用可能になるまで待つ必要があります。
+
+その方法の一つは、以下のワンライナーを使用することです：
+
+[,shell]
+----
+while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
+----
+
+==== トークン値の取得（エージェントのvalues.yaml）
+
+トークン値には、ダウンストリームクラスターに{product_name}エージェントをインストールするために`helm install`に渡されることが期待される`values.yaml`ファイルのYAMLコンテンツが含まれています。
+
+その値は、上記の`Secret`の`values`フィールドに含まれています。上記の例のYAMLコンテンツを取得するには、以下のワンライナーを実行できます：
+
+[,shell]
+----
+kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' | base64 --decode > values.yaml
+----
+
+`values.yaml`が準備できると、TTLの期限が切れるまで、各クラスターがそのを用いて登録を繰り返すことができます。
+
+== マネージャーによる開始
+
+マネージャーが開始する登録フローは、{product_name}マネージャー内に、データフィールドに`value`と呼ばれる有効なkubeconfigファイルを含むKubernetesの`Secret`を参照する`Cluster`リソースを作成することによって実現されます。
+
+[IMPORTANT]
+====
+{product_name}スタンドアロン_Rancherなし_を使用している場合は、xref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[インストールの詳細]に記載されているようにインストールする必要があります。
+
+マネージャーが開始した登録は、Rancherダッシュボードからクラスタを追加する際に使用されます。
+====
+
+
+=== Kubeconfigシークレットを作成する
+
+このシークレットの形式は、 https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[形式]が https://github.com/kubernetes-sigs/cluster-api[cluster-api]で使用されるkubeconfigシークレットと一致することを意図しています。
+これは、`cluster-api`を使用して{product_name}に動的に登録されるクラスタを作成できることを意味します。
+
+[,yaml]
+----
+title="Kubeconfig Secret Example"
+kind: Secret
+apiVersion: v1
+metadata:
+  name: my-cluster-kubeconfig
+  namespace: clusters
+data:
+  value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
+----
+
+== クラスタリソースを作成する
+
+クラスタリソースはkubeconfigシークレットを参照する必要があります。
+
+[,yaml]
+----
+title="Cluster Resource Example"
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: clusters
+  labels:
+    demo: "true"
+    env: dev
+spec:
+  kubeConfigSecret: my-cluster-kubeconfig
+----

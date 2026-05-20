@@ -1,0 +1,236 @@
+= マルチユーザーのセットアップ
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name}は可能な限りKubernetes RBACを使用します。
+
+RBACに追加されるのは、xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`]リソースで、これはネームスペース内のGitRepoリソースを制御するために使用できます。
+
+マルチユーザーFleetセットアップは次のようになります：
+
+* テナントはネームスペースを共有せず、各テナントはアップストリームクラスタ上に1つ以上のネームスペースを持ち、そこでGitRepoリソースを作成できます。
+* テナントはクラスタ全体のリソースをデプロイできず、ダウンストリームクラスタ上の特定のネームスペースに制限されています。
+* クラスターは別のネームスペースにあります。
+
+image::FleetSharedClusters.svg[共有クラスター]
+
+[CAUTION]
+.重要な情報
+====
+
+テナントの隔離は完全ではなく、Kubernetes RBACが正しく設定されることに依存しています。オペレーターによる手動設定がない限り、テナントはクラスター全体のリソースをデプロイすることができます。利用可能な{product_name}制限があっても、ユーザーはネームスペースにのみ制限されており、ネームスペース自体はあまり隔離を提供しません。例えば、彼らは好きなだけリソースを消費することができます。
+
+しかし、既存の{product_name}制限により、ユーザーはクラスターを共有し、リソースを競合なくデプロイすることができます。
+====
+
+
+== 例{product_name}スタンドアロン
+
+これにより、'fleetuser'というユーザーが作成され、'project1'ネームスペース内のGitRepoリソースのみを管理できます。
+
+[,bash]
+----
+ kubectl create serviceaccount fleetuser
+ kubectl create namespace project1
+ kubectl create -n project1 role fleetuser --verb=get --verb=list --verb=create --verb=delete --resource=gitrepos.fleet.cattle.io
+ kubectl create -n project1 rolebinding fleetuser --serviceaccount=default:fleetuser --role=fleetuser
+----
+
+複数のネームスペースへのアクセスを提供したい場合は、2つのロールバインディングを持つ単一のクラスター役割を使用できます：
+
+[,bash]
+----
+ kubectl create clusterrole fleetuser --verb=get --verb=list --verb=create --verb=delete --resource=gitrepos.fleet.cattle.io
+ kubectl create -n project1 rolebinding fleetuser --serviceaccount=default:fleetuser --clusterrole=fleetuser
+ kubectl create -n project2 rolebinding fleetuser --serviceaccount=default:fleetuser --clusterrole=fleetuser
+----
+
+これにより、テナントは他のテナントのネームスペースにアクセスできないため、GitRepoリソースに干渉できません。
+
+== Rancherにおける隔離されたワークスペース
+
+会社内の特定のグループ/組織に属するユーザーは、同じ会社の他のグループ/組織のユーザーに対して自分のクラスターの可視性を無効にしたい場合があります。
+
+この隔離を実現するために、Rancherは特定のKubernetesリソースに対するユーザーの権限を許可するための`GlobalRoles`を提供します。`GlobalRoles`は、`NamespacedRules`のおかげで、クラスター内の特定のネームスペースへのアクセスを制限する能力を持っています。
+
+新しいFleetワークスペースが作成されると、同一の名前を持つネームスペースがRancherローカルクラスタ内に自動的に生成されます。
+ユーザーが特定のワークスペースでFleetリソースを表示およびデプロイするには、少なくとも以下の権限が必要です：
+
+* ローカルクラスタ内の`fleetworkspace`クラスター全体のリソースをリスト/取得する権限
+* ローカルクラスタ内のワークスペースのバックエンドネームスペースでFleetリソース（`bundles`、`gitrepos`、...など）を作成する権限。
+
+`project1`および`project2`FleetワークスペースでFleetリソースをデプロイする権限を付与しましょう：
+
+ifeval::["{product}" == "fleet"]
+* `project1`および`project2`Fleetワークスペースを作成するには、 https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#accessing-fleet-in-the-rancher-ui[Rancher UI]で行うか、以下のYAMLリソースを使用できます：
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+* `project1`および`project2`Fleetワークスペースを作成するには、 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_accessing_suse_rancher_prime_continuous_delivery_in_the_rancher_ui[Rancher UI]で行うか、以下のYAMLリソースを使用できます：
+
+endif::[]
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project1
+----
+
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project2
+----
+
+* `GlobalRole`を作成して、`project1`および`project2`FleetワークスペースにおいてFleetリソースをデプロイする権限を付与します：
+
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: GlobalRole
+metadata:
+  name: fleet-projects1and2
+namespacedRules:
+  project1:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - bundles
+        - clusterregistrationtokens
+        - gitreporestrictions
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+  project2:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - bundles
+        - clusterregistrationtokens
+        - gitreporestrictions
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+rules:
+  - apiGroups:
+      - management.cattle.io
+    resourceNames:
+      - project1
+      - project2
+    resources:
+      - fleetworkspaces
+    verbs:
+      - '*'
+----
+
+ifeval::["{product}" == "fleet"]
+`GlobalRole`をユーザーまたはグループに割り当てます。詳細は https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher docs]で確認できます。
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+`GlobalRole`をユーザーまたはグループに割り当てます。詳細は https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher docs]で確認できます。
+endif::[]
+
+ユーザーは現在、Rancherの`Continuous Delivery`タブにアクセスでき、`project1`および`project2`ワークスペースの両方にFleetリソースをデプロイできます。
+
+整理された環境を持つために、各ワークスペースには顧客が必要とする職務の分離と隔離を助けるための関連する`GlobalRole`が必要です。このようにして、各ユーザーはニーズに応じて1つ以上の`GlobalRoles`に割り当てることができます。
+
+== クラスターへのアクセスを許可する
+
+これは、'fleetuser'によって作成されたすべてのGitRepoが`team: one`ラベルを持っていると仮定します。異なるラベルを使用して、異なるクラスターのネームスペースを選択することができます。
+
+各ユーザーのネームスペース内で、管理者としてxref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`]を作成します。
+
+[,yaml]
+....
+kind: BundleNamespaceMapping
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: mapping
+  namespace: project1
+
+# Bundles to match by label.
+# The labels are defined in the fleet.yaml # labels field or from the
+# GitRepo metadata.labels field
+bundleSelector:
+  matchLabels:
+    team: one
+    # or target one repo
+    #fleet.cattle.io/repo-name: simpleapp
+
+# Namespaces, containing clusters, to match by label
+namespaceSelector:
+  matchLabels:
+    kubernetes.io/metadata.name: fleet-default
+    # the label is on the namespace
+    #workspace: prod
+....
+
+GitRepoリソース内のxref:how-tos-for-users/gitrepo-targets.adoc[`target`セクション]は、一致したクラスターのサブセットにのみFleetリソースをデプロイするために使用できます。
+
+== ダウンストリームクラスターへのアクセスを制限する
+
+管理者は、各ネームスペース内に`GitRepoRestriction`を作成することでテナントをさらに制限できます。
+
+[,yaml]
+....
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: project1
+
+allowedTargetNamespaces:
+  - project1simpleapp
+....
+
+これにより、クラスター全体のリソースの作成が拒否され、他のテナントに干渉し、'project1simpleapp'ネームスペースへのデプロイが制限される可能性があります。
+
+== GitRepoリソースの例
+
+テナントによって作成されたGitRepoリソースで、管理者アクセスがない場合は次のようになります：
+
+[,yaml]
+....
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: simpleapp
+  namespace: project1
+  labels:
+    team: one
+
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - bundle-diffs
+
+  targetNamespace: project1simpleapp
+
+  # do not match the upstream/local cluster, won't work
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+....
+
+これには`team: one`ラベルと必要な`targetNamespace`が含まれます。
+
+前の`BundleNamespaceMapping`と合わせて、'fleet-default'ネームスペース内の`env: dev`ラベルを持つすべてのクラスターを対象とします。
+
+[NOTE]
+====
+
+`BundleNamespaceMappings`はローカルクラスタでは機能しないため、それらを対象にしないようにしてください。
+====
+

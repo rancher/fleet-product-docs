@@ -1,0 +1,21 @@
+= Fleet Cleanup
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Veraltete Ressourcen bereinigen
+
+----
+fleet cleanup [flags]
+----
+
+== Optionen
+
+----
+  -h, --help   help for cleanup
+----
+
+== SIEHE AUCH
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name} Operationen verwalten
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Fleet Cleanup Clusterregistrierung]     - Veraltete Clusterregistrierungen bereinigen
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Fleet Cleanup Gitjob]     - Veraltete Gitjobs bereinigen

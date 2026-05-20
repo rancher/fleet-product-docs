@@ -1,0 +1,77 @@
+= 卸装
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+[CAUTION]
+====
+删除 CRD 将删除所有已部署的工作负载。
+====
+
+
+== {product_name} 独立
+
+{product_name} 被打包为两个 Helm 图表，因此卸载是通过卸载相应的 Helm 图表来完成的。
+
+然而，{product_name} 使用了 https://kubernetes.io/docs/concepts/overview/working-with-objects/finalizers/[finalizers]，因此请先卸载工作负载，以便 {product_name} 控制器有时间进行清理。
+
+[source,shell]
+----
+kubectl delete clusters.fleet.cattle.io -A
+kubectl delete gitrepos -A
+kubectl delete bundles -A
+----
+
+请注意，删除包含工作负载的名称空间可能更容易，例如：
+
+[source,shell]
+----
+kubectl delete ns fleet-local
+kubectl delete ns fleet-default
+----
+
+自定义资源不会被 Helm 3 卸载，请先删除它们：
+
+[source,shell]
+----
+kubectl delete crd gitrepos.fleet.cattle.io bundles.fleet.cattle.io contents.fleet.cattle.io \
+  bundledeployments.fleet.cattle.io imagescans.fleet.cattle.io \
+  bundlenamespacemappings.fleet.cattle.io gitreporestrictions.fleet.cattle.io \
+  clusters.fleet.cattle.io clustergroups.fleet.cattle.io \
+  clusterregistrations.fleet.cattle.io clusterregistrationtokens.fleet.cattle.io
+----
+
+然后，要卸载 {product_name}，请运行以下命令：
+
+[,shell]
+----
+helm -n cattle-fleet-system uninstall fleet
+helm -n cattle-fleet-system uninstall fleet-crd
+----
+
+[NOTE]
+====
+如果卸载卡住，可能是由于 finalizers。资源状态字段，例如在名称空间上，将列出等待其 finalizers 被移除的资源。如果其控制器不再运行，可以使用 kubectl 手动删除 finalizers。
+====
+
+
+之后，还可以删除与 {product_name} 相关的名称空间及其内容：
+
+[source,shell]
+----
+kubectl delete ns cattle-fleet-system
+kubectl delete ns cattle-fleet-clusters-system
+kubectl delete ns -l "fleet.cattle.io/managed=true"
+----
+
+== {product_name} 在 Rancher 中
+
+{product_name}在不卸载 Rancher 的情况下，无法卸载。但是，可以禁用 GitOps 功能。
+禁用后，gitjob 部署将不再部署到 Rancher 服务器的本地群集中，并且在 Rancher UI 中不会显示持续交付。
+
+ifeval::["{product}" == "fleet"]
+更多信息请参见 Rancher 文档： https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-experimental-features/continuous-delivery.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+更多信息请参见 Rancher 文档： https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/experimental-features/continuous-delivery.html.
+endif::[]

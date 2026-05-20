@@ -1,0 +1,65 @@
+= 从OCI注册表获取Helm图表
+:revdate: 2025-09-01
+:page-revdate: {revdate}
+
+{product_name}支持从OCI注册表中提取Helm图表。OCI注册表通常用于存储和分发容器镜像。通过将它们用于Helm图表，您可以应用与容器镜像相同的打包、身份验证和分发方法。
+
+使用OCI注册表存储Helm图表可以帮助您：
+
+* 在同一注册表中将图表与容器镜像一起存储。
+* 使用您已经应用于容器镜像的相同身份验证和访问控制。
+* 使用标准OCI命令推送和拉取图表，使其在不同环境中易于分发。
+* 在为高可用性和全球分发而设计的注册表中管理图表。
+
+有关使用OCI注册表的HelmOps的更多信息，请参阅xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOps]。
+
+image::fetch-Helm-from-OCI.svg[展示从OCI注册表获取Helm图表流程的可视资产]
+
+例如，如果您管理多个集群并使用{product_name}，开发人员可以将Helm图表推送到内部OCI注册表。{product_name}然后直接从注册表中拉取图表并将其部署到下游集群。
+这种方法避免了维护单独的图表储存库，并重用您现有的注册表基础设施。
+
+== fleet.yaml中的Helm图表
+
+要从OCI注册表获取Helm图表，请在`repo`文件中使用`fleet.yaml`字段引用该图表：
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+----
+
+您可以使用`version`字段引用特定的图表版本：
+
+[source,yaml]
+----
+helm:
+  repo: "oci://ghcr.io/fleetrepoci/guestbook"
+  version: 0.1.0
+----
+
+{product_name}从OCI注册表中拉取图表并将其部署到目标集群。
+
+[NOTE]
+====
+`repo`字段是在`fleet.yaml`文件中指定OCI注册表URL的标准方式。这与在HelmOp资源中引用OCI注册表的方式一致。
+====
+
+=== 弃用：OCI URL 在 `helm.chart` 中
+
+在此更改之前，{product_name} 期望将 OCI URL 放置在 `chart` 字段中，而不是 `repo`：
+
+[source,yaml]
+----
+helm:
+  chart: "oci://ghcr.io/fleetrepoci/guestbook"  # <1>
+  version: 0.1.0
+----
+<1> 弃用：请改用 `helm.repo`。
+
+此表单仍可用于向后兼容，但弃用，并将在 {product_name} 日志中产生警告。迁移现有的 `fleet.yaml` 文件以使用 `helm.repo` 作为 OCI URL。
+
+== 使用经过身份验证的注册表
+
+如果 OCI 注册表需要身份验证，请在 GitRepo 资源中引用 Kubernetes 秘密。{product_name} 使用此秘密来拉取图表并将其部署到目标集群。
+
+有关更多信息，请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml 及身份验证].

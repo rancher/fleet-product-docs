@@ -1,0 +1,55 @@
+= Copiar automáticamente recursos a clústeres en sentido descendente
+:revdate: 4/11/2025
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Esta es una función experimental.
+====
+
+A partir de {product_name} v0.14.0, {product_name} admite la propagación de recursos externos a clústeres en sentido descendente.
+
+Esto simplifica el manejo de las dependencias de los charts, como los valores que provienen de recursos externos.
+Ver también xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
+
+== Funcionamiento
+
+HelmOps admite un nuevo campo `downstreamResources`, que se puede utilizar para referenciar recursos por tipo y nombre.
+Esos recursos deben:
+
+* Ser secretos o mapas de configuración. No se admiten otros `kind`s en este momento.
+* Existir antes de ser referenciados desde el HelmOp, y vivir en el mismo espacio de nombres que el HelmOp que los referencia.
+
+Ejemplo:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+[...] # metadata
+spec:
+  helm:
+    [...] # Helm options
+  downstreamResources:
+    - kind: Secret
+      name: my-secret
+    - kind: ConfigMap
+      name: my-config
+----
+
+Esto instruye al controlador de Fleet a copiar esos recursos a cada clúster descendente destinado, antes de desplegar la carga de trabajo (en este caso especificada mediante un chart de Helm) en dicho clúster descendente.
+
+Cuando un clúster ya no está destinado, el Fleet agent también eliminará esos recursos del clúster. Sin embargo, permanecerán en el clúster en sentido ascendente.
+
+[NOTE]
+====
+Si los recursos referenciados a través de `downstreamResources` deben permanecer en los clústeres descendentes incluso después de que ya no estén destinados, xref:/reference/ref-bundle.adoc[keepResources] debe establecerse en `true` en el HelmOp.
+====
+
+== Monitorización
+
+A partir de la versión v0.15.0, {product_name} monitorea los cambios realizados en secretos y mapas de configuración que están listados en `DownstreamResources`. También verifica si un secreto o mapa de configuración fue creado después de que se creó el Bundle.
+
+Cuando se crea o actualiza un secreto o mapa de configuración referenciado en el clúster en sentido ascendente, Fleet propagará esos cambios a los clústeres en sentido descendente y volverá a desplegar la carga de trabajo.
+
+Esto permite que los despliegues utilicen las versiones más recientes de esos recursos referenciados, que pueden representar configuración, valores de Helm, etc.

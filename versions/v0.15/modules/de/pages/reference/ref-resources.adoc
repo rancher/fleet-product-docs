@@ -1,0 +1,95 @@
+= Liste der bereitgestellten Ressourcen
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Nach der Installation von {product_name} in Rancher werden diese Ressourcen im Upstream-Cluster erstellt.
+
+Siehe auch xref:explanations/namespaces.adoc[Namespaces].
+
+== Von Helm, Initial setup
+
+[cols="1,1,1",options="header"]
+|===
+|Typ |Name |Namespace
+
+|ClusterRole |fleet-controller |-
+|ClusterRole |gitjob |-
+|ClusterRoleBinding |fleet-controller |-
+|ClusterRoleBinding |gitjob-binding |-
+|ConfigMap |fleet-controller |cattle-fleet-system
+|Bereitstellung |fleet-controller |cattle-fleet-system
+|Bereitstellung |gitjob |cattle-fleet-system
+|Rolle |fleet-controller |cattle-fleet-system
+|Rolle |gitjob |cattle-fleet-system
+|RoleBinding |fleet-controller |cattle-fleet-system
+|RoleBinding |gitjob |cattle-fleet-system
+|Service |gitjob |cattle-fleet-system
+|ServiceAccount |fleet-controller |cattle-fleet-system
+|ServiceAccount |gitjob |cattle-fleet-system
+|===
+
+== Erstellt von Bootstrap
+
+[cols="1,1,1",options="header"]
+|===
+|Typ |Name |Namespace
+
+|clusters.fleet.cattle.io |lokal |fleet-local
+|clusters.provisioning.cattle.io |lokal |fleet-local
+|clusters.management.cattle.io |lokal |-
+|ClusterGroup |default |fleet-local
+|Bundle |fleet-agent-local |fleet-local
+|===
+
+== Für jeden registrierten Cluster
+
+[cols="1,1,1",options="header"]
+|===
+|Typ |Name |Namespace
+
+|clusters.provisioning.cattle.io | |fleet-default (default)
+|clusters.management.cattle.io |generiert |-
+|clusters.fleet.cattle.io | |fleet-default
+|Secret (opaque) |kubeconfig |fleet-default
+|ClusterRegistrationToken | |fleet-default
+|ServiceAccount |Importieren |fleet-default
+|RoleBinding |Anforderung |fleet-default
+|RoleBinding |Anforderung |cluster-fleet-default
+|Rolle |Anforderung |cluster-fleet-default
+|Secret (service-account-token) |import-token |fleet-default
+|Namespace |cluster-fleet-default |-
+|ClusterRegistration |fleet-default |
+|ServiceAccount |Anforderung |fleet-default
+|Secret (agent-credential) |c-ID |fleet-default
+|Secret (service-account-token) |request-token |fleet-default
+|Bundle |fleet-agent-name |fleet-name
+|BundleDeployment |fleet-agent-name |cluster-fleet-default
+|===
+
+== Für jedes Bundle, pro Cluster
+
+[cols="1,1,1",options="header"]
+|===
+|Typ |Name |Namespace
+
+|Bundle |name |fleet-default
+|Secret (bundle) |name |fleet-default
+|BundleDeployment |name |cluster-fleet-default
+|Secret (bundle-deployment) |name |cluster-fleet-default
+|Secret (opaque, content-access) |name |cluster-fleet-default
+|Inhalt |- |-
+|===
+
+== Für jedes GitRepo
+
+[cols="1,1,1",options="header"]
+|===
+|Typ |Name |Namespace
+
+|ServiceAccount |name |fleet-default
+|Rolle |name |fleet-default
+|RoleBinding |name |fleet-default
+|Auftrag |name |fleet-default
+|ConfigMap |name-config |fleet-default
+|Geheim |name-cabundle |fleet-default
+|===

@@ -1,0 +1,21 @@
+= Nettoyage de Fleet
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Nettoyer les ressources obsolètes
+
+----
+fleet cleanup [flags]
+----
+
+== Options
+
+----
+  -h, --help   help for cleanup
+----
+
+== VOIR ÉGALEMENT
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]     - Gérer {product_name} les opérations
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[fleet cleanup clusterregistration]     - Nettoyer les enregistrements de cluster obsolètes
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[fleet cleanup gitjob]     - Nettoyer les travaux git obsolètes

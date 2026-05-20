@@ -1,0 +1,455 @@
+= 変更された GitRepos を無視するための Diffs を生成する
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Rancher における継続的デリバリは {product_name} によって支えられています。ユーザーが GitRepo CR を追加すると、継続的デリバリは関連するフリートバンドルを作成します。
+
+これらのバンドルには、クラスターエクスプローラー（ダッシュボード UI）に移動し、`Bundles` セクションを選択することでアクセスできます。
+
+バンドルされたチャートには、実行時に修正されるオブジェクトが含まれている場合があります。たとえば、ValidatingWebhookConfiguration では `caBundle` が空で、CA 証明書はクラスターによって注入されます。
+
+これにより、バンドルと関連する GitRepo のステータスが「変更済み」として報告されます。
+
+image::ModifiedGitRepo.png[スタティック, 600]
+
+関連バンドル
+
+image::ModifiedBundle.png[スタティック, 600]
+
+{product_name} バンドルはカスタム http://jsonpatch.com/[jsonPointer パッチ] を指定する機能をサポートします。
+
+パッチを使用すると、ユーザーは {product_name} にオブジェクトの変更と全オブジェクトを無視するよう指示できます。
+
+== `fleet bundlediff` を使用して comparePatches を生成する
+
+`fleet bundlediff` CLI コマンドは、すでに `Bundle` と `BundleDeployment` ステータスフィールドに存在する diff 情報を読み取り、人間が読みやすい形式で表示します。
+また、観察されたドリフトを手動で JSON パッチパスを構築することなく受け入れるために、`diff:` 形式の使用可能な `fleet.yaml` スニペットを生成することもできます。
+
+=== diff を表示する
+
+[source,bash]
+----
+# Show all diffs across all namespaces, grouped by Bundle
+fleet bundlediff
+
+# Show diffs for a specific Bundle
+fleet bundlediff --bundle my-bundle
+
+# Show diffs for a specific BundleDeployment
+fleet bundlediff --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Output in JSON format
+fleet bundlediff --json
+----
+
+デフォルトのテキスト出力は結果を `Bundle` でグループ化し、各変更されたリソースまたは準備が整っていないリソースをその JSON マージパッチと共にリストします。
+
+[source,yaml]
+----
+Bundle: my-bundle
+BundleDeployments with diffs: 1
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  BundleDeployment: cluster-fleet-local-local-abc123/my-bundle-deployment
+  Modified Resources (1):
+    Resource: ConfigMap.v1 default/my-config
+    Status: Modified
+    Patch:
+    {
+      "metadata": {
+        "annotations": {
+          "timestamp": "2024-01-15T10:30:00Z"
+        }
+      }
+    }
+----
+
+=== `fleet.yaml` `comparePatches` スニペットを生成する
+
+`--fleet-yaml` を `--bundle-deployment` と組み合わせて使用し、`diff:` ブロックを生成して直接 `fleet.yaml` に貼り付けることができます。コマンドは観察された JSON マージパッチを `remove` 操作に変換し、`comparePatches` にすでに構成されている `Bundle` とマージするため、既存の無視がそのまま保持されます。
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123
+----
+
+出力の例：
+
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: v1
+    kind: ConfigMap
+    name: my-config
+    namespace: default
+    operations:
+    - op: remove
+      path: /metadata/annotations/timestamp
+----
+
+出力をリダイレクトし、Git の `fleet.yaml` に追加できます。
+
+[source,bash]
+----
+fleet bundlediff \
+  --fleet-yaml \
+  --bundle-deployment my-bundle-deployment \
+  -n cluster-fleet-local-local-abc123 >> fleet.yaml
+----
+
+更新された `fleet.yaml` をコミットしてプッシュした後、{product_name} は変更を調整し、バンドルは *変更済み* から *準備完了* に移行します。フィールド自体は元に戻されません。{product_name}単にドリフトとして報告するのを停止します。
+
+
+[NOTE]
+====
+`--fleet-yaml`フラグは`--bundle-deployment`を必要とします。生成された出力は、関連する`comparePatches`からの既存の`Bundle`とマージされます。
+====
+
+完全なフラグの参照については、xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
+[{product_name} bundlediff]を参照してください。
+
+== オブジェクトの変更を無視する
+
+=== シンプルな例
+
+このシンプルな例では、バンドルの差分を適用するServiceとConfigMapを作成します。
+
+https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
+
+=== ゲートキーパーの例
+
+この例では、継続的デリバリを使用してopa-gatekeeperをクラスターにデプロイしようとしています。
+
+opa GitRepoに関連付けられたopa-gatekeeperバンドルは、変更された状態にあります。
+
+GitRepo CR内の各パスには、関連するBundle CRがあります。ユーザーはBundlesを表示でき、Bundleのステータスに必要な関連する差分を確認できます。
+
+私たちのケースでは、検出された違いは次のとおりです：
+
+[source,yaml]
+----
+  summary:
+    desiredReady: 1
+    modified: 1
+    nonReadyResources:
+    - bundleState: Modified
+      modifiedStatus:
+      - apiVersion: admissionregistration.k8s.io/v1
+        kind: ValidatingWebhookConfiguration
+        name: gatekeeper-validating-webhook-configuration
+        patch: '{"$setElementOrder/webhooks":[{"name":"validation.gatekeeper.sh"},{"name":"check-ignore-label.gatekeeper.sh"}],"webhooks":[{"clientConfig":{"caBundle":"Cg=="},"name":"validation.gatekeeper.sh","rules":[{"apiGroups":["*"],"apiVersions":["*"],"operations":["CREATE","UPDATE"],"resources":["*"]}]},{"clientConfig":{"caBundle":"Cg=="},"name":"check-ignore-label.gatekeeper.sh","rules":[{"apiGroups":[""],"apiVersions":["*"],"operations":["CREATE","UPDATE"],"resources":["namespaces"]}]}]}'
+      - apiVersion: apps/v1
+        kind: Deployment
+        name: gatekeeper-audit
+        namespace: cattle-gatekeeper-system
+        patch: '{"spec":{"template":{"spec":{"$setElementOrder/containers":[{"name":"manager"}],"containers":[{"name":"manager","resources":{"limits":{"cpu":"1000m"}}}],"tolerations":[]}}}}'
+      - apiVersion: apps/v1
+        kind: Deployment
+        name: gatekeeper-controller-manager
+        namespace: cattle-gatekeeper-system
+        patch: '{"spec":{"template":{"spec":{"$setElementOrder/containers":[{"name":"manager"}],"containers":[{"name":"manager","resources":{"limits":{"cpu":"1000m"}}}],"tolerations":[]}}}}'
+----
+
+この要約に基づいて、パッチが必要なオブジェクトは3つあります。
+
+これらを一度に1つずつ見ていきます。
+
+==== 1.ValidatingWebhookConfiguration：
+
+gatekeeper-validating-webhook-configurationの検証Webhookには、仕様に2つのValidatingWebhooksがあります。
+
+フィールド内の要素が1つ以上パッチを必要とする場合、そのパッチはこれを`$setElementOrder/ELEMENTNAME`と呼びます。
+
+この情報から、問題の2つのValidatingWebhooksが次のように示されます：
+[source,json]
+----
+  "$setElementOrder/webhooks": [
+    {
+      "name": "validation.gatekeeper.sh"
+    },
+    {
+      "name": "check-ignore-label.gatekeeper.sh"
+    }
+  ],
+----
+
+各ValidatingWebhook内で無視する必要があるフィールドは次のとおりです：
+
+[source,json]
+----
+    {
+      "clientConfig": {
+        "caBundle": "Cg=="
+      },
+      "name": "validation.gatekeeper.sh",
+      "rules": [
+        {
+          "apiGroups": [
+            "*"
+          ],
+          "apiVersions": [
+            "*"
+          ],
+          "operations": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "resources": [
+            "*"
+          ]
+        }
+      ]
+    },
+----
+
+および
+
+[source,json]
+----
+     {
+      "clientConfig": {
+        "caBundle": "Cg=="
+      },
+      "name": "check-ignore-label.gatekeeper.sh",
+      "rules": [
+        {
+          "apiGroups": [
+            ""
+          ],
+          "apiVersions": [
+            "*"
+          ],
+          "operations": [
+            "CREATE",
+            "UPDATE"
+          ],
+          "resources": [
+            "namespaces"
+          ]
+        }
+      ]
+    }
+----
+
+要約すると、パッチ仕様でフィールド`rules`と`clientConfig.caBundle`を無視する必要があります。
+
+ValidatingWebhookConfigurationのspecにあるフィールドwebhookは配列であるため、要素をインデックス値で指定する必要があります。
+
+image::WebhookConfigurationSpec.png[スタティック, 600]
+
+この情報に基づいて、私たちのdiffパッチは次のようになります：
+
+[source,yaml]
+----
+  - apiVersion: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    name: gatekeeper-validating-webhook-configuration
+    operations:
+    - {"op": "remove", "path":"/webhooks/0/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/0/rules"}
+    - {"op": "remove", "path":"/webhooks/1/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/1/rules"}
+----
+
+==== 2.Deployment gatekeeper-controller-manager：
+
+gatekeeper-controller-managerのデプロイメントは、CPU制限と許容が適用されているため（実際のバンドルには含まれていません）、修正されています。
+
+[source,json]
+----
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "$setElementOrder/containers": [
+          {
+            "name": "manager"
+          }
+        ],
+        "containers": [
+          {
+            "name": "manager",
+            "resources": {
+              "limits": {
+                "cpu": "1000m"
+              }
+            }
+          }
+        ],
+        "tolerations": []
+      }
+    }
+  }
+}
+----
+
+この場合、デプロイメントコンテナspecには1つのコンテナしかなく、そのコンテナにはCPU制限と許容が追加されています。
+
+この情報に基づいて、私たちのdiffパッチは次のようになります：
+
+[source,yaml]
+----
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-controller-manager
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+----
+
+==== 3.Deployment gatekeeper-audit：
+
+gatekeeper-auditのデプロイメントは、gatekeeper-controller-managerと同様に、追加のCPU制限と許容が適用されて修正されています。
+
+[source,json]
+----
+{
+  "spec": {
+    "template": {
+      "spec": {
+        "$setElementOrder/containers": [
+          {
+            "name": "manager"
+          }
+        ],
+        "containers": [
+          {
+            "name": "manager",
+            "resources": {
+              "limits": {
+                "cpu": "1000m"
+              }
+            }
+          }
+        ],
+        "tolerations": []
+      }
+    }
+  }
+}
+----
+
+gatekeeper-controller-managerと同様に、デプロイメントのコンテナspecには1つのコンテナしかなく、そのコンテナにはCPU制限と許容が追加されています。
+
+この情報に基づいて、私たちのdiffパッチは次のようになります：
+
+[source,yaml]
+----
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-audit
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+----
+
+==== すべてをまとめる
+
+これらのパッチを次のようにまとめることができます：
+
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-audit
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: gatekeeper-controller-manager
+    namespace: cattle-gatekeeper-system
+    operations:
+    - {"op": "remove", "path": "/spec/template/spec/containers/0/resources/limits/cpu"}
+    - {"op": "remove", "path": "/spec/template/spec/tolerations"}
+  - apiVersion: admissionregistration.k8s.io/v1
+    kind: ValidatingWebhookConfiguration
+    name: gatekeeper-validating-webhook-configuration
+    operations:
+    - {"op": "remove", "path":"/webhooks/0/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/0/rules"}
+    - {"op": "remove", "path":"/webhooks/1/clientConfig/caBundle"}
+    - {"op": "remove", "path":"/webhooks/1/rules"}
+----
+
+これらを今すぐバンドルに直接追加してテストし、同じものをあなたのGitRepoの`fleet.yaml`にコミットすることができます。
+
+これらが追加されると、GitRepoはデプロイされ、「アクティブ」ステータスになります。
+
+== 全体のオブジェクトを無視する
+
+link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul]のようなチャートをインストールすると、`consul-server-acl-init`という名前のジョブが作成され、正常に完了すると削除されます。
+
+そのチャートは、次のような`GitRepo`を使用してGitリポジトリを指す`fleet.yaml`を作成することでインストールできます：
+
+[source,yaml]
+----
+defaultNamespace: consul
+helm:
+  releaseName: test-consul
+  chart: "consul"
+  repo: "https://helm.releases.hashicorp.com"
+
+  values:
+    global:
+      name: consul
+      acls:
+        manageSystemACLs: true
+----
+
+このチャートをインストールすると、ジョブが完了した後、`GitRepo`が`Modified`ステータスを報告し、ジョブ`consul-server-acl-init`が存在しなくなります。
+
+これは、私たちの`fleet.yaml`における次のバンドルdiffで修正できます：
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: consul-server-acl-init
+    operations:
+    - {"op":"ignore"}
+----
+
+場合によっては、ジョブのフルネームが事前に知られていないことがあります。例えば、それが生成されるときです。
+さらに、特定のワークロードは同じネームスペース内に複数のジョブを作成する可能性があり、通常はジョブごとに1つのバンドルdiffが発生します。
+
+これらの状況を扱いやすくするために、ジョブを無視することもできます：
+
+- 名前に対する正規表現を通じて、その場合、上記の差分は次のようになります：
+[source,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: batch/v1
+    kind: Job
+    namespace: consul
+    name: 'consul-server.*'
+    operations:
+    - {"op":"ignore"}
+----
+
+- または空の `name` フィールドを指定するか、そのフィールドを完全に省略することによって、その場合、そのネームスペース（この例では `consul` ネームスペース）に存在するすべてのジョブは無視されます。
+
+サポートされている正規表現の構文に関する詳細情報は link:https://pkg.go.dev/regexp/syntax[こちら] です。
+
+== 水平ポッド自動スケーリング
+
+水平ポッドオートスケーラーによって参照されるデプロイメントまたはステートフルセットを扱う際、レプリカ数の更新に関してバンドルの差分はもはや必要ありません。
+Fleet agentはこれらの更新を自動的にフィルタリングします。その結果、ソースバンドルのデプロイメントは _変更されていない_ と見なされます。
+
+ただし、デプロイメントまたはステートフルセットの `replicas` フィールドが、参照している HPA によって許容される間隔の上限または下限を超える値に設定されている場合、その変更はソースバンドルのデプロイメントのステータスに表示されます。
+
+`autoscaling/v1` と `autoscaling/v2` の両方がサポートされています。
+
+HPA の空の `minReplicas` フィールドは `1` と解釈されます。

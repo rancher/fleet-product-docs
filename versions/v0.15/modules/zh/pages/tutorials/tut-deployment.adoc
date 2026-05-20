@@ -1,0 +1,465 @@
+:doctype: book
+
+= 创建部署
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+要将工作负载部署到下游集群，首先创建一个 Git 储存库，然后创建一个 GitRepo 资源并应用它。
+
+本教程使用 https://github.com/rancher/fleet-examples[fleet-examples] 储存库。
+
+[NOTE]
+====
+有关如何构建储存库和配置每个软件包的部署的更多详细信息，请参见 xref:explanations/gitrepo-content.adoc[GitRepo 内容]。
+有关每个 Git 储存库可用选项的更多详细信息，请参见 xref:how-tos-for-users/gitrepo-add.adoc[添加 GitRepo]。
+====
+
+
+== 单集群示例
+
+所有示例将内容部署到没有针对每个群集进行定制的群集。这是了解为{product_name}构建 Git 储存库基础知识的良好起点。
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+使用 Helm 的示例。我们正在将 https://github.com/rancher/fleet-examples/tree/master/single-cluster/helm[Helm 示例] 部署到本地群集。
++
+该储存库包含一个 helm chart 和一个可选的 `fleet.yaml` 来配置部署：
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-helm-example
+
+# Custom helm options
+helm:
+  # The release name to use. If empty a generated release name will be used
+  releaseName: guestbook
+
+  # The directory of the chart in the repo.  Also any valid go-getter supported
+  # URL can be used there is specify where to download the chart from.
+  # If repo below is set this value if the chart name in the repo
+  chart: ""
+
+  # An https to a valid Helm repository to download the chart from
+  repo: ""
+
+  # Used if repo is set to look up the version of the chart
+  version: ""
+
+  # Force recreate resource that can not be updated
+  force: false
+
+  # How long for helm to wait for the release to be active. If the value
+  # is less that or equal to zero, we will not wait in Helm
+  timeoutSeconds: 0
+
+  # Custom values that will be passed as values.yaml to the installation
+  values:
+    replicas: 2
+----
+
+Helm 多 Chart::
++
+一个 https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-multi-chart[从单个储存库部署多个 chart 的示例]。这与之前的示例类似，但将从子文件夹中部署三个 Helm chart，每个 chart 都由其自己的 `fleet.yaml` 配置。
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-multi-chart
+EOF
+----
+
+Helm 和 Kustomize::
++
+一个使用 https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-kustomize[Kustomize 修改第三方 Helm chart 的示例]。它将部署作为 Helm chart 打包的 Kubernetes 示例 guestbook 应用程序，该 Helm chart 从第三方源下载，并将使用 Kustomize 修改。该应用程序将部署到 fleet-helm-kustomize-example 名称空间。
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-kustomize
+EOF
+----
+
+Kustomize::
++
+一个 https://github.com/rancher/fleet-examples/blob/master/single-cluster/kustomize[使用 Kustomize 的示例]。
++
+请注意，`fleet.yaml` 有一个 `kustomize:` 键来指定所需 `kustomization.yaml` 的路径：
++
+.fleet.yaml
+[source,yaml]
+----
+kustomize:
+  # To use a kustomization.yaml different from the one in the root folder
+  dir: ""
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/kustomize
+EOF
+----
+
+清单::
++
+一个 https://github.com/rancher/fleet-examples/tree/master/single-cluster/manifests[使用原始 Kubernetes YAML 的示例]。
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/manifests
+EOF
+----
+====
+
+== 多集群示例
+
+下面的示例将同时将多个 git 储存库部署到多个群集，并为每个目标配置不同的应用程序。
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+使用 Helm 的示例。我们正在部署 https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[Helm 示例] 并根据目标群集进行定制。
++
+该储存库包含一个 Helm chart 和一个可选的 `fleet.yaml` 来配置部署。`fleet.yaml` 用于根据群集的标签配置不同的部署选项：
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-helm-example
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
++
+要创建部署，我们将自定义资源应用于上游群集。默认情况下，`fleet-default` 名称空间包含下游群集资源。该 chart 将部署到 fleet-default 名称空间中的所有群集，这些群集的资源标签与 `targets:` 下的任何条目匹配。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+通过将 gitrepo 资源应用于上游群集，fleet 将开始监控该储存库并创建部署：
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm 外部::
++
+一个 https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-external[使用从第三方源下载的 Helm 图表并根据目标集群进行定制的示例]。定制与前面的示例类似。
++
+要创建部署，我们将自定义资源应用于上游集群。默认情况下，`fleet-default` 名称空间包含下游群集资源。该 chart 将部署到 fleet-default 名称空间中的所有群集，这些群集的资源标签与 `targets:` 下的任何条目匹配。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-external
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-external
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+通过将 gitrepo 资源应用于上游集群，fleet 将开始监控该储存库并创建部署：
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm 和 Kustomize::
++
+一个使用 https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-kustomize[Kustomize 修改第三方 Helm chart 的示例]。它将部署作为 Helm chart 打包的 Kubernetes 示例 guestbook 应用程序，该 Helm chart 从第三方源下载，并将使用 Kustomize 修改。该应用程序将部署到 fleet-helm-kustomize-example 名称空间。
++
+应用程序将根据环境进行如下定制：
++
+  * 开发集群：仅部署 redis 领导者，而不部署跟随者。
+  * 测试集群：将前端部署扩展到3 
+  * 生产集群：将前端部署扩展到3并将服务类型设置为负载均衡器 
++
+`fleet.yaml`用于控制使用哪些覆盖，具体取决于集群的标签：
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-kustomize-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  kustomize:
+    dir: overlays/dev
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  kustomize:
+    dir: overlays/test
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  kustomize:
+    dir: overlays/prod
+----
++
+要创建部署，我们将自定义资源应用于上游集群。默认情况下，`fleet-default` 名称空间包含下游群集资源。该 chart 将部署到所有在 fleet-default 名称空间中的群集，这些群集的资源标签与 `targets:` 下的任何条目匹配。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+通过将 gitrepo 资源应用于上游集群，fleet 将开始监控该储存库并创建部署：
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Kustomize::
++
+一个 https://github.com/rancher/fleet-examples/blob/master/multi-cluster/kustomize[使用 Kustomize 的示例] 并根据目标群集进行定制。
++
+在 `fleet.yaml` 中的定制与 "Helm & Kustomize" 示例相同。
++
+要创建部署，我们将自定义资源应用于上游集群。默认情况下，`fleet-default` 命名空间包含下游集群资源。该 chart 将部署到所有在 fleet-default 名称空间中的群集，这些群集的资源标签与 `targets:` 下的任何条目匹配。
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+EOF
+----
++
+通过将 gitrepo 资源应用于上游集群，fleet 将开始监控该储存库并创建部署：
+
+清单::
++
+一个 https://github.com/rancher/fleet-examples/tree/master/multi-cluster/manifests[使用原始 Kubernetes YAML 的示例] 并根据目标群集进行定制。应用程序将根据环境进行如下定制：
++
+* 开发集群：仅部署 redis 领导者，而不部署跟随者。
+* 测试集群：将前端部署扩展到3 
+* 生产集群：将前端部署扩展到3并将服务类型设置为负载均衡器 
++
+`fleet.yaml`用于控制使用哪些'yaml'覆盖，具体取决于集群的标签：
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-manifest-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  yaml:
+    overlays:
+    # Refers to overlays/noreplication folder
+    - noreplication
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  yaml:
+    overlays:
+    # Refers to overlays/scale3 folder
+    - scale3
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  yaml:
+    # Refers to overlays/servicelb, scale3 folders
+    overlays:
+    - servicelb
+    - scale3
+----
++
+要创建部署，我们将自定义资源应用于上游集群。默认情况下，`fleet-default` 名称空间包含下游集群资源。该 chart 将部署到所有在 fleet-default 名称空间中的群集，这些群集的资源标签与 `targets:` 下的任何条目匹配。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: manifests
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/manifests
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+====

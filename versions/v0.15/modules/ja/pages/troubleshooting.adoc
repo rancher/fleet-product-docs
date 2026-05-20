@@ -1,0 +1,362 @@
+= トラブルシューティング
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+このセクションには、トラブルシューティングのためのコマンドとヒントが含まれています{product_name}。
+
+== 問題の根本原因を探す場所
+
+{product_name}が予期せず動作する場合に最初に確認すべきことは次のとおりです：
+
+* 管理クラスターの`fleet-controller`ログ：{product_name}はリソース（バンドル、バンドルデプロイメント）の現在の状態を期待される状態と照合するのに失敗しましたか？
+* 管理クラスターの`gitjob`ポッドログ：{product_name}は、監視されているgitリポジトリで見つかった新しいコミットのために新しいバンドルを生成するジョブを作成する際に問題に遭遇しましたか？
+* リソースが適切にデプロイされていない`GitRepo`の状態：
+    ** いくつの`Ready Bundle Deployments`がリストされていますか？
+    ** 期待されるバンドルデプロイメントはいくつリストされていますか？いくつ見ることを期待していますか？
+        *** `GitRepo`はパスごとにバンドルを作成しますので、各バンドルはターゲットクラスターの数だけバンドルデプロイメントを生成します。`Desired Ready Clusters`とあなた自身の期待との不一致は、ターゲティングの問題を示している可能性があります。
+    ** `GitRepo's`の状態にリストされているリソースはどれですか？
+    ** `GitRepo's`の状態に表示されるコミットはどれですか？
+
+問題が特定のターゲットクラスターに特有の場合、ユーザーはそのクラスターのFleetエージェントログを確認する必要があります：{product_name}はそのクラスターにバンドルデプロイメントをデプロイするのに失敗しましたか？
+
+次のセクションでは、これらのチェックを実行する方法を説明します。
+
+そのうちのいくつかは、xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]とxref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]を通じて自動化できます。
+
+== どうすれば...
+
+=== `fleet-controller`からログを取得しますか？
+
+`fleet-controller`がデプロイされているローカル管理クラスターで、特定の`fleet-controller`ポッド名を入力して次のコマンドを実行します：
+
+ $ kubectl logs -l app=fleet-controller -n cattle-fleet-system
+
+=== `fleet-agent`からログを取得しますか？
+
+各ダウンストリームクラスターに移動し、特定の `fleet-agent` ポッド名を入力して、次のコマンドを実行してください。
+
+----
+# Downstream cluster
+$ kubectl logs -l app=fleet-agent -n cattle-fleet-system
+# Local cluster
+$ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
+----
+
+=== `GitRepos` と `Bundles` から詳細なエラーログを取得しますか？
+
+通常、エラーは Rancher UI に表示されるべきです。ただし、そこにエラーに関する十分な情報が表示されない場合は、必要に応じて以下のいずれかを試してさらに調査できます。
+
+* バンドルに関する詳細情報は、`bundle` をクリックすると YAML モードが有効になります。
+* GitRepo に関する詳細情報は、`GitRepo` をクリックし、次に画面右上の `View Yaml` をクリックしてください。YAML を表示した後、`status.conditions` を確認してください。ここに詳細なエラーメッセージが表示されるはずです。
+* syncエラーについて `fleet-controller` を確認してください。
+* バンドルをデプロイする際に問題が発生した場合は、ダウンストリームクラスターの `fleet-agent` ログを確認してください。
+
+=== `GitRepos` と `Bundles` から詳細なステータスを取得しますか？
+
+デバッグやバグレポートには、リソースのステータスフィールドの生の JSON が最も役立ちます。
+これは Rancher UI でアクセスするか、または `kubectl` を通じてアクセスできます。
+
+[,shell]
+----
+kubectl get bundle -n fleet-local fleet-agent-local -o=jsonpath={.status}
+kubectl get gitrepo -n fleet-default gitrepo-name -o=jsonpath={.status}
+----
+
+仕様フィールド以外のリソースをダウンロードするには：
+
+[,shell]
+----
+kubectl get clusters.fleet.cattle.io -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.metadata.labels}{"\t"}{.status}{"\n"}{end}'
+kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
+----
+
+=== `Kustomize` でチャートレンダリングエラーを確認しますか？
+
+xref:troubleshooting.adoc#_fetch_the_log_from_fleet_controller[`fleet-controller` ログ] と xref:troubleshooting.adoc#_fetch_the_log_from_the_fleet_agent[`fleet-agent` ログ] を確認してください。
+
+=== `GitRepo` の監視やチェックアウト、または `fleet.yaml` のダウンロードされた Helm リポジトリに関するエラーを確認してください。
+
+特定の `gitjob` ポッド名を入力して、次のコマンドを使用して `gitjob-controller` ログを確認してください。
+
+ $ kubectl logs -f $gitjob-pod-name -n cattle-fleet-system
+
+ポッド内には 2 つのコンテナがあります：git リポジトリをクローンする `step-git-source` コンテナと、git リポジトリに基づいてバンドルを適用する `fleet` コンテナです。
+
+ポッドには通常、`rancher/tekton-utils` という名前のイメージがあり、`gitRepo` という名前がプレフィックスとして付けられています。ローカル管理クラスターでこれらの Kubernetes ジョブポッドのログを次のように確認してください。特定の `gitRepoName` ポッド名とネームスペースを入力します。
+
+ $ kubectl logs -f $gitRepoName-pod-name -n namespace
+
+=== `fleet-controller`のステータスを確認しますか？
+
+以下のコマンドを実行することで、`fleet-controller`ポッドのステータスを確認できます。
+
+[,bash]
+----
+kubectl -n cattle-fleet-system logs -l app=fleet-controller
+kubectl -n cattle-fleet-system get pods -l app=fleet-controller
+----
+
+[,bash]
+----
+NAME                                READY   STATUS    RESTARTS   AGE
+fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
+----
+
+=== `fleet-controller`と`fleet-agent`のデバッグログを有効にしますか？
+
+Rancher v2.6.3 ({product_name} v0.3.8)で、デバッグログを有効にする機能が追加されました。
+
+* *ダッシュボード*に移動し、左側のナビゲーションメニューで*ローカルクラスタ*をクリックします。
+* *アプリとマーケットプレイス*を選択し、ドロップダウンから*インストール済みアプリ*を選択します。
+* そこから、値`debug=true`で{product_name}チャートをアップグレードします。必要に応じて`debugLevel=5`を設定することもできます。
+
+==== Fleetインストールオプションを介して
+
+`cattle-system`ネームスペースに`rancher-config`という設定マップをxref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Fleetインストールオプション]で作成できます。
+
+例えば、`fleet-controller`と`fleet-agent`のデバッグログを有効にするには、以下の内容で設定マップを作成できます。
+
+[source,yaml]
+====
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    debug: true
+    debugLevel: 1
+    propagateDebugSettingsToAgents: true
+====
+
+設定を変更すると、Fleetが再インストールされ、エージェントが再デプロイされます。
+
+=== 時間の経過に伴うリソースの変更を記録する
+
+時々、リソースの変更を時間の経過とともに記録することが有用です。リソースを監視し、出力をファイルに保存することでこれを行うことができます。
+
+[source,bash]
+====
+for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.fleet.cattle.io; do
+  {
+    kubectl get -A --show-managed-fields -w --output-watch-events -o yaml $kind > $kind-watch.yaml &
+    pid=$!
+    sleep 60
+    kill $pid
+  } &
+done ; wait
+====
+
+== *他の{product_name}の問題に対する追加の解決策*
+
+=== CRDの命名規則
+
+. `clusters`や`gitrepos`のようなCRD用語については、完全なCRD名を参照する必要があります。例えば、クラスターCRDの完全な名前は`cluster.fleet.cattle.io`であり、gitrepo CRDの完全な名前は`gitrepo.fleet.cattle.io`です。
+. `Bundles`は`GitRepo`から作成され、`GitRepo`が作成された同じワークスペース/ネームスペース内でパターン`$gitrepoName-$path`に従います。`$path`は、`bundle`（`fleet.yaml`）を含むgitリポジトリ内のディレクトリであることに注意してください。
+. `BundleDeployments`は`bundle`から作成され、ネームスペース`clusters-$workspace-$cluster-$generateHash`内のパターン`$bundleName-$clusterName`に従います。`$clusterName`は、バンドルがデプロイされるクラスターであることに注意してください。
+
+=== GithubのHTTPシークレット
+
+プライベートgitリポジトリで{product_name}をテストすると、GithubではHTTPシークレットがもはやサポートされていないことに気付くでしょう。この問題を回避するには、次の手順に従います：
+
+. Githubで https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token[個人アクセストークン]を作成します。
++
+ifeval::["{product}" == "fleet"]
+. Rancherで、Githubの個人アクセストークンを使用してHTTP https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/kubernetes-resources-setup/secrets[シークレット]を作成します。ユーザー名は任意です。
+endif::[]
++
+ifeval::["{product}" == "continuous-delivery"]
+. Rancherで、Githubの個人アクセストークンを使用してHTTP https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/security/secrets-hub.html[シークレット]を作成します。ユーザー名は任意です。
+endif::[]
++
+. トークンをシークレットとして使用してください。
+
+=== {product_name}は不正なレスポンスコードで失敗します：403
+
+GitJobが以下のエラーを返す場合、問題は{product_name}が指定したxref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]のHelmリポジトリにアクセスできないことかもしれません：
+
+----
+time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
+----
+
+評価するために次の手順を実行します：
+
+* 開発マシンからリポジトリにアクセスでき、Helmチャートを正常にダウンロードできることを確認してください。
+* gitリポジトリの資格情報が有効であることを確認してください。
+
+=== Helmチャートリポジトリ：不明な権限によって署名された証明書
+
+GitJobが以下のエラーを返す場合、間違った証明書チェーンを追加した可能性があります：
+
+----
+time="2021-11-11T05:55:08Z" level=fatal msg="Get \"https://helm.intra/virtual-helm/index.yaml\": x509: certificate signed by unknown authority"
+----
+
+次のコマンドで証明書を確認してください：
+
+[,bash]
+----
+context=playground-local
+kubectl get secret -n fleet-default helm-repo -o jsonpath="{['data']['cacerts']}" --context $context | base64 -d | openssl x509 -text -noout
+Certificate:
+    Data:
+        Version: 3 (0x2)
+        Serial Number:
+            7a:1e:df:79:5f:b0:e0:be:49:de:11:5e:d9:9c:a9:71
+        Signature Algorithm: sha512WithRSAEncryption
+        Issuer: C = CH, O = MY COMPANY, CN = NOP Root CA G3
+...
+----
+
+=== {product_name}のデプロイメントが変更された状態で停止しています。
+
+{product_name}にバンドルをデプロイすると、一部のコンポーネントが変更され、これが{product_name}環境の「変更済み」フラグを引き起こします。
+
+`fleet.yaml`によって生成されたHelmインストールとクラスター内のリソースとの違いに対して修正フラグを無視するには、デプロイメントの`fleet.yaml`に`diff.comparePatches`を追加します。以下の例のように：
+
+[,yaml]
+----
+defaultNamespace: <namespace name>
+helm:
+  releaseName: <release name>
+  repo: <repo name>
+  chart: <chart name>
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    operations:
+    - {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
+    - {"op":"remove", "path":"/spec/template/spec/nodeSelector"}
+    jsonPointers: # jsonPointers allows to ignore diffs at certain json path
+    - "/spec/template/spec/priorityClassName"
+    - "/spec/template/spec/tolerations"
+----
+
+どの操作を削除すべきかを判断するには、ターゲットクラスターの`fleet-agent`からのログを観察してください。以下のようなエントリが表示されるはずです：
+
+[,text]
+----
+level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monitoring-monitoring-kube-state-metrics modified {\"spec\":{\"template\":{\"spec\":{\"hostNetwork\":false}}}}"
+----
+
+上記のログに基づいて、操作を削除するために以下のエントリを追加できます：
+
+[,json]
+----
+{"op":"remove", "path":"/spec/template/spec/hostNetwork"}
+----
+
+==== GitRepoのsyncは、再試行なしでは失敗します。
+
+`GitRepo`はsyncを停止し、**失敗**状態のままになることがあります。この場合、GitJobコントローラーのログにはネットワークタイムアウトやetcdリクエストタイムアウトが表示されることがあります。{product_name}が高負荷のときにこの問題が発生しやすくなります。
+
+{product_name}はリソースバージョンの競合を検出すると、適用操作を再試行します。再試行の試行回数は、`FLEET_APPLY_CONFLICT_RETRIES`環境変数によって制御されます。
+
+デフォルト値は、`1`です。これは、{product_name}がバンドルの作成または更新を一度だけ試み、競合が発生した場合には再試行しないことを意味します。重負荷の下で競合が頻繁に発生する場合は、この値を増やして追加の再試行を許可してください。この変数をGitJobデプロイメントの環境変数として設定してください。
+
+たとえば、Helmでインストールする場合：
+
+[source,bash]
+----
+--set-string extraEnv[0].name=FLEET_APPLY_CONFLICT_RETRIES \
+--set-string extraEnv[0].value=3
+----
+
+この設定は、再試行回数をデフォルト値`1`の代わりに`3`に設定します。
+
+=== `GitRepo`または`Bundle`が修正状態で停止しています。
+
+*修正*は、実際の状態と望ましい状態、すなわち真実のソースであるgitリポジトリとの間に不一致があることを意味します。
+
+. 詳細については、xref:how-tos-for-users/bundle-diffs.adoc[バンドルの差分ドキュメント]を確認してください。
+. 手動でsyncを再実行するために、`GitRepo`を強制更新することもできます。左のナビゲーションバーで**GitRepo**を選択し、次に**強制更新**を選択します。
+
+[NOTE]
+====
+作成されたバンドルのIDに影響を与える可能性のあるプロパティが変更されると（バンドルのパスを変更するなど）、新しく作成されたバンドルの状態に不整合が生じることがあり、時には一部のリソースが修正状態で停止することがあります。
+
+そのような場合、影響を受けたGitRepoの強制更新を行うことも推奨されます。
+====
+
+=== バンドルの水平ポッドオートスケーラー（HPA）は、Modified状態にあります。
+
+HPAを持つバンドルの場合、期待される状態は`Modified`です。これは、バンドルがデプロイ時のバンドルの状態と異なるフィールドを含んでいるためで、通常は`ReplicaSet`です。
+
+このフィールドを無視するために、`fleet.yaml`でパッチを定義する必要があります。これはxref:troubleshooting.adoc#_gitrepo_or_bundle_stuck_in_modified_state[`GitRepo`または`Bundle`が修正状態で停止している]に従います。
+
+こちらが、ネームスペース`default`内のデプロイメント`nginx`用のこのようなパッチの例です。
+
+[,yaml]
+----
+diff:
+  comparePatches:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: nginx
+    namespace: default
+    operations:
+    - {"op": "remove", "path": "/spec/replicas"}
+----
+
+=== クラスターが利用できない場合、または`WaitCheckIn`の状態にある場合はどうなりますか？
+
+再インポートして登録プロセスを再起動する必要があります。左側のナビゲーションバーで*クラスター*を選択し、次に*強制更新*を選択します。
+
+[CAUTION]
+====
+
+*Rancher v2.5のWaitCheckInステータス*：
+
+ifeval::["{product}" == "fleet"]
+クラスターは`WaitCheckIn`の状態で表示されます。これは`fleet-controller`がRancherサービスIPを使用して{product_name}と通信しようとしているためです。ただし、{product_name}はプロキシを介さずにサービスディスカバリーを使用してKubernetesサービスDNS経由でRancherと直接通信する必要があります。詳細については、 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/other-installation-methods/rancher-behind-an-http-proxy/install-rancher[Rancherドキュメント]を参照してください。
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+クラスターは`WaitCheckIn`の状態で表示されます。これは`fleet-controller`がRancherサービスIPを使用して{product_name}と通信しようとしているためです。ただし、{product_name}はプロキシを介さずにサービスディスカバリーを使用してKubernetesサービスDNS経由でRancherと直接通信する必要があります。詳細については、 https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/installation-and-upgrade/other-installation-methods/http-proxy/install-rancher.html [Rancherドキュメント]を参照してください。
+endif::[]
+====
+
+
+=== GitRepoが`gzip: invalid header`というエラーを出しています。
+
+以下のようなエラーが表示された場合、...
+
+[,sh]
+----
+Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid header
+----
+
+... helmチャートの内容が正しくありません。チャートを手動でローカルマシンにダウンロードし、内容を確認してください。
+
+=== エージェントはもはや登録されていません。
+
+指定されたクラスターのエージェントを再デプロイするには、`redeployAgentGeneration`を設定することで強制できます。
+
+[,sh]
+----
+kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
+----
+
+=== ローカルクラスターを{product_name}デフォルトクラスターのワークスペースに移行しますか？
+
+ユーザーは新しいワークスペースを作成し、クラスターをワークスペース間で移動できます。
+現在、ローカルクラスターを`fleet-local`から別のワークスペースに移動することはできません。
+
+=== バンドルのデプロイに失敗しました："リソースはすでに存在します" エラー
+
+デプロイ中にバンドルが次のエラーメッセージに遭遇した場合：
+
+[,sh]
+----
+not installed: rendered manifests contain a resource that already
+exists. Unable to continue with install: ClusterRole "grafana-clusterrole"
+in namespace "" exists and cannot be imported into the current release: invalid
+ownership metadata; annotation validation error: key "meta.helm.sh/release-namespace"
+must equal "ns-2": current value is "ns-1"
+----
+
+このエラーは、クラスター内に同じ`releaseName`のHelmリソースがすでに存在するために発生します。この問題を解決するには、作成したいリソースの`releaseName`を変更して競合を避ける必要があります。

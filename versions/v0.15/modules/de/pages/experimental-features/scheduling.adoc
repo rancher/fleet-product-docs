@@ -1,0 +1,89 @@
+= Planung
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Dies ist eine experimentelle Funktion.
+====
+
+{product_name} unterstützt (ab Version 0.13 und im experimentellen Modus) die Definition von **geplanten Intervallen**, während denen neue Updates für bestehende Implementierungen erlaubt sind.
+
+Dies ermöglicht es den Benutzern, **wann Änderungen angewendet werden** zu steuern, unabhängig davon, wann Updates in das Git-Repository gepusht werden – falls gewünscht.
+
+Es gibt viele Gründe, warum man Zeitfenster definieren möchte, während denen Änderungen an einem Cluster erlaubt sind. Beispiel:
+
+* Außerhalb der Geschäftszeiten
+* Um Updates zu bestimmten Zeiten zu planen
+* Um Update-Fenster zwischen Umgebungen zu unterscheiden (z. B. dev vs prod)
+
+Die Update-Planung wird derzeit auf der `Cluster` Ebene angewendet.
+
+Eine `Schedule` Ressource wird definiert, die angibt, welche `Clusters` betroffen sind. Diese Cluster installieren nur neue Updates, wenn dies durch die definierten `Schedule` erlaubt ist.
+
+Alle Änderungen, die von {product_name} im Git-Repository erkannt werden, werden weiterhin auf der `Bundle` Ebene angewendet. Der **Agent**, der für die Bereitstellung der Änderungen in jedem betroffenen Cluster verantwortlich ist, wird die Implementierung jedoch nur initiieren, wenn das Cluster derzeit von der entsprechenden `Schedule` dazu berechtigt ist.
+
+Das bedeutet, dass, wenn eine Änderung im Repository erkannt wird, sie auf die `Bundle` angewendet wird und der Status auf *Warten auf Update* wechselt, bis der `Cluster` Agent aktiv ist und berechtigt ist, Implementierungen gemäß seiner `Schedule` durchzuführen.
+
+Wenn ein `Cluster` nicht mit einer `Schedule` verknüpft ist, werden Updates sofort angewendet.
+
+== Planungsressource
+
+Schauen wir uns nun an, wie man eine `Schedule` definiert und welche Felder verfügbar sind.
+
+Eine `Schedule` wird im Wesentlichen definiert durch:
+
+* Ein **Cron-Ausdruck**, der den Startzeitpunkt angibt
+* Eine **Dauer**
+* Die **Ziele** (Cluster), auf die es zutrifft
+
+Hier ist ein einfaches Beispiel für eine `Schedule`, die eine einfache Zieldefinition verwendet:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-local
+spec:
+  schedule: "0 0 22 * * *"
+  duration: 1h
+  targets:
+    clusters:
+      - name: local
+        clusterName: local
+----
+
+Dies definiert ein **1-Stunden-Zeitfenster**, das jeden Tag um **22:00:00** beginnt und auf den Cluster mit dem Namen *local* im `fleet-local` Namespace angewendet wird.
+Die Ziele eines `Schedule` verwenden den **gleichen Namespace** wie der `Schedule`.
+
+Mit anderen Worten: das *lokale* `Cluster` akzeptiert nur Änderungen von **22:00:00 bis 23:00:00**.
+
+Jetzt schauen wir uns ein weiteres Beispiel an, bei dem das `Schedule` verwendet wird, um Updates an **Downstream-Clustern** bereitzustellen, die mit *env=dev* gekennzeichnet sind:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-default
+spec:
+  schedule: "0 0 */3 * * *"
+  duration: 1h 
+  targets:
+    clusters:
+      - name: targets-dev
+        clusterSelector:
+          matchLabels:
+            env: dev
+----
+
+In diesem Fall erlaubt das `Schedule` Updates an `Clusters`, die mit *env=dev* **alle 3 Stunden** gekennzeichnet sind, für eine **Dauer von 1 Stunde**.
+
+Die Art und Weise, wie Sie das Ziel `Clusters` definieren, ist **identisch** mit der Art und Weise, wie Ziele für `GitRepo` Ressourcen definiert werden.
+
+Für weitere Informationen verweisen Sie auf xref:how-tos-for-users/gitrepo-targets.adoc[GitRepo-Ziele]. Was auch für `Schedule` Ziele gilt.
+
+Sie können die vollständige CRD für xref:reference/ref-schedule.adoc[Zeitplan] einsehen.

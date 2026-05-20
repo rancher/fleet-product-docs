@@ -1,0 +1,16 @@
+= 概要
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::fleet-architecture.svg[スタティック, 600]
+
+[discrete]
+=== {product_name}とは
+
+* *クラスタエンジン*: {product_name}は、ユーザーにローカルクラスタに対するより高い制御と、*GitOps*を通じた継続的な監視を提供するために設計されたコンテナ管理およびデプロイメントエンジンです。{product_name}は、スケーラビリティの能力だけでなく、ユーザーにクラスタにインストールされているものを正確に監視するための高い制御と可視性を提供します。
+* *デプロイメント管理*: {product_name}は、生のKubernetes YAML、Helmチャート、Kustomize、またはこれら3つの任意の組み合わせをgitリポジトリからデプロイメントとして管理できます。ソースに関係なく、すべてのリソースは動的にHelmチャートに変換され、Helmがクラスタ内のすべてのリソースをデプロイするためのエンジンとして使用されます。その結果、ユーザーはクラスタの高い制御、一貫性、および監査可能性を享受できます。
+
+[discrete]
+=== Configuration Management
+
+{product_name}は、単一のKubernetesクラスタまたは大規模なKubernetesクラスタのデプロイメントのGitOpsを管理するKubernetes xref:explanations/concepts.adoc[カスタムリソース定義（CRD）]とコントローラのセットです。これは、アプリケーションのカスタマイズやHAクラスタの管理を単一ポイントから容易に行える分散初期化システムです。

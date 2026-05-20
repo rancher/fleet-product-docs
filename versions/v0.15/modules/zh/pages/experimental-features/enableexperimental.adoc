@@ -1,0 +1,47 @@
+= 如何启用实验功能
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+{product_name} 支持默认禁用的实验功能，用户可以启用这些功能。
+
+启用或禁用实验功能是通过在部署 `rancher/fleet` 时可用的额外环境变量来完成的。
+
+有关更多信息，请参阅 Rancher 中的配置 xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} 安装选项]。
+
+== 可用的实验功能
+
+{product_name} 当前支持以下实验功能，通过各自的环境变量进行切换：
+
+* xref:experimental-features/scheduling.adoc[安排日程]
+* xref:experimental-features/experimental-downstream-resource.adoc[资源自动传播到下游集群]
+
+== 启用实验功能
+
+=== 在独立安装 {product_name} 时启用
+
+您只需传递类似以下内容：
+
+[source,bash]
+----
+--set-string extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string extraEnv[0].value=true
+----
+
+到您的 `helm install` 或 `helm upgrade` 命令。
+
+[NOTE]
+====
+您必须使用 `--set-string`，否则布尔数据类型将无法按预期工作。
+====
+
+=== 在使用 Rancher 安装 {product_name} 时启用
+
+您还可以在安装 Rancher 时，在 {product_name} 中激活实验功能。
+
+参数相同，但您必须添加 `fleet.` 前缀：
+
+[source,bash]
+----
+--set-string fleet.extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string fleet.extraEnv[0].value=true
+----

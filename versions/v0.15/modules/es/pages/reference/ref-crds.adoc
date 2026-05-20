@@ -1,0 +1,2896 @@
+= Especificación de Recursos Personalizados
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:doctype: book
+
+== Recursos
+
+* <<Bundle,Bundle>>
+* <<BundleDeployment,BundleDeployment>>
+* <<BundleNamespaceMapping,BundleNamespaceMapping>>
+* <<Cluster,Clúster>>
+* <<ClusterGroup,ClusterGroup>>
+* <<ClusterRegistration,RegistroDeClúster>>
+* <<ClusterRegistrationToken,ClusterRegistrationToken>>
+* <<Content,Contenido>>
+* <<GitRepo,GitRepo>>
+* <<GitRepoRestriction,GitRepoRestriction>>
+* <<ImageScan,ImageScan>>
+
+== Sub Recursos
+
+* <<BundleDisplay,BundleDisplay>>
+* <<BundleList,ListaDePaquetes>>
+* <<BundleRef,BundleRef>>
+* <<BundleResource,BundleResource>>
+* <<BundleSpec,BundleSpec>>
+* <<BundleStatus,BundleStatus>>
+* <<BundleSummary,ResumenDePaquete>>
+* <<BundleTarget,BundleTarget>>
+* <<BundleTargetRestriction,BundleTargetRestriction>>
+* <<NonReadyResource,NonReadyResource>>
+* <<Partition,Partición>>
+* <<PartitionStatus,PartitionStatus>>
+* <<ResourceKey,ResourceKey>>
+* <<RolloutStrategy,RolloutStrategy>>
+* <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+* <<BundleDeploymentList,BundleDeploymentList>>
+* <<BundleDeploymentOptions,BundleDeploymentOptions>>
+* <<BundleDeploymentResource,BundleDeploymentResource>>
+* <<BundleDeploymentSpec,BundleDeploymentSpec>>
+* <<BundleDeploymentStatus,BundleDeploymentStatus>>
+* <<ComparePatch,ComparePatch>>
+* <<ConfigMapKeySelector,ConfigMapKeySelector>>
+* <<DiffOptions,OpcionesDeDiferencia>>
+* <<HelmOptions,OpcionesDeHelm>>
+* <<IgnoreOptions,IgnoreOptions>>
+* <<KustomizeOptions,KustomizeOptions>>
+* <<LocalObjectReference,LocalObjectReference>>
+* <<ModifiedStatus,ModifiedStatus>>
+* <<NonReadyStatus,NonReadyStatus>>
+* <<Operation,Operación>>
+* <<SecretKeySelector,SecretKeySelector>>
+* <<ValuesFrom,ValuesFrom>>
+* <<YAMLOptions,OpcionesYAML>>
+* <<BundleNamespaceMappingList,BundleNamespaceMappingList>>
+* <<AgentStatus,AgentStatus>>
+* <<ClusterDisplay,ClusterDisplay>>
+* <<ClusterList,Lista de Clústeres>>
+* <<ClusterSpec,ClusterSpec>>
+* <<ClusterStatus,ClusterStatus>>
+* <<ClusterGroupDisplay,ClusterGroupDisplay>>
+* <<ClusterGroupList,ClusterGroupList>>
+* <<ClusterGroupSpec,ClusterGroupSpec>>
+* <<ClusterGroupStatus,ClusterGroupStatus>>
+* <<ClusterRegistrationList,ClusterRegistrationList>>
+* <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+* <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+* <<ClusterRegistrationTokenList,ClusterRegistrationTokenList>>
+* <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+* <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+* <<ContentList,ListaDeContenido>>
+* <<CommitSpec,CommitSpec>>
+* <<CorrectDrift,CorrectDrift>>
+* <<GitRepoDisplay,GitRepoDisplay>>
+* <<GitRepoList,GitRepoList>>
+* <<GitRepoResource,GitRepoResource>>
+* <<GitRepoResourceCounts,GitRepoResourceCounts>>
+* <<GitRepoSpec,GitRepoSpec>>
+* <<GitRepoStatus,GitRepoStatus>>
+* <<GitTarget,GitTarget>>
+* <<OCIRegistrySpec,OCIRegistrySpec>>
+* <<ResourcePerClusterState,ResourcePerClusterState>>
+* <<GitRepoRestrictionList,GitRepoRestrictionList>>
+* <<AlphabeticalPolicy,PolíticaAlfabética>>
+* <<ImagePolicyChoice,ImagePolicyChoice>>
+* <<ImageScanList,ImageScanList>>
+* <<ImageScanSpec,ImageScanSpec>>
+* <<ImageScanStatus,ImageScanStatus>>
+* <<SemVerPolicy,SemVerPolicy>>
+* <<FleetYAML,FleetYAML>>
+* <<ImageScanYAML,ImageScanYAML>>
+
+=== Bundle
+
+El paquete contiene los recursos de una aplicación y sus opciones de despliegue. Se desplegará como un gráfico de Helm en clústeres objetivo.
+
+Cuando se escanee un GitRepo, producirá uno o más paquetes. Los lotes son una colección de recursos que se despliegan en uno o más clústeres. El paquete es la unidad de ampliación fundamental utilizada en {product_name}. El contenido de un lote puede ser manifiestos de Kubernetes, configuración de Kustomize o gráficos de Helm. Independientemente de la fuente, el contenido se renderiza dinámicamente en un gráfico de Helm por el agente y se instala en el clúster de sentido descendente como una liberación de Helm.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleSpec,BundleSpec>>
+| true
+
+| status
+|
+| <<BundleStatus,BundleStatus>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleDisplay
+
+La visualización de lote contiene el número de clústeres listos, clústeres deseados y un estado resumen para el lote.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| readyClusters
+| ClústeresListos es una cadena en la forma "%d/%d", que describe el número de clústeres que están listos frente al número de clústeres deseados para estar listos.
+| cadena
+| false
+
+| estado
+| El estado es un estado resumen para el lote, calculado sobre los recursos no listos.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Lista de Lotes
+
+La lista de lotes contiene una lista de lotes
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<Bundle,Lote>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleRef
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| El nombre del lote.
+| cadena
+| false
+
+| selector
+| Selector que coincide con las etiquetas del lote.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleResource
+
+BundleResource representa el contenido de un único recurso del paquete, como un manifiesto YAML.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| Nombre del recurso, puede incluir la ruta interna del paquete.
+| cadena
+| false
+
+| contenido
+| El contenido del recurso, puede estar comprimido.
+| cadena
+| false
+
+| encoding
+| La codificación es o bien vacía o "base64+gz".
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| en pausa
+| Si se establece en verdadero, se pausará y se terminará la actualización de cualquier ampliación de paquete. Se marcará como fuera de sincronización.
+| bool
+| false
+
+| rolloutStrategy
+| La estrategia de ampliación controla la ampliación de paquetes, definiendo particiones, canarios y porcentajes para la disponibilidad del clúster.
+| *<<RolloutStrategy,RolloutStrategy>>
+| false
+
+| físicos
+| Recursos contiene los recursos que se leyeron de la ruta del paquete. Esto incluye el contenido de los gráficos helm descargados.
+| []<<BundleResource,BundleResource>>
+| false
+
+| destinos
+| Los destinos se refieren a los clústeres a los que se desplegará. Los destinos se evalúan en orden y el primero que coincida se utiliza.
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| targetRestrictions
+| RestriccionesDeDestino es una lista de permitidos, que controla si se crea un despliegue de paquete para un destino.
+| []<<BundleTargetRestriction,BundleTargetRestriction>>
+| false
+
+| dependsOn
+| DependsOn se refiere a los paquetes que deben estar en un estado aceptado antes de que este paquete pueda ser desplegado.
+| []<<BundleRef,BundleRef>>
+| false
+
+| contentsId 
+| ContentsID almacena el id de contenido al desplegar contenidos utilizando un registro OCI. 
+| cadena 
+| false
+
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| condiciones
+| Condiciones es una lista de condiciones de Wrangler que describen el estado del paquete.
+| []genericcondition.GenericCondition
+| false
+
+| Resumen
+| Resumen contiene el número de despliegues de paquetes en cada estado y una lista de recursos no listos.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| newlyCreated
+| RecientementeCreado es el número de ampliaciones de paquete que han sido creadas, no actualizadas.
+| int
+| false
+
+| unavailable
+| Unavailable es el número de ampliaciones de paquete que no están listos o donde el AppliedDeploymentID en el estado no coincide con el DeploymentID de la especificación.
+| int
+| true
+
+| unavailablePartitions
+| UnavailablePartitions es el número de particiones no disponibles.
+| int
+| true
+
+| maxUnavailable
+| MaxUnavailable es el número máximo de despliegues no disponibles. Ver configuración.
+| int
+| true
+
+| maxUnavailablePartitions
+| MaxUnavailablePartitions es el número máximo de particiones no disponibles. La configuración define un número máximo o porcentaje de particiones no disponibles.
+| int
+| true
+
+| particiones
+| PartitionStatus enumera el estado de cada partición.
+| []<<PartitionStatus,PartitionStatus>>
+| false
+
+| visualizar
+| Display contiene el número de clústeres listos y deseados, así como un estado resumen para los recursos del paquete.
+| <<BundleDisplay,BundleDisplay>>
+| false
+
+| resourceKey
+| ResourceKey enumera los recursos que probablemente se desplegarán. La lista real de recursos en un clúster puede diferir, dependiendo del gráfico de helm, la plantilla de valores, etc..
+| []<<ResourceKey,ResourceKey>>
+| false
+
+| ociReference 
+| OCIReference es la referencia OCI utilizada para almacenar contenidos, esto es solo para fines informativos. 
+| cadena 
+| false
+
+| observedGeneration
+| ObservedGeneration es la generación actual del paquete.
+| int64
+| true
+
+| resourcesSha256Sum
+| ResourcesSHA256Sum corresponde a la serialización JSON del campo .Spec.Resources
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleSummary
+
+BundleSummary contiene el número de despliegues de paquetes en cada estado y una lista de recursos no listos. Se utiliza en el estado del paquete, grupo de clústeres, clúster y gitrepo.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| notReady
+| NotReady es el número de ampliaciones de paquete que se han desplegado donde algunos recursos no están listos.
+| int
+| false
+
+| waitApplied
+| WaitApplied es el número de ampliaciones de paquete que se han sincronizado desde {product_name} controlador y el clúster de sentido descendente, pero están esperando ser desplegadas.
+| int
+| false
+
+| errApplied
+| ErrApplied es el número de ampliaciones de paquete que se han sincronizado desde el controlador {product_name} y el clúster de sentido descendente, pero con algunos errores al desplegar el paquete.
+| int
+| false
+
+| outOfSync
+| OutOfSync es el número de ampliaciones de paquete que se han sincronizado desde el controlador {product_name}, pero aún no por el agente de sentido descendente.
+| int
+| false
+
+| modified
+| Modified es el número de ampliaciones de paquete que se han desplegado y para los cuales todos los recursos están listos, pero donde algunos cambios del repositorio de Git aún no se han sincronizado.
+| int
+| false
+
+| ready
+| Ready es el número de ampliaciones de paquete que se han desplegado donde todos los recursos están listos.
+| int
+| true
+
+| pendientes
+| Pendiente es el número de ampliaciones de paquete que están siendo procesadas por el controlador {product_name}.
+| int
+| false
+
+| desiredReady
+| DesiredReady es el número de ampliaciones de paquete que deberían estar listos.
+| int
+| true
+
+| nonReadyResources
+| NonReadyClusters es una lista de estados, que se completa para un paquete que no está listo.
+| []<<NonReadyResource,NonReadyResource>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleTarget
+
+BundleTarget declara los clústeres a los que se debe desplegar. {product_name} fusionará las OpcionesDeAmpliaciónDePaquete de las personalizaciones en esta estructura.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| Nombre del objetivo. Este valor es principalmente para visualización y registro. Si no se especifica, se utilizará un nombre predeterminado del formato "target000"
+| cadena
+| false
+
+| clusterName
+| NombreDelClúster para coincidir con un clúster específico por nombre que será seleccionado.
+| cadena
+| false
+
+| clusterSelector
+| ClusterSelector es un selector para coincidir con clústeres. La estructura es el formato estándar metav1.LabelSelector. Si se especifica clusterGroupSelector o clusterGroup, clusterSelector se utilizará solo para refinar aún más la selección después de que se evalúen clusterGroupSelector y clusterGroup.
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| ClusterGroup para coincidir con un grupo de clústeres específico por nombre.
+| cadena
+| false
+
+| clusterGroupSelector
+| ClusterGroupSelector es un selector para coincidir con grupos de clústeres.
+| *metav1.LabelSelector
+| false
+
+| doNotDeploy
+| DoNotDeploy, si se establece en verdadero, no se desplegará en este objetivo.
+| bool
+| false
+
+| namespaceLabels 
+| NamespaceLabels son etiquetas que se añadirán al espacio de nombres creado por {product_name}. 
+| map[string]string 
+| false 
+
+| namespaceAnnotations 
+| NamespaceAnnotations son anotaciones que se añadirán al espacio de nombres creado por {product_name}. 
+| map[string]string 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleTargetRestriction
+
+BundleTargetRestriction se utiliza internamente por {product_name} y no debe ser modificado. Actúa como una lista de permitidos, para prevenir la creación de BundleDeployments a partir de Targets creados por TargetCustomizations en fleet.yaml.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+|
+| cadena
+| false
+
+| clusterName
+|
+| cadena
+| false
+
+| clusterSelector
+|
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+|
+| cadena
+| false
+
+| clusterGroupSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== NonReadyResource
+
+NonReadyResource contiene información sobre un paquete que no está listo para un estado dado como "ErrApplied". Contiene una lista de recursos no listos o modificados y sus estados.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| El nombre es el nombre del recurso.
+| cadena
+| false
+
+| bundleState
+| El estado es el estado del recurso, como por ejemplo. "NotReady" or "ErrApplied".
+| BundleState
+| false
+
+| mensaje
+| El mensaje contiene información sobre por qué el paquete no está listo.
+| cadena
+| false
+
+| modifiedStatus
+| EstadoModificado lista el estado de cada recurso modificado.
+| []<<ModifiedStatus,EstadoModificado>>
+| false
+
+| nonReadyStatus
+| EstadoNoListo lista el estado de cada recurso no listo.
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Partición
+
+La partición define una estrategia de despliegue separada para un conjunto de clústeres.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| Un nombre amigable dado a la partición utilizado para la visualización (opcional).
+| cadena
+| false
+
+| maxUnavailable
+| Un número o porcentaje de clústeres que pueden estar no disponibles en esta partición antes de que se considere que esta partición está completa. por defecto: 10%
+| *intstr.IntOrString
+| false
+
+| clusterName
+| NombreDelClúster es el nombre de un clúster a incluir en esta partición
+| cadena
+| false
+
+| clusterSelector
+| Selector que coincide con las etiquetas de clústeres para incluir en esta partición
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| Un nombre de grupo de clústeres a incluir en esta partición
+| cadena
+| false
+
+| clusterGroupSelector
+| Selector que coincide con las etiquetas de grupo de clústeres para incluir en esta partición
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== PartitionStatus
+
+EstadoDeLaPartición es el estado de una única partición de despliegue.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| Nombre es el nombre de la partición.
+| cadena
+| false
+
+| conteo
+| El conteo es el número de clústeres en la partición.
+| int
+| false
+
+| maxUnavailable
+| MaxNoDisponible es el número máximo de clústeres no disponibles en la partición.
+| int
+| false
+
+| no disponible
+| NoDisponible es el número de clústeres no disponibles en la partición.
+| int
+| false
+
+| Resumen
+| El resumen es un estado de resumen para la partición, calculado sobre sus recursos no listos.
+| <<BundleSummary,ResumenDePaquete>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClaveRecurso
+
+ResourceKey enumera los recursos que probablemente se desplegarán.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| tipo
+| El tipo es el tipo de recurso de la API de k8s.
+| cadena
+| false
+
+| apiVersion
+| La versiónApi es la versión de la API de k8s del recurso.
+| cadena
+| false
+
+| espacio de nombres
+| El espacio de nombres es el espacio de nombres del recurso.
+| cadena
+| false
+
+| name
+| El nombre es el nombre del recurso.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== RolloutStrategy
+
+RolloverStrategy controla el despliegue del paquete a través de los clústeres.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| maxUnavailable
+| Un número o porcentaje de clústeres que pueden estar no disponibles durante una actualización de un paquete. Esto sigue el mismo enfoque básico que una estrategia de despliegue. Una vez que el número de clústeres alcanza el estado no disponible, la actualización se pausará. El valor predeterminado es 100%, el cual no tiene efecto durante la actualización. Por defecto: 100%
+| *intstr.IntOrString
+| false
+
+| maxUnavailablePartitions
+| Un número o porcentaje de particiones del clúster que pueden estar no disponibles durante una actualización de un paquete. por defecto: 0
+| *intstr.IntOrString
+| false
+
+| autoPartitionSize
+| Un número o porcentaje de cómo particionar automáticamente los clústeres si no se configura una estrategia de particionamiento específica. por defecto: 25%
+| *intstr.IntOrString
+| false
+
+| autoPartitionThreshold
+| El número mínimo de clústeres que deben estar presentes antes de que se habilite el particionamiento automático. Si el número de clústeres objetivo es menor que este valor, todos los clústeres se colocarán en una única partición. por defecto: 200
+| *int
+| false
+
+| maxNuevo
+| El número máximo de nuevos DesplieguesDePaquete que se pueden crear en una única reconciliación. Esto limita la tasa a la que se preparan nuevos despliegues cuando un paquete se aplica por primera vez a muchos clústeres. por defecto: 50
+| *int
+| false
+
+| particiones
+| Una lista de definiciones de particiones.  Si algún clúster objetivo no coincide con la configuración, se añaden a las particiones al final siguiendo el tamañoDeParticionAuto.
+| []<<Partition,Partición>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== DespliegueDePaquete
+
+DespliegueDePaquete se utiliza internamente por {product_name} y no debe utilizarse directamente. Cuando un paquete se despliega en un clúster, una instancia de un paquete se llama DespliegueDePaquete. Un DespliegueDePaquete representa el estado de ese paquete en un clúster específico con sus personalizaciones específicas del clúster. El agente {product_name} solo es consciente de los recursos de DespliegueDePaquete que se crean para el clúster que el agente está gestionando.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| especificación
+|
+| <<BundleDeploymentSpec,BundleDeploymentSpec>>
+| false
+
+| status
+|
+| <<BundleDeploymentStatus,BundleDeploymentStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleDeploymentDisplay
+
+|===
+| Campo | Descripción | Esquema | required
+
+| desplegado
+|
+| cadena
+| false
+
+| monitorizado
+|
+| cadena
+| false
+
+| estado
+|
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Lista de Despliegue de Paquete
+
+La Lista de Despliegue de Paquete contiene una lista de Despliegues de Paquete
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<BundleDeployment,Despliegue de Paquete>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleDeploymentOptions
+
+|===
+| Campo | Descripción | Esquema | required
+
+| defaultNamespace
+| El espacio de nombres por defecto es el espacio de nombres a utilizar para recursos que no especifican un espacio de nombres. Este campo no se utiliza para imponer o restringir el despliegue a un espacio de nombre específico.
+| cadena
+| false
+
+| espacio de nombre
+| El espacio de nombres objetivo, si está presente, asignará todos los recursos a este espacio de nombres y, si existe algún recurso de ámbito de clúster, el despliegue fallará.
+| cadena
+| false
+
+| kustomize
+| Opciones de Kustomize para el despliegue, como el directorio que contiene el archivo kustomization.yaml.
+| *<<KustomizeOptions,KustomizeOptions>>
+| false
+
+| helm
+| Opciones de Helm para el despliegue, como el nombre del chart, el repositorio y los valores.
+| *<<HelmOptions,OpcionesDeHelm>>
+| false
+
+| serviceAccount
+| CuentaDeServicio que se utilizará para realizar este despliegue.
+| cadena
+| false
+
+| forceSyncGeneration
+| ForceSyncGeneration se utiliza para forzar un redepliegue
+| int64
+| false
+
+| yaml
+| Las opciones de YAML, si se utiliza YAML en bruto, son nombres que se asignan a los archivos overlays/{name} que se utilizarán para reemplazar o parchear un recurso.
+| *<<YAMLOptions,Opciones YAML>>
+| false
+
+| diff
+| Diff se puede utilizar para ignorar el estado modificado de los objetos que se modifican en tiempo de ejecución.
+| *<<DiffOptions,OpcionesDiferencia>>
+| false
+
+| mantenerRecursos
+| MantenerRecursos se puede utilizar para mantener los recursos desplegados al eliminar el paquete
+| bool
+| false
+
+| deleteNamespace 
+| EliminarEspacioDeNombres se puede utilizar para eliminar el espacio de nombres desplegado al eliminar el paquete 
+| bool 
+| false
+
+| ignore
+| IgnorarOpciones se puede utilizar para ignorar campos al monitorear el paquete.
+| <<IgnoreOptions,IgnoreOptions>>
+| false
+
+| correctDrift
+| CorregirDeriva especifica cómo debe funcionar la corrección de deriva.
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| namespaceLabels
+| Las etiquetasDeEspacioDeNombres son etiquetas que se agregarán al espacio de nombres creado por {product_name}.
+| mapa[string]string
+| false
+
+| namespaceAnnotations
+| NamespaceAnnotations son anotaciones que se añadirán al espacio de nombres creado por {product_name}.
+| mapa[string]string
+| false
+
+| eliminarRecursosCRD
+| EliminarRecursosCRD elimina CRDs. ¡Advertencia! Esto también eliminará todos tus Recursos Personalizados.
+| bool
+| false
+|===
+
+[Note]
+====
+Si no deseas que Fleet aplique el `helm.sh/resource-policy: keep`, configura la opción `deleteCRDResource` a `true` en `fleet.yaml`.
+====
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleDeploymentResource
+
+RecursoDesplieguePaquete contiene los metadatos de un recurso desplegado.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| clase
+|
+| cadena
+| false
+
+| apiVersion
+|
+| cadena
+| false
+
+| espacio de nombres
+|
+| cadena
+| false
+
+| name
+|
+| cadena
+| false
+
+| createdAt
+|
+| metav1.Time
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleDeploymentSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| en pausa
+| Pausado si se establece en verdadero, detendrá cualquier DespliegueDePaquete de ser actualizado. Si es verdadero, los DespliegueDePaquete se marcarán como fuera de sincronización cuando se detecten cambios.
+| bool
+| false
+
+| opcionesPreparadas
+| OpcionesPreparadas son las opciones de despliegue, que están preparadas para el próximo despliegue.
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| stagedDeploymentID
+| IDDesplieguePreparado es el ID del despliegue preparado.
+| cadena
+| false
+
+| options
+| Las opciones son las opciones de despliegue que se aplican actualmente.
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| deploymentID
+| IDdeDespliegue es el ID del despliegue que se aplica actualmente.
+| cadena
+| false
+
+| dependsOn
+| DependeDe se refiere a los paquetes que deben estar listos antes de que este paquete pueda ser desplegado.
+| []<<BundleRef,BundleRef>>
+| false
+
+| correctDrift
+| CorregirDeriva especifica cómo debe funcionar la corrección de deriva.
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| ociContents 
+| contenidosOCI es verdadero cuando el contenido de este despliegue se almacena en un registro OCI 
+| bool 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleDeploymentStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| condiciones
+|
+| []genericcondition.GenericCondition
+| false
+
+| appliedDeploymentID
+|
+| cadena
+| false
+
+| liberación
+| La liberación es el ID de la liberación de Helm
+| cadena
+| false
+
+| listo
+|
+| bool
+| false
+
+| nonModified
+|
+| bool
+| false
+
+| nonReadyStatus
+|
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+
+| modifiedStatus
+|
+| []<<ModifiedStatus,EstadoModificado>>
+| false
+
+| visualizar
+|
+| <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+| false
+
+| syncGeneration
+|
+| *int64
+| false
+
+| físicos
+| Los recursos enumeran los metadatos de los recursos que se desplegaron de acuerdo con el historial de liberaciones de Helm.
+| []<<BundleDeploymentResource,BundleDeploymentResource>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ComparePatch
+
+CompararParche empareja un recurso y elimina campos de la verificación de modificaciones.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| clase
+| El kind es la clase del recurso a emparejar.
+| cadena
+| false
+
+| apiVersion
+| La versión API es la apiVersion del recurso a emparejar.
+| cadena
+| false
+
+| espacio de nombres
+| El espacio de nombres es el namespace del recurso a emparejar.
+| cadena
+| false
+
+| name
+| ElNombre es el nombre del recurso a emparejar.
+| cadena
+| false
+
+| operaciones
+| Las operaciones eliminan una ruta JSON del recurso.
+| []<<Operation,Operación>>
+| false
+
+| jsonPointers
+| LosPunterosJSON ignoran diferencias en una cierta ruta JSON.
+| []cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ConfigMapKeySelector
+
+|===
+| Campo | Descripción | Esquema | required
+
+| espacio de nombres
+|
+| cadena
+| false
+
+| clave
+|
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== OpcionesDiferencia
+
+|===
+| Campo | Descripción | Esquema | required
+
+| comparePatches
+| CompararParches emparejan un recurso y eliminan campos de la verificación de modificaciones.
+| []<<ComparePatch,ComparePatch>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== OpcionesHelm
+
+OpcionesHelm para el despliegue. Para paquetes basados en Helm, se pueden usar todas las opciones, de lo contrario, algunas opciones son ignoradas. Por ejemplo, NombreDeLanzamiento funciona con todos los tipos de paquetes.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| chart
+| El chart puede referirse a cualquier URL de go-getter o URL de helm chart basada en OCI. El chart será descargado.
+| cadena
+| false
+
+| repo
+| El repositorio es el nombre del repositorio HTTPS de helm desde el cual descargar el diagrama.
+| cadena
+| false
+
+| releaseName
+| nombreDeLanzamiento establece un nombre de lanzamiento personalizado para desplegar el chart. Si no se especifica, se generará un nombre de lanzamiento combinando GitRepo.name + GitRepo.path.
+| cadena
+| false
+
+| versión
+| Versión del chart a descargar
+| cadena
+| false
+
+| timeoutSeconds
+| segundosDeTiempoDeEspera es el tiempo a esperar para las operaciones de Helm.
+| int
+| false
+
+| valores
+| Valores pasados a Helm. Es posible especificar las claves y valores como cadenas de plantilla de go.
+| *GenericMap
+| false
+
+| valuesFrom
+| valoresDesde carga los valores de configmaps y secretos.
+| []<<ValuesFrom,ValoresDesde>>
+| false
+
+| forzar
+| Forzar permite anular recursos inmutables. Esto podría ser peligroso.
+| bool
+| false
+
+| takeOwnership
+| tomarPropiedad hace que helm omita la verificación de sus propias anotaciones.
+| bool
+| false
+
+| maxHistory
+| MaxHistory limita el número máximo de revisiones guardadas por cada lanzamiento de Helm.
+| int
+| false
+
+| valuesFiles
+| ValuesFiles es una lista de archivos de los que cargar valores.
+| []cadena
+| false
+
+| waitForJobs
+| WaitForJobs, si está configurado y timeoutSeconds proporcionado, esperará hasta que todos los Jobs se hayan completado antes de marcar el GitRepo como listo. Esperará durante tanto tiempo como timeoutSeconds
+| bool
+| false
+
+| atomic
+| Atomic establece la bandera --atomic cuando Helm está realizando una actualización
+| bool
+| false
+
+| disablePreProcess
+| DisablePreProcess desactiva el procesamiento de plantillas en los valores
+| bool
+| false
+
+| disableDNS
+| DisableDNS se puede usar para personalizar la opción EnableDNS de Helm, que {product_name} establece en `true` por defecto.
+| bool
+| false
+
+| skipSchemaValidation
+| SkipSchemaValidation permite omitir la validación del esquema contra los valores del chart
+| bool
+| false
+
+| disableDependencyUpdate 
+| DisableDependencyUpdate permite omitir la actualización de dependencias del chart 
+| bool 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== IgnoreOptions
+
+IgnoreOptions define las condiciones que se deben ignorar al monitorear el Bundle.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| condiciones
+| Conditions es una lista de condiciones que se deben ignorar al monitorear el Bundle.
+| []map[string]string
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== KustomizeOptions
+
+KustomizeOptions para un despliegue.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| dir
+| Dir apunta a una carpeta personalizada para los recursos de Kustomize. Esta carpeta debe contener un archivo kustomization.yaml.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== LocalObjectReference
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| Nombre de un recurso en el mismo espacio de nombres que el referente.
+| cadena
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ModifiedStatus
+
+EstadoModificado se utiliza para informar el estado de un recurso que ha sido modificado. Indica si la modificación fue una creación, una eliminación o un parche.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| clase
+|
+| cadena
+| false
+
+| apiVersion
+|
+| cadena
+| false
+
+| espacio de nombres
+|
+| cadena
+| false
+
+| name
+|
+| cadena
+| false
+
+| falta
+|
+| bool
+| false
+
+| existe 
+| Existe es verdadero si el recurso existe pero no es de nuestra propiedad. Esto puede suceder si un recurso fue adoptado por otro paquete mientras que el primer paquete aún existe y, debido a eso, informa que no lo posee. 
+| bool 
+| false
+
+| eliminar
+|
+| bool
+| false
+
+| parche
+|
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== NonReadyStatus
+
+EstadoNoListo se utiliza para informar el estado de un recurso que no está listo. Incluye un resumen.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| uid
+|
+| tipos.UID
+| false
+
+| clase
+|
+| cadena
+| false
+
+| apiVersion
+|
+| cadena
+| false
+
+| espacio de nombres
+|
+| cadena
+| false
+
+| name
+|
+| cadena
+| false
+
+| Resumen
+|
+| resumen.Resumen
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Operación
+
+Operación de un ComparePatch, generalmente "eliminar".
+
+|===
+| Campo | Descripción | Esquema | required
+
+| op
+| Op es generalmente "eliminar"
+| cadena
+| false
+
+| vía
+| La ruta JSON a eliminar.
+| cadena
+| false
+
+| valor
+| El valor suele estar vacío.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== SecretKeySelector
+
+|===
+| Campo | Descripción | Esquema | required
+
+| espacio de nombres
+|
+| cadena
+| false
+
+| clave
+|
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ValuesFrom
+
+Define valores de helm que pueden provenir de configmap, secreto o externo. Crédito: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
+
+|===
+| Campo | Descripción | Esquema | required
+
+| configMapKeyRef
+| La referencia a un mapa de configuración con valores de lanzamiento.
+| *<<ConfigMapKeySelector,ConfigMapKeySelector>>
+| false
+
+| secretKeyRef
+| La referencia a un secreto con valores de lanzamiento.
+| *<<SecretKeySelector,SecretKeySelector>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== YAMLOptions
+
+OpcionesYAML, si se utiliza YAML en bruto, estos son nombres que se mapean a archivos overlays/{name} que se utilizarán para reemplazar o parchear un recurso.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| overlays
+| Overlays es una lista de nombres que se mapean a carpetas en "overlays/". Si deseas personalizar el archivo ./subdir/resource.yaml, entonces un archivo ./overlays/myoverlay/subdir/resource.yaml reemplazará el archivo base. Un archivo llamado ./overlays/myoverlay/subdir/resource_patch.yaml aplicará un parche al archivo base.
+| []cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleNamespaceMapping
+
+BundleNamespaceMapping asigna bundles a clústeres en otros espacios de nombres.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| selectorDePaquete
+|
+| *metav1.LabelSelector
+| false
+
+| namespaceSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== BundleNamespaceMappingList
+
+La ListaDeMapeoDeEspacioDeNombresDePaquete contiene una lista de MapeoDeEspacioDeNombresDePaquete
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<BundleNamespaceMapping,BundleNamespaceMapping>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== AgentStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| última vez
+| LastSeen es la última vez que el agente se registró para actualizar el estado del recurso del clúster.
+| metav1.Time
+| true
+
+| espacio de nombres
+| El espacio de nombres es el espacio de nombres de la ampliación del agente, por ejemplo, "cattle-fleet-system".
+| cadena
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Clúster
+
+El clúster corresponde a un clúster de Kubernetes. {product_name} despliega paquetes a clústeres objetivo. Los clústeres a los que {product_name} despliega manifiestos se denominan clústeres descendentes. En el caso de uso de un solo clúster, el clúster de Kubernetes {product_name} es tanto el clúster gestor como el clúster descendente al mismo tiempo.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterSpec,ClusterSpec>>
+| false
+
+| status
+|
+| <<ClusterStatus,ClusterStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterDisplay
+
+|===
+| Campo | Descripción | Esquema | required
+
+| readyBundles
+| ReadyBundles es una cadena en la forma "%d/%d", que describe el número de paquetes que están listos frente al número de paquetes que se desea que estén listos.
+| cadena
+| false
+
+| estado
+| Estado del clúster, ya sea uno de los estados del paquete, o "WaitCheckIn".
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Lista de Clústeres
+
+ClusterList contiene una lista de Clúster
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<Cluster,Cluster>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| en pausa
+| Pausado, si se establece en verdadero, impedirá que se actualicen los BundleDeployments.
+| bool
+| false
+
+| clientID
+| ClientID es una cadena única que identificará el clúster. Puede ser predefinido o generado al importar el clúster.
+| cadena
+| false
+
+| kubeConfigSecret
+| KubeConfigSecret es el nombre del secreto que contiene el kubeconfig para el clúster descendente. Puede contener opcionalmente un APIServerURL y CA para sobrescribir los valores en el configmap del fleet-controller.
+| cadena
+| false
+
+| kubeConfigSecretNamespace
+| KubeConfigSecretNamespace es el espacio de nombres del secreto que contiene el kubeconfig para el clúster descendente. Si no se establece, se asumirá que el secreto se puede encontrar en el espacio de nombres en el que reside el objeto del clúster.
+| cadena
+| false
+
+| redeployAgentGeneration
+| RedeployAgentGeneration se puede utilizar para forzar el redepliegue del agente.
+| int64
+| false
+
+| agentEnvVars
+| AgentEnvVars son variables de entorno adicionales que se añadirán al despliegue del agente.
+| []corev1.EnvVar
+| false
+
+| agentNamespace
+| AgentNamespace por defecto es el espacio de nombres del sistema, por ejemplo, cattle-fleet-system.
+| cadena
+| false
+
+| privateRepoURL
+| PrivateRepoURL prefija el nombre de la imagen y anula una URL de repositorio global de la configuración de los agentes.
+| cadena
+| false
+
+| templateValues
+| TemplateValues define un mapeo específico del clúster de valores que se enviarán a la plantilla de valores de fleet.yaml.
+| *GenericMap
+| false
+
+| agentTolerations
+| AgentTolerations define un conjunto adicional de Tolerancias que se añadirán al despliegue del Agente.
+| []corev1.Toleration
+| false
+
+| agentAffinity
+| AgentAffinity anula la afinidad por defecto para el despliegue del agente del clúster. Si este valor es nulo, se utiliza la afinidad por defecto.
+| *corev1.Affinity
+| false
+
+| agentResources
+| AgentResources establece los recursos para el despliegue del agente del clúster.
+| *corev1.ResourceRequirements
+| false
+
+| hostNetwork 
+| HostNetwork establece el StatefulSet del agente para utilizar la configuración hostNetwork: true. Permite la provisión de paquetes relacionados con la red (configuración CNI). 
+| *bool 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| condiciones
+|
+| []genericcondition.GenericCondition
+| false
+
+| espacio de nombres
+| El espacio de nombres es el espacio de nombres del clúster, contiene la cuenta de servicio del clúster así como cualquier BundleDeployment. Ejemplo: "cluster-fleet-local-cluster-294db1acfa77-d9ccf852678f"
+| cadena
+| false
+
+| Resumen
+| El resumen es un resumen de los BundleDeployments. Los recuentos de recursos se copian del recurso gitrepo.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| resourceCounts
+| ResourceCounts es un agregado sobre los GitRepoResourceCounts.
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| readyGitRepos
+| ReadyGitRepos es el número de gitrepos para este clúster que están listos.
+| int
+| true
+
+| desiredReadyGitRepos
+| DesiredReadyGitRepos es el número de gitrepos para este clúster que se desea que estén listos.
+| int
+| true
+
+| agentEnvVarsHash
+| AgentEnvVarsHash es un hash de las variables de entorno del agente, utilizado para detectar cambios.
+| cadena
+| false
+
+| agentPrivateRepoURL
+| AgentPrivateRepoURL es la URL del repositorio privado para el agente que se utiliza actualmente.
+| cadena
+| false
+
+| agentHostNetwork 
+| AgentHostNetwork define el estado observado de la configuración spec.hostNetwork que se utiliza actualmente. 
+| bool 
+| false
+
+| agentDeployedGeneration
+| AgentDeployedGeneration es la generación del agente que está actualmente desplegado.
+| *int64
+| false
+
+| agentMigrated
+| AgentMigrated siempre se establece en verdadero después de importar un clúster. Si es falso, se activará una migración. Los agentes antiguos no tienen esto en su estado.
+| bool
+| false
+
+| agentNamespaceMigrated
+| AgentNamespaceMigrated siempre se establece en verdadero después de importar un clúster. Si es falso, se activará una migración. Los agentes antiguos {product_name} no tienen esto en su estado.
+| bool
+| false
+
+| cattleNamespaceMigrated
+| CattleNamespaceMigrated siempre se establece en verdadero después de importar un clúster. Si es falso, se activará una migración. Los agentes antiguos {product_name} no tienen esto en su estado.
+| bool
+| false
+
+| agentAffinityHash
+| AgentAffinityHash es un hash de la configuración de afinidad del agente, utilizado para detectar cambios.
+| cadena
+| false
+
+| agentResourcesHash
+| AgentResourcesHash es un hash de la configuración de recursos del agente, utilizado para detectar cambios.
+| cadena
+| false
+
+| agentTolerationsHash
+| AgentTolerationsHash es un hash de la configuración de tolerancias del agente, utilizado para detectar cambios.
+| cadena
+| false
+
+| agentConfigChanged
+| AgentConfigChanged se establece en verdadero si ha cambiado alguna configuración del agente, como la URL del servidor API o CA. Establecerlo en verdadero activará una re-importación del clúster.
+| bool
+| false
+
+| apiServerURL
+| APIServerURL es la URL actualmente utilizada del servidor API que el clúster utiliza para conectarse a sentido ascendente.
+| cadena
+| false
+
+| apiServerCAHash
+| APIServerCAHash es un hash del CA del servidor API de sentido ascendente, utilizado para detectar cambios.
+| cadena
+| false
+
+| agentTLSMode 
+| AgentTLSMode admite dos valores: `system-store` y `strict`. Si se establece en `system-store`, instruye al agente para que confíe en los paquetes CA del almacén del sistema operativo. Si se establece en `strict`, el agente solo se conectará a un servidor que utilice la CA exacta configurada al crear/actualizar el agente. 
+| cadena 
+| false
+
+| visualizar
+| Visualización contiene el número de paquetes listos, nodos y un estado resumido.
+| <<ClusterDisplay,ClusterDisplay>>
+| false
+
+| agente
+| EstadoDelAgente contiene información sobre el agente.
+| <<AgentStatus,AgentStatus>>
+| false
+
+| garbageCollectionInterval 
+| ElIntervaloDeRecolecciónDeBasura determina con qué frecuencia los agentes limpian las versiones obsoletas de Helm. 
+| *metav1.Duration 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterGroup
+
+GrupoDeClústeres es un selector reutilizable para dirigir un grupo de clústeres.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterGroupSpec,ClusterGroupSpec>>
+| true
+
+| status
+|
+| <<ClusterGroupStatus,ClusterGroupStatus>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterGroupDisplay
+
+|===
+| Campo | Descripción | Esquema | required
+
+| readyClusters
+| ClústeresListos es una cadena en la forma "%d/%d", que describe el número de clústeres que están listos frente al número de clústeres que se desea que estén listos.
+| cadena
+| false
+
+| readyBundles
+| PaquetesListos es una cadena en la forma "%d/%d", que describe el número de paquetes que están listos frente al número de paquetes que se desea que estén listos.
+| cadena
+| false
+
+| estado
+| El estado es un resumen para el grupo de clústeres, mostrando "NoListo" si hay recursos no listos.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterGroupList
+
+ListaDeGruposDeClústeres contiene una lista de GrupoDeClústeres
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<ClusterGroup,ClusterGroup>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterGroupSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| selector
+| ElSelector es un selector de etiquetas, utilizado para seleccionar clústeres para este grupo.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterGroupStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| clusterCount
+| ElConteoDeClústeres es el número de clústeres en el grupo de clústeres.
+| int
+| true
+
+| nonReadyClusterCount
+| ElConteoDeClústeresNoListos es el número de clústeres que no están listos.
+| int
+| true
+
+| nonReadyClusters
+| LosClústeresNoListos son una lista de nombres de clústeres que no están listos.
+| []cadena
+| false
+
+| condiciones
+| Condiciones es una lista de condiciones y sus estados para el grupo de clústeres.
+| []genericcondition.GenericCondition
+| false
+
+| Resumen
+| Resumen es un resumen de los BundleDeployments y sus recursos en el grupo de clústeres.
+| <<BundleSummary,BundleSummary>>
+| false
+
+| visualizar
+| La visualización contiene el número de clústeres listos y desiredready, junto con un estado resumen para los recursos del bundle.
+| <<ClusterGroupDisplay,ClusterGroupDisplay>>
+| false
+
+| resourceCounts
+| ResourceCounts contiene el número de recursos en cada estado en todos los bundles del grupo de clústeres.
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Registro de clúster
+
+El RegistroDeClúster se utiliza internamente por {product_name} y no debe ser utilizado directamente.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationList
+
+ListaRegistroClúster contiene una lista de RegistroClúster
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<ClusterRegistration,RegistroClúster>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| clientID
+| ClientID es una cadena única que identificará el clúster. El agente utiliza ya sea el ID configurado o el kubeSystem.UID.
+| cadena
+| false
+
+| clientRandom
+| ClientRandom es una cadena aleatoria que genera el agente. Cuando fleet-controller concede un registro, crea un secreto de registro con esta cadena en el nombre.
+| cadena
+| false
+
+| clusterLabels
+| Las etiquetas del clúster se copian al recurso del clúster durante el registro.
+| map[string]string
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| clusterName
+| El nombre del clúster solo se establece después de que el registro está siendo procesado por fleet-controller.
+| cadena
+| false
+
+| concedido
+| Concedido se establece en verdadero, si la cuenta de servicio de la solicitud está presente y su secreto de token existe. Esto ocurre directamente antes de crear el secreto de registro, roles y vinculaciones de roles.
+| bool
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationToken
+
+El TokenDeRegistroDeClúster es utilizado por los agentes para registrar un nuevo clúster.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationTokenList
+
+ClusterRegistrationTokenList contiene una lista de ClusterRegistrationToken
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<ClusterRegistrationToken,ClusterRegistrationToken>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationTokenSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| ttl
+| TTL es el tiempo de vida del token. Se utiliza para calcular el tiempo de caducidad. Si el token caduca, será eliminado.
+| *metav1.Duration
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ClusterRegistrationTokenStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| caduca
+| Caduca es el momento en que el token caduca.
+| *metav1.Time
+| false
+
+| secretName
+| SecretName es el nombre del secreto que contiene el token.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== Contenido
+
+El Contenido se utiliza internamente por {product_name} y no debe ser utilizado directamente. Contiene los recursos de un Bundle para un clúster destino específico.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| contenido
+| El contenido es un array de bytes, que contiene los manifiestos de un paquete. Los recursos del paquete se copian en el recurso de contenido de la ampliación del paquete, para que el agente descendente pueda desplegarlos.
+| []byte
+| false
+
+| sha256sum
+| SHA256Sum del campo de contenido
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ListaDeContenido
+
+Lista de contenido contiene una lista de contenido
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<Content,Contenido>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== CommitSpec
+
+CommitSpec especifica cómo enviar cambios al repositorio git.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| authorName
+| AuthorName proporciona el nombre que se debe utilizar al realizar un commit.
+| cadena
+| true
+
+| authorEmail
+| AuthorEmail proporciona el correo electrónico que se debe utilizar al realizar un commit.
+| cadena
+| true
+
+| messageTemplate
+| La plantilla de mensaje proporciona una plantilla para el mensaje de compromiso, en la que se interpolarán los detalles del cambio realizado.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== CorrectDrift
+
+|===
+| Campo | Descripción | Esquema | required
+
+| habilitado
+| Habilitar corrección de desviación si es verdadero.
+| bool
+| false
+
+| forzar
+| Se forzará la reversión de helm utilizando la opción --force si es verdadero. Esto intentará recrear todos los recursos en la versión.
+| bool
+| false
+
+| keepFailHistory
+| MantenerHistorialDeFallos realiza un seguimiento de las reversiones fallidas en el historial de helm.
+| bool
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepo
+
+GitRepo describe un repositorio git que es supervisado por {product_name}. El recurso contiene la información necesaria para desplegar el repositorio, o partes de él, en clústeres destino.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| especificación
+|
+| <<GitRepoSpec,GitRepoSpec>>
+| false
+
+| status
+|
+| <<GitRepoStatus,GitRepoStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoDisplay
+
+|===
+| Campo | Descripción | Esquema | required
+
+| readyBundleDeployments
+| AmpliacionesDePaqueteListas es una cadena con el formato "%d/%d", que describe el número de ampliaciones de paquete listas sobre el número total de ampliaciones de paquete.
+| cadena
+| false
+
+| estado
+| El estado es el estado del GitRepo, por ejemplo. "ActualizandoGit" o el estado máximo de Paquete según el RangoDeEstado.
+| cadena
+| false
+
+| mensaje
+| El mensaje contiene el mensaje relevante de las condiciones de despliegue.
+| cadena
+| false
+
+| error
+| Error es verdadero si hay un mensaje presente.
+| bool
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoList
+
+ListaGitRepo contiene una lista de GitRepo
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<GitRepo,GitRepo>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoResource
+
+RecursoGitRepo contiene metadatos sobre los recursos de un paquete.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| apiVersion
+| VersiónApi es la versión de la API del recurso.
+| cadena
+| false
+
+| clase
+| La clase es el tipo de recurso de k8s.
+| cadena
+| false
+
+| tipo
+| El tipo es el tipo de recurso, por ejemplo, "apiextensions.k8s.io.customresourcedefinition" o "configmap".
+| cadena
+| false
+
+| id
+| El ID es el nombre del recurso, por ejemplo, "namespace1/my-config" o "backingimagemanagers.storage.io".
+| cadena
+| false
+
+| espacio de nombres
+| El espacio de nombres del recurso.
+| cadena
+| false
+
+| name
+| Nombre del recurso.
+| cadena
+| false
+
+| incompleteState
+| El estadoIncompleto es verdadero si un resumen de paquete tiene 10 o más recursos no listos o un recurso no listo tiene 10 o más estados no listos o modificados.
+| bool
+| false
+
+| estado
+| El estado es el estado del recurso, por ejemplo, "Unknown", "WaitApplied", "ErrApplied" or "Ready".
+| cadena
+| false
+
+| error
+| El error es verdadero si hay algún error en el PerClusterState que es verdadero.
+| bool
+| false
+
+| transicionando
+| Transicionando es verdadero si hay alguna transición en el PerClusterState que es verdadera.
+| bool
+| false
+
+| mensaje
+| El mensaje es el primer mensaje de los PerClusterStates.
+| cadena
+| false
+
+| perClusterState
+| El PerClusterState es una lista de estados para cada clúster. Derivado de los resúmenes de recursos no listos.
+| []<<ResourcePerClusterState,ResourcePerClusterState>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoResourceCounts
+
+GitRepoResourceCounts contiene el número de recursos en cada estado.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| preparado
+| Preparado es el número de recursos listos.
+| int
+| true
+
+| desiredReady
+| ListoDeseado es el número de recursos que deberían estar listos.
+| int
+| true
+
+| waitApplied
+| EsperandoAplicación es el número de recursos que están esperando ser aplicados.
+| int
+| true
+
+| modificado
+| Modificado es el número de recursos que han sido modificados.
+| int
+| true
+
+| huérfano
+| Huérfano es el número de recursos huérfanos.
+| int
+| true
+
+| falta
+| Faltante es el número de recursos faltantes.
+| int
+| true
+
+| desconocido
+| Desconocido es el número de recursos en un estado desconocido.
+| int
+| true
+
+| notReady
+| NoListo es el número de recursos no listos. Los recursos no están listos si no coinciden con ningún otro estado.
+| int
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoSpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| repo
+| Repositorio es una URL a un repositorio git para clonar e indexar.
+| cadena
+| false
+
+| rama
+| Rama es la rama git a seguir.
+| cadena
+| false
+
+| revisión
+| Revisión de un commit o etiqueta específica para operar.
+| cadena
+| false
+
+| targetNamespace
+| Asegúrate de que todos los recursos se creen en este espacio de nombres. Cualquier recurso a nivel de clúster será rechazado si esto está configurado. Además, este espacio de nombres se creará bajo demanda.
+| cadena
+| false
+
+| clientSecretName
+| ClientSecretName es el nombre del secreto del cliente que se utilizará para conectarse al repositorio. Se espera que el secreto sea de tipo "kubernetes.io/basic-auth" o "kubernetes.io/ssh-auth".
+| cadena
+| false
+
+| helmSecretName
+| HelmSecretName contiene el secreto de autenticación para un repositorio privado de Helm.
+| cadena
+| false
+
+| helmSecretNameForPaths
+| HelmSecretNameForPaths contiene el secreto de autenticación para el repositorio privado de Helm para cada vía.
+| cadena
+| false
+
+| helmRepoURLRegex
+| HelmRepoURLRegex: las credenciales de Helm se utilizarán si el repositorio de helm coincide con esta expresión regular. Las credenciales siempre se utilizarán si este valor está vacío o no se proporciona.
+| cadena
+| false
+
+| caBundle
+| CABundle es un paquete CA codificado en PEM que se utilizará para validar el certificado del repositorio.
+| []byte
+| false
+
+| insecureSkipTLSVerify
+| InsecureSkipTLSverify utilizará HTTPS inseguro para clonar el repositorio.
+| bool
+| false
+
+| vías
+| Las vías son los directorios relativos a la raíz del repositorio git que contienen recursos que se aplicarán. Se admite el uso de patrones de ruta, por ejemplo, ["charts/*"] coincidirá con todas las carpetas como un subdirectorio de charts/. Si está vacío, "/" es el valor predeterminado.
+| []cadena
+| false
+
+| en pausa
+| Pausado, cuando es verdadero, provoca que los cambios en Git no se propaguen a los clústeres, sino que marquen los recursos como Fuera de Sincronización.
+| bool
+| false
+
+| serviceAccount
+| ServiceAccount utilizado en el clúster descendente para la implementación.
+| cadena
+| false
+
+| destinos
+| Targets es una lista de objetivos a los que este repositorio se desplegará.
+| []<<GitTarget,GitTarget>>
+| false
+
+| pollingInterval
+| PollingInterval es la frecuencia con la que se comprueba git en busca de nuevas actualizaciones.
+| *metav1.Duration
+| false
+
+| forceSyncGeneration
+| Incrementa este número para forzar una ampliación de contenidos desde Git.
+| int64
+| false
+
+| imageScanInterval
+| ImageScanInterval es el intervalo de sincronización de imágenes escaneadas y su escritura de vuelta al repositorio git.
+| *metav1.Duration
+| false
+
+| imageScanCommit
+| Commit especifica cómo realizar un commit en el repositorio git cuando se escanea una nueva imagen y se escribe de vuelta al repositorio git.
+| <<CommitSpec,CommitSpec>>
+| false
+
+| keepResources
+| KeepResources especifica si los recursos creados deben ser mantenidos después de eliminar el GitRepo.
+| bool
+| false
+
+| deleteNamespace 
+| DeleteNamespace especifica si el espacio de nombres creado debe ser eliminado después de eliminar el GitRepo. 
+| bool 
+| false
+
+| correctDrift
+| CorrectDrift especifica cómo debe funcionar la corrección de deriva.
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| disablePolling 
+| Desactiva la comprobación de git. Cuando está habilitado, solo se utilizarán webhooks. 
+| bool 
+| false
+
+| ociRegistry 
+| OCIRegistry especifica los parámetros relacionados con el registro OCI. 
+| *[OCIRegistrySpec](#ociregistryspec) 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| observedGeneration
+| La generación observada es la generación actual del recurso en el clúster. Se copia de k8s metadata.Generation. El valor se incrementa para todos los cambios, excepto para los cambios en .metadata o .status.
+| int64
+| true
+
+| updateGeneration 
+| La generación de actualización es la generación de actualización forzada, si se ha configurado spec.forceSyncGeneration. 
+| int64 
+| false
+
+| commit 
+| Commit es el hash del commit de Git del último trabajo de git ejecutado. 
+| cadena 
+| false
+
+| webhookCommit 
+| WebhookCommit es el último hash de commit de Git recibido de un webhook 
+| cadena 
+| false
+
+| readyClusters
+| ReadyClusters es el número más bajo de clústeres que están listos en todos los paquetes de este GitRepo.
+| int
+| true
+
+| desiredReadyClusters
+| clústeresListosDeseados\tes el número de clústeres que deberían estar listos para los paquetes de este GitRepo.
+| int
+| true
+
+| gitJobStatus
+| EstadoDelTrabajoGit es el estado del último trabajo de Git ejecutado, por ejemplo. "Actual" si no hubo error.
+| cadena
+| false
+
+| Resumen
+| El resumen contiene el número de ampliaciones de paquete en cada estado y una lista de recursos no listos.
+| <<BundleSummary,ResumenDelPaquete>>
+| false
+
+| visualizar
+| Display contiene un resumen legible por humanos del estado.
+| <<GitRepoDisplay,GitRepoDisplay>>
+| false
+
+| condiciones
+| Las condiciones son una lista de condiciones de Wrangler que describen el estado del GitRepo.
+| []genericcondition.GenericCondition
+| false
+
+| físicos
+| Los recursos contienen metadatos sobre los recursos de cada paquete.
+| []<<GitRepoResource,GitRepoResource>>
+| false
+
+| resourceCounts
+| CuentasDeRecursos contiene el número de recursos en cada estado a través de todos los paquetes.
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| resourceErrors
+| ErroresDeRecursos es una lista ordenada de errores de los recursos.
+| []cadena
+| false
+
+| lastSyncedImageScanTime
+| LastSyncedImageScanTime es el momento del último escaneo de imágenes.
+| metav1.Time
+| false
+
+| lastPollingTriggered 
+| LastPollingTime es el último momento en el que se activó la comprobación de consulta. 
+| metav1.Time 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitTarget
+
+ObjetivoGit es un clúster o grupo de clústeres al que desplegar.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name
+| El nombre es el nombre de este objetivo.
+| cadena
+| false
+
+| clusterName
+| Nombre del clúster es el nombre de un clúster.
+| cadena
+| false
+
+| clusterSelector
+| Selector de clúster es un selector de etiquetas para seleccionar clústeres.
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| Grupo de clúster es el nombre de un grupo de clústeres en el mismo espacio de nombres que los clústeres.
+| cadena
+| false
+
+| clusterGroupSelector
+| Selector de grupo de clúster es un selector de etiquetas para seleccionar grupos de clústeres.
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+=== OCIRegistrySpec
+
+|===
+| Campo | Descripción | Esquema | required
+
+| referencia 
+| Referencia del Registro OCI 
+| cadena 
+| false
+
+| authSecretName 
+| AuthSecretName contiene el secreto de autenticación donde se almacenan las credenciales del Registro OCI. 
+| cadena 
+| false
+
+| basicHTTP 
+| BasicHTTP utiliza conexiones HTTP al Registro OCI cuando está habilitado. 
+| bool 
+| false
+
+| insecureSkipTLS 
+| InsecureSkipTLS permite conexiones al Registro OCI sin certificados cuando está habilitado. 
+| bool 
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+=== ResourcePerClusterState
+
+ResourcePerClusterState se genera para cada recurso no listo de los paquetes.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| estado
+| State es el estado del recurso.
+| cadena
+| false
+
+| error
+| Error es verdadero si el recurso está en un estado de error, copiado del resumen del paquete para recursos no listos.
+| bool
+| false
+
+| transicionando
+| Transitioning es verdadero si el recurso está en un estado de transición, copiado del resumen del paquete para recursos no listos.
+| bool
+| false
+
+| mensaje
+| Message combina los mensajes del resumen del paquete. Messages se unen con el delimitador ';'.
+| cadena
+| false
+
+| parche
+| Parche para recursos modificados.
+| *GenericMap
+| false
+
+| clusterId
+| ClusterID es el id del clúster.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoRestriction
+
+GitRepoRestriction es un recurso que se puede utilizar opcionalmente para restringir las opciones de GitRepos en el mismo espacio de nombres.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| defaultServiceAccount
+| DefaultServiceAccount anula la cuenta de servicio predeterminada del GitRepo.
+| cadena
+| false
+
+| allowedServiceAccounts
+| AllowedServiceAccounts es una lista de cuentas de servicio que los GitRepos pueden utilizar.
+| []cadena
+| false
+
+| allowedRepoPatterns
+| AllowedRepoPatterns es una lista de patrones regex que restringen los valores válidos del campo Repo de un GitRepo.
+| []cadena
+| false
+
+| defaultClientSecretName
+| DefaultClientSecretName anula el secreto de cliente predeterminado del GitRepo.
+| cadena
+| false
+
+| allowedClientSecretNames
+| AllowedClientSecretNames es una lista de nombres de secretos de cliente que los GitRepos pueden utilizar.
+| []cadena
+| false
+
+| allowedTargetNamespaces
+| AllowedTargetNamespaces restringe TargetNamespace a los espacios de nombres dados. Si se establece AllowedTargetNamespaces, se debe establecer TargetNamespace.
+| []cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== GitRepoRestrictionList
+
+GitRepoRestrictionList contiene una lista de GitRepoRestriction
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<GitRepoRestriction,GitRepoRestriction>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+=== AlphabeticalPolicy
+
+AlphabeticalPolicy especifica una política de ordenación alfabética.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| orden
+| El orden especifica el orden de clasificación de las etiquetas. Dadas las letras del alfabeto como etiquetas, el orden ascendente seleccionaría Z, y el orden descendente seleccionaría A.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ImagePolicyChoice
+
+Elección de política de imagen es una unión de todos los tipos de política que se pueden suministrar.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| semver
+| SemVer proporciona un rango de versión semántica para comprobar contra las etiquetas disponibles.
+| *<<SemVerPolicy,SemVerPolicy>>
+| false
+
+| alphabetical
+| Conjunto de reglas alfabéticas a utilizar para el ordenamiento alfabético de las etiquetas.
+| *<<AlphabeticalPolicy,AlphabeticalPolicy>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ImageScan
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+
+| status
+|
+| <<ImageScanStatus,ImageScanStatus>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ImageScanList
+
+La lista de escaneo de imágenes contiene una lista de escaneo de imágenes
+
+|===
+| Campo | Descripción | Esquema | required
+
+| metadatos
+|
+| metav1.ListMeta
+| false
+
+| elementos
+|
+| []<<ImageScan,ImageScan>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ImageScanSpec
+
+La API se toma de https://github.com/fluxcd/image-reflector-controller
+
+|===
+| Campo | Descripción | Esquema | required
+
+| nombreDeEtiqueta
+| nombreDeEtiqueta es la referencia de etiqueta que debe incluirse en el manifiesto para reemplazar campos
+| cadena
+| false
+
+| gitrepoName
+| nombre de referencia de GitRepo
+| cadena
+| false
+
+| imagen
+| La imagen es el nombre del repositorio de imágenes
+| cadena
+| false
+
+| intervalo
+| El intervalo es la duración de tiempo que se debe esperar entre escaneos del repositorio de imágenes.
+| metav1.Duración
+| false
+
+| secretRef
+| SecretRef puede recibir el nombre de un secreto que contenga credenciales para usar en el registro de imágenes. El secreto debe ser creado con `kubectl create secret docker-registry`, o el equivalente.
+| *corev1.LocalObjectReference
+| false
+
+| suspender
+| Esta bandera indica al controlador que suspenda los escaneos de imágenes subsiguientes. No se aplica a los escaneos que ya han comenzado. Por defecto es falso.
+| bool
+| false
+
+| directiva
+| La política proporciona los detalles de la política a seguir al seleccionar la imagen más reciente
+| <<ImagePolicyChoice,ImagePolicyChoice>>
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== ImageScanStatus
+
+|===
+| Campo | Descripción | Esquema | required
+
+| condiciones
+|
+| []genericcondition.GenericCondition
+| false
+
+| lastScanTime
+| LastScanTime es la última vez que se escaneó la imagen
+| metav1.Time
+| false
+
+| latestImage
+| LatestImage proporciona el primero en la lista de imágenes escaneadas por el repositorio de imágenes, cuando se filtra y ordena según la política.
+| cadena
+| false
+
+| latestTag
+| Latest tag es la última etiqueta filtrada por la política
+| cadena
+| false
+
+| latestDigest
+| LatestDigest es el digest de la última etiqueta
+| cadena
+| false
+
+| observedGeneration
+|
+| int64
+| false
+
+| canonicalImageName
+| CanonicalName es el nombre del repositorio de imágenes con todos los bits implícitos hechos explícitos; por ejemplo, `docker.io/library/alpine` en lugar de `alpine`.
+| cadena
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+
+=== SemVerPolicy
+
+SemVerPolicy especifica una política de versión semántica.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| rango
+| Range proporciona un rango semver para la etiqueta de la imagen; la versión más alta dentro del rango que es una etiqueta produce la última imagen.
+| cadena
+| true
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+=== FleetYAML
+
+FleetYAML es la estructura de nivel superior del archivo fleet.yaml. El archivo fleet.yaml añade opciones a un bundle. Cualquier directorio con un fleet.yaml se convierte automáticamente en un bundle.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name 
+| Nombre del bundle que se creará. 
+| cadena 
+| false
+
+| etiquetas 
+| Las etiquetas se copian al bundle y se pueden usar en un dependsOn.selector. 
+| map[string]string 
+| false
+
+| BundleSpec 
+|
+| <<BundleSpec,BundleSpec>>
+| false
+
+| targetCustomizations 
+| Las personalizaciones de destino se utilizan para determinar cómo deben modificarse los recursos por destino. Los destinos se evalúan en orden y el primero que coincida con un clúster se utiliza para ese clúster. 
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| imageScans 
+| Las exploraciones de imágenes son opcionales y se utilizan para actualizar las referencias de imágenes de contenedor en el repositorio git. 
+| []<<ImageScanYAML,ImageScanYAML>>
+| false
+
+| overrideTargets 
+| OverrideTargets anula los destinos que están definidos en el recurso GitRepo. Si se proporciona overrideTargets, el bundle no heredará destinos del GitRepo. 
+| []<<GitTarget,GitTarget>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>
+
+=== ImageScanYAML
+
+ImageScanYAML es una entrada única en la lista de ImageScan de fleet.yaml.
+
+|===
+| Campo | Descripción | Esquema | required
+
+| name 
+| Nombre de la exploración de imágenes. No se usa. 
+| cadena 
+| false
+
+| ImageScanSpec 
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+|===
+
+<<Resources,Volver a Recursos Personalizados>>

@@ -1,0 +1,55 @@
+= Ressourcen automatisch in Downstream-Cluster kopieren
+:revdate: 2025-11-04
+:page-revdate: {revdate}
+
+[WARNING]
+====
+Dies ist eine experimentelle Funktion.
+====
+
+Ab {product_name} v0.14.0 unterstützt {product_name} die Weitergabe externer Ressourcen an Downstream-Cluster.
+
+Dies vereinfacht den Umgang mit Abhängigkeiten von Charts, wie z.B. Werten, die aus externen Ressourcen stammen.
+Siehe auch xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
+
+== Funktionsweise
+
+HelmOps unterstützen ein neues `downstreamResources` Feld, das verwendet werden kann, um Ressourcen nach Art und Name zu referenzieren.
+Diese Ressourcen müssen:
+
+* Entweder Secrets oder ConfigMaps sein. Derzeit werden keine anderen `kind`s unterstützt.
+* Vor der Referenzierung durch die HelmOp existieren und im selben Namespace wie die HelmOp leben, die sie referenziert.
+
+Beispiel:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+[...] # metadata
+spec:
+  helm:
+    [...] # Helm options
+  downstreamResources:
+    - kind: Secret
+      name: my-secret
+    - kind: ConfigMap
+      name: my-config
+----
+
+Dies weist den Fleet-Controller an, diese Ressourcen in jedes angezielte Downstream-Cluster zu kopieren, bevor die Arbeitslast (in diesem Fall durch ein Helm-Chart spezifiziert) in das genannte Downstream-Cluster bereitgestellt wird.
+
+Wenn ein Cluster nicht mehr angezielt wird, wird der Fleet-Agent diese Ressourcen auch aus dem Cluster löschen. Sie bleiben jedoch im Upstream-Cluster.
+
+[NOTE]
+====
+Wenn Ressourcen, die über `downstreamResources` referenziert werden, auch dann in Downstream-Clustern verbleiben sollen, wenn sie nicht mehr angezielt werden, sollte xref:/reference/ref-bundle.adoc[keepResources] auf `true` in der HelmOp gesetzt werden.
+====
+
+== Überwachung
+
+Ab Version v0.15.0 überwacht {product_name} Änderungen an Secrets und ConfigMaps, die in `DownstreamResources` aufgeführt sind. Es wird auch überprüft, ob ein Secret oder eine ConfigMap nach der Erstellung des Bundles erstellt wurde.
+
+Wenn ein referenziertes Secret oder eine ConfigMap im Upstream-Cluster erstellt oder aktualisiert wird, wird Fleet diese Änderungen an die Downstream-Cluster weiterleiten und die Arbeitslast erneut bereitstellen.
+
+Dies ermöglicht Implementierungen, die neuesten Versionen dieser referenzierten Ressourcen zu nutzen, die Konfiguration, Helm-Werte usw. darstellen können.

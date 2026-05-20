@@ -1,0 +1,144 @@
+= OCIストレージ
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name}はデフォルトでetcdにKubernetesバンドルリソースを保存します。しかし、etcdには厳しいサイズ制限があり、大規模なワークロードには最適化されていません。ターゲットクラスターのバンドルリソースがetcdのサイズ制限を超える場合は、OCIレジストリをストレージバックエンドとして使用することを検討してください。
+
+[NOTE]
+====
+バンドルサイズを削減するために、OCIレジストリにアップロードする前にバンドルコンテンツを圧縮し、base64エンコードしてください。
+====
+
+OCIレジストリを使用すると、次のことが可能になります：
+
+* 大きなバンドルコンテンツをオフロードすることでetcdの負荷を軽減します。
+* 大規模なマニフェストやHelmチャートのために標準化されたストレージバックエンドを使用します。
+
+image::fleet-ociStorage-flow.png[OCIストレージを使用した{product_name}のフローを表示するビジュアルアセット。]
+
+[NOTE]
+====
+{product_name}はOCIアーティファクトの整合性をチェックし、OCIアーティファクトに`latest`としてタグを付けます。
+====
+
+== 前提条件
+
+* 稼働中のOCIレジストリ。
+* 有効な資格情報を持つKubernetesシークレット。
+* {product_name}のインストール（v2.12.0以降）。
+
+== OCIストレージを有効にする方法
+
+OCIストレージを有効にするには、OCIレジストリのための必要な情報とアクセスオプションを含むシークレットを作成します。シークレットを定義する方法は2つあります：
+
+* *グローバルシークレット：*`GitRepo`と同じネームスペースに正確に名付けられたシークレット`ocistorage`。
+** これはフォールバックシークレットです。`GitRepo`レベルのシークレットが指定されていない場合、{product_name}はネームスペース内のすべての`GitRepo`にこのシークレットを使用します。
+* *GitRepoレベルのシークレット:*特定の`GitRepo`リソース用のカスタムシークレットです。
+** これはユーザー定義のシークレットで、任意の名前を持つことができ、`GitRepo`リソースで参照する必要があります。
+** `ociRegistrySecret`仕様の`GitRepo`フィールドにシークレットの名前を設定してください。
+
+[NOTE]
+====
+シークレットが欠落しているか無効な場合、{product_name}はetcdにフォールバックしません。その代わりに、エラーをログに記録し、デプロイメントをスキップします。
+====
+
+レジストリアドレスとオプションの認証情報を含むKubernetesシークレットを作成します：
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocistorage
+  namespace: fleet-local
+type: fleet.cattle.io/bundle-oci-storage/v1alpha1
+data:
+  reference: <base64-encoded-registry-url> # Only the reference field is required. All other fields are optional.
+  username: <base64-encoded-user>
+  password: <base64-encoded-password>
+  insecureSkipTLS: <base64-encoded-true/false>
+  basicHTTP: <base64-encoded-true/false>
+  agentUsername: <base64-encoded-readonly-user>
+  agentPassword: <base64-encoded-password>
+----
+
+[NOTE]
+====
+シークレットはタイプ: `fleet.cattle.io/bundle-oci-storage/v1alpha1`を持っている必要があります。{product_name}はこの値を要求し、異なるタイプのシークレットを拒否します。
+====
+
+シークレットを変更しても再デプロイメントはトリガーされません。{product_name}はGitの更新または手動の強制更新後に新しいレジストリを使用します。
+
+=== シークレットフィールドの参照
+
+設定できるフィールドは次のとおりです：
+
+[cols="1,3,1,3",options="header"]
+|===
+| フィールド | 説明 | Format | 備考
+
+| `reference`       | OCIレジストリのURL。                    | Base64エンコードされた文字列       | `oci://`や類似のプレフィックスは使用しないでください。
+| `username`        | レジストリへの書き込みアクセスを持つユーザー名。| Base64エンコードされた文字列       | 指定されていない場合、{product_name}は認証なしでレジストリにアクセスします。
+| `password`        | 書き込みアクセスユーザーのパスワード。        | Base64エンコードされた文字列       | 指定されていない場合、{product_name}は認証なしでレジストリにアクセスします。
+| `agentUsername`   | エージェント用の読み取り専用ユーザー名。              | Base64エンコードされた文字列       | エージェントのセキュリティを強化するために、読み取り専用の認証情報を使用してください。これらの認証情報を設定しない場合、エージェントはそのユーザー名を使用します。
+| `agentPassword`   | エージェント用の読み取り専用パスワード。              | Base64エンコードされた文字列       | エージェントのセキュリティを強化するために、読み取り専用の認証情報を使用してください。これらの認証情報を設定しない場合、エージェントはそのユーザーパスワードを使用します。
+| `insecureSkipTLS` | TLS証明書の検証をスキップします。           | Base64エンコードされた`true/false`| 開発またはテストのみに使用してください。デフォルトでは、`insecureSkipTLS`は`false`に設定されています。
+| `basicHTTP`       | HTTPSの代わりにHTTPを有効にします。              | Base64エンコードされた`true/false`| お勧めしません。安全でないトラフィックを許可します。デフォルトでは、`basicHTTP`は`false`に設定されています。
+|===
+
+== {product_name} 例
+
+次の`GitRepo`ファイルを考慮してください：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: frontend-oci
+  namespace: fleet-local
+spec:
+  repo: https://github.com/your-org/fleet-oci-example.git
+  branch: main
+  paths:
+    - ./frontend
+  ociRegistrySecret: ocistorage
+----
+
+上記の例に似たレジストリアドレスとオプションの認証情報を含むYAMLファイルを作成して適用することができます。続いて、実行します：
+
+[source,bash]
+----
+kubectl apply -f secrets/oci-secret.yaml
+----
+
+または、`kubectl`を使用して、エンコードされていないテキストでシークレットを作成することもできます。Kubernetesは自動的に値をbase64に変換します。
+
+[source,bash]
+----
+kubectl -n fleet-local create secret generic ocistorage \
+  --type=fleet.cattle.io/bundle-oci-storage/v1alpha1 \
+  --from-literal=username=fleet-ci \
+  --from-literal=password=fleetRocks \
+  --from-literal=reference=192.168.1.39:8082 \
+  --from-literal=insecureSkipTLS=true \
+  --from-literal=basicHTTP=false \
+  --from-literal=agentUsername=fleet-ci-readonly \
+  --from-literal=agentPassword=readonlypass
+----
+
+シークレットを検証するには、次を実行します：
+
+[source,bash]
+----
+kubectl get secret ocistorage -n fleet-local -o yaml
+----
+
+シークレットを復号化して表示するには：
+
+[source,bash]
+----
+kubectl get secret ocistorage -n fleet-local -o json | jq '.data | map_values(@base64d)'
+----
+
+image::ociStorage-secret-ss.png[OCIシークレットが{product_name}に対して有効になっているスクリーンショット]

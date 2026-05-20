@@ -1,0 +1,40 @@
+= Concepts du noyau
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} est fondamentalement un ensemble de définitions de ressources personnalisées (CRD) et de contrôleurs Kubernetes pour gérer GitOps pour une grappe Kubernetes unique ou un déploiement à grande échelle de grappes Kubernetes.
+
+[IMPORTANT]
+====
+
+Pour en savoir plus sur les conventions de nommage des CRD, cliquez sur xref:troubleshooting.adoc#_naming_conventions_for_crds[Conventions de nommage pour les CRD].
+====
+
+Voici quelques-uns des concepts de {product_name} qui seront utiles tout au long de cette documentation{nbsp}:
+
+* *{product_name} Gestionnaire*{nbsp}: Le composant centralisé qui orchestre les déploiements des ressources Kubernetes à partir de git. Dans une configuration multi-grappes, cela sera généralement une grappe Kubernetes dédiée. Dans une configuration à grappe unique, le {product_name} gestionnaire fonctionnera sur la même grappe que celle que vous gérez avec GitOps.
+* *{product_name} contrôleur*{nbsp}: Le(s) contrôleur(s) fonctionnant sur le {product_name} gestionnaire orchestrant GitOps. En pratique, le {product_name} gestionnaire et les {product_name} contrôleurs sont utilisés de manière assez interchangeable.
+* *Style de grappe unique*{nbsp}: C'est un style d'installation de {product_name} dans lequel le gestionnaire et la grappe en aval sont la même grappe.  C'est un modèle très simple pour se mettre rapidement en route avec GitOps.
+* *Style multi-grappes*{nbsp}: C'est un style d'exécution de {product_name} dans lequel vous avez un gestionnaire central qui gère un grand nombre de grappes en aval.
+* *{product_name} agent*{nbsp}: Chaque grappe en aval gérée exécutera un agent qui communique avec le {product_name} gestionnaire.
+  Cet agent est simplement un autre ensemble de contrôleurs Kubernetes fonctionnant dans la grappe en aval.
+* *GitRepo*{nbsp}: Les dépôts Git qui sont surveillés par {product_name} sont représentés par le type `GitRepo`.
+
+____
+*Exemple d'ordre d'installation via les ressources personnalisées `GitRepo` lors de l'utilisation de {product_name} pour la gestion de la configuration des clusters en aval :*
+
+. Installez les CRD et contrôleurs https://github.com/projectcalico/calico[Calico].
+. Définissez une ou plusieurs politiques réseau globales au niveau du cluster.
+. Installez https://github.com/open-policy-agent/gatekeeper[GateKeeper]. Notez que les *étiquettes de cluster* et les *overlays* sont des fonctionnalités critiques dans {product_name} car elles déterminent quels clusters recevront chaque partie du bundle.
+. Configurez et mettez en place des ingress et des daemon système.
+____
+
+* *Bundle*{nbsp}: Une unité interne utilisée pour l'orchestration des ressources depuis git.
+  Lorsqu'un `GitRepo` est analysé, il produira un ou plusieurs bundles. Les bundles sont une collection de ressources qui sont déployées sur un cluster. `Bundle` est l'unité de déploiement fondamentale utilisée dans {product_name}. Le contenu d'un `Bundle` peut être des manifests Kubernetes, une configuration Kustomize ou des charts Helm.
+  Quelle que soit la source, le contenu est rendu dynamiquement dans un chart Helm par l'agent et installé dans le cluster en aval en tant que release Helm.
+ ** Pour voir le *cycle de vie d'un bundle*, cliquez sur xref:explanations/ref-bundle-stages.adoc[cycle de vie du bundle] :
+* *BundleDeployment* : Lorsqu'un `Bundle` est déployé sur un cluster, une instance d'un `Bundle` est appelée un `BundleDeployment`.
+  Un `BundleDeployment` représente l'état de ce `Bundle` sur un cluster spécifique avec ses personnalisations spécifiques au cluster. L'agent {product_name} n'a connaissance que des ressources `BundleDeployment` qui sont créées pour le cluster que l'agent gère.
+ ** Pour un exemple de déploiement de manifestes Kubernetes à travers des clusters en utilisant la personnalisation {product_name}, cliquez sur xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[personnalisation par cluster] :
+* *Cluster en aval* : Les clusters auxquels {product_name} déploie des manifestes sont appelés des clusters en aval. Dans le cas d'un cluster unique, le cluster Kubernetes {product_name} jouant le rôle de gestionnaire est à la fois le gestionnaire et le cluster en aval.
+* *Jeton d'enregistrement de cluster* : Jetons utilisés par les agents pour enregistrer un nouveau cluster.

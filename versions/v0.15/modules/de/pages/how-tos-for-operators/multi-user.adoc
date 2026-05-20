@@ -1,0 +1,236 @@
+= Multi-User-Setup
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} verwendet Kubernetes RBAC, wo immer möglich.
+
+Eine Ergänzung zu RBAC ist die xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] Ressource, die verwendet werden kann, um GitRepo-Ressourcen in einem Namespace zu steuern.
+
+Ein Multi-User-Fleet-Setup sieht so aus:
+
+* Mandanten teilen keine Namespaces, jeder Mandant hat einen oder mehrere Namespaces im Upstream-Cluster, in denen sie GitRepo-Ressourcen erstellen können.
+* Mandanten können keine clusterweiten Ressourcen bereitstellen und sind auf eine Reihe von Namespaces in den Downstream-Clustern beschränkt.
+* Cluster befinden sich in einem separaten Namespace.
+
+image::FleetSharedClusters.svg[Geteilte Cluster]
+
+[CAUTION]
+.wichtige Informationen
+====
+
+Die Isolation der Mandanten ist nicht vollständig und hängt davon ab, dass Kubernetes RBAC korrekt eingerichtet ist. Ohne manuelle Einrichtung durch einen Operator können Mandanten weiterhin clusterweite Ressourcen bereitstellen. Selbst mit den verfügbaren {product_name} Einschränkungen sind Benutzer nur auf Namespaces beschränkt, aber Namespaces bieten allein nicht viel Isolation. Z.B. können sie weiterhin so viele Ressourcen konsumieren, wie sie möchten.
+
+Die bestehenden {product_name} Einschränkungen ermöglichen es Benutzern jedoch, Cluster zu teilen und Ressourcen ohne Konflikte bereitzustellen.
+====
+
+
+== Beispiel {product_name} Standalone
+
+Dies würde einen Benutzer 'fleetuser' erstellen, der nur GitRepo-Ressourcen im Namespace 'project1' verwalten kann.
+
+[,bash]
+----
+ kubectl create serviceaccount fleetuser
+ kubectl create namespace project1
+ kubectl create -n project1 role fleetuser --verb=get --verb=list --verb=create --verb=delete --resource=gitrepos.fleet.cattle.io
+ kubectl create -n project1 rolebinding fleetuser --serviceaccount=default:fleetuser --role=fleetuser
+----
+
+Wenn wir den Zugriff auf mehrere Namespaces gewähren möchten, können wir eine einzelne Clusterrolle mit zwei Rollenbindungen verwenden:
+
+[,bash]
+----
+ kubectl create clusterrole fleetuser --verb=get --verb=list --verb=create --verb=delete --resource=gitrepos.fleet.cattle.io
+ kubectl create -n project1 rolebinding fleetuser --serviceaccount=default:fleetuser --clusterrole=fleetuser
+ kubectl create -n project2 rolebinding fleetuser --serviceaccount=default:fleetuser --clusterrole=fleetuser
+----
+
+Dies stellt sicher, dass Mandanten nicht mit GitRepo-Ressourcen anderer Mandanten interferieren können, da sie keinen Zugriff auf deren Namespaces haben.
+
+== Isolierte Arbeitsbereiche in Rancher
+
+Benutzer, die zu einer bestimmten Gruppe/Organisation innerhalb des Unternehmens gehören, möchten möglicherweise die Sichtbarkeit ihrer Cluster für Benutzer anderer Gruppen/Organisationen desselben Unternehmens deaktivieren.
+
+Um diese Isolation zu erreichen, bietet Rancher `GlobalRoles` an, um Benutzern Berechtigungen für bestimmte Kubernetes-Ressourcen zu gewähren. `GlobalRoles` haben die Möglichkeit, den Zugriff auf spezifische Namespaces im Cluster zu beschränken, dank `NamespacedRules`.
+
+Wenn ein neuer Fleet-Arbeitsbereich erstellt wird, wird automatisch ein entsprechender Namespace mit identischem Namen im lokalen Cluster generiert.
+Damit ein Benutzer Fleet-Ressourcen in einem bestimmten Arbeitsbereich sehen und bereitstellen kann, benötigt er mindestens die folgenden Berechtigungen:
+
+* Liste/Erhalte die `fleetworkspace` clusterweite Ressource im lokalen Cluster.
+* Berechtigungen zum Erstellen von Fleet-Ressourcen (wie `bundles`, `gitrepos`, ...) im zugrunde liegenden Namespace für den Arbeitsbereich im lokalen Cluster.
+
+Lassen Sie uns Berechtigungen gewähren, um Fleet-Ressourcen in den Fleet-Arbeitsbereichen `project1` und `project2` bereitzustellen:
+
+ifeval::["{product}" == "fleet"]
+* Um die Fleet-Arbeitsbereiche `project1` und `project2` zu erstellen, können Sie dies entweder in der https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#accessing-fleet-in-the-rancher-ui[Rancher UI] tun oder die folgenden YAML-Ressourcen verwenden:
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+* Um die Fleet-Arbeitsbereiche `project1` und `project2` zu erstellen, können Sie dies entweder in der https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_accessing_suse_rancher_prime_continuous_delivery_in_the_rancher_ui[Rancher UI] tun oder die folgenden YAML-Ressourcen verwenden:
+
+endif::[]
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project1
+----
+
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project2
+----
+
+* Erstellen Sie eine `GlobalRole`, die die Berechtigung gewährt, Fleet-Ressourcen in den Fleet-Arbeitsbereichen `project1` und `project2` bereitzustellen:
+
+[,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: GlobalRole
+metadata:
+  name: fleet-projects1and2
+namespacedRules:
+  project1:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - bundles
+        - clusterregistrationtokens
+        - gitreporestrictions
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+  project2:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - bundles
+        - clusterregistrationtokens
+        - gitreporestrictions
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+rules:
+  - apiGroups:
+      - management.cattle.io
+    resourceNames:
+      - project1
+      - project2
+    resources:
+      - fleetworkspaces
+    verbs:
+      - '*'
+----
+
+ifeval::["{product}" == "fleet"]
+Weisen Sie die `GlobalRole` Benutzern oder Gruppen zu, weitere Informationen finden Sie in den https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher-Dokumenten].
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+
+Weisen Sie die `GlobalRole` Benutzern oder Gruppen zu, weitere Informationen finden Sie in den https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher-Dokumenten].
+endif::[]
+
+Der Benutzer hat jetzt Zugriff auf die `Continuous Delivery`-Registerkarte in Rancher und kann Ressourcen sowohl in den Fleet-Arbeitsbereichen `project1` als auch `project2` bereitstellen.
+
+Um eine gut organisierte Umgebung zu gewährleisten, sollte jeder Fleet-Arbeitsbereich über ein zugehöriges `GlobalRole` verfügen, das zur Unterstützung der für den Kunden erforderlichen Trennung der Aufgaben und Isolation dient. Auf diese Weise kann jeder Benutzer einem oder mehreren `GlobalRoles` zugewiesen werden, je nach Bedarf.
+
+== Zugriff auf Cluster erlauben
+
+Dies setzt voraus, dass alle von 'fleetuser' erstellten GitRepos das `team: one` Label haben. Verschiedene Labels könnten verwendet werden, um verschiedene Cluster-Namespaces auszuwählen.
+
+Erstellen Sie in jedem Namespace des Benutzers als Administrator ein xref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`].
+
+[,yaml]
+....
+kind: BundleNamespaceMapping
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: mapping
+  namespace: project1
+
+# Bundles to match by label.
+# The labels are defined in the fleet.yaml # labels field or from the
+# GitRepo metadata.labels field
+bundleSelector:
+  matchLabels:
+    team: one
+    # or target one repo
+    #fleet.cattle.io/repo-name: simpleapp
+
+# Namespaces, containing clusters, to match by label
+namespaceSelector:
+  matchLabels:
+    kubernetes.io/metadata.name: fleet-default
+    # the label is on the namespace
+    #workspace: prod
+....
+
+Der xref:how-tos-for-users/gitrepo-targets.adoc[`target` Abschnitt] in der GitRepo-Ressource kann verwendet werden, um nur auf eine Teilmenge der übereinstimmenden Cluster bereitzustellen.
+
+== Zugriff auf Downstream-Cluster einschränken
+
+Administratoren können die Mandanten weiter einschränken, indem sie in jedem ihrer Namespaces ein `GitRepoRestriction` erstellen.
+
+[,yaml]
+....
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: project1
+
+allowedTargetNamespaces:
+  - project1simpleapp
+....
+
+Dies wird die Erstellung von clusterweiten Ressourcen verweigern, die andere Mandanten stören und die Bereitstellung auf den Namespace 'project1simpleapp' beschränken könnte.
+
+== Ein Beispiel für eine GitRepo-Ressource
+
+Eine von einem Mandanten erstellte GitRepo-Ressource ohne Administratorzugang könnte so aussehen:
+
+[,yaml]
+....
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: simpleapp
+  namespace: project1
+  labels:
+    team: one
+
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - bundle-diffs
+
+  targetNamespace: project1simpleapp
+
+  # do not match the upstream/local cluster, won't work
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+....
+
+Dies umfasst das `team: one`-Label und das erforderliche `targetNamespace`.
+
+Zusammen mit dem vorherigen `BundleNamespaceMapping` würde es alle Cluster mit einem `env: dev`-Label im Namespace 'fleet-default' anvisieren.
+
+[NOTE]
+====
+
+`BundleNamespaceMappings` funktionieren nicht mit lokalen Clustern, daher stellen Sie sicher, dass Sie diese nicht anvisieren.
+====
+

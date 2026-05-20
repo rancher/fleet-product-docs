@@ -1,0 +1,2896 @@
+= カスタムリソース仕様
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:doctype: book
+
+== リソース
+
+* <<Bundle,バンドル>>
+* <<BundleDeployment,BundleDeployment>>
+* <<BundleNamespaceMapping,BundleNamespaceMapping>>
+* <<Cluster,クラスタ>>
+* <<ClusterGroup,ClusterGroup>>
+* <<ClusterRegistration,クラスター登録>>
+* <<ClusterRegistrationToken,ClusterRegistrationToken>>
+* <<Content,コンテンツ>>
+* <<GitRepo,GitRepo>>
+* <<GitRepoRestriction,GitRepoRestriction>>
+* <<ImageScan,ImageScan>>
+
+== サブリソース
+
+* <<BundleDisplay,バンドル表示>>
+* <<BundleList,BundleList>>
+* <<BundleRef,BundleRef>>
+* <<BundleResource,BundleResource>>
+* <<BundleSpec,BundleSpec>>
+* <<BundleStatus,BundleStatus>>
+* <<BundleSummary,BundleSummary>>
+* <<BundleTarget,BundleTarget>>
+* <<BundleTargetRestriction,BundleTargetRestriction>>
+* <<NonReadyResource,NonReadyResource>>
+* <<Partition,パーティション>>
+* <<PartitionStatus,PartitionStatus>>
+* <<ResourceKey,リソースキー>>
+* <<RolloutStrategy,RolloutStrategy>>
+* <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+* <<BundleDeploymentList,BundleDeploymentList>>
+* <<BundleDeploymentOptions,BundleDeploymentOptions>>
+* <<BundleDeploymentResource,BundleDeploymentResource>>
+* <<BundleDeploymentSpec,BundleDeploymentSpec>>
+* <<BundleDeploymentStatus,BundleDeploymentStatus>>
+* <<ComparePatch,ComparePatch>>
+* <<ConfigMapKeySelector,ConfigMapKeySelector>>
+* <<DiffOptions,DiffOptions>>
+* <<HelmOptions,HelmOptions>>
+* <<IgnoreOptions,IgnoreOptions>>
+* <<KustomizeOptions,KustomizeOptions>>
+* <<LocalObjectReference,LocalObjectReference>>
+* <<ModifiedStatus,ModifiedStatus>>
+* <<NonReadyStatus,NonReadyStatus>>
+* <<Operation,操作>>
+* <<SecretKeySelector,SecretKeySelector>>
+* <<ValuesFrom,ValuesFrom>>
+* <<YAMLOptions,YAMLOptions>>
+* <<BundleNamespaceMappingList,BundleNamespaceMappingList>>
+* <<AgentStatus,AgentStatus>>
+* <<ClusterDisplay,ClusterDisplay>>
+* <<ClusterList,クラスターリスト>>
+* <<ClusterSpec,ClusterSpec>>
+* <<ClusterStatus,ClusterStatus>>
+* <<ClusterGroupDisplay,ClusterGroupDisplay>>
+* <<ClusterGroupList,ClusterGroupList>>
+* <<ClusterGroupSpec,ClusterGroupSpec>>
+* <<ClusterGroupStatus,ClusterGroupStatus>>
+* <<ClusterRegistrationList,ClusterRegistrationList>>
+* <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+* <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+* <<ClusterRegistrationTokenList,ClusterRegistrationTokenList>>
+* <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+* <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+* <<ContentList,ContentList>>
+* <<CommitSpec,CommitSpec>>
+* <<CorrectDrift,CorrectDrift>>
+* <<GitRepoDisplay,GitRepoDisplay>>
+* <<GitRepoList,GitRepoList>>
+* <<GitRepoResource,GitRepoResource>>
+* <<GitRepoResourceCounts,GitRepoResourceCounts>>
+* <<GitRepoSpec,GitRepoSpec>>
+* <<GitRepoStatus,GitRepoStatus>>
+* <<GitTarget,GitTarget>>
+* <<OCIRegistrySpec,OCIRegistrySpec>>
+* <<ResourcePerClusterState,ResourcePerClusterState>>
+* <<GitRepoRestrictionList,GitRepoRestrictionList>>
+* <<AlphabeticalPolicy,AlphabeticalPolicy>>
+* <<ImagePolicyChoice,ImagePolicyChoice>>
+* <<ImageScanList,ImageScanList>>
+* <<ImageScanSpec,ImageScanSpec>>
+* <<ImageScanStatus,ImageScanStatus>>
+* <<SemVerPolicy,SemVerPolicy>>
+* <<FleetYAML,FleetYAML>>
+* <<ImageScanYAML,ImageScanYAML>>
+
+=== バンドル
+
+バンドルにはアプリケーションのリソースとそのデプロイメントオプションが含まれています。ターゲットクラスターにHelmチャートとしてデプロイされます。
+
+GitRepoがスキャンされると、1つ以上のバンドルが生成されます。バンドルは、1つ以上のクラスターにデプロイされるリソースのコレクションです。バンドルは、{product_name}で使用される基本的なデプロイメントユニットです。バンドルの内容は、Kubernetesマニフェスト、Kustomize設定、またはHelmチャートである可能性があります。ソースに関係なく、内容はエージェントによって動的にHelmチャートにレンダリングされ、ダウンストリームのクラスターにHelmリリースとしてインストールされます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleSpec,BundleSpec>>
+| true
+
+| status
+|
+| <<BundleStatus,BundleStatus>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== バンドル表示
+
+バンドル表示には、準備が整ったクラスターの数、望ましい準備が整ったクラスターの数、およびバンドルの概要状態が含まれます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| readyClusters
+| 準備が整ったクラスターは、"%d/%d"の形式の文字列で、準備が整ったクラスターの数と、準備が整うことが望ましいクラスターの数を説明します。
+| 文字列
+| false
+
+| ループ
+| 状態は、準備が整っていないリソースに基づいて計算されたバンドルの概要状態です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== バンドルリスト
+
+バンドルリストには、バンドルのリストが含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<Bundle,バンドル>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== バンドル参照
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| バンドルの名前。
+| 文字列
+| false
+
+| セレクタ
+| バンドルのラベルに一致するセレクタです。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== バンドルリソース
+
+バンドルリソースは、YAMLマニフェストのようなバンドルからの単一リソースの内容を表します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| リソースの名前は、バンドルのパスを含むことができます。
+| 文字列
+| false
+
+| コンテンツ
+| リソースの内容は、圧縮されることがあります。
+| 文字列
+| false
+
+| encoding
+| エンコーディングは空であるか、"base64+gz"です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 一時停止
+| 真に設定されている場合、すべてのバンドルデプロイメントの更新を停止します。同期が取れていないとマークされます。
+| bool
+| false
+
+| rolloutStrategy
+| ロールアウト戦略は、パーティション、カナリア、およびクラスターの可用性のための割合を定義することによって、バンドルのロールアウトを制御します。
+| *<<RolloutStrategy,RolloutStrategy>>
+| false
+
+| リソース
+| リソースには、バンドルのパスから読み取られたリソースが含まれます。これには、ダウンロードされたヘルムチャートの内容が含まれます。
+| []<<BundleResource,BundleResource>>
+| false
+
+| ターゲット
+| ターゲットは、デプロイされるクラスターを指します。ターゲットは順番に評価され、最初に一致したものが使用されます。
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| targetRestrictions
+| ターゲット制限は、ターゲットのためにバンドルデプロイメントが作成されるかどうかを制御する許可リストです。
+| []<<BundleTargetRestriction,BundleTargetRestriction>>
+| false
+
+| dependsOn
+| DependsOnは、このバンドルがデプロイされる前に受け入れられた状態でなければならないバンドルを指します。
+| []<<BundleRef,BundleRef>>
+| false
+
+| contentsId 
+| ContentsIDは、OCIレジストリを使用してコンテンツをデプロイする際のコンテンツIDを保存します。
+| 文字列 
+| false
+
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== バンドルステータス
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| conditions
+| 条件は、バンドルの状態を説明するWrangler条件のリストです。
+| []genericcondition.GenericCondition
+| false
+
+| summary
+| サマリーには、各状態のバンドルデプロイメントの数と、準備が整っていないリソースのリストが含まれています。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| newlyCreated
+| 新規作成は、作成されたが更新されていないバンドルデプロイメントの数です。
+| int
+| false
+
+| 使用不可
+| 使用不可は、準備が整っていないバンドルデプロイメントの数、またはステータスのAppliedDeploymentIDが仕様のDeploymentIDと一致しない場合の数です。
+| int
+| true
+
+| unavailablePartitions
+| 使用不可パーティションは、使用不可のパーティションの数です。
+| int
+| true
+
+| 最大使用不可
+| 最大使用不可は、使用不可のデプロイメントの最大数です。ロールアウト設定を参照してください。
+| int
+| true
+
+| 最大使用不可パーティション
+| 最大使用不可パーティションは、使用不可のパーティションの最大数です。ロールアウト構成は、使用不可のパーティションの最大数または割合を定義します。
+| int
+| true
+
+| パーティション
+| パーティションステータスは、各パーティションの状態をリストします。
+| []<<PartitionStatus,PartitionStatus>>
+| false
+
+| display
+| バンドル表示には、準備が整ったクラスターの数、希望する準備が整ったクラスターの数、およびバンドルのリソースのサマリー状態が含まれています。
+| <<BundleDisplay,バンドル表示>>
+| false
+
+| resourceKey
+| リソースキーは、デプロイされる可能性のあるリソースをリストします。クラスター上のリソースの実際のリストは、ヘルムチャート、値のテンプレート化などに応じて異なる場合があります。
+| []<<ResourceKey,ResourceKey>>
+| false
+
+| ociReference 
+| OCIReferenceは、コンテンツを保存するために使用されるOCI参照であり、これは情報提供のみを目的としています。
+| 文字列 
+| false
+
+| observedGeneration
+| ObservedGenerationは、バンドルの現在の世代です。
+| int64
+| true
+
+| resourcesSha256Sum
+| ResourcesSHA256Sumは、.Spec.ResourcesフィールドのJSONシリアル化に対応します。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== バンドル概要
+
+BundleSummaryには、各状態のバンドルデプロイメントの数と、準備が整っていないリソースのリストが含まれています。これは、バンドル、クラスターグループ、クラスター、およびGitリポジトリのステータスで使用されます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| notReady
+| NotReadyは、いくつかのリソースが準備できていない状態でデプロイされたバンドルデプロイメントの数です。
+| int
+| false
+
+| waitApplied
+| WaitAppliedは、{product_name}コントローラーおよび下流クラスターから同期されたバンドルデプロイメントの数ですが、デプロイされるのを待っています。
+| int
+| false
+
+| errApplied
+| ErrAppliedは、{product_name}コントローラーおよび下流クラスターから同期されたバンドルデプロイメントの数ですが、バンドルをデプロイする際にいくつかのエラーが発生しました。
+| int
+| false
+
+| outOfSync
+| OutOfSyncは、{product_name}コントローラーから同期されたバンドルデプロイメントの数ですが、まだ下流エージェントによって同期されていません。
+| int
+| false
+
+| modified
+| Modifiedは、デプロイされたバンドルデプロイメントの数であり、すべてのリソースが準備完了ですが、Gitリポジトリからのいくつかの変更がまだ同期されていません。
+| int
+| false
+
+| ready
+| 準備完了は、すべてのリソースが準備完了の状態でデプロイされたバンドルデプロイメントの数です。
+| int
+| true
+
+| 準備中 <:so>じゅんびちゅう
+| 保留中は、{product_name} コントローラーによって処理中のバンドルデプロイメントの数です。
+| int
+| false
+
+| desiredReady
+| 希望する準備完了は、準備が整うべきバンドルデプロイメントの数です。
+| int
+| true
+
+| nonReadyResources
+| 未準備クラスターは、準備が整っていないバンドルのために埋められる状態のリストです。
+| []<<NonReadyResource,NonReadyResource>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleTarget
+
+バンドルターゲットは、デプロイ先のクラスターを宣言します。{product_name} は、カスタマイズからのバンドルデプロイメントオプションをこの構造体に統合します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| ターゲットの名前。この値は主に表示とログ記録のためのものです。指定されていない場合、"target000" という形式のデフォルト名が使用されます。
+| 文字列
+| false
+
+| clusterName
+| 特定のクラスターを名前で一致させるためのクラスター名が選択されます。
+| 文字列
+| false
+
+| clusterSelector
+| クラスターセレクターは、クラスターを一致させるためのセレクターです。この構造は、標準の metav1.LabelSelector 形式です。clusterGroupSelector または clusterGroup が指定されている場合、clusterSelector は clusterGroupSelector と clusterGroup が評価された後に選択をさらに絞り込むためにのみ使用されます。
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| 特定のクラスターグループを名前で一致させるためのクラスターグループです。
+| 文字列
+| false
+
+| clusterGroupSelector
+| クラスターグループセレクターは、クラスターグループを一致させるためのセレクターです。
+| *metav1.LabelSelector
+| false
+
+| doNotDeploy
+| DoNotDeploy が true に設定されている場合、このターゲットにはデプロイされません。
+| bool
+| false
+
+| namespaceLabels 
+| NamespaceLabelsは、{product_name}によって作成されたネームスペースに追加されるラベルです。
+| map[string]string 
+| false 
+
+| namespaceAnnotations 
+| NamespaceAnnotationsは、{product_name}によって作成されたネームスペースに追加される注釈です。
+| map[string]string 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleTargetRestriction
+
+BundleTargetRestrictionは、{product_name}によって内部的に使用され、変更すべきではありません。これは、fleet.yaml内のTargetCustomizationsによって作成されたTargetsからのBundleDeploymentsの作成を防ぐための許可リストとして機能します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+|
+| 文字列
+| false
+
+| clusterName
+|
+| 文字列
+| false
+
+| clusterSelector
+|
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+|
+| 文字列
+| false
+
+| clusterGroupSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== NonReadyResource
+
+NonReadyResourceは、"ErrApplied"のような特定の状態に対して準備が整っていないバンドルに関する情報を含みます。それは、準備が整っていないまたは変更されたリソースとその状態のリストを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| Nameはリソースの名前です。
+| 文字列
+| false
+
+| bundleState
+| Stateは、リソースの状態であり、例えば、"NotReady"または"ErrApplied"のようなものです。
+| BundleState
+| false
+
+| message
+| Messageは、バンドルが準備できていない理由に関する情報を含みます。
+| 文字列
+| false
+
+| modifiedStatus
+| ModifiedStatusは、各変更されたリソースの状態をリストします。
+| []<<ModifiedStatus,ModifiedStatus>>
+| false
+
+| nonReadyStatus
+| NonReadyStatusは、各準備が整っていないリソースの状態をリストします。
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== パーティション
+
+Partitionは、一連のクラスターに対する別のロールアウト戦略を定義します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| 表示用に使用されるパーティションに付けられたユーザーフレンドリーな名前（オプション）。
+| 文字列
+| false
+
+| maxUnavailable
+| このパーティションが完了と見なされる前に、利用できないクラスターの数または割合。デフォルト：10%
+| *intstr.IntOrString
+| false
+
+| clusterName
+| ClusterNameは、このパーティションに含めるクラスターの名前です。
+| 文字列
+| false
+
+| clusterSelector
+| このパーティションに含めるクラスターラベルに一致するセレクター。
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| このパーティションに含めるクラスターグループ名。
+| 文字列
+| false
+
+| clusterGroupSelector
+| このパーティションに含めるクラスターグループラベルに一致するセレクター。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== パーティションステータス。
+
+PartitionStatusは、単一のロールアウトパーティションのステータスです。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| Nameは、パーティションの名前です。
+| 文字列
+| false
+
+| count
+| Countは、パーティション内のクラスターの数です。
+| int
+| false
+
+| maxUnavailable
+| MaxUnavailableは、パーティション内で利用できないクラスターの最大数です。
+| int
+| false
+
+| 使用不可
+| Unavailableは、パーティション内で利用できないクラスターの数です。
+| int
+| false
+
+| summary
+| Summaryは、準備が整っていないリソースに基づいて計算されたパーティションの要約状態です。
+| <<BundleSummary,BundleSummary>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ResourceKey
+
+リソースキーは、デプロイされる可能性のあるリソースをリストします。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| kind
+| Kindは、リソースのk8s APIの種類です。
+| 文字列
+| false
+
+| apiVersion
+| APIVersionは、リソースのk8s APIバージョンです。
+| 文字列
+| false
+
+| ネームスペース
+| Namespaceは、リソースのネームスペースです。
+| 文字列
+| false
+
+| name
+| Nameはリソースの名前です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== RolloutStrategy
+
+RolloverStrategyは、複数のクラスターにまたがるバンドルのロールアウトを制御します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| maxUnavailable
+| バンドルの更新中に利用できないクラスターの数または割合。これは、デプロイメントのロールアウト戦略と同じ基本的なアプローチに従います。クラスターの数が利用できない状態に達すると、更新は一時停止されます。デフォルト値は100%で、更新には影響しません。デフォルト:100%
+| *intstr.IntOrString
+| false
+
+| maxUnavailablePartitions
+| バンドルの更新中に利用できないクラスターのパーティションの数または割合。デフォルト：0
+| *intstr.IntOrString
+| false
+
+| autoPartitionSize
+| 特定のパーティショニング戦略が設定されていない場合に、クラスターを自動的にパーティション分割する数または割合。デフォルト：25%
+| *intstr.IntOrString
+| false
+
+| autoPartitionThreshold
+| 自動パーティショニングが有効になる前に必要な最小クラスター数。ターゲットクラスターの数がこの値未満の場合、すべてのクラスターは単一のパーティションに配置されます。デフォルト：200
+| *int
+| false
+
+| maxNew
+| 単一の調整で作成できる新しいBundleDeploymentの最大数。これは、バンドルが最初に多くのクラスターに適用されるときに新しいデプロイメントがステージされる速度を制限します。デフォルト：50
+| *int
+| false
+
+| パーティション
+| パーティションの定義のリスト。 ターゲットクラスターのいずれかが設定と一致しない場合、それらはautoPartitionSizeに従って最後にパーティションに追加されます。
+| []<<Partition,パーティション>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeployment
+
+BundleDeploymentは{product_name}によって内部的に使用され、直接使用するべきではありません。バンドルがクラスターにデプロイされると、バンドルのインスタンスはBundleDeploymentと呼ばれます。BundleDeploymentは、特定のクラスターにおけるそのバンドルの状態を、クラスター固有のカスタマイズとともに表します。{product_name}エージェントは、エージェントが管理しているクラスターのために作成されたBundleDeploymentリソースのみを認識しています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleDeploymentSpec,BundleDeploymentSpec>>
+| false
+
+| status
+|
+| <<BundleDeploymentStatus,BundleDeploymentStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeploymentDisplay
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| デプロイ済み
+|
+| 文字列
+| false
+
+| 監視された
+|
+| 文字列
+| false
+
+| ループ
+|
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeploymentList
+
+BundleDeploymentListはBundleDeploymentのリストを含みます
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<BundleDeployment,BundleDeployment>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeploymentOptions
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| defaultNamespace
+| DefaultNamespaceは、ネームスペースを指定しないリソースに使用するネームスペースです。このフィールドは、特定のネームスペースにデプロイメントを強制またはロックダウンするためには使用されません。
+| 文字列
+| false
+
+| ネームスペース
+| TargetNamespaceが存在する場合、すべてのリソースはこのネームスペースに割り当てられ、クラスター範囲のリソースが存在する場合、デプロイメントは失敗します。
+| 文字列
+| false
+
+| kustomize
+| デプロイメントのためのKustomizeオプション、kustomization.yamlファイルを含むディレクトリなど。
+| *<<KustomizeOptions,KustomizeOptions>>
+| false
+
+| helm
+| デプロイメントのためのHelmオプション、チャート名、リポジトリ、値など。
+| *<<HelmOptions,HelmOptions>>
+| false
+
+| serviceAccount
+| このデプロイメントを実行するために使用されるServiceAccountです。
+| 文字列
+| false
+
+| forceSyncGeneration
+| ForceSyncGenerationは再デプロイメントを強制するために使用されます。
+| int64
+| false
+
+| yaml
+| YAMLオプション、生のYAMLを使用する場合、これらはリソースを置き換えたりパッチを当てたりするために使用されるoverlays/{name}ファイルにマッピングされる名前です。
+| *<<YAMLOptions,YAMLOptions>>
+| false
+
+| diff
+| Diffは、実行時に修正されたオブジェクトの変更状態を無視するために使用できます。
+| *<<DiffOptions,DiffOptions>>
+| false
+
+| リソースを保持する
+| KeepResourcesは、バンドルを削除する際にデプロイされたリソースを保持するために使用できます。
+| bool
+| false
+
+| deleteNamespace 
+| DeleteNamespaceは、バンドルを削除する際にデプロイされたネームスペースを削除するために使用できます。 
+| bool 
+| false
+
+| ignore
+| IgnoreOptionsは、バンドルを監視する際にフィールドを無視するために使用できます。
+| <<IgnoreOptions,IgnoreOptions>>
+| false
+
+| correctDrift
+| CorrectDriftは、ドリフト修正がどのように機能するかを指定します。
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| namespaceLabels
+| NamespaceLabelsは、{product_name}によって作成されたネームスペースに追加されるラベルです。
+| map[string]string
+| false
+
+| namespaceAnnotations
+| NamespaceAnnotationsは、{product_name}によって作成されたネームスペースに追加される注釈です。
+| map[string]string
+| false
+
+| deleteCRDResources
+| DeleteCRDResourcesは、CRDを削除します。警告！これにより、すべてのカスタムリソースも削除されます。
+| bool
+| false
+|===
+
+[Note]
+====
+Fleetが`helm.sh/resource-policy: keep`を適用しないようにしたい場合は、`fleet.yaml`で`deleteCRDResource`オプションを`true`に設定してください。
+====
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeploymentResource
+
+BundleDeploymentResourceは、デプロイされたリソースのメタデータを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 種類
+|
+| 文字列
+| false
+
+| apiVersion
+|
+| 文字列
+| false
+
+| ネームスペース
+|
+| 文字列
+| false
+
+| name
+|
+| 文字列
+| false
+
+| createdAt
+|
+| metav1.Time
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeploymentSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 一時停止
+| trueに設定されている場合、BundleDeploymentsの更新が停止します。trueの場合、変更が検出されるとBundleDeploymentsは同期が取れていないとマークされます。
+| bool
+| false
+
+| stagedOptions
+| ステージングオプションは、次のデプロイメントのためにステージングされたデプロイメントオプションです。
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| stagedDeploymentID
+| StagedDeploymentIDは、ステージングされたデプロイメントのIDです。
+| 文字列
+| false
+
+| options
+| オプションは、現在適用されているデプロイメントオプションです。
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| deploymentID
+| DeploymentIDは、現在適用されているデプロイメントのIDです。
+| 文字列
+| false
+
+| dependsOn
+| DependsOnは、このバンドルがデプロイされる前に準備が整っている必要があるバンドルを指します。
+| []<<BundleRef,BundleRef>>
+| false
+
+| correctDrift
+| CorrectDriftは、ドリフト修正がどのように機能するかを指定します。
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| ociContents 
+| OCIContentsは、このデプロイメントの内容がociレジストリに保存されている場合にtrueです。 
+| bool 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleDeploymentStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| conditions
+|
+| []genericcondition.GenericCondition
+| false
+
+| appliedDeploymentID
+|
+| 文字列
+| false
+
+| release
+| ReleaseはHelmリリースIDです。
+| 文字列
+| false
+
+| 準備完了
+|
+| bool
+| false
+
+| nonModified
+|
+| bool
+| false
+
+| nonReadyStatus
+|
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+
+| modifiedStatus
+|
+| []<<ModifiedStatus,ModifiedStatus>>
+| false
+
+| display
+|
+| <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+| false
+
+| 同期生成
+|
+| *int64
+| false
+
+| リソース
+| リソースは、ヘルムリリース履歴に従ってデプロイされたリソースのメタデータをリストします。
+| []<<BundleDeploymentResource,BundleDeploymentResource>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ComparePatch
+
+ComparePatchはリソースを一致させ、変更のチェックからフィールドを削除します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 種類
+| Kindは一致させるリソースの種類です。
+| 文字列
+| false
+
+| apiVersion
+| APIVersionは一致させるリソースのapiVersionです。
+| 文字列
+| false
+
+| ネームスペース
+| Namespaceは一致させるリソースのネームスペースです。
+| 文字列
+| false
+
+| name
+| Nameは一致させるリソースの名前です。
+| 文字列
+| false
+
+| 操作
+| 操作はリソースからJSONパスを削除します。
+| []<<Operation,操作>>
+| false
+
+| jsonPointers
+| JSONポインタは特定のJSONパスでの差分を無視します。
+| []string
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ConfigMapKeySelector
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| ネームスペース
+|
+| 文字列
+| false
+
+| key
+|
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== 差分オプション
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| ComparePatches
+| ComparePatchesはリソースを一致させ、変更のチェックからフィールドを削除します。
+| []<<ComparePatch,ComparePatch>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ヘルムオプション
+
+デプロイメントのためのヘルムオプション。ヘルムベースのバンドルの場合、すべてのオプションが使用できますが、そうでない場合は一部のオプションが無視されます。例えば、ReleaseNameはすべてのバンドルタイプで機能します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| チャート
+| チャートは、あらゆるゴーゲッターURLまたはOCIレジストリに基づくヘルムチャートURLを指すことができます。チャートはダウンロードされます。
+| 文字列
+| false
+
+| リポジトリ
+| リポジトリは、チャートをダウンロードするためのHTTPSヘルムリポジトリの名前です。
+| 文字列
+| false
+
+| releaseName
+| ReleaseNameは、チャートをデプロイするためのカスタムリリース名を設定します。指定されていない場合、リリース名は呼び出し元のGitRepo.name + GitRepo.pathを組み合わせて生成されます。
+| 文字列
+| false
+
+| バージョン
+| ダウンロードするチャートのバージョン
+| 文字列
+| false
+
+| timeoutSeconds
+| TimeoutSecondsは、Helm操作の待機時間です。
+| int
+| false
+
+| 値
+| Helmに渡される値。キーと値をGoテンプレート文字列として指定することが可能です。
+| *GenericMap
+| false
+
+| valuesFrom
+| ValuesFromは、configmapsおよびシークレットから値を読み込みます。
+| []<<ValuesFrom,ValuesFrom>>
+| false
+
+| 強制
+| Forceは、不変リソースを上書きすることを許可します。これは危険な可能性があります。
+| bool
+| false
+
+| takeOwnership
+| TakeOwnershipは、Helmが自分自身のアノテーションのチェックをスキップするようにします。
+| bool
+| false
+
+| 最大履歴
+| MaxHistoryは、Helmによって保存されるリリースごとの最大リビジョン数を制限します。
+| int
+| false
+
+| valuesFiles
+| ValuesFilesは、値を読み込むためのファイルのリストです。
+| []string
+| false
+
+| waitForJobs
+| WaitForJobsが設定され、timeoutSecondsが提供されている場合、すべてのジョブが完了するまで待機し、GitRepoを準備完了としてマークします。タイムアウト秒数の間、待機します。
+| bool
+| false
+
+| アトミック
+| Helmがアップグレードする際に、--アトミックフラグを設定します。
+| bool
+| false
+
+| disablePreProcess
+| DisablePreProcessは、値のテンプレート処理を無効にします。
+| bool
+| false
+
+| disableDNS
+| DisableDNSは、HelmのEnableDNSオプションをカスタマイズするために使用でき、デフォルトでは{product_name}を`true`に設定します。
+| bool
+| false
+
+| skipSchemaValidation
+| SkipSchemaValidationは、チャートの値に対するスキーマ検証をスキップすることを許可します。
+| bool
+| false
+
+| disableDependencyUpdate 
+| DisableDependencyUpdateは、チャートの依存関係の更新をスキップすることを許可します。 
+| bool 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== IgnoreOptions
+
+IgnoreOptionsは、バンドルを監視する際に無視される条件を定義します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| conditions
+| Conditionsは、バンドルを監視する際に無視される条件のリストです。
+| []map[string]string
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== KustomizeOptions
+
+デプロイメント用のKustomizeOptions。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| dir
+| Dirは、kustomizeリソースのカスタムフォルダーを指します。このフォルダーには、kustomization.yamlファイルが含まれている必要があります。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== LocalObjectReference
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| 参照対象と同じネームスペース内のリソースの名前。
+| 文字列
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ModifiedStatus
+
+ModifiedStatusは、変更されたリソースの状態を報告するために使用されます。変更が作成、削除、またはパッチであったかどうかを示します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 種類
+|
+| 文字列
+| false
+
+| apiVersion
+|
+| 文字列
+| false
+
+| ネームスペース
+|
+| 文字列
+| false
+
+| name
+|
+| 文字列
+| false
+
+| 表示しない <:so>ひょうじしない
+|
+| bool
+| false
+
+| 存在する 
+| Exist は、リソースが存在するものの、我々が所有していない場合に true となります。これは、リソースが別のバンドルに採用された場合に発生する可能性がありますが、最初のバンドルはまだ存在しており、そのため所有していないと報告されます。
+| bool 
+| false
+
+| delete
+|
+| bool
+| false
+
+| patch
+|
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== NonReadyStatus
+
+非準備状態は、準備が整っていないリソースの状態を報告するために使用されます。要約が含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| uid
+|
+| タイプ.UID
+| false
+
+| 種類
+|
+| 文字列
+| false
+
+| apiVersion
+|
+| 文字列
+| false
+
+| ネームスペース
+|
+| 文字列
+| false
+
+| name
+|
+| 文字列
+| false
+
+| summary
+|
+| 要約.要約
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== 操作
+
+ComparePatch の操作は通常「削除する」です。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| op
+| 操作は通常「削除する」です。
+| 文字列
+| false
+
+| path
+| パスは削除するためのJSONパスです。
+| 文字列
+| false
+
+| 値
+| 値は通常空です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== SecretKeySelector
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| ネームスペース
+|
+| 文字列
+| false
+
+| key
+|
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ValuesFrom
+
+ConfigMap、Secret、または外部から取得できるHelm値を定義します。クレジット: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| configMapKeyRef
+| リリース値を持つConfigMapへの参照です。
+| *<<ConfigMapKeySelector,ConfigMapKeySelector>>
+| false
+
+| secretKeyRef
+| リリース値を持つSecretへの参照です。
+| *<<SecretKeySelector,SecretKeySelector>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== YAMLOptions
+
+YAMLOptions、未加工のYAMLを使用する場合、これらはリソースを置き換えたりパッチを当てたりするために使用されるoverlays/{name}ファイルにマッピングされる名前です。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| オーバーレイ
+| オーバーレイは、"overlays/"内のフォルダーにマッピングされる名前のリストです。./subdir/resource.yamlファイルをカスタマイズしたい場合、./overlays/myoverlay/subdir/resource.yamlファイルが基本ファイルを置き換えます。./overlays/myoverlay/subdir/resource_patch.yamlという名前のファイルが基本ファイルにパッチします。
+| []string
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleNamespaceMapping
+
+バンドルネームスペースマッピングは、他のネームスペースのクラスターにバンドルをマッピングします。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| bundleSelector
+|
+| *metav1.LabelSelector
+| false
+
+| namespaceSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== BundleNamespaceMappingList
+
+BundleNamespaceMappingListはBundleNamespaceMappingのリストを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<BundleNamespaceMapping,BundleNamespaceMapping>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== AgentStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| lastSeen
+| LastSeenは、エージェントがクラスターリソースのステータスを更新するためにチェックインした最後の時間です。
+| metav1.Time
+| true
+
+| ネームスペース
+| Namespaceはエージェントデプロイメントのネームスペースです。例: "cattle-fleet-system"。
+| 文字列
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== クラスタ
+
+ClusterはKubernetesクラスターに対応します。{product_name}はターゲットクラスターにバンドルをデプロイします。{product_name}がマニフェストをデプロイするクラスターは、ダウンストリームクラスターと呼ばれます。単一クラスターのユースケースでは、{product_name} Kubernetesクラスターが同時にマネージャーとダウンストリームクラスターの役割を果たします。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterSpec,ClusterSpec>>
+| false
+
+| status
+|
+| <<ClusterStatus,ClusterStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterDisplay
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| readyBundles
+| ReadyBundlesは、準備が整ったバンドルの数と、準備が整うことが望ましいバンドルの数を示す「%d/%d」という形式の文字列です。
+| 文字列
+| false
+
+| ループ
+| クラスターの状態は、バンドルの状態のいずれか、または「WaitCheckIn」です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== クラスターリスト
+
+ClusterListには、クラスターのリストが含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<Cluster,Cluster>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 一時停止
+| trueに設定されている場合、すべてのBundleDeploymentsの更新が停止されます。
+| bool
+| false
+
+| clientID
+| ClientIDは、クラスターを識別するための一意の文字列です。それは事前に定義されているか、クラスターをインポートする際に生成されます。
+| 文字列
+| false
+
+| kubeConfigSecret
+| KubeConfigSecretは、ダウンストリームクラスターのkubeconfigを含むシークレットの名前です。オプションで、APIServerURLとCAを含めて、fleet-controllerのconfigmap内の値を上書きすることができます。
+| 文字列
+| false
+
+| kubeConfigSecretNamespace
+| KubeConfigSecretNamespaceは、ダウンストリームクラスターのkubeconfigを含むシークレットのネームスペースです。設定されていない場合、クラスターオブジェクトが存在するネームスペース内でシークレットが見つかると見なされます。
+| 文字列
+| false
+
+| redeployAgentGeneration
+| RedeployAgentGenerationは、エージェントの再デプロイを強制するために使用できます。
+| int64
+| false
+
+| agentEnvVars
+| AgentEnvVarsは、エージェントデプロイメントに追加される環境変数です。
+| []corev1.EnvVar
+| false
+
+| agentNamespace
+| AgentNamespaceは、システムネームスペース、例えばcattle-fleet-systemにデフォルト設定されています。
+| 文字列
+| false
+
+| privateRepoURL
+| PrivateRepoURLは、イメージ名の接頭辞を付け、エージェントの設定からのグローバルリポURLを上書きします。
+| 文字列
+| false
+
+| templateValues
+| TemplateValuesは、fleet.yamlの値テンプレートに送信される値のクラスター固有のマッピングを定義します。
+| *GenericMap
+| false
+
+| agentTolerations
+| AgentTolerationsは、エージェントデプロイメントに追加されるトレランスのセットを定義します。
+| []corev1.Toleration
+| false
+
+| agentAffinity
+| AgentAffinityは、クラスターのエージェントデプロイメントのデフォルトのアフィニティを上書きします。この値がnilの場合、デフォルトのアフィニティが使用されます。
+| *corev1.Affinity
+| false
+
+| agentResources
+| AgentResourcesは、クラスターのエージェントデプロイメントのリソースを設定します。
+| *corev1.ResourceRequirements
+| false
+
+| hostNetwork 
+| HostNetworkは、エージェントのStatefulSetをhostNetwork: true設定を使用するように設定します。ネットワーク関連のバンドル（CNI構成）のプロビジョニングを許可します。
+| *bool 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| conditions
+|
+| []genericcondition.GenericCondition
+| false
+
+| ネームスペース
+| Namespaceはクラスターのネームスペースであり、クラスターのサービスアカウントおよび任意のバンドルデプロイメントを含みます。例: "cluster-fleet-local-cluster-294db1acfa77-d9ccf852678f"
+| 文字列
+| false
+
+| summary
+| Summaryはバンドルデプロイメントの要約です。リソースのカウントはgitrepoリソースからコピーされます。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| resourceCounts
+| ResourceCountsはGitRepoResourceCountsの集計です。
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| readyGitRepos
+| ReadyGitReposは、このクラスターで準備が整ったgitリポジトリの数です。
+| int
+| true
+
+| desiredReadyGitRepos
+| DesiredReadyGitReposは、このクラスターで準備が整うことが望ましいgitリポジトリの数です。
+| int
+| true
+
+| agentEnvVarsHash
+| AgentEnvVarsHashは、エージェントの環境変数のハッシュで、変更を検出するために使用されます。
+| 文字列
+| false
+
+| agentPrivateRepoURL
+| AgentPrivateRepoURLは、現在使用されているエージェントのプライベートリポジトリのURLです。
+| 文字列
+| false
+
+| agentHostNetwork 
+| AgentHostNetworkは、現在使用されているspec.hostNetwork設定の観測された状態を定義します。
+| bool 
+| false
+
+| agentDeployedGeneration
+| AgentDeployedGenerationは、現在デプロイメントされているエージェントの世代です。
+| *int64
+| false
+
+| agentMigrated
+| AgentMigratedは、クラスターをインポートした後、常にtrueに設定されます。falseの場合、移行がトリガーされます。古いエージェントには、これがステータスに含まれていません。
+| bool
+| false
+
+| agentNamespaceMigrated
+| AgentNamespaceMigratedは、クラスターをインポートした後、常にtrueに設定されます。falseの場合、移行がトリガーされます。古い{product_name}エージェントには、これがステータスに含まれていません。
+| bool
+| false
+
+| cattleNamespaceMigrated
+| CattleNamespaceMigratedは、クラスターをインポートした後、常にtrueに設定されます。falseの場合、移行がトリガーされます。古い{product_name}エージェントには、これがステータスに含まれていません。
+| bool
+| false
+
+| agentAffinityHash
+| AgentAffinityHashは、エージェントのアフィニティ設定のハッシュで、変更を検出するために使用されます。
+| 文字列
+| false
+
+| agentResourcesHash
+| AgentResourcesHashは、エージェントのリソース設定のハッシュで、変更を検出するために使用されます。
+| 文字列
+| false
+
+| agentTolerationsHash
+| AgentTolerationsHashは、エージェントのトレランス設定のハッシュであり、変更を検出するために使用されます。
+| 文字列
+| false
+
+| agentConfigChanged
+| AgentConfigChangedは、APIサーバーのURLやCAなど、エージェントの設定が変更された場合にtrueに設定されます。これをtrueに設定すると、クラスターの再インポートがトリガーされます。
+| bool
+| false
+
+| apiServerURL
+| APIServerURLは、クラスターがアップストリームに接続するために使用するAPIサーバーの現在のURLです。
+| 文字列
+| false
+
+| apiServerCAHash
+| APIServerCAHashは、アップストリームAPIサーバーCAのハッシュで、変更を検出するために使用されます。
+| 文字列
+| false
+
+| agentTLSMode 
+| AgentTLSModeは、`system-store`と`strict`の2つの値をサポートしています。`system-store`に設定すると、エージェントはオペレーティングシステムのストアからCAバンドルを信頼するよう指示します。`strict`に設定されている場合、エージェントはエージェントを作成/更新する際に構成された正確なCAを使用するサーバーにのみ接続します。
+| 文字列 
+| false
+
+| display
+| Displayには、準備が整ったバンドル、ノードの数、および要約状態が含まれています。
+| <<ClusterDisplay,ClusterDisplay>>
+| false
+
+| エージェント
+| AgentStatusには、エージェントに関する情報が含まれています。
+| <<AgentStatus,AgentStatus>>
+| false
+
+| garbageCollectionInterval 
+| GarbageCollectionIntervalは、エージェントが古いHelmリリースをクリーンアップする頻度を決定します。
+| *metav1.Duration 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterGroup
+
+ClusterGroupは、クラスターのグループをターゲットにするための再利用可能なセレクターです。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterGroupSpec,ClusterGroupSpec>>
+| true
+
+| status
+|
+| <<ClusterGroupStatus,ClusterGroupStatus>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterGroupDisplay
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| readyClusters
+| ReadyClustersは、準備が整ったクラスターの数と、準備が整うことが望ましいクラスターの数を示す"%d/%d"形式の文字列です。
+| 文字列
+| false
+
+| readyBundles
+| ReadyBundlesは、準備が整ったバンドルの数と、準備が整うことが望ましいバンドルの数を示す"%d/%d"形式の文字列です。
+| 文字列
+| false
+
+| ループ
+| Stateは、クラスターグループの要約状態であり、準備が整っていないリソースがある場合は"NotReady"を表示します。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterGroupList
+
+ClusterGroupListには、ClusterGroupのリストが含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<ClusterGroup,ClusterGroup>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterGroupSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| セレクタ
+| セレクタはラベルセレクタであり、このグループのクラスターを選択するために使用されます。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterGroupStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| clusterCount
+| クラスター数は、クラスターグループ内のクラスターの数です。
+| int
+| true
+
+| nonReadyClusterCount
+| 非準備クラスター数は、準備ができていないクラスターの数です。
+| int
+| true
+
+| nonReadyClusters
+| 非準備クラスターは、準備ができていないクラスター名のリストです。
+| []string
+| false
+
+| conditions
+| 条件は、クラスターグループの条件とそのステータスのリストです。
+| []genericcondition.GenericCondition
+| false
+
+| summary
+| サマリーは、クラスターグループ内のバンドルデプロイメントとそのリソースの概要です。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| display
+| 表示には、準備ができているクラスター、希望する準備ができているクラスターの数、およびバンドルのリソースの概要状態が含まれます。
+| <<ClusterGroupDisplay,ClusterGroupDisplay>>
+| false
+
+| resourceCounts
+| リソース数は、クラスターグループ内のすべてのバンドルにおける各状態のリソースの数を含みます。
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== クラスター登録
+
+ClusterRegistrationは、{product_name}によって内部的に使用され、直接使用すべきではありません。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationList
+
+クラスター登録リストには、クラスター登録のリストが含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<ClusterRegistration,クラスター登録>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| clientID
+| ClientIDは、クラスターを識別するための一意の文字列です。エージェントは、構成されたIDまたはkubeSystem.UIDを使用します。
+| 文字列
+| false
+
+| clientRandom
+| クライアントランダムは、エージェントが生成するランダムな文字列です。フリートコントローラーが登録を許可すると、この文字列を名前に含む登録シークレットが作成されます。
+| 文字列
+| false
+
+| clusterLabels
+| クラスターラベルは、登録中にクラスターリソースにコピーされます。
+| map[string]string
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| clusterName
+| クラスター名は、登録がフリートコントローラーによって処理されている間にのみ設定されます。
+| 文字列
+| false
+
+| 付与済み
+| リクエストサービスアカウントが存在し、そのトークンシークレットが存在する場合、付与済みは真に設定されます。これは、登録シークレット、ロール、およびロールバインディングを作成する直前に発生します。
+| bool
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationToken
+
+ClusterRegistrationTokenは、エージェントが新しいクラスターを登録するために使用します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationTokenList
+
+クラスター登録トークンリストには、クラスター登録トークンのリストが含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<ClusterRegistrationToken,ClusterRegistrationToken>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationTokenSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| TTL
+| TTLはトークンの有効期限です。これは、有効期限を計算するために使用されます。トークンの有効期限が切れると削除されます。
+| *metav1.Duration
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ClusterRegistrationTokenStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 有効期限
+| 有効期限は、トークンが失効する時刻です。
+| *metav1.Time
+| false
+
+| secretName
+| シークレット名は、トークンを含むシークレットの名前です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== コンテンツ
+
+Contentは、{product_name}によって内部的に使用され、直接使用すべきではありません。これは、特定のターゲットクラスター向けのバンドルからリソースを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| コンテンツ
+| コンテンツは、バイト配列であり、バンドルのマニフェストを含んでいます。バンドルリソースは、バンドルデプロイメントのコンテンツリソースにコピーされるため、ダウンストリームのエージェントはそれらをデプロイできます。
+| []バイト
+| false
+
+| sha256sum
+| コンテンツフィールドのSHA256Sum
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ContentList
+
+コンテンツリストには、コンテンツのリストが含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<Content,Content>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== CommitSpec
+
+コミット仕様は、gitリポジトリに変更をコミットする方法を指定します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| authorName
+| 著者名は、コミットを作成する際に提供する名前を示します。
+| 文字列
+| true
+
+| 著者メール
+| 著者メールは、コミットを作成する際に提供するメールアドレスを示します。
+| 文字列
+| true
+
+| messageTemplate
+| メッセージテンプレートは、変更の詳細が補間されるコミットメッセージのテンプレートを提供します。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== CorrectDrift
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 対応
+| trueの場合、ドリフトを修正することが有効になります。
+| bool
+| false
+
+| 強制
+| trueの場合、--forceオプションを使用してhelmのロールバックを強制します。これにより、リリース内のすべてのリソースを再作成しようとします。
+| bool
+| false
+
+| keepFailHistory
+| KeepFailHistoryは、helmの履歴における失敗したロールバックを追跡します。
+| bool
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepo
+
+GitRepoは、{product_name}によって監視されるgitリポジトリを説明します。リソースには、リポジトリまたはその一部をターゲットクラスターにデプロイするために必要な情報が含まれています。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<GitRepoSpec,GitRepoSpec>>
+| false
+
+| status
+|
+| <<GitRepoStatus,GitRepoStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoDisplay
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| readyBundleDeployments
+| ReadyBundleDeploymentsは、準備が整ったバンドルデプロイメントの数を、合計のバンドルデプロイメントの数で表す"%d/%d"形式の文字列です。
+| 文字列
+| false
+
+| ループ
+| Stateは、GitRepoの状態です。例えば、"GitUpdating"またはStateRankに基づく最大のBundleStateです。
+| 文字列
+| false
+
+| message
+| Messageは、デプロイメント条件からの関連メッセージを含みます。
+| 文字列
+| false
+
+| error
+| Errorは、メッセージが存在する場合にtrueです。
+| bool
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoList
+
+GitRepoListは、GitRepoのリストを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<GitRepo,GitRepo>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoResource
+
+GitRepoResourceは、バンドルのリソースに関するメタデータを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| apiVersion
+| APIVersionは、リソースのAPIバージョンです。
+| 文字列
+| false
+
+| kind
+| Kindは、リソースのk8sの種類です。
+| 文字列
+| false
+
+| type
+| Typeは、リソースのタイプです。例えば、"apiextensions.k8s.io.customresourcedefinition"または"configmap"です。
+| 文字列
+| false
+
+| id
+| IDはリソースの名前です。例えば、「namespace1/my-config」や「backingimagemanagers.storage.io」です。
+| 文字列
+| false
+
+| ネームスペース
+| リソースのネームスペース。
+| 文字列
+| false
+
+| name
+| リソースの名前。
+| 文字列
+| false
+
+| incompleteState
+| 不完全な状態は、バンドルの概要に10個以上の準備完了でないリソースがある場合、または準備完了でないリソースが10個以上の準備完了でない状態または変更された状態を持つ場合に真です。
+| bool
+| false
+
+| ループ
+| 状態はリソースの状態です。例えば、「不明」、「適用待ち」、「エラー適用」または「準備完了」です。
+| 文字列
+| false
+
+| error
+| エラーは、PerClusterStateにエラーがある場合に真です。
+| bool
+| false
+
+| 遷移中
+| 遷移中は、PerClusterStateに遷移中がある場合に真です。
+| bool
+| false
+
+| message
+| メッセージは、PerClusterStatesからの最初のメッセージです。
+| 文字列
+| false
+
+| perClusterState
+| PerClusterStateは各クラスターの状態のリストです。準備完了でないリソースの概要から派生しています。
+| []<<ResourcePerClusterState,ResourcePerClusterState>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoResourceCounts
+
+GitRepoResourceCountsは、各状態のリソースの数を含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| 準備完了
+| 準備完了は、準備完了のリソースの数です。
+| int
+| true
+
+| desiredReady
+| 望ましい準備完了は、準備完了すべきリソースの数です。
+| int
+| true
+
+| waitApplied
+| WaitAppliedは、適用待ちのリソースの数です。
+| int
+| true
+
+| 変更済み
+| Modifiedは、変更されたリソースの数です。
+| int
+| true
+
+| 孤立した
+| Orphanedは、孤立したリソースの数です。
+| int
+| true
+
+| 表示しない <:so>ひょうじしない
+| Missingは、欠落しているリソースの数です。
+| int
+| true
+
+| unknown
+| Unknownは、不明な状態のリソースの数です。
+| int
+| true
+
+| notReady
+| NotReadyは、準備ができていないリソースの数です。リソースは、他の状態と一致しない場合、準備ができていないと見なされます。
+| int
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoSpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| リポジトリ
+| Repoは、クローンしてインデックスを作成するためのgitリポジトリのURLです。
+| 文字列
+| false
+
+| ブランチ
+| Branchは、追跡するgitブランチです。
+| 文字列
+| false
+
+| revision
+| Revisionは、操作対象の特定のコミットまたはタグです。
+| 文字列
+| false
+
+| targetNamespace
+| すべてのリソースがこのネームスペースで作成されることを確認してください。この設定がある場合、クラスター範囲のリソースは拒否されます。さらに、このネームスペースは必要に応じて作成されます。
+| 文字列
+| false
+
+| clientSecretName
+| ClientSecretNameは、リポジトリに接続するために使用されるクライアントシークレットの名前です。シークレットは「kubernetes.io/basic-auth」または「kubernetes.io/ssh-auth」のタイプであることが期待されます。
+| 文字列
+| false
+
+| helmSecretName
+| HelmSecretNameは、プライベートHelmリポジトリの認証シークレットを含みます。
+| 文字列
+| false
+
+| helmSecretNameForPaths
+| HelmSecretNameForPathsは、各パスのプライベートHelmリポジトリの認証シークレットを含みます。
+| 文字列
+| false
+
+| helmRepoURLRegex
+| HelmRepoURLRegex helm リポジトリがこの正規表現に一致する場合、Helm 認証情報が使用されます。この値が空または提供されていない場合は、常に認証情報が使用されます。
+| 文字列
+| false
+
+| caBundle
+| CABundleは、リポジトリの証明書を検証するために使用されるPEMエンコードされたCAバンドルです。
+| []バイト
+| false
+
+| insecureSkipTLSVerify
+| InsecureSkipTLSVerify は、安全でない HTTPS を使用してリポジトリをクローンします。
+| bool
+| false
+
+| paths
+| Paths は、適用されるリソースを含む git リポジトリのルートに対する相対ディレクトリです。パスのグロビングがサポートされており、たとえば ["charts/*"] は charts/ のサブディレクトリとしてすべてのフォルダーに一致します。空の場合は、"/" がデフォルトです。
+| []string
+| false
+
+| 一時停止
+| Paused が true の場合、Git の変更がクラスターに伝播されず、リソースが OutOfSync としてマークされます。
+| bool
+| false
+
+| serviceAccount
+| ServiceAccount は、デプロイメントのためにダウンストリーム クラスターで使用されます。
+| 文字列
+| false
+
+| targets
+| Targets は、このリポジトリがデプロイするターゲットのリストです。
+| []<<GitTarget,GitTarget>>
+| false
+
+| pollingInterval
+| PollingInterval は、新しい更新のために git をチェックする頻度です。
+| *metav1.Duration
+| false
+
+| forceSyncGeneration
+| この数を増やして、Git からのコンテンツの再デプロイを強制します。
+| int64
+| false
+
+| imageScanInterval
+| ImageScanInterval は、スキャンされたイメージを同期し、git リポジトリに書き戻す間隔です。
+| *metav1.Duration
+| false
+
+| imageScanCommit
+| Commit は、新しいイメージがスキャンされ、git リポジトリに書き戻されるときに git リポジトリにコミットする方法を指定します。
+| <<CommitSpec,CommitSpec>>
+| false
+
+| keepResources
+| KeepResourcesは、作成されたリソースをGitRepoを削除した後に保持する必要があるかどうかを指定します。
+| bool
+| false
+
+| deleteNamespace 
+| DeleteNamespaceは、作成されたネームスペースをGitRepoを削除した後に削除する必要があるかどうかを指定します。
+| bool 
+| false
+
+| correctDrift
+| CorrectDriftは、ドリフト修正がどのように機能するかを指定します。
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| disablePolling 
+| gitポーリングを無効にします。有効にすると、ウェブフックのみが使用されます。
+| bool 
+| false
+
+| ociRegistry 
+| OCIRegistryは、OCIレジストリに関連するパラメータを指定します。 
+| *[OCIRegistrySpec](#ociregistryspec) 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| observedGeneration
+| ObservedGenerationは、クラスター内のリソースの現在の世代です。これはk8sのmetadata.Generationからコピーされます。この値は、.metadataまたは.statusへの変更を除いて、すべての変更に対してインクリメントされます。
+| int64
+| true
+
+| updateGeneration 
+| Update generationは、spec.forceSyncGenerationが設定されている場合の強制更新世代です。 
+| int64 
+| false
+
+| commit 
+| Commitは、最後のgitジョブ実行からのGitコミットハッシュです。
+| 文字列 
+| false
+
+| webhookCommit 
+| WebhookCommitは、ウェブフックから受信した最新のGitコミットハッシュです。 
+| 文字列 
+| false
+
+| readyClusters
+| ReadyClustersは、このGitRepoのすべてのバンドルに対して準備が整ったクラスタの最小数です。
+| int
+| true
+
+| desiredReadyClusters
+| DesiredReadyClustersは、このGitRepoのバンドルに対して準備が整っているべきクラスタの数です。
+| int
+| true
+
+| gitJobStatus
+| GitJobStatusは、最後に実行されたGitジョブのステータスです。"Current"は、エラーがなかった場合を示します。
+| 文字列
+| false
+
+| summary
+| Summaryには、各状態におけるバンドルのデプロイ数と、準備が整っていないリソースのリストが含まれています。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| display
+| Displayにはステータスの読みやすい概要が含まれています。
+| <<GitRepoDisplay,GitRepoDisplay>>
+| false
+
+| conditions
+| Conditionsは、GitRepoの状態を説明するWrangler条件のリストです。
+| []genericcondition.GenericCondition
+| false
+
+| リソース
+| Resourcesには、各バンドルのリソースに関するメタデータが含まれています。
+| []<<GitRepoResource,GitRepoResource>>
+| false
+
+| resourceCounts
+| ResourceCountsは、すべてのバンドルにおける各状態のリソースの数を含みます。
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| resourceErrors
+| ResourceErrorsは、リソースからのエラーのソートされたリストです。
+| []string
+| false
+
+| lastSyncedImageScanTime
+| LastSyncedImageScanTimeは、最後の画像スキャンの時間です。
+| metav1.Time
+| false
+
+| lastPollingTriggered 
+| LastPollingTimeは、最後にポーリングチェックがトリガーされた時間です。 
+| metav1.Time 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitTarget
+
+GitTargetは、デプロイ先のクラスタまたはクラスタグループです。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name
+| 名前はこのターゲットの名前です。
+| 文字列
+| false
+
+| clusterName
+| ClusterNameはクラスタの名前です。
+| 文字列
+| false
+
+| clusterSelector
+| ClusterSelectorはクラスタを選択するためのラベルセレクタです。
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| ClusterGroupはクラスタと同じネームスペースにあるクラスタグループの名前です。
+| 文字列
+| false
+
+| clusterGroupSelector
+| ClusterGroupSelectorはクラスタグループを選択するためのラベルセレクタです。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+=== OCIRegistrySpec
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| リファレンス 
+| OCIレジストリの参照 
+| 文字列 
+| false
+
+| authSecretName 
+| AuthSecretNameはOCIレジストリの認証情報が保存されている認証シークレットを含みます。
+| 文字列 
+| false
+
+| basicHTTP 
+| BasicHTTPは有効な場合、OCIレジストリへのHTTP接続を使用します。
+| bool 
+| false
+
+| insecureSkipTLS 
+| InsecureSkipTLSは有効な場合、証明書なしでOCIレジストリへの接続を許可します。
+| bool 
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+=== ResourcePerClusterState
+
+ResourcePerClusterStateはバンドルの非準備リソースごとに生成されます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| ループ
+| 状態はリソースの状態です。
+| 文字列
+| false
+
+| error
+| エラーはリソースがエラー状態にある場合に真であり、非準備リソースのバンドルの要約からコピーされます。
+| bool
+| false
+
+| 遷移中
+| 遷移中はリソースが遷移状態にある場合に真であり、非準備リソースのバンドルの要約からコピーされます。
+| bool
+| false
+
+| message
+| メッセージはバンドルの概要からのメッセージを組み合わせます。メッセージはデリミタ ';' で結合されます。
+| 文字列
+| false
+
+| patch
+| 変更されたリソースのパッチ。
+| *GenericMap
+| false
+
+| clusterId
+| ClusterIDはクラスタのIDです。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoRestriction
+
+GitRepoRestrictionは、同じネームスペース内のGitReposのオプションを制限するためにオプションで使用できるリソースです。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| defaultServiceAccount
+| DefaultServiceAccount は GitRepo のデフォルトサービスアカウントを上書きします。
+| 文字列
+| false
+
+| allowedServiceAccounts
+| AllowedServiceAccounts は GitRepos が使用を許可されているサービスアカウントのリストです。
+| []string
+| false
+
+| allowedRepoPatterns
+| AllowedRepoPatterns は、GitRepo の Repo フィールドの有効な値を制限する正規表現パターンのリストです。
+| []string
+| false
+
+| defaultClientSecretName
+| DefaultClientSecretName は GitRepo のデフォルトクライアントシークレットを上書きします。
+| 文字列
+| false
+
+| allowedClientSecretNames
+| AllowedClientSecretNames は GitRepo が使用を許可されているクライアントシークレット名のリストです。
+| []string
+| false
+
+| allowedTargetNamespaces
+| AllowedTargetNamespacesはTargetNamespaceを指定されたネームスペースに制限します。AllowedTargetNamespacesが設定されている場合、TargetNamespaceも設定する必要があります。
+| []string
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== GitRepoRestrictionList
+
+GitRepoRestrictionListはGitRepoRestrictionのリストを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<GitRepoRestriction,GitRepoRestriction>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+=== アルファベット順ポリシー
+
+AlphabeticalPolicyはアルファベット順のポリシーを指定します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| order
+| Orderはタグのソート順を指定します。アルファベットの文字をタグとして与えられた場合、昇順はZを選択し、降順はAを選択します。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ImagePolicyChoice
+
+ImagePolicyChoiceは提供可能なすべてのポリシーのタイプの和集合です。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| semver
+| SemVerは利用可能なタグに対してチェックするためのセマンティックバージョン範囲を提供します。
+| *<<SemVerPolicy,SemVerPolicy>>
+| false
+
+| アルファベット順
+| タグのアルファベット順のために使用するルールのセットです。
+| *<<AlphabeticalPolicy,AlphabeticalPolicy>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ImageScan
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+
+| status
+|
+| <<ImageScanStatus,ImageScanStatus>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ImageScanList
+
+ImageScanListはImageScanのリストを含みます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| アイテム
+|
+| []<<ImageScan,ImageScan>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ImageScanSpec
+
+APIは https://github.com/fluxcd/image-reflector-controllerから取得されます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| tagName
+| TagNameはフィールドを置き換えるためにマニフェストに入れる必要があるタグ参照です。
+| 文字列
+| false
+
+| gitrepoName
+| GitRepo参照名
+| 文字列
+| false
+
+| image
+| Imageはイメージリポジトリの名前です。
+| 文字列
+| false
+
+| interval
+| Intervalはイメージリポジトリのスキャン間の待機時間の長さです。
+| metav1.Duration
+| false
+
+| secretRef
+| SecretRefにはイメージレジストリで使用する資格情報を含むシークレットの名前を指定できます。シークレットは`kubectl create secret docker-registry`で作成するか、同等の方法で作成する必要があります。
+| *corev1.LocalObjectReference
+| false
+
+| 一時停止
+| このフラグはコントローラーに対して、以降のイメージスキャンを一時停止するよう指示します。これはすでに開始されたスキャンには適用されません。デフォルトはfalseです。
+| bool
+| false
+
+| ポリシー
+| Policyは最新のイメージを選択する際に従うべきポリシーの詳細を示します。
+| <<ImagePolicyChoice,ImagePolicyChoice>>
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== ImageScanStatus
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| conditions
+|
+| []genericcondition.GenericCondition
+| false
+
+| lastScanTime
+| LastScanTimeはイメージが最後にスキャンされた時間です。
+| metav1.Time
+| false
+
+| latestImage
+| LatestImageはポリシーに従ってフィルタリングおよび順序付けされたイメージリポジトリによってスキャンされたイメージのリストの最初のものを示します。
+| 文字列
+| false
+
+| latestTag
+| Latest tagはポリシーによってフィルタリングされた最新のタグです。
+| 文字列
+| false
+
+| latestDigest
+| LatestDigestは最新のタグのダイジェストです
+| 文字列
+| false
+
+| observedGeneration
+|
+| int64
+| false
+
+| canonicalImageName
+| CanonicalNameは、すべての暗黙のビットを明示的にしたイメージリポジトリの名前です。例えば、`docker.io/library/alpine`ではなく`alpine`です。
+| 文字列
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+
+=== SemVerPolicy
+
+SemVerPolicyはセマンティックバージョンポリシーを指定します。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| range
+| Rangeはイメージタグのセマンティックバージョン範囲を提供します。範囲内の最高バージョンでタグが付けられたものが最新のイメージとなります。
+| 文字列
+| true
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+=== FleetYAML
+
+FleetYAMLはfleet.yamlファイルの最上位構造です。fleet.yamlファイルはバンドルにオプションを追加します。fleet.yamlがあるディレクトリは自動的にバンドルに変換されます。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name 
+| 作成されるバンドルの名前。
+| 文字列 
+| false
+
+| ラベル 
+| ラベルはバンドルにコピーされ、dependsOn.selectorで使用できます。
+| map[string]string 
+| false
+
+| BundleSpec 
+|
+| <<BundleSpec,BundleSpec>>
+| false
+
+| targetCustomizations 
+| TargetCustomizationsは、リソースがターゲットごとにどのように変更されるべきかを決定するために使用されます。ターゲットは順番に評価され、クラスターに一致する最初のものがそのクラスターに使用されます。
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| imageScans 
+| イメージスキャンはオプションで、gitリポジトリ内のコンテナイメージ参照を更新するために使用されます。
+| []<<ImageScanYAML,ImageScanYAML>>
+| false
+
+| overrideTargets 
+| オーバーライドターゲットは、GitRepoリソースで定義されたターゲットを上書きします。overrideTargetsが提供されると、バンドルはGitRepoからターゲットを継承しません。
+| []<<GitTarget,GitTarget>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>
+
+=== ImageScanYAML
+
+イメージスキャンYAMLは、fleet.yamlのイメージスキャンリストの単一のエントリです。
+
+|===
+| フィールド | 説明 | [Scheme] | 必須
+
+| name 
+| イメージスキャンの名前。未使用。
+| 文字列 
+| false
+
+| ImageScanSpec 
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+|===
+
+<<Resources,カスタムリソースに戻る>>

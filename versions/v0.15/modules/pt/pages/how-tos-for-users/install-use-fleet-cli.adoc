@@ -1,0 +1,168 @@
+= Instale e use o Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+O CLI {product_name} é uma Interface de Linha de Comando (CLI) que permite interagir diretamente com {product_name} a partir da sua máquina local. Ele permite criar, aplicar e inspecionar `bundles` sem a necessidade de um `GitRepo`. Casos de uso típicos incluem:
+
+* Testar e visualizar o conteúdo do bundle.
+* Criar bundles diretamente a partir de Helm charts, manifestos do Kubernetes ou arquivos `fleet.yaml`.
+* Verificar quais clusters um bundle teria como alvo.
+* Validar implantações sem instalar {product_name} no cluster.
+
+[NOTE]
+====
+Você pode usar `fleet apply` sem instalar {product_name} em seus clusters. No entanto, para interação com o cluster (por exemplo, `fleet target`, `fleet deploy`), {product_name} deve ser instalado.
+
+Para mais informações, veja xref:how-tos-for-operators/installation.adoc[Instalar o Fleet].
+====
+
+== Instale o Fleet CLI
+
+O Fleet CLI é um binário autônomo que você pode baixar da link:https://github.com/rancher/fleet/releases[Página de lançamentos do GitHub do Fleet].
+
+=== Linux/macOS
+
+[source,bash]
+----
+curl -L -o fleet https://github.com/rancher/fleet/releases/latest/download/fleet-linux-amd64
+
+# Make it executable and move to PATH
+chmod +x fleet
+sudo mv fleet /usr/local/bin/
+----
+
+=== Windows (PowerShell)
+
+[source,powershell]
+----
+Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
+----
+
+=== Verifique a instalação
+
+[source,bash]
+----
+fleet --version
+----
+
+== Pré-requisitos
+
+Certifique-se de que você tenha as seguintes ferramentas instaladas e configuradas:
+
+* Um cluster Kubernetes funcional (por exemplo, k3s, kind ou um provedor de nuvem).
+* `kubectl` está configurado para o seu cluster.
+* O Helm está instalado.
+* O Fleet CLI está instalado e acessível no seu terminal.
+
+=== Verifique os pré-requisitos
+
+[source,bash]
+----
+kubectl get nodes
+helm version
+fleet --version
+----
+
+== Comandos Chave
+
+{product_name} fornece vários comandos CLI para criar, visualizar e implantar pacotes. Esses comandos são úteis para depurar e compreender o ciclo de vida do bundle.
+
+* `fleet apply`: Cria ou visualiza um bundle a partir de arquivos locais, como um Helm chart, manifestos do Kubernetes ou pastas Kustomize.
+Este comando não requer acesso a um cluster, portanto, funciona mesmo sem {product_name} ou `kubectl` instalados.
++
+Exemplo:
+[source,bash]
+----
+fleet apply my-bundle ./manifests
+----
+* `fleet target`: Lê um arquivo de bundle e avalia quais clusters o receberiam, com base em seletores e regras de direcionamento, como `targets`, `targetOverrides`, `clusterGroups` e seletores de rótulos.
++
+Exemplo:
+[source,bash]
+----
+fleet target my-bundle ./manifests
+----
+* `fleet deploy`: Recebe a saída de `fleet target`, ou um recurso `bundledeployment`/content despejado, e o implanta em um cluster—assim como `fleet-agent` faria.
++
+Você pode usá-lo nestes cenários:
+** `fleet apply -o - name ./folder` para verificar o YAML do bundle antes de criá-lo. Para mais informações, veja xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Examinando o Ciclo de Vida do Bundle com o CLI].
+** Use com um alvo para depurar seletores e verificar quais clusters downstream estão sendo direcionados.
+** `fleet deploy --dry-run` para imprimir recursos que seriam implantados, sem aplicá-los.
+
+image::fleetCLI-key-components.svg[Um diagrama explicando como os comandos-chave do Fleet CLI funcionam]
+
+== Implante um Bundle de Exemplo Usando o Fleet CLI.
+
+Você pode implantar cargas de trabalho sem usar GitRepos aplicando-as localmente com o CLI. Por exemplo, use o link:https://github.com/rancher/fleet-examples[repositório de exemplos do Fleet]:
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-examples
+cd fleet-examples/single-cluster
+----
+
+Aplique-o ao cluster atual:
+
+[source,bash]
+----
+fleet apply -o my-cool-bundle manifests
+----
+
+Este comando cria um recurso `Bundle` no namespace.
+
+== Converta um Helm Chart em um Bundle
+
+Você pode usar o Fleet CLI para converter um Helm chart em um bundle. Por exemplo, para converter o chart do operador *external-secrets*:
+
+[source,bash]
+----
+cat > targets.yaml <<EOF
+targets:
+- clusterSelector: {}
+EOF
+
+mkdir app
+cat > app/fleet.yaml <<EOF
+defaultNamespace: external-secrets
+helm:
+  repo: https://charts.external-secrets.io
+  chart: external-secrets
+EOF
+
+fleet apply --compress --targets-file=targets.yaml -n fleet-default -o - external-secrets app > eso-bundle.yaml
+
+kubectl apply -f eso-bundle.yaml
+----
+
+Certifique-se de usar um seletor de cluster em `targets.yaml` que corresponda a todos os clusters que você deseja implantar.
+
+Para mais informações, consulte link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Implantação Multi-Cluster com a Ajuda de Segredos Externos].
+
+== Solução de problemas
+
+Se o bundle não estiver pronto:
+
+* Verifique se os pods `fleet-controller` e `fleet-agent` estão em execução.
+* Certifique-se de que o cluster `fleet-local` está registrado.
+* Inspecione o bundle em busca de mensagens de erro:
++
+[source,bash]
+----
+kubectl describe bundle -n fleet-local <bundle-name>
+----
+* Exclua e reaplique o bundle se você encontrar conflitos de propriedade do Helm.
+
+=== Verifique o status do Agente e do Controlador
+
+Antes de solucionar problemas de bundle ou implantação, verifique se o Fleet agent está registrado e em execução no cluster downstream.
+Para mais informações, veja xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[O Fleet Agent está registrado e monitora as implantações de bundle].
+
+Se um bundle não estiver pronto em um determinado cluster, verifique o seguinte:
+
+* No cluster de gerenciamento:
+** Verifique se os pods `fleet-controller` e `gitjob` (ou `helmops`, dependendo da sua configuração) estão em execução.
+** Certifique-se de que o status do cluster mostra *Pronto*.
+** Verifique o status do bundle—ele deve conter uma mensagem de erro se a implantação falhar.
+* No cluster de destino onde o bundle não está pronto:
+** Verifique se este cluster de destino está registrado e possui um pod `fleet-agent` em execução.
+** Como último recurso, verifique os logs do pod `fleet-agent`.

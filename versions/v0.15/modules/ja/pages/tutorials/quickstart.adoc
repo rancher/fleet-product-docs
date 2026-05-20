@@ -1,0 +1,97 @@
+:doctype: book
+
+= クイックスタート
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::single-cluster.png[]
+
+
+== クライアントマシンに
+
+{product_name}はHelmチャートとして配布されます。Helm 3はCLIであり、サーバー側のコンポーネントはなく、その使用は非常に簡単です。Helm 3 CLIをインストールするには、 https://helm.sh/docs/intro/install[公式インストール手順]に従ってください。
+
+[CAUTION]
+.{product_name}Rancherの
+====
+Rancherは{product_name}のために別々のHelmチャートを持ち、異なるリポジトリを使用します。
+====
+
+
+[tabs]
+====
+Linux/Mac::
++
+[source,bash]
+----
+brew install helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Windows::
++
+[source,bash]
+----
+choco install kubernetes-helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+====
+
+{product_name}のHelmチャートをインストールします（最終的な柔軟性のためにCRDを分離しているので、2つあります）。
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
+    fleet/fleet-crd
+helm -n cattle-fleet-system install --create-namespace --wait fleet \
+    fleet/fleet
+----
+
+== 監視するGitリポジトリを追加します。
+
+`spec.repo`をお好みのGitリポジトリに変更します。 デプロイされるべきKubernetesマニフェストファイルは、リポジトリの`/manifests`にあるべきです。
+
+[source,bash]
+----
+cat > example.yaml << "EOF"
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+  - simple
+EOF
+
+kubectl apply -f example.yaml
+----
+
+== ステータスの取得
+
+Fleetが行っていることのステータスを取得します。
+
+[source,shell]
+----
+kubectl -n fleet-local get fleet
+----
+
+クラスター内にこのようなものが作成されるのを確認できるはずです。
+
+----
+kubectl get deploy frontend
+----
+
+----
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+frontend   3/3     3            3           116m
+----
+
+== 次のステップ
+
+あなたは...を利用する必要がありますか？
+* プライベートなGitまたはHelmリポジトリを監視する必要がありますか？xref:how-tos-for-users/gitrepo-add.adoc[GitRepoリソースを作成する]を確認してください。
+* ターゲットクラスターごとにデプロイメントをカスタマイズする必要がありますか？xref:how-tos-for-users/gitrepo-targets.adoc[ダウンストリームクラスターへのマッピング]。

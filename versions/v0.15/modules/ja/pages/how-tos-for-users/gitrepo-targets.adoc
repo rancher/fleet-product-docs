@@ -1,0 +1,190 @@
+= ダウンストリームクラスターへのマッピング
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} in Rancher] は、ユーザーがクラスターをまるで1つのクラスターのように簡単に管理できるようにします。ユーザーは、デプロイメントマニフェストやその他のKubernetesリソースで構成されるバンドルを、グルーピング設定を使用してクラスター間でデプロイできます。
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} in Rancher] は、ユーザーがクラスターをまるで1つのクラスターのように簡単に管理できるようにします。ユーザーは、デプロイメントマニフェストやその他のKubernetesリソースで構成されるバンドルを、グルーピング設定を使用してクラスター間でデプロイできます。
+endif::[]
+[IMPORTANT]
+====
+
+*マルチクラスター専用*:
+このアプローチは、{product_name}をマルチクラスター方式で実行している場合にのみ適用されます。ターゲットが指定されていない場合、つまりシングルクラスターを使用している場合、バンドルはデフォルトのクラスターグループを対象とします。
+====
+
+
+`GitRepos`をダウンストリームクラスターにデプロイする際には、クラスターをターゲットにマッピングする必要があります。
+
+== ターゲットの定義
+
+`GitRepo`のデプロイメントターゲットは、クラスターまたはクラスターグループと一致させるために`spec.targets`フィールドを使用して行います。YAML仕様は以下の通りです。
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: myrepo
+  namespace: clusters
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - simple
+
+  # Targets are evaluated in order and the first one to match is used. If
+  # no targets match then the evaluated cluster will not be deployed to.
+  targets:
+  # The name of target. This value is largely for display and logging.
+  # If not specified a default name of the format "target000" will be used
+  - name: prod
+    # A selector used to match clusters.  The structure is the standard
+    # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
+    # clusterSelector will be used only to further refine the selection after
+    # clusterGroupSelector and clusterGroup is evaluated.
+    clusterSelector:
+      matchLabels:
+        env: prod
+    # A selector used to match cluster groups.
+    clusterGroupSelector:
+      matchLabels:
+        region: us-east
+    # A specific clusterGroup by name that will be selected
+    clusterGroup: group1
+    # A specific cluster by name that will be selected
+    clusterName: cluster1
+----
+
+== ターゲットの一致
+
+`GitRepo`と同じ名前空間内のすべてのクラスターおよびクラスターグループは、すべてのターゲットに対して評価されます。
+ターゲットのいずれかがクラスターと一致する場合、`GitRepo`はダウンストリームクラスターにデプロイされます。一致がない場合、`GitRepo`はそのクラスターにデプロイされません。
+
+クラスターを一致させるためのアプローチは3つあります。
+クラスターセレクター、クラスターグループセレクター、または明示的なクラスターグループ名を使用できます。 すべての基準は加算的であり、最終的な一致は「clusterSelector && clusterGroupSelector && clusterGroup」として評価されます。 3つのうちのいずれかがデフォルト値を持っている場合、それは基準から除外されます。 デフォルト値はnullまたは""です。 セレクターの値`{}`は「すべてに一致する」を意味することを理解することが重要です。
+
+[,yaml]
+----
+targets:
+  # Match everything
+  - clusterSelector: {}
+  # Selector ignored
+  - clusterSelector: null
+----
+
+名前でクラスターを一致させることもできます:
+
+[,yaml]
+----
+targets:
+  - clusterName: fleetname
+----
+
+Rancherで{product_name}を使用する際は、`clusters.fleet.cattle.io`リソースの名前を入力してください。
+
+== デフォルトターゲット
+
+`GitRepo`にターゲットが設定されていない場合、デフォルトターゲットの値が適用されます。 デフォルトターゲットの値は以下の通りです。
+
+[,yaml]
+----
+targets:
+- name: default
+  clusterGroup: default
+----
+
+これは、デフォルトの場所をセットアップしたい場合、未設定のGitReposが向かうクラスターグループをdefaultと呼び、そこにクラスターを追加するだけで済むことを意味します。
+
+== クラスターごとのカスタマイズ
+
+[IMPORTANT]
+====
+
+`targets:`リソース内の`GitRepo`は、デプロイするクラスターを選択します。`targetCustomizations:`の`fleet.yaml`は、Helmの値のみを上書きし、ターゲティングは変更しません。
+====
+
+
+{product_name}を使用して異なるクラスターにKubernetesマニフェストをカスタマイズしてデプロイする方法を示すために、 https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml]を使用します。
+
+*状況：*ユーザーは、`env=dev`、`env=test`、`env=prod`という3つの異なるラベルを持つ3つのクラスターを持っています。ユーザーは、これらのクラスターにフロントエンドアプリケーションとバックエンドデータベースをデプロイしたいと考えています。
+
+*期待される動作:*
+
+* `dev`クラスターにデプロイした後、データベースのレプリケーションは有効になっていません。
+* `test`クラスターにデプロイした後、データベースのレプリケーションは有効になっています。
+* `prod`クラスターにデプロイした後、データベースのレプリケーションが有効になり、ロードバランサーサービスが公開されます。
+
+*の利点:{product_name}*
+
+各クラスターにアプリをデプロイする代わりに、{product_name}を使用すると、次の手順に従ってすべてのクラスターにデプロイできます：
+
+. gitRepo `https://github.com/rancher/fleet-examples.git`をデプロイし、パス`multi-cluster/helm`を指定します。
+. `multi-cluster/helm`の下で、Helmチャートがフロントエンドアプリサービスとバックエンドデータベースサービスをデプロイします。
+. 次のルールが`fleet.yaml`に定義されます:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
+
+*結果:*
+
+{product_name}は、カスタマイズされた`values.yaml`を使って、異なるクラスターにHelmチャートをデプロイします。
+
+
+[NOTE]
+====
+構成管理はデプロイメントに限定されず、一般的な構成管理に拡張できます。{product_name}は、任意のクラスターセット間でのカスタマイズを通じて、自動的に構成管理を適用できます。
+====
+
+=== `targetCustomizations` を使用して Helm チャート設定を上書きする際の制限
+
+`helm.chart`、`helm.repo`、および `helm.version` は `targetCustomizations` で指定できますが、これらのフィールドを上書きすることには重要な制限があります。
+
+{product_name}は、最初の**バンドル作成**フェーズ中に、トップレベルの`helm`設定を使用してHelmチャートを取得します。この取得は、`targetCustomizations`が処理される前にFleetツールチェーン（`GitJob`）によって実行されます。
+
+この段階でチャートがダウンロードされるため、`targetCustomizations`は次の場所から異なるチャートを動的に取得することはできません：
+
+* ローカルディレクトリ
+* 別の Helm リポジトリ
+* 別のOCIレジストリ（例：ファイアウォールの背後にあるもの）
+
+これらのフィールドを上書きしようとすると、チャート取得中に上書きが無視される可能性があります。場合によっては、Fleet が同じバンドルに複数のチャートバージョンを含めようとすることがあり、これによりバンドルサイズが大幅に増加し、etcd サイズ制限を超える可能性があります。
+
+異なる環境が異なるチャートやレジストリを必要とする場合は、次のアプローチのいずれかを使用してください：
+
+* 各チャート構成のために別々の `fleet.yaml` ファイルを定義します。
+* 各環境のために別々の `GitRepo` リソースを作成します。
+
+
+== 追加の例
+
+生の Kubernetes YAML、Helm チャート、Kustomize、およびその三者の組み合わせを使用した例は、 https://github.com/rancher/fleet-examples/[{product_name} Examples リポジトリ] にあります。

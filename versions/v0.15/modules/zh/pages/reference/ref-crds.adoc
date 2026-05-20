@@ -1,0 +1,2896 @@
+= 自定义资源规范
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+:doctype: book
+
+== 资源
+
+* <<Bundle,捆绑包>>
+* <<BundleDeployment,包部署>>
+* <<BundleNamespaceMapping,BundleNamespaceMapping>>
+* <<Cluster,群集>>
+* <<ClusterGroup,ClusterGroup>>
+* <<ClusterRegistration,集群注册>>
+* <<ClusterRegistrationToken,ClusterRegistrationToken>>
+* <<Content,内容>>
+* <<GitRepo,GitRepo>>
+* <<GitRepoRestriction,GitRepoRestriction>>
+* <<ImageScan,ImageScan>>
+
+== 子资源
+
+* <<BundleDisplay,BundleDisplay>>
+* <<BundleList,BundleList>>
+* <<BundleRef,BundleRef>>
+* <<BundleResource,BundleResource>>
+* <<BundleSpec,BundleSpec>>
+* <<BundleStatus,BundleStatus>>
+* <<BundleSummary,包摘要>>
+* <<BundleTarget,包目标>>
+* <<BundleTargetRestriction,BundleTargetRestriction>>
+* <<NonReadyResource,NonReadyResource>>
+* <<Partition,分区>>
+* <<PartitionStatus,PartitionStatus>>
+* <<ResourceKey,资源键>>
+* <<RolloutStrategy,发布策略>>
+* <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+* <<BundleDeploymentList,BundleDeploymentList>>
+* <<BundleDeploymentOptions,BundleDeploymentOptions>>
+* <<BundleDeploymentResource,BundleDeploymentResource>>
+* <<BundleDeploymentSpec,BundleDeploymentSpec>>
+* <<BundleDeploymentStatus,BundleDeploymentStatus>>
+* <<ComparePatch,比较补丁>>
+* <<ConfigMapKeySelector,ConfigMapKeySelector>>
+* <<DiffOptions,差异选项>>
+* <<HelmOptions,Helm选项>>
+* <<IgnoreOptions,IgnoreOptions>>
+* <<KustomizeOptions,KustomizeOptions>>
+* <<LocalObjectReference,LocalObjectReference>>
+* <<ModifiedStatus,ModifiedStatus>>
+* <<NonReadyStatus,NonReadyStatus>>
+* <<Operation,Operation>>
+* <<SecretKeySelector,SecretKeySelector>>
+* <<ValuesFrom,ValuesFrom>>
+* <<YAMLOptions,YAML选项>>
+* <<BundleNamespaceMappingList,BundleNamespaceMappingList>>
+* <<AgentStatus,AgentStatus>>
+* <<ClusterDisplay,ClusterDisplay>>
+* <<ClusterList,ClusterList>>
+* <<ClusterSpec,ClusterSpec>>
+* <<ClusterStatus,ClusterStatus>>
+* <<ClusterGroupDisplay,ClusterGroupDisplay>>
+* <<ClusterGroupList,ClusterGroupList>>
+* <<ClusterGroupSpec,ClusterGroupSpec>>
+* <<ClusterGroupStatus,ClusterGroupStatus>>
+* <<ClusterRegistrationList,ClusterRegistrationList>>
+* <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+* <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+* <<ClusterRegistrationTokenList,ClusterRegistrationTokenList>>
+* <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+* <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+* <<ContentList,内容列表>>
+* <<CommitSpec,CommitSpec>>
+* <<CorrectDrift,CorrectDrift>>
+* <<GitRepoDisplay,GitRepoDisplay>>
+* <<GitRepoList,GitRepoList>>
+* <<GitRepoResource,GitRepoResource>>
+* <<GitRepoResourceCounts,GitRepoResourceCounts>>
+* <<GitRepoSpec,GitRepoSpec>>
+* <<GitRepoStatus,GitRepoStatus>>
+* <<GitTarget,GitTarget>>
+* <<OCIRegistrySpec,OCI注册表规范>>
+* <<ResourcePerClusterState,ResourcePerClusterState>>
+* <<GitRepoRestrictionList,GitRepoRestrictionList>>
+* <<AlphabeticalPolicy,字母顺序策略>>
+* <<ImagePolicyChoice,ImagePolicyChoice>>
+* <<ImageScanList,ImageScanList>>
+* <<ImageScanSpec,ImageScanSpec>>
+* <<ImageScanStatus,ImageScanStatus>>
+* <<SemVerPolicy,SemVerPolicy>>
+* <<FleetYAML,FleetYAML>>
+* <<ImageScanYAML,ImageScanYAML>>
+
+=== 捆绑包
+
+包包含应用程序及其部署选项的资源。它将作为 Helm chart 部署到目标集群。
+
+当扫描Git仓库时，它将生成一个或多个包。包是一组资源，部署到一个或多个集群。包是{product_name}中使用的基本部署单元。包的内容可以是 Kubernetes 清单、Kustomize 配置或 Helm chart。无论来源如何，内容都由代理动态渲染为 Helm chart，并作为 Helm release 安装到下游集群。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleSpec,BundleSpec>>
+| true
+
+| status
+|
+| <<BundleStatus,BundleStatus>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDisplay
+
+BundleDisplay 包含准备好的、期望准备好的集群数量和包的摘要状态。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| readyClusters
+| ReadyClusters 是一个字符串，形式为 "%d/%d"，描述准备好的集群数量与期望准备好的集群数量。
+| 字符串
+| false
+
+| 状态
+| 状态是包的摘要状态，计算基于未准备好的资源。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleList
+
+包列表包含一个包的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<Bundle,包>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleRef
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 分发包名称。
+| 字符串
+| false
+
+| 选择器
+| 选择器匹配包的标签。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleResource
+
+包资源表示包中单个资源的内容，如 YAML 清单。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 资源的名称，可以包括包的内部路径。
+| 字符串
+| false
+
+| content
+| 资源的内容，可以被压缩。
+| 字符串
+| false
+
+| 正在编码
+| 编码为空或 "base64+gz"。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 已暂停
+| 如果设置为 true，将停止任何包部署的更新。它将被标记为不同步。
+| 布尔
+| false
+
+| rolloutStrategy
+| RolloutStrategy 控制包的发布，通过定义分区、金丝雀和集群可用性的百分比。
+| *<<RolloutStrategy,发布策略>>
+| false
+
+| 资源
+| 资源包含从包的路径读取的资源。这包括下载的 Helm chart 的内容。
+| []<<BundleResource,包资源>>
+| false
+
+| targets
+| 目标是指将要部署的集群。目标按顺序评估，第一个匹配的目标将被使用。
+| []<<BundleTarget,包目标>>
+| false
+
+| targetRestrictions
+| TargetRestrictions 是一个允许列表，用于控制是否为目标创建包部署。
+| []<<BundleTargetRestriction,BundleTargetRestriction>>
+| false
+
+| dependsOn
+| DependsOn 指的是在此包可以部署之前，必须处于接受状态的包。
+| []<<BundleRef,BundleRef>>
+| false
+
+| contentsId 
+| ContentsID 在使用 OCI 注册表部署内容时存储内容 ID。
+| 字符串 
+| false
+
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 条件
+| Conditions 是描述包状态的 Wrangler 条件列表。
+| []genericcondition.GenericCondition
+| false
+
+| summary
+| 包摘要包含每个状态下的包部署数量和非就绪资源的列表。
+| <<BundleSummary,包摘要>>
+| false
+
+| newlyCreated
+| NewlyCreated 是已创建但未更新的包部署数量。
+| 整数
+| false
+
+| 不可用
+| Unavailable 是未准备好或状态中的 AppliedDeploymentID 与规范中的 DeploymentID 不匹配的包部署数量。
+| 整数
+| true
+
+| unavailablePartitions
+| UnavailablePartitions 是不可用分区的数量。
+| 整数
+| true
+
+| maxUnavailable
+| MaxUnavailable 是不可用包部署的最大数量。查看发布配置。
+| 整数
+| true
+
+| maxUnavailablePartitions
+| MaxUnavailablePartitions 是不可用分区的最大数量。发布配置定义了不可用分区的最大数量或百分比。
+| 整数
+| true
+
+| partitions
+| PartitionStatus 列出了每个分区的状态。
+| []<<PartitionStatus,PartitionStatus>>
+| false
+
+| 显示
+| 包显示包含准备好的集群、期望准备好的集群数量以及包资源的摘要状态。
+| <<BundleDisplay,BundleDisplay>>
+| false
+
+| resourceKey
+| 资源键 列出了可能被部署的资源。集群上的实际资源列表可能会有所不同，具体取决于 Helm chart、值模板等。
+| []<<ResourceKey,资源键>>
+| false
+
+| ociReference 
+| OCIReference 是用于存储内容的 OCI 引用，仅供参考。
+| 字符串 
+| false
+
+| observedGeneration
+| ObservedGeneration 是该包的当前版本。
+| int64
+| true
+
+| resourcesSha256Sum
+| ResourcesSHA256Sum 对应于 .Spec.Resources 字段的 JSON 序列化。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleSummary
+
+包摘要包含每个状态下的包部署数量和非就绪资源的列表。它用于包、集群组、集群和 Git仓库的状态。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| notReady
+| NotReady 是已部署的包部署数量，其中一些资源尚未就绪。
+| 整数
+| false
+
+| waitApplied
+| WaitApplied 是从 {product_name} 控制器和下游集群同步的包部署数量，但仍在等待部署。
+| 整数
+| false
+
+| errApplied
+| ErrApplied 是从 {product_name} 控制器和下游集群同步的包部署数量，但在部署包时出现了一些错误。
+| 整数
+| false
+
+| outOfSync
+| OutOfSync 是从 {product_name} 控制器同步的包部署数量，但尚未由下游代理同步。
+| 整数
+| false
+
+| modified
+| Modified 是已部署的包部署数量，所有资源均已就绪，但某些来自 Git仓库的更改尚未同步。
+| 整数
+| false
+
+| 就绪
+| 就绪是已部署的包部署数量，所有资源均已就绪。
+| 整数
+| true
+
+| 待发
+| 待处理的是正在由 {product_name} 控制器处理的包部署数量。
+| 整数
+| false
+
+| desiredReady
+| 期望就绪是应该就绪的包部署数量。
+| 整数
+| true
+
+| nonReadyResources
+| 非就绪集群是一个状态列表，适用于未就绪的包。
+| []<<NonReadyResource,NonReadyResource>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleTarget
+
+包目标声明要部署的集群。{product_name} 将把自定义中的包部署选项合并到此结构中。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 目标名称。此值主要用于显示和日志记录。如果未指定，将使用格式为 "target000" 的默认名称。
+| 字符串
+| false
+
+| clusterName
+| 集群名称用于通过名称匹配已选择的特定集群。
+| 字符串
+| false
+
+| clusterSelector
+| ClusterSelector 是用于匹配集群的选择器。该结构是标准的 metav1.LabelSelector 格式。如果指定了 clusterGroupSelector 或 clusterGroup，则 clusterSelector 仅在评估 clusterGroupSelector 和 clusterGroup 后进一步细化选择。
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| ClusterGroup 用于通过名称匹配特定集群组。
+| 字符串
+| false
+
+| clusterGroupSelector
+| ClusterGroupSelector 是用于匹配集群组的选择器。
+| *metav1.LabelSelector
+| false
+
+| doNotDeploy
+| 如果设置为 true，则不会部署到此目标。
+| 布尔
+| false
+
+| namespaceLabels 
+| NamespaceLabels 是将附加到 {product_name} 创建的名称空间的标签。
+| map[string]string 
+| false 
+
+| namespaceAnnotations 
+| NamespaceAnnotations 是将附加到由 {product_name} 创建的名称空间的注释。
+| map[string]string 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleTargetRestriction
+
+包目标限制 由 {product_name} 内部使用，不应被修改。它充当允许列表，以防止从 fleet.yaml 中的 TargetCustomizations 创建包部署。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+|
+| 字符串
+| false
+
+| clusterName
+|
+| 字符串
+| false
+
+| clusterSelector
+|
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+|
+| 字符串
+| false
+
+| clusterGroupSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== NonReadyResource
+
+非就绪资源包含有关在某一状态下尚未就绪（如 "ErrApplied"）的包的信息。它包含非就绪或已修改资源及其状态的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| Name 是资源的名称。
+| 字符串
+| false
+
+| bundleState
+| State 是资源的状态，例如。"NotReady" 或 "ErrApplied"。
+| BundleState
+| false
+
+| 讯息
+| Message 包含有关捆绑包为何不就绪的信息。
+| 字符串
+| false
+
+| modifiedStatus
+| ModifiedStatus 列出了每个已修改资源的状态。
+| []<<ModifiedStatus,ModifiedStatus>>
+| false
+
+| nonReadyStatus
+| NonReadyStatus 列出了每个非就绪资源的状态。
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== 分区
+
+Partition 为一组集群定义了单独的发布策略。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 为分区提供的用户友好名称，用于显示（可选）。
+| 字符串
+| false
+
+| maxUnavailable
+| 在此分区中，允许集群处于不可用状态的数量或百分比（未达到该阈值前，分区不会被视为完成）。默认：10%
+| *intstr.IntOrString
+| false
+
+| clusterName
+| ClusterName 是要包含在此分区中的集群的名称。
+| 字符串
+| false
+
+| clusterSelector
+| Selector 匹配要包含在此分区中的集群标签。
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| 要包含在此分区中的集群组名称
+| 字符串
+| false
+
+| clusterGroupSelector
+| Selector 匹配要包含在此分区中的集群组标签
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== PartitionStatus
+
+PartitionStatus 是单个发布分区的状态。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 名称是分区的名称。
+| 字符串
+| false
+
+| 计数
+| 计数是分区中集群的数量。
+| 整数
+| false
+
+| maxUnavailable
+| MaxUnavailable 是分区中不可用集群的最大数量。
+| 整数
+| false
+
+| 不可用
+| 不可用是分区中不可用集群的数量。
+| 整数
+| false
+
+| summary
+| 摘要是分区的摘要状态，计算其非就绪资源。
+| <<BundleSummary,捆绑包摘要>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== 资源键
+
+ResourceKey 列出了可能被部署的资源。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| kind
+| Kind 是资源在 k8s API 中的 kind.
+| 字符串
+| false
+
+| apiVersion
+| APIVersion 是资源的 k8s api 版本。
+| 字符串
+| false
+
+| namespace
+| Namespace 是资源的名称空间。
+| 字符串
+| false
+
+| name
+| Name 是资源的名称。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== RolloutStrategy
+
+RolloverStrategy 控制捆绑包在集群之间的发布。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| maxUnavailable
+| 在更新捆绑包期间可以不可用的集群数量或百分比。这遵循与部署发布策略相同的基本方法。一旦分区中不可用的集群数量达到设定阈值，更新将被暂停。默认值为100%，在更新时不生效。默认：100%
+| *intstr.IntOrString
+| false
+
+| maxUnavailablePartitions
+| 在更新一个包时，可以在集群分区中不可用的数量或百分比。默认：0
+| *intstr.IntOrString
+| false
+
+| autoPartitionSize
+| 如果没有配置特定的分区策略，自动分区集群的数量或百分比。默认：25%
+| *intstr.IntOrString
+| false
+
+| autoPartitionThreshold
+| 启用自动分区之前需要存在的最小集群数量。如果目标集群的数量少于此值，则所有集群将被放置在一个单一的分区中。默认：200
+| *整数
+| false
+
+| maxNew
+| 在一次协调中可以创建的最大新 BundleDeployments 数量。这限制了在将一个包首次应用于多个集群时新部署的阶段速率。默认：50
+| *整数
+| false
+
+| partitions
+| 分区定义的列表。 如果任何目标集群与配置不匹配，则它们将在自动分区大小之后被添加到分区中。
+| []<<Partition,分区>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== 捆绑部署
+
+BundleDeployment 由 {product_name} 内部使用，不应直接使用。当一个包部署到集群时，包的一个实例称为 BundleDeployment。BundleDeployment 表示该包在特定集群上的状态及其集群特定的自定义。{product_name}代理仅了解为其管理的集群创建的 BundleDeployment 资源。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<BundleDeploymentSpec,BundleDeploymentSpec>>
+| false
+
+| status
+|
+| <<BundleDeploymentStatus,BundleDeploymentStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDeploymentDisplay
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 已部署
+|
+| 字符串
+| false
+
+| 受监视的
+|
+| 字符串
+| false
+
+| 状态
+|
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDeploymentList
+
+BundleDeploymentList 包含 BundleDeployment 的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<BundleDeployment,BundleDeployment>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDeploymentOptions
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| defaultNamespace
+| 默认名称空间是用于未指定名称空间的资源的名称空间。此字段不用于强制或锁定部署到特定名称空间。
+| 字符串
+| false
+
+| namespace
+| 如果存在目标名称空间，将把所有资源分配到此名称空间，如果存在任何集群范围的资源，则部署将失败。
+| 字符串
+| false
+
+| kustomize
+| 部署的 Kustomize 选项，例如包含 kustomization.yaml 文件的目录。
+| *<<KustomizeOptions,KustomizeOptions>>
+| false
+
+| Helm
+| 部署的 Helm 选项，例如图表名称、仓库和值。
+| *<<HelmOptions,HelmOptions>>
+| false
+
+| serviceAccount
+| 将用于执行此部署的服务账户。
+| 字符串
+| false
+
+| forceSyncGeneration
+| ForceSyncGeneration 用于强制重新部署。
+| int64
+| false
+
+| yaml
+| YAML 选项，如果使用原始 YAML，这些是映射到 overlays/{name} 文件的名称，这些文件将用于替换或修补资源。
+| *<<YAMLOptions,YAMLOptions>>
+| false
+
+| 差异
+| 差异可以用于忽略在运行时修改对象的状态。
+| *<<DiffOptions,DiffOptions>>
+| false
+
+| keepResources
+| KeepResources 可用于在移除包时保留已部署的资源。
+| 布尔
+| false
+
+| deleteNamespace 
+| DeleteNamespace 可用于在删除包时删除已部署的名称空间。 
+| 布尔 
+| false
+
+| ignore
+| IgnoreOptions 可用于在监控包时忽略字段。
+| <<IgnoreOptions,IgnoreOptions>>
+| false
+
+| correctDrift
+| CorrectDrift 指定漂移修正的工作方式。
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| namespaceLabels
+| NamespaceLabels 是将附加到由 {product_name} 创建的名称空间的标签。
+| map[string]string
+| false
+
+| namespaceAnnotations
+| NamespaceAnnotations 是将附加到由 {product_name} 创建的名称空间的注释。
+| map[string]string
+| false
+
+| deleteCRDResources
+| DeleteCRDResources 删除 CRD 资源。警告！这也将删除您所有的自定义资源。
+| 布尔
+| false
+|===
+
+[Note]
+====
+如果您不希望 Fleet 应用 `helm.sh/resource-policy: keep`，请在 `deleteCRDResource` 中将 `true` 选项配置为 `fleet.yaml`。
+====
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDeploymentResource
+
+BundleDeploymentResource 包含已部署资源的元数据。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 类型
+|
+| 字符串
+| false
+
+| apiVersion
+|
+| 字符串
+| false
+
+| namespace
+|
+| 字符串
+| false
+
+| name
+|
+| 字符串
+| false
+
+| createdAt
+|
+| metav1.Time
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDeploymentSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 已暂停
+| 如果设置为 true，则暂停状态将阻止对 BundleDeployments 的任何更新。如果为 true，当检测到更改时，BundleDeployments 将被标记为不同步。
+| 布尔
+| false
+
+| stagedOptions
+| StagedOptions 是为下一个部署准备的部署选项。
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| stagedDeploymentID
+| StagedDeploymentID 是已准备部署的部署 ID。
+| 字符串
+| false
+
+| options
+| 选项是当前应用的部署选项。
+| <<BundleDeploymentOptions,BundleDeploymentOptions>>
+| false
+
+| deploymentID
+| DeploymentID是当前应用的部署的ID。
+| 字符串
+| false
+
+| dependsOn
+| DependsOn 指的是在此包部署之前必须就绪的包。
+| []<<BundleRef,BundleRef>>
+| false
+
+| correctDrift
+| CorrectDrift 指定漂移修正的工作方式。
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| ociContents 
+| 当此部署的内容存储在 OCI 注册表中时，OCIContents 为真。 
+| 布尔 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleDeploymentStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 条件
+|
+| []genericcondition.GenericCondition
+| false
+
+| appliedDeploymentID
+|
+| 字符串
+| false
+
+| release
+| Release 是 Helm 发布 ID。
+| 字符串
+| false
+
+| 就绪
+|
+| 布尔
+| false
+
+| nonModified
+|
+| 布尔
+| false
+
+| nonReadyStatus
+|
+| []<<NonReadyStatus,NonReadyStatus>>
+| false
+
+| modifiedStatus
+|
+| []<<ModifiedStatus,ModifiedStatus>>
+| false
+
+| 显示
+|
+| <<BundleDeploymentDisplay,BundleDeploymentDisplay>>
+| false
+
+| syncGeneration
+|
+| *int64
+| false
+
+| 资源
+| 资源列出了根据Helm发布历史记录部署的资源的元数据。
+| []<<BundleDeploymentResource,BundleDeploymentResource>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ComparePatch
+
+ComparePatch 匹配资源，并从修改检查中移除字段。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 类型
+| Kind 是要匹配的资源类型。
+| 字符串
+| false
+
+| apiVersion
+| APIVersion 是要匹配的资源的 apiVersion。
+| 字符串
+| false
+
+| namespace
+| Namespace 是要匹配的资源的名称空间。
+| 字符串
+| false
+
+| name
+| Name 是要匹配的资源的名称。
+| 字符串
+| false
+
+| operations
+| 操作从资源中移除 JSON 路径。
+| []<<Operation,操作>>
+| false
+
+| jsonPointers
+| JSON指针在某个 JSON 路径上忽略差异。
+| []string
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ConfigMapKeySelector
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| namespace
+|
+| 字符串
+| false
+
+| key
+|
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== DiffOptions
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| comparePatches
+| ComparePatches 匹配资源，并从修改检查中移除字段。
+| []<<ComparePatch,ComparePatch>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== HelmOptions
+
+HelmOptions 用于部署。对于基于Helm的包，可以使用所有选项，否则某些选项将被忽略。例如，ReleaseName适用于所有包类型。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 图表
+| Chart 可以指任何 go-getter URL 或 OCI 注册表基础的 Helm 图表 URL。图表将被下载。
+| 字符串
+| false
+
+| 仓库
+| Repo 是用于下载图表的 HTTPS Helm 仓库的名称。
+| 字符串
+| false
+
+| releaseName
+| ReleaseName 设置自定义发布名称以部署图表。如果未指定，将通过组合调用的 GitRepo.name 和 GitRepo.path 生成发布名称。
+| 字符串
+| false
+
+| version
+| 要下载的图表版本
+| 字符串
+| false
+
+| timeoutSeconds
+| TimeoutSeconds 是等待 Helm 操作的时间。
+| 整数
+| false
+
+| values
+| 传递给 Helm 的值。可以将键和值指定为 Go 模板字符串。
+| *GenericMap
+| false
+
+| valuesFrom
+| ValuesFrom 从配置映射和秘密中加载值。
+| []<<ValuesFrom,ValuesFrom>>
+| false
+
+| force
+| Force 允许覆盖不可变资源。这可能是危险的。
+| 布尔
+| false
+
+| takeOwnership
+| TakeOwnership 使 Helm 跳过对其自身注释的检查。
+| 布尔
+| false
+
+| maxHistory
+| MaxHistory 限制每个发布由 Helm 保存的最大修订次数。
+| 整数
+| false
+
+| valuesFiles
+| ValuesFiles 是要加载值的文件列表。
+| []string
+| false
+
+| waitForJobs
+| 如果设置了 WaitForJobs 并提供了 timeoutSeconds，将在所有作业完成之前等待，才会将 GitRepo 标记为已准备好。它将等待 timeoutSeconds 指定的时间。
+| 布尔
+| false
+
+| 原子
+| Atomic 在 Helm 执行升级时设置 -- 原子标志。
+| 布尔
+| false
+
+| disablePreProcess
+| DisablePreProcess 禁用值中的模板处理。
+| 布尔
+| false
+
+| disableDNS
+| DisableDNS 可用于自定义 Helm 的 EnableDNS 选项，默认情况下 {product_name} 设置为 `true`。
+| 布尔
+| false
+
+| skipSchemaValidation
+| SkipSchemaValidation 允许跳过对图表值的模式验证。
+| 布尔
+| false
+
+| disableDependencyUpdate 
+| DisableDependencyUpdate 允许跳过图表依赖项更新。 
+| 布尔 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== IgnoreOptions
+
+IgnoreOptions 定义在监控包时要忽略的条件。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 条件
+| Conditions 是在监控包时要忽略的条件列表。
+| []map[string]string
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== KustomizeOptions
+
+KustomizeOptions 用于部署。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| dir
+| Dir 指向用于 Kustomize 资源的自定义文件夹。该文件夹必须包含一个 kustomization.yaml 文件。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== LocalObjectReference
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 与引用者在同一名称空间中的资源名称。
+| 字符串
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ModifiedStatus
+
+ModifiedStatus 用于报告已修改资源的状态。它指示修改是创建、删除还是补丁。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 类型
+|
+| 字符串
+| false
+
+| apiVersion
+|
+| 字符串
+| false
+
+| namespace
+|
+| 字符串
+| false
+
+| name
+|
+| 字符串
+| false
+
+| 缺少
+|
+| 布尔
+| false
+
+| 存在 
+| 如果资源存在但不属于我们，则 Exist 为真。如果一个资源被另一个包采用，而第一个包仍然存在，从而报告它不拥有该资源，则可能会出现这种情况。
+| 布尔 
+| false
+
+| delete
+|
+| 布尔
+| false
+
+| 增补
+|
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== NonReadyStatus
+
+NonReadyStatus 用于报告未准备好资源的状态。它包括一个摘要。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| uid
+|
+| types.UID
+| false
+
+| 类型
+|
+| 字符串
+| false
+
+| apiVersion
+|
+| 字符串
+| false
+
+| namespace
+|
+| 字符串
+| false
+
+| name
+|
+| 字符串
+| false
+
+| summary
+|
+| summary.Summary
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== Operation
+
+ComparePatch 的操作，通常为 "remove"。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 操作
+| Op 通常为 "remove"
+| 字符串
+| false
+
+| path
+| Path 是要删除的 JSON 路径。
+| 字符串
+| false
+
+| value
+| Value 通常为空。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== SecretKeySelector
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| namespace
+|
+| 字符串
+| false
+
+| key
+|
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ValuesFrom
+
+定义可以来自 configmap、secret 或外部的 helm 值。致谢： https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| configMapKeyRef
+| 对包含发布值的配置映射的引用。
+| *<<ConfigMapKeySelector,ConfigMapKeySelector>>
+| false
+
+| secretKeyRef
+| 对包含发布值的秘密的引用。
+| *<<SecretKeySelector,SecretKeySelector>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== YAML选项
+
+YAML选项，如果使用原始 YAML，这些是映射到 overlays/{name} 文件的名称，这些文件将用于替换或修补资源。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 覆盖
+| 覆盖是映射到 "overlays/" 中文件夹的名称列表。如果您希望自定义文件 ./subdir/resource.yaml，则文件 ./overlays/myoverlay/subdir/resource.yaml 将替换基础文件。名为 ./overlays/myoverlay/subdir/resource_patch.yaml 的文件将修补基础文件。
+| []string
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleNamespaceMapping
+
+BundleNamespaceMapping 将 Bundle 映射到其他名称空间中的集群.
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| bundleSelector
+|
+| *metav1.LabelSelector
+| false
+
+| namespaceSelector
+|
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== BundleNamespaceMappingList
+
+BundleNamespaceMappingList 包含 BundleNamespaceMapping 的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<BundleNamespaceMapping,BundleNamespaceMapping>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== AgentStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| lastSeen
+| LastSeen 是代理检查以更新集群资源状态的最后时间。
+| metav1.Time
+| true
+
+| namespace
+| 名称空间是代理部署的名称空间，例如 "cattle-fleet-system"。
+| 字符串
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== 群集
+
+集群对应于一个 Kubernetes 集群。{product_name} 将包部署到目标集群。{product_name}部署清单的集群称为下游集群。在单一集群使用案例中，{product_name} Kubernetes 集群同时充当管理器和下游集群。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterSpec,ClusterSpec>>
+| false
+
+| status
+|
+| <<ClusterStatus,ClusterStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterDisplay
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| readyBundles
+| 就绪包是一个字符串，格式为 "%d/%d"，描述了已就绪的包数量与期望就绪的包数量。
+| 字符串
+| false
+
+| 状态
+| 集群状态，可以是包状态之一，或 "WaitCheckIn"。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterList
+
+集群列表包含集群的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<Cluster,集群>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 已暂停
+| 如果设置为 true，将停止任何 BundleDeployment 的更新。
+| 布尔
+| false
+
+| clientID
+| 客户端 ID 是一个唯一字符串，用于标识集群。它可以是预定义的，或在导入集群时生成。
+| 字符串
+| false
+
+| kubeConfigSecret
+| KubeConfigSecret 是包含下游集群 kubeconfig 的秘密名称。它可以选择性地包含一个 APIServerURL 和 CA，以覆盖 fleet-controller 的 configmap 中的值。
+| 字符串
+| false
+
+| kubeConfigSecretNamespace
+| KubeConfigSecretNamespace 是包含下游集群 kubeconfig 的秘密的命名空间。如果未设置，将假定该秘密可以在集群对象所在的命名空间中找到。
+| 字符串
+| false
+
+| redeployAgentGeneration
+| RedeployAgentGeneration 可用于强制重新部署代理。
+| int64
+| false
+
+| agentEnvVars
+| AgentEnvVars 是要添加到代理部署的额外环境变量。
+| []corev1.EnvVar
+| false
+
+| agentNamespace
+| AgentNamespace 默认为系统名称空间，例如 cattle-fleet-system。
+| 字符串
+| false
+
+| privateRepoURL
+| PrivateRepoURL 前缀图像名称并覆盖代理配置中的全局仓库 URL。
+| 字符串
+| false
+
+| templateValues
+| TemplateValues 定义特定于集群的值映射，以发送到 fleet.yaml 值模板。
+| *GenericMap
+| false
+
+| agentTolerations
+| AgentTolerations 定义要添加到代理部署的额外容忍。
+| []corev1.Toleration
+| false
+
+| agentAffinity
+| AgentAffinity 覆盖集群代理部署的默认亲和性。如果该值为 nil，则使用默认亲和性。
+| *corev1.Affinity
+| false
+
+| agentResources
+| AgentResources 设置集群代理部署的资源。
+| *corev1.ResourceRequirements
+| false
+
+| hostNetwork 
+| HostNetwork 将代理 StatefulSet 设置为使用 hostNetwork: true 设置。允许配置与网络相关的包（CNI 配置）。
+| *bool 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 条件
+|
+| []genericcondition.GenericCondition
+| false
+
+| namespace
+| Namespace 是集群名称空间，它包含集群的服务账户以及任何包部署。示例："cluster-fleet-local-cluster-294db1acfa77-d9ccf852678f"
+| 字符串
+| false
+
+| summary
+| Summary 是包部署的摘要。资源计数从 gitrepo 资源中复制。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| resourceCounts
+| ResourceCounts 是对 GitRepoResourceCounts 的汇总。
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| readyGitRepos
+| ReadyGitRepos 是此集群中准备好的 gitrepos 数量。
+| 整数
+| true
+
+| desiredReadyGitRepos
+| DesiredReadyGitRepos 是此集群中希望准备好的 gitrepos 数量。
+| 整数
+| true
+
+| agentEnvVarsHash
+| AgentEnvVarsHash 是代理环境变量的哈希，用于检测变化。
+| 字符串
+| false
+
+| agentPrivateRepoURL
+| AgentPrivateRepoURL 是当前使用的代理的私有仓库 URL。
+| 字符串
+| false
+
+| agentHostNetwork 
+| AgentHostNetwork 定义当前使用的 spec.hostNetwork 设置的观察状态。
+| 布尔 
+| false
+
+| agentDeployedGeneration
+| AgentDeployedGeneration 是当前部署的代理的版本。
+| *int64
+| false
+
+| agentMigrated
+| AgentMigrated 在导入集群后始终设置为 true。如果为 false，将触发迁移。旧代理在其状态中没有此项。
+| 布尔
+| false
+
+| agentNamespaceMigrated
+| AgentNamespaceMigrated 在导入集群后始终设置为 true。如果为 false，将触发迁移。旧 {product_name} 代理在其状态中没有此项。
+| 布尔
+| false
+
+| cattleNamespaceMigrated
+| CattleNamespaceMigrated 在导入集群后始终设置为 true。如果为 false，将触发迁移。旧 {product_name} 代理在其状态中没有此项。
+| 布尔
+| false
+
+| agentAffinityHash
+| AgentAffinityHash 是代理亲和性配置的哈希，用于检测变化。
+| 字符串
+| false
+
+| agentResourcesHash
+| AgentResourcesHash 是代理资源配置的哈希，用于检测变化。
+| 字符串
+| false
+
+| agentTolerationsHash
+| AgentTolerationsHash 是代理容忍配置的哈希，用于检测变化。
+| 字符串
+| false
+
+| agentConfigChanged
+| 如果代理配置发生任何变化，如 API 服务器 URL 或 CA，AgentConfigChanged 将设置为 true。将其设置为 true 将触发集群的重新导入。
+| 布尔
+| false
+
+| apiServerURL
+| APIServerURL 是集群用于连接上游的当前 API 服务器 URL。
+| 字符串
+| false
+
+| apiServerCAHash
+| APIServerCAHash 是上游 API 服务器 CA 的哈希，用于检测变化。
+| 字符串
+| false
+
+| agentTLSMode 
+| AgentTLSMode 支持两个值：`system-store` 和 `strict`。如果设置为 `system-store`，则指示代理信任操作系统证书存储中的 CA 包。如果设置为 `strict`，则代理仅连接到在创建/更新代理时配置的确切 CA 所使用的服务器。
+| 字符串 
+| false
+
+| 显示
+| 显示包含已就绪捆绑包数量、节点数量以及摘要状态。
+| <<ClusterDisplay,ClusterDisplay>>
+| false
+
+| 代理
+| AgentStatus 包含有关代理的信息。
+| <<AgentStatus,AgentStatus>>
+| false
+
+| garbageCollectionInterval 
+| GarbageCollectionInterval 决定代理清理过时 Helm 发布的频率。
+| *metav1.Duration 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterGroup
+
+ClusterGroup 是一个可重用的选择器，用于定位一组集群。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterGroupSpec,ClusterGroupSpec>>
+| true
+
+| status
+|
+| <<ClusterGroupStatus,ClusterGroupStatus>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterGroupDisplay
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| readyClusters
+| ReadyClusters 是一个字符串，格式为 "%d/%d"，描述准备好的集群数量与希望准备好的集群数量。
+| 字符串
+| false
+
+| readyBundles
+| ReadyBundles 是一个字符串，格式为 "%d/%d"，描述了已就绪的包数量与期望就绪的包数量。
+| 字符串
+| false
+
+| 状态
+| State 是集群组的摘要状态，如果有未准备好的资源，则显示 "NotReady"。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterGroupList
+
+ClusterGroupList 包含 ClusterGroup 的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<ClusterGroup,ClusterGroup>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterGroupSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 选择器
+| Selector 是一个标签选择器，用于选择此组的集群。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterGroupStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| clusterCount
+| ClusterCount 是集群组中集群的数量。
+| 整数
+| true
+
+| nonReadyClusterCount
+| NonReadyClusterCount 是未准备好的集群数量。
+| 整数
+| true
+
+| nonReadyClusters
+| NonReadyClusters 是未准备好的集群名称的列表。
+| []string
+| false
+
+| 条件
+| Conditions 是集群组的条件及其状态的列表。
+| []genericcondition.GenericCondition
+| false
+
+| summary
+| Summary 是集群组中捆绑部署及其资源的摘要。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| 显示
+| 显示包含已就绪集群数量、期望就绪集群数量以及捆绑资源的摘要状态。
+| <<ClusterGroupDisplay,ClusterGroupDisplay>>
+| false
+
+| resourceCounts
+| ResourceCounts 包含集群组中所有捆绑的每种状态下资源的数量。
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistration
+
+ClusterRegistration 由 {product_name} 内部使用，不应直接使用。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationSpec,ClusterRegistrationSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationStatus,ClusterRegistrationStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationList
+
+ClusterRegistrationList 包含 ClusterRegistration 的列表
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<ClusterRegistration,ClusterRegistration>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| clientID
+| ClientID 是一个唯一字符串，用于标识集群。代理使用配置的 ID 或 kubeSystem.UID。
+| 字符串
+| false
+
+| clientRandom
+| ClientRandom 是代理生成的随机字符串。当 fleet-controller 授予注册时，它会创建一个包含此字符串的注册密钥。
+| 字符串
+| false
+
+| clusterLabels
+| ClusterLabels 在注册期间被复制到集群资源中。
+| map[string]string
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| clusterName
+| ClusterName 仅在注册被 fleet-controller 处理后设置。
+| 字符串
+| false
+
+| 已授予
+| 如果请求的服务账户存在且其词元秘密存在，则 Granted 设置为 true。这发生在创建注册密钥、角色和角色绑定之前。
+| 布尔
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationToken
+
+ClusterRegistrationToken 由 Fleet agent 用于注册新集群.
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ClusterRegistrationTokenSpec,ClusterRegistrationTokenSpec>>
+| false
+
+| status
+|
+| <<ClusterRegistrationTokenStatus,ClusterRegistrationTokenStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationTokenList
+
+ClusterRegistrationTokenList 包含 ClusterRegistrationToken 的列表
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<ClusterRegistrationToken,ClusterRegistrationToken>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationTokenSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| ttl
+| TTL 是词元的生存时间。它用于计算过期时间。如果词元过期，它将被删除。
+| *metav1.Duration
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ClusterRegistrationTokenStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 到期
+| Expires 是词元过期的时间。
+| *metav1.Time
+| false
+
+| secretName
+| SecretName是包含词元的Secret的名称。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== 内容
+
+Content 由 {product_name} 内部使用，不应直接使用。它包含用于特定目标集群的 Bundle 中的资源.
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| content
+| 内容是一个字节数组，包含一个包的清单。包资源被复制到 bundledeployment 的内容资源中，以便下游代理可以部署它们。
+| []字节
+| false
+
+| sha256sum
+| 内容字段的 SHA256Sum
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ContentList
+
+内容列表包含内容的列表
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<Content,内容>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== CommitSpec
+
+CommitSpec 指定如何将更改提交到 git 储存库。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| authorName
+| 作者姓名在提交时提供的名称
+| 字符串
+| true
+
+| authorEmail
+| 作者邮箱在提交时提供的邮箱
+| 字符串
+| true
+
+| messageTemplate
+| 消息模板提供提交消息的模板，变更的详细信息将被插入其中。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== CorrectDrift
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 已启用
+| 如果为真，则启用漂移修正。
+| 布尔
+| false
+
+| force
+| 如果为真，则使用带有 --force 选项的强制 helm 回滚。这将尝试重新创建发布中的所有资源。
+| 布尔
+| false
+
+| keepFailHistory
+| KeepFailHistory 记录 helm 历史中的失败回滚。
+| 布尔
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepo
+
+GitRepo 描述了一个由 {product_name} 监视的 git 储存库。该资源包含将储存库或其部分部署到目标集群所需的信息。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<GitRepoSpec,GitRepoSpec>>
+| false
+
+| status
+|
+| <<GitRepoStatus,GitRepoStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoDisplay
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| readyBundleDeployments
+| ReadyBundleDeployments 是一个字符串，格式为 "%d/%d"，描述了已准备好的包部署数量与总包部署数量的比例。
+| 字符串
+| false
+
+| 状态
+| State 是 GitRepo 的状态，例如："GitUpdating" 或根据 StateRank 的最大 BundleState。
+| 字符串
+| false
+
+| 讯息
+| Message 包含与部署条件相关的信息。
+| 字符串
+| false
+
+| error
+| 如果存在消息，则 Error 为真。
+| 布尔
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoList
+
+GitRepoList 包含 GitRepo 的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<GitRepo,GitRepo>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoResource
+
+GitRepoResource 包含有关包资源的元数据。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| apiVersion
+| APIVersion 是资源的 API 版本。
+| 字符串
+| false
+
+| kind
+| Kind 是资源的 k8s 类型。
+| 字符串
+| false
+
+| type
+| Type 是资源的类型，例如 "apiextensions.k8s.io.customresourcedefinition" 或 "configmap"。
+| 字符串
+| false
+
+| id
+| ID 是资源的名称，例如 "namespace1/my-config" 或 "backingimagemanagers.storage.io"。
+| 字符串
+| false
+
+| namespace
+| 资源的名称空间。
+| 字符串
+| false
+
+| name
+| 资源名称。
+| 字符串
+| false
+
+| incompleteState
+| 如果一个包摘要有 10 个或更多未准备好的资源，或者一个未准备好的资源有 10 个或更多未准备或已修改的状态，则 IncompleteState 为真。
+| 布尔
+| false
+
+| 状态
+| 状态是资源的状态，例如："未知"、"等待应用"、"应用错误"或"就绪"。
+| 字符串
+| false
+
+| error
+| 如果 PerClusterState 中有任何错误为真，则错误为真。
+| 布尔
+| false
+
+| 正在过渡
+| 如果 PerClusterState 中有任何正在过渡为真，则正在过渡为真。
+| 布尔
+| false
+
+| 讯息
+| 消息是来自 PerClusterStates 的第一条消息。
+| 字符串
+| false
+
+| perClusterState
+| PerClusterState 是每个集群的状态列表。源自非就绪资源的摘要。
+| []<<ResourcePerClusterState,ResourcePerClusterState>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoResourceCounts
+
+GitRepoResourceCounts 包含每个状态中资源的数量。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 就绪
+| 就绪是就绪资源的数量。
+| 整数
+| true
+
+| desiredReady
+| 期望就绪是应该就绪的资源数量。
+| 整数
+| true
+
+| waitApplied
+| 等待应用是等待应用的资源数量。
+| 整数
+| true
+
+| modified
+| 已修改是已修改的资源数量。
+| 整数
+| true
+
+| 孤立的
+| 孤立的是孤立资源的数量。
+| 整数
+| true
+
+| 缺少
+| 缺少是缺少资源的数量。
+| 整数
+| true
+
+| 未知
+| 未知是处于未知状态的资源数量。
+| 整数
+| true
+
+| notReady
+| NotReady 是未准备资源的数量。如果资源不匹配任何其他状态，则它们被视为未准备。
+| 整数
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoSpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 储存库
+| Repo 是一个用于克隆和索引的 git 储存库的 URL。
+| 字符串
+| false
+
+| 分支
+| 分支是要跟随的 git 分支。
+| 字符串
+| false
+
+| 修订
+| 修订是要操作的特定提交或标签。
+| 字符串
+| false
+
+| targetNamespace
+| 确保所有资源都在此名称空间中创建。如果设置了此项，任何集群范围的资源将被拒绝。此外，此名称空间将按需创建。
+| 字符串
+| false
+
+| clientSecretName
+| ClientSecretName 是用于连接到储存库的客户端秘密的名称。预计该秘密的类型为 "kubernetes.io/basic-auth" 或 "kubernetes.io/ssh-auth"。
+| 字符串
+| false
+
+| helmSecretName
+| HelmSecretName 包含私有 Helm 储存库的身份验证秘密。
+| 字符串
+| false
+
+| helmSecretNameForPaths
+| HelmSecretNameForPaths 包含每个路径的私有 Helm 储存库的身份验证秘密。
+| 字符串
+| false
+
+| helmRepoURLRegex
+| HelmRepoURLRegex 如果 helm 储存库匹配此正则表达式，将使用 Helm 凭据。如果此项为空或未提供，将始终使用凭据。
+| 字符串
+| false
+
+| caBundle
+| CABundle 是一个 PEM 编码的 CA 包，将用于验证储存库的证书。
+| []字节
+| false
+
+| insecureSkipTLSVerify
+| InsecureSkipTLSverify 将使用不安全的 HTTPS 克隆储存库。
+| 布尔
+| false
+
+| 路径
+| 路径是相对于 git 储存库根目录的目录，包含要应用的资源。支持路径通配符，例如 ["charts/*"] 将匹配 charts/ 的所有子目录。如果为空，默认值为 "/"。
+| []string
+| false
+
+| 已暂停
+| 暂停时，如果为真，则会导致 Git 中的更改不会传播到集群，而是将资源标记为不同步。
+| 布尔
+| false
+
+| serviceAccount
+| 在下游集群中用于部署的 ServiceAccount。
+| 字符串
+| false
+
+| targets
+| Targets 是此储存库将要部署的目标列表。
+| []<<GitTarget,GitTarget>>
+| false
+
+| pollingInterval
+| PollingInterval 是检查 git 是否有新更新的频率。
+| *metav1.Duration
+| false
+
+| forceSyncGeneration
+| 增加此数字以强制从 Git 重新部署内容。
+| int64
+| false
+
+| imageScanInterval
+| ImageScanInterval 是同步扫描图像并写回 git 储存库的间隔。
+| *metav1.Duration
+| false
+
+| imageScanCommit
+| Commit 指定在扫描新图像并写回 git 储存库时如何提交到 git 储存库。
+| <<CommitSpec,CommitSpec>>
+| false
+
+| keepResources
+| KeepResources 指定在删除 GitRepo 后是否必须保留创建的资源。
+| 布尔
+| false
+
+| deleteNamespace 
+| DeleteNamespace 指定在删除 GitRepo 后是否必须删除创建的名称空间。
+| 布尔 
+| false
+
+| correctDrift
+| CorrectDrift 指定漂移修正应如何工作。
+| *<<CorrectDrift,CorrectDrift>>
+| false
+
+| disablePolling 
+| 禁用 git 轮询。启用时仅使用 webhooks。
+| 布尔 
+| false
+
+| ociRegistry 
+| OCIRegistry 指定与 OCI 注册表相关的参数。 
+| *[OCIRegistrySpec](#ociregistryspec) 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| observedGeneration
+| ObservedGeneration 是集群中资源的当前代。它是从 k8s metadata.Generation 复制的。该值在所有更改时递增，除了对 .metadata 或 .status 的更改。
+| int64
+| true
+
+| updateGeneration 
+| Update generation 是在设置了 spec.forceSyncGeneration 时，用于强制更新的生成。 
+| int64 
+| false
+
+| commit 
+| 提交是上次 Git 作业运行的 Git 提交哈希。
+| 字符串 
+| false
+
+| webhookCommit 
+| WebhookCommit 是从 webhook 接收到的最新 Git 提交哈希。 
+| 字符串 
+| false
+
+| readyClusters
+| ReadyClusters 是该 GitRepo 所有包中准备好的集群的最低数量。
+| 整数
+| true
+
+| desiredReadyClusters
+| DesiredReadyClusters 是该 GitRepo 包中应该准备好的集群数量。
+| 整数
+| true
+
+| gitJobStatus
+| GitJobStatus 是上次 Git 作业运行的状态，例如：如果没有错误，则为"当前"。
+| 字符串
+| false
+
+| summary
+| 摘要包含每个状态下的包部署数量和未准备好的资源列表。
+| <<BundleSummary,BundleSummary>>
+| false
+
+| 显示
+| 显示包含状态的人类可读摘要。
+| <<GitRepoDisplay,GitRepoDisplay>>
+| false
+
+| 条件
+| 条件是描述 GitRepo 状态的 Wrangler 条件列表。
+| []genericcondition.GenericCondition
+| false
+
+| 资源
+| 资源包含每个包的资源元数据。
+| []<<GitRepoResource,GitRepoResource>>
+| false
+
+| resourceCounts
+| ResourceCounts 包含所有包中每个状态的资源数量。
+| <<GitRepoResourceCounts,GitRepoResourceCounts>>
+| false
+
+| resourceErrors
+| ResourceErrors 是资源错误的排序列表。
+| []string
+| false
+
+| lastSyncedImageScanTime
+| LastSyncedImageScanTime 是最后一次图像扫描的时间。
+| metav1.Time
+| false
+
+| lastPollingTriggered 
+| LastPollingTime 是最后一次触发轮询检查的时间。 
+| metav1.Time 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitTarget
+
+GitTarget 是一个集群或集群组，用于部署。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name
+| 名称是此目标的名称。
+| 字符串
+| false
+
+| clusterName
+| ClusterName 是集群的名称。
+| 字符串
+| false
+
+| clusterSelector
+| ClusterSelector 是用于选择集群的标签选择器。
+| *metav1.LabelSelector
+| false
+
+| clusterGroup
+| ClusterGroup 是与集群在同一名称空间中的集群组的名称。
+| 字符串
+| false
+
+| clusterGroupSelector
+| ClusterGroupSelector 是用于选择集群组的标签选择器。
+| *metav1.LabelSelector
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+=== OCIRegistrySpec
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 参考手册 
+| OCI注册表的引用 
+| 字符串 
+| false
+
+| authSecretName 
+| AuthSecretName包含存储OCI注册表凭据的身份验证秘密。
+| 字符串 
+| false
+
+| basicHTTP 
+| BasicHTTP在启用时使用HTTP连接到OCI注册表。
+| 布尔 
+| false
+
+| insecureSkipTLS 
+| InsecureSkipTLS在启用时允许不使用证书连接到OCI注册表。
+| 布尔 
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+=== ResourcePerClusterState
+
+ResourcePerClusterState 为每个非就绪资源生成。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 状态
+| 状态是资源的状态。
+| 字符串
+| false
+
+| error
+| 如果资源处于错误状态，则错误为真，复制自非就绪资源的包摘要。
+| 布尔
+| false
+
+| 正在过渡
+| 如果资源处于过渡状态，则 Transitioning 为真，复制自非就绪资源的包摘要。
+| 布尔
+| false
+
+| 讯息
+| 消息组合了包摘要中的消息。消息用分隔符';'连接。
+| 字符串
+| false
+
+| 增补
+| 修改资源的补丁。
+| *GenericMap
+| false
+
+| clusterId
+| ClusterID 是集群的ID。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoRestriction
+
+GitRepoRestriction 是一个可选资源，可用于限制同一名称空间中 GitRepo 的选项。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| defaultServiceAccount
+| 默认服务账户覆盖GitRepo的默认服务账户。
+| 字符串
+| false
+
+| allowedServiceAccounts
+| 允许的服务账户是GitRepo允许使用的服务账户列表。
+| []string
+| false
+
+| allowedRepoPatterns
+| 允许的仓库模式是限制GitRepo的Repo字段有效值的正则表达式模式列表。
+| []string
+| false
+
+| defaultClientSecretName
+| 默认客户端密钥名称覆盖GitRepo的默认客户端密钥。
+| 字符串
+| false
+
+| allowedClientSecretNames
+| 允许的客户端密钥名称是GitRepo允许使用的客户端密钥名称列表。
+| []string
+| false
+
+| allowedTargetNamespaces
+| AllowedTargetNamespaces 限制 TargetNamespace 仅限于给定的名称空间。如果设置了 AllowedTargetNamespaces，则必须设置 TargetNamespace。
+| []string
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== GitRepoRestrictionList
+
+GitRepoRestrictionList 包含 GitRepoRestriction 的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<GitRepoRestriction,GitRepoRestriction>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+=== 按字母顺序策略
+
+AlphabeticalPolicy 指定按字母顺序的排序策略。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| order
+| Order 指定标签的排序顺序。给定字母表的字母作为标签，升序将选择 Z，降序将选择 A。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ImagePolicyChoice
+
+ImagePolicyChoice 是可以提供的所有类型策略的联合。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| semver
+| SemVer 提供一个语义版本范围以检查可用的标签。
+| *<<SemVerPolicy,SemVerPolicy>>
+| false
+
+| 按字母顺序
+| 用于标签按字母顺序排序的规则集。
+| *<<AlphabeticalPolicy,AlphabeticalPolicy>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ImageScan
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| spec
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+
+| status
+|
+| <<ImageScanStatus,ImageScanStatus>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ImageScanList
+
+ImageScanList 包含 ImageScan 的列表。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| 项目
+|
+| []<<ImageScan,ImageScan>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ImageScanSpec
+
+API 来源于 https://github.com/fluxcd/image-reflector-controller
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| tagName
+| TagName是需要放入清单中以替换字段的标签引用
+| 字符串
+| false
+
+| gitrepoName
+| GitRepo引用名称
+| 字符串
+| false
+
+| image
+| Image是镜像储存库的名称
+| 字符串
+| false
+
+| interval
+| Interval是扫描镜像储存库之间等待的时间长度。
+| metav1.Duration
+| false
+
+| secretRef
+| SecretRef可以指定包含用于镜像注册表的凭据的秘密名称。该秘密应使用`kubectl create secret docker-registry`创建，或等效的方式。
+| *corev1.LocalObjectReference
+| false
+
+| 暂停
+| 此标志告诉控制器暂停后续的镜像扫描。它不适用于已经开始的扫描。默认为false。
+| 布尔
+| false
+
+| policy
+| Policy提供了在选择最新镜像时应遵循的策略细节
+| <<ImagePolicyChoice,ImagePolicyChoice>>
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== ImageScanStatus
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| 条件
+|
+| []genericcondition.GenericCondition
+| false
+
+| lastScanTime
+| LastScanTime是最后一次扫描镜像的时间
+| metav1.Time
+| false
+
+| latestImage
+| LatestImage提供了根据策略过滤和排序后镜像储存库扫描的镜像列表中的第一个。
+| 字符串
+| false
+
+| latestTag
+| Latest tag是根据策略过滤的最新标签。
+| 字符串
+| false
+
+| latestDigest
+| LatestDigest是最新标签的摘要
+| 字符串
+| false
+
+| observedGeneration
+|
+| int64
+| false
+
+| canonicalImageName
+| CanonicalName 是镜像储存库的名称，所有隐含的部分都已明确表示；例如，使用 `docker.io/library/alpine` 而不是 `alpine`。
+| 字符串
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+
+=== SemVerPolicy
+
+SemVerPolicy 指定语义版本策略。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| range
+| Range 为图像标签提供语义版本范围；范围内的最高版本标签将生成最新图像。
+| 字符串
+| true
+|===
+
+<<Resources,返回自定义资源>>
+
+=== FleetYAML
+
+FleetYAML 是 fleet.yaml 文件的顶层结构。fleet.yaml 文件为包添加选项。任何包含 fleet.yaml 的目录会自动转换为包。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name 
+| 将要创建的包的名称。
+| 字符串 
+| false
+
+| 标签的数目不同 
+| 标签会被复制到包中，并可以在 dependsOn.selector 中使用。
+| map[string]string 
+| false
+
+| BundleSpec 
+|
+| <<BundleSpec,BundleSpec>>
+| false
+
+| targetCustomizations 
+| TargetCustomizations 用于确定每个目标应如何修改资源。目标按顺序评估，第一个匹配集群的目标将用于该集群。
+| []<<BundleTarget,BundleTarget>>
+| false
+
+| imageScans 
+| ImageScans 是可选的，用于在 git 储存库中更新容器镜像引用。
+| []<<ImageScanYAML,ImageScanYAML>>
+| false
+
+| overrideTargets 
+| OverrideTargets 覆盖在 GitRepo 资源中定义的目标。如果提供了 overrideTargets，包将不会从 GitRepo 继承目标。
+| []<<GitTarget,GitTarget>>
+| false
+|===
+
+<<Resources,返回自定义资源>>
+
+=== ImageScanYAML
+
+ImageScanYAML 是来自 fleet.yaml 的 ImageScan 列表中的单个条目。
+
+|===
+| 字段 | 说明 | 纲要 | 必需
+
+| name 
+| 镜像扫描的名称。未使用。
+| 字符串 
+| false
+
+| ImageScanSpec 
+|
+| <<ImageScanSpec,ImageScanSpec>>
+| false
+|===
+
+<<Resources,返回自定义资源>>

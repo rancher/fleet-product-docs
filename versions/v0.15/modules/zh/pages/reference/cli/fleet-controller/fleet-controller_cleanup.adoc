@@ -1,0 +1,30 @@
+= fleet-controller 清理
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+清理过时的控制器资源
+
+----
+fleet-controller cleanup [flags]
+----
+
+== 选项
+
+[source,text]
+----
+  -h, --help                help for cleanup
+      --kubeconfig string   kubeconfig file
+      --namespace string    namespace to watch
+----
+
+== 从父命令继承的选项
+
+[source,text]
+----
+      --debug             Turn on debug logging
+      --debug-level int   If debugging is enabled, set klog -v=X
+----
+
+== 另请参阅
+
+* xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - 管理与 Fleet agent 通信的 Fleet controller

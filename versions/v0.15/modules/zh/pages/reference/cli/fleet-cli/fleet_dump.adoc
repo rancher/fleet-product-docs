@@ -1,0 +1,65 @@
+= Fleet 转储
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+将集群数据转储到归档中。
+
+== 概述
+
+将集群中的数据转储到归档中，包括： +
+* {product_name}-管理的资源 +
+* Kubernetes 事件 +
+* Fleet 控制器暴露的指标
+
+[source,text]
+----
+fleet dump <flags>
+----
+
+== 标志
+
+[source,text]
+----
+  -p <path>         Path to the archive file to generate
+----
+
+== 输出
+
+=== 目录
+
+`dump` 命令生成一个 `.tgz` 归档，包含以下数据：
+
+* 原始 Fleet 资源，YAML 格式：
+** 分发包
+** BundleDeployments
+** BundleNamespaceMappings
+** 群集
+** ClusterGroups
+** GitRepos
+** GitRepoRestrictions
+** HelmOps
+
+* 以下命名空间的 Kubernetes 事件：
+** `cattle-fleet-system`
+** `cattle-fleet-local-system`
+** `default`
+** `kube-system`
+** 每个命名空间包含一个 Fleet `Cluster` 资源
+
+* 在 `monitoring-*` 命名空间中，`cattle-fleet-system` 服务暴露的指标。
+这通常包括 `monitoring-gitjob` 和 `monitoring-fleet-controller` 服务，以及（如果有的话）它们的 xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[分片] 对应项。
+
+==== 格式
+
+原始 {product_name} 资源各自存储在不同的文件中，命名为 `<kind>_<namespace>_<name>`，其中 `<kind>` 是前一部分提到的原始资源名称之一，使用小写字母。
+
+Kubernetes 事件按命名空间分割成文件，每个文件命名为 `events_<namespace>`。
+它们每行包含一个事件，每个事件以 JSON 编码。
+
+指标按服务存储到文件中，每个文件命名为 `metrics_<service_name>`。
+它们的内容是来自每个服务的 `GET` 端点的 `/metrics` 响应体，逐字记录。
+
+== 另请参阅
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet 监控]

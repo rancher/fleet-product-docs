@@ -1,0 +1,29 @@
+= 体系结构
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} 有两个主要组件。{product_name} 控制器和集群代理。这些组件在一个两阶段拉取模型中工作。{product_name} 控制器将从 git 拉取，而集群代理将从 {product_name} 控制器拉取。
+
+== {product_name} 控制器
+
+{product_name} 控制器是一组在任何标准 Kubernetes 集群中运行的 Kubernetes 控制器。 {product_name} 控制器暴露的唯一 API 是 Kubernetes API，Fleet 控制器没有自定义 API。
+
+== 集群代理
+
+每个集群中运行一个集群代理，负责与 {product_name} 控制器进行通信。
+从集群到 {product_name} 控制器的唯一通信是通过这个代理，所有通信都从受管集群到 {product_name} 控制器。Fleet 控制器不会主动发起与下游集群的连接。这意味着受管集群可以在私有网络和 NAT 后运行。唯一的要求是集群代理需要能够与运行 {product_name} 控制器的集群的 Kubernetes API 进行通信。唯一的例外是如果您使用 xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager-initiated registration] 集群注册流程。这不是必需的，而是一个可选模式。
+
+集群代理不被假定为具有 "始终开启" 的连接。他们将在能够连接时恢复操作。未来的增强可能会增加调度代理检查时间的能力，目前他们将始终尝试连接。
+
+== 安全性
+
+{product_name} 控制器动态创建服务账户，管理其 RBAC，然后将词元提供给下游集群。集群通过可选地过期集群注册词元进行注册。
+集群注册词元仅在注册过程中使用，以生成特定于该集群的凭证。在集群凭证建立后，集群会“忘记”集群注册词元。
+
+授予集群的服务帐户仅具有在专门为该集群创建的名称空间中列出`BundleDeployment`的权限。它还可以更新`status`的`BundleDeployment`子资源，以及它的`status`资源的`Cluster`子资源。
+
+== 组件概览
+
+组件的概述以及它们在高层次上的交互。
+
+image::FleetComponents.svg[静态, 600]

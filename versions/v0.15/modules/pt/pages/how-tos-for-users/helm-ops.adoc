@@ -1,0 +1,158 @@
+= HelmOps
+:revdate: 2025-07-01
+:page-revdate: {revdate}
+
+HelmOps é uma maneira simplificada de criar pacotes apontando diretamente para um repositório Helm ou para um registro OCI, sem a necessidade de configurar um repositório git.
+
+== Resumo
+
+Quando um recurso +GitRepo+ é criado, {product_name} monitora um repositório git, criando um ou mais pacotes a partir de caminhos especificados no +GitRepo+, seguindo uma abordagem GitOps, ou orientada por git, para implantação contínua. Isso requer que um repositório git esteja disponível, possivelmente contendo +fleet.yaml+ ou outros arquivos de configuração.
+
+HelmOps, por outro lado, depende de um registro Helm como sua fonte de verdade, assim como o GitOps utiliza um repositório git. Aproveitar o HelmOps é feito criando um recurso +HelmOp+, com opções semelhantes às disponíveis em um recurso +GitRepo+ e/ou em um arquivo +fleet.yaml+ para direcionar pacotes a clusters, configurando valores de gráfico, etc.
+
+HelmOps é o conceito. Um +HelmOp+ é um recurso Kubernetes personalizado gerenciado por {product_name}.
+
+O controlador Fleet HelmOps criará pacotes leves, apontando para charts Helm referenciados, sem baixá-los. No entanto, ele resolverá as versões dos charts para garantir que a mesma e a mais recente versão de um chart seja implantada em todos os clusters downstream alvo. Isso se aplica aos seguintes casos:
+
+* uma versão curinga ou vazia é especificada
+* uma restrição de versionamento https://semver.org/semantic[https://semver.org/semantic] é especificada, como +0.1.x+, ++< 2.0.0++. Mais informações sobre restrições suportadas https://github.com/Masterminds/semver?tab=readme-ov-file#checking-version-constraints[verificando restrições de versão].
+
+Quando as restrições são inválidas ou nenhuma versão correspondente pode ser encontrada, {product_name} exibe uma mensagem de erro descritiva.
+
+Ao usar este recurso, gráficos Helm são baixados de clusters downstream, que, portanto, devem ter acesso a registros Helm.
+
+== Criando um recurso HelmOp
+
+Um recurso +HelmOp+ pode ser criado da seguinte forma para começar a implantar charts Helm diretamente:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+name: my-awesome-helmop
+namespace: "fleet-local"
+spec:
+helm:
+releaseName: my-fantastic-chart
+repo: [https://foo.bar/baz](https://foo.bar/baz)
+chart: fantastic-chart
+version: ''
+namespace: that-amazing-namespace
+helmSecretName: my-top-secret-helm-access
+insecureSkipTLSVerify: false
+----
+
+Para charts privados, isso requer que um segredo de acesso Helm (referenciado pelo campo +helmSecretName+) seja criado no mesmo namespace que o recurso +HelmOp+. O controlador Fleet HelmOps cuida de copiar esse segredo para os clusters downstream alvo, permitindo que o agente Fleet acesse o registro.
+
+== Casos de uso suportados
+
+Com 3 campos disponíveis para referenciar um chart Helm, vamos esclarecer algumas regras. De acordo com a instalação do Helm https://helm.sh/docs/helm/helm_install/[documentação], existem 6 maneiras de expressar um chart para instalar. 3 delas usam álias do repositório ou o sistema de arquivos local, que não estão disponíveis no contexto do HelmOps do Fleet. Isso nos deixa com 3 opções:
+
+=== URL absoluta
+
+Referenciar um chart Helm por URL absoluta é tão simples quanto fornecer uma URL para um arquivo +.tgz+ no campo +chart+. As opções do Helm seriam parecidas com:
+
+[source,yaml]
+----
+helm:
+chart: [https://example.com/charts/my-chart-1.2.3.tgz](https://example.com/charts/my-chart-1.2.3.tgz)
+# can be omitted
+
+repo: ''
+version: ''
+----
+
+Se um repositório não vazio ou uma versão não vazia for especificada neste caso, um erro aparecerá no status do HelmOp e nenhum pacote será criado, abortando a implantação.
+
+=== Referência do chart e URL do repositório
+
+Um chart Helm também pode ser referenciado através de seu repositório e nome do chart, com uma versão opcional, que pode ser uma versão estática ou uma restrição de versão.
+
+Neste caso, a consulta pode fazer sentido, porque referenciar o chart usando um repositório permite que {product_name} verifique o +index.yaml+ do repositório em busca de versões disponíveis que correspondam ao campo ++versão++.
+
+Exemplo:
+
+[source,yaml]
+----
+helm:
+repo: [https://foo.bar/baz](https://foo.bar/baz)
+chart: fantastic-chart
+version: '1.2.3'
+----
+
+Neste caso, apenas o campo ++versão++ pode estar vazio. Se qualquer um dos campos +chart+ ou +repo+ estiver vazio, {product_name} definirá um erro no status do HelmOp e nenhum bundle será criado.
+
+[[oci-registry]]
+=== Registro OCI
+
+O Helm suporta registros OCI, que podem ser referenciados em {product_name} usando o campo +repo+.
+
+Neste caso, as opções do Helm seriam semelhantes a isto:
+
+[source,yaml]
+----
+helm:
+repo: oci://foo.bar/baz
+version: '1.2.3' # optional
+----
+
+Quando uma URL OCI é fornecida no campo +repo+, um campo +chart+ não vazio levará a um erro no status do HelmOps, e nenhum bundle será criado.
+
+
+[NOTE]
+====
+Neste caso, {product_name} estará baixando artefatos OCI. Isso significa que:
+
+* o campo `version` representa a tag de um artefato OCI, que pode ser diferente da versão real do chart armazenada no artefato OCI.
+* {product_name} pode verificar as tags OCI disponíveis que correspondem ao repositório e à restrição de versão fornecidos regularmente, configurado através do intervalo de polling.
+* um artefato OCI pode conter múltiplos charts Helm. Este caso de uso foi validado apenas com artefatos OCI contendo um único chart Helm.
+====
+
+
+== Polling
+
+{product_name} pode consultar o registro Helm referenciado, verificando periodicamente se novas versões estão disponíveis. Claro, isso só faz sentido se o campo +version+ contiver uma restrição de versão, que pode resolver para múltiplas versões.
+
+=== Como habilitar isso
+
+O polling envolve um campo +pollingInterval+, semelhante ao que existe para GitOps. No entanto, no caso do HelmOps, o intervalo de polling padrão é de 0 segundos, o que significa que o polling será desativado.
+
+As seguintes condições devem ser atendidas em um recurso HelmOp para que {product_name} habilite o polling nele:
+
+* O campo +pollingInterval+ está definido para uma duração diferente de zero (por exemplo, +10s+, +1m+, etc)
+* O campo +version+ está definido para uma restrição de versão semântica válida (por exemplo, +2.x.x+, ++< 1.0++), não uma versão estática (por exemplo, 1.2.3)
+
+=== O que ele faz
+
+Quando o polling é habilitado, {product_name} faz o seguinte no intervalo configurado:
+
+* verificando o registro Helm referenciado para a versão mais recente que corresponde à restrição de versão configurada no campo +version+
+* se uma nova versão for encontrada, definindo essa versão no Bundle criado a partir do objeto HelmOp, para que a nova versão do chart seja instalada em todos os clusters alvo
+* atualizando o status do recurso HelmOp:
+** definindo sua condição +Polled+:
+*** com +true+ se o polling foi bem-sucedido
+*** com +false+ com um erro se ocorreu uma falha
+** atualizando o campo ++Last Polling Time++ para o horário de início da última tentativa de polling, mesmo que tenha falhado.
+
+== Usando repositórios Helm privados
+
+Isso funciona da mesma forma que para gitOps, referenciando um segredo de acesso do Helm através do campo `helmSecretName`.
+
+Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Repositório privado do Helm].
+
+A parte sobre o uso de credenciais separadas para cada caminho não é relevante, uma vez que, ao contrário de um GitRepo, um recurso HelmOp referencia apenas um único chart Helm.
+
+== Atualizações de status
+
+Criar um recurso HelmOp leva à criação de um pacote, se as opções do Helm forem válidas e uma versão do chart puder ser encontrada.
+
+O status desse pacote evoluirá ao longo do tempo, à medida que implantações de pacotes forem criadas a partir dele, para cada cluster de destino, e à medida que os status dessas implantações de pacotes evoluírem e forem propagados de volta para o pacote.
+
+{product_name} propaga atualizações do status do pacote para o status do recurso HelmOp em si. Ela inclui:
+
+* Um status de exibição com um resumo, contagens de clusters esperados e prontos
+* Condições que fornecem mais informações sobre o estado do recurso, se ele é válido e se suas implantações estão prontas
+* Contagens de recursos por status
+
+Consulte xref:reference/ref-status-fields.adoc[Campos de status] para mais detalhes sobre contagens de recursos e condições.

@@ -1,0 +1,16 @@
+= Visão Geral
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::fleet-architecture.svg[Estático, 600]
+
+[discrete]
+=== O que é o comando {product_name}?
+
+* *Motor de cluster*: {product_name} é um mecanismo de gerenciamento e implantação de contêineres projetado para oferecer aos usuários mais controle sobre o cluster local e monitoramento constante através de *GitOps*. {product_name} foca não apenas na capacidade de escalar, mas também oferece aos usuários um alto grau de controle e visibilidade para monitorar exatamente o que está instalado no cluster.
+* *Gerenciamento de implantação*: {product_name} pode gerenciar implantações a partir do Git de YAML bruto do Kubernetes, Helm charts, Kustomize ou qualquer combinação dos três. Independentemente da fonte, todos os recursos são dinamicamente transformados em Helm charts, e o Helm é usado como mecanismo para implantar todos os recursos no cluster. Como resultado, os usuários podem desfrutar de um alto grau de controle, consistência e auditabilidade de seus clusters.
+
+[discrete]
+=== Gerenciamento de Configurações
+
+{product_name} é fundamentalmente um conjunto de xref:explanations/concepts.adoc[definições de recursos personalizados (CRDs)] do Kubernetes e controladores que gerenciam GitOps para um único cluster Kubernetes ou uma implantação em grande escala de clusters Kubernetes. Trata-se de um sistema de inicialização distribuído que facilita a personalização de aplicativos e o gerenciamento de clusters HA a partir de um único ponto.

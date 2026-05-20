@@ -1,0 +1,168 @@
+= 安装和使用 Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+{product_name} CLI 是一个命令行界面 (CLI)，允许您直接从本地计算机与 {product_name} 进行交互。它使您能够创建、应用和检查 `bundles`，而无需 `GitRepo`。典型的用例包括：
+
+* 测试和预览包内容。
+* 直接从 Helm 图表、Kubernetes 清单和 `fleet.yaml` 文件创建包。
+* 检查包将针对哪些集群。
+* 在集群中验证部署，而无需安装 {product_name}。
+
+[NOTE]
+====
+您可以在不安装 `fleet apply` 的情况下使用 {product_name}。但是，对于集群交互（例如，`fleet target`、`fleet deploy`），必须安装 {product_name}。
+
+有关更多信息，请参见 xref:how-tos-for-operators/installation.adoc[安装 Fleet]。
+====
+
+== 安装 Fleet CLI
+
+Fleet CLI 是一个独立的二进制文件，您可以从 link:https://github.com/rancher/fleet/releases[Fleet GitHub 发布页面] 下载。
+
+=== Linux/macOS
+
+[source,bash]
+----
+curl -L -o fleet https://github.com/rancher/fleet/releases/latest/download/fleet-linux-amd64
+
+# Make it executable and move to PATH
+chmod +x fleet
+sudo mv fleet /usr/local/bin/
+----
+
+=== Windows (PowerShell)
+
+[source,powershell]
+----
+Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
+----
+
+=== 验证安装
+
+[source,bash]
+----
+fleet --version
+----
+
+== 先决条件
+
+确保您已安装并配置以下工具：
+
+* 一个可用的 Kubernetes 集群（例如，k3s、kind 或云提供商）。
+* `kubectl` 已为您的集群配置。
+* 已安装 Helm。
+* Fleet CLI 已安装并可在您的终端中访问。
+
+=== 验证先决条件
+
+[source,bash]
+----
+kubectl get nodes
+helm version
+fleet --version
+----
+
+== 关键命令
+
+{product_name} 提供了多个 CLI 命令来创建、预览和部署捆绑包。这些命令对于调试和理解捆绑包生命周期非常有用。
+
+* `fleet apply`：从本地文件（如 Helm 图表、Kubernetes 清单或 Kustomize 文件夹）创建或预览捆绑包。
+此命令不需要访问集群，因此即使没有安装 {product_name} 或 `kubectl` 也可以工作。
++
+示例：
+[source,bash]
+----
+fleet apply my-bundle ./manifests
+----
+* `fleet target`：读取捆绑包文件并评估哪些集群会接收它，基于选择器和目标规则，如 `targets`、`targetOverrides`、`clusterGroups` 和标签选择器。
++
+示例：
+[source,bash]
+----
+fleet target my-bundle ./manifests
+----
+* `fleet deploy`：获取 `fleet target` 的输出，或转储的 `bundledeployment`/content 资源，并将其部署到集群中——就像 `fleet-agent` 一样。
++
+您可以在以下场景中使用它：
+** `fleet apply -o - name ./folder` 在创建捆绑包之前检查 YAML。有关更多信息，请参见 xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[使用 CLI 检查捆绑包生命周期]。
+** 与目标一起使用以调试选择器并验证哪些下游集群被选中。
+** `fleet deploy --dry-run` 打印将要部署的资源，而不应用它们。
+
+image::fleetCLI-key-components.svg[解释 Fleet CLI 关键命令工作原理的图示]
+
+== 使用 Fleet CLI 部署示例捆绑包
+
+您可以通过使用 CLI 在本地应用工作负载，而无需使用 GitRepos。例如，使用 link:https://github.com/rancher/fleet-examples[Fleet 示例储存库]：
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-examples
+cd fleet-examples/single-cluster
+----
+
+将其应用于当前集群：
+
+[source,bash]
+----
+fleet apply -o my-cool-bundle manifests
+----
+
+此命令在名称空间中创建一个 `Bundle` 资源。
+
+== 将 Helm 图表转换为捆绑包
+
+您可以使用 Fleet CLI 将 Helm 图表转换为捆绑包。例如，要转换 *external-secrets* 操作符图表：
+
+[source,bash]
+----
+cat > targets.yaml <<EOF
+targets:
+- clusterSelector: {}
+EOF
+
+mkdir app
+cat > app/fleet.yaml <<EOF
+defaultNamespace: external-secrets
+helm:
+  repo: https://charts.external-secrets.io
+  chart: external-secrets
+EOF
+
+fleet apply --compress --targets-file=targets.yaml -n fleet-default -o - external-secrets app > eso-bundle.yaml
+
+kubectl apply -f eso-bundle.yaml
+----
+
+确保您在 `targets.yaml` 中使用的集群选择器与您要部署的所有集群匹配。
+
+有关更多信息，请参阅 link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster Deployment with the Help of External Secrets]。
+
+== 查错
+
+如果捆绑包尚未准备好：
+
+* 检查 `fleet-controller` 和 `fleet-agent` pod 是否正在运行。
+* 确保 `fleet-local` 集群已注册。
+* 检查捆绑包以获取错误消息：
++
+[source,bash]
+----
+kubectl describe bundle -n fleet-local <bundle-name>
+----
+* 如果遇到 Helm 所有权冲突，请删除并重新应用捆绑包。
+
+=== 验证代理和控制器状态
+
+在排查捆绑包或部署问题之前，请验证 Fleet agent 是否已在下游集群上注册并运行。
+有关更多信息，请参见 xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments]。
+
+如果在给定集群上捆绑包尚未准备好，请检查以下内容：
+
+* 在管理集群上：
+** 验证 `fleet-controller` 和 `gitjob` pod（或 `helmops`，具体取决于您的设置）是否正在运行。
+** 确保集群状态显示为 *Ready*。
+** 检查捆绑包的状态——如果部署失败，它应包含错误消息。
+* 在目标集群上，捆绑包尚未准备好：
+** 验证该目标集群已注册并且有一个正在运行的 `fleet-agent` pod。
+** 作为最后手段，请检查 `fleet-agent` pod 的日志。

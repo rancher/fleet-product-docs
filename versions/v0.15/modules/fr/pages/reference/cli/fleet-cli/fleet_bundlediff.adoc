@@ -1,0 +1,68 @@
+= Fleet bundlediff
+:revdate: 2026-03-05
+:page-revdate: {revdate}
+
+Afficher les différences de bundle à partir de l'état des ressources.
+
+Cette commande extrait et affiche les correctifs de diff des ressources `Bundle` ou `BundleDeployment` qui ont été modifiées. Les différences montrent les écarts entre l'état souhaité (provenant de Git ou Helm) et l'état réel dans le cluster.
+
+Pour les `BundleDeployment`, la commande affiche les informations de correctif du champ `ModifiedStatus`, qui contient des correctifs JSON indiquant ce qui a changé sur les ressources déployées.
+
+Pour les `Bundle`, la commande agrège les informations de diff de tous les `BundleDeployment` associés à travers les clusters cibles.
+
+Par défaut, la commande recherche des `BundleDeployment` dans tous les espaces de noms.
+Utilisez le drapeau `-n` pour restreindre la recherche à un espace de noms spécifique. Le drapeau d'espace de noms est requis lors de la requête d'un `BundleDeployment` par nom.
+
+[source,bash]
+----
+fleet bundlediff [flags]
+----
+
+== Options
+
+[source,text]
+----
+-b, --bundle string              Name of the Bundle to show diffs for all its BundleDeployments
+    --bundle-deployment string   Name of the BundleDeployment to show diffs for
+    --fleet-yaml                 Output in fleet.yaml format (comparePatches)
+    --json                       Output in JSON format
+-h, --help                       help for bundlediff
+-n, --namespace string           Namespace to restrict the search to
+    --zap-devel                  Development mode defaults (encoder=consoleEncoder, logLevel=Debug, stackTraceLevel=Warn).
+                                 Production mode defaults (encoder=jsonEncoder, logLevel=Info, stackTraceLevel=Error). (default true)
+    --zap-encoder encoder        Zap log encoding (one of 'json' or 'console')
+    --zap-log-level level        Zap level that controls logging verbosity. Can be 'debug', 'info',
+                                 'error', or any integer value greater than 0 for custom debug levels.
+    --zap-stacktrace-level level Zap level at and above which stack traces are captured
+                                 (one of 'info', 'error', or 'panic')
+    --zap-time-encoding          Zap time encoding (one of 'epoch', 'millis', 'nano',
+                                 'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
+----
+
+== Exemples
+
+[source,bash]
+----
+# Show diffs for all Bundles across all namespaces (grouped by Bundle)
+fleet bundlediff
+
+# Show all BundleDeployments for a specific Bundle
+fleet bundlediff --bundle my-bundle
+
+# Show a specific BundleDeployment in a cluster namespace
+fleet bundlediff --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Output in JSON format
+fleet bundlediff --json
+
+# Output as a fleet.yaml diff snippet for a specific BundleDeployment
+# This generates a diff: section you can add to your fleet.yaml in Git
+fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluster-fleet-local-local-abc123
+
+# Show diffs only in a specific namespace
+fleet bundlediff -n cluster-fleet-local-local-abc123
+----
+
+== Reportez-vous également à la section
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Gérer les opérations de {product_name}

@@ -1,0 +1,321 @@
+= Estratégia de Implantação
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} utiliza uma estratégia de implantação para controlar como os aplicativos são implantados em clusters. Você pode definir a ordem e o agrupamento das implantações de clusters usando partições, permitindo implantações controladas e atualizações mais seguras.
+
+{product_name} avalia o status `Ready` de cada `BundleDeployment` para determinar quando prosseguir para a próxima partição. Para mais informações, consulte xref:reference/ref-status-fields.adoc[Campos de status].
+
+Durante uma implantação, o status do GitRepo indica o progresso da implantação. Isso ajuda você a entender quando os pacotes se tornam `Ready` antes de continuar:
+
+* Para implantações iniciais:
+  * Um ou mais clusters podem estar em um estado `NotReady`.
+  * Os clusters restantes são marcados como `Pending`, o que significa que a implantação não começou.
+* Para implantações:
+  * Um ou mais clusters podem estar em um estado `NotReady`.
+  * Os clusters restantes são marcados como `OutOfSync` até que a implantação continue.
+
+As opções de configuração da implantação estão documentadas no campo `rolloutStrategy` do xref:reference/ref-fleet-yaml.adoc[+fleet.yaml+].
+
+[NOTE]
+====
+Se `rolloutStrategy` não for especificado em `fleet.yaml`, {product_name} utiliza os valores padrão.
+====
+
+== Como Funciona o Particionamento?
+
+As partições são usadas exclusivamente para agrupar e controlar a implantação de `BundleDeployments` em clusters. Elas não afetam as opções de implantação de forma alguma.
+
+Se os clusters alvo não fizerem parte da partição manual, eles não serão incluídos na implantação. Se um cluster faz parte de uma partição, ele receberá um `BundleDeployment` quando a partição for processada.
+
+As partições são consideradas `NotReady` se tiverem clusters que excedem o número permitido de `NotReady` clusters. Se um cluster estiver offline, o cluster alvo não será considerado `Ready` e permanecerá no estado `NotReady` até voltar online e implantar com sucesso o `BundleDeployment`.
+
+O limite é determinado por:
+
+* **Partições manuais**: Use o valor `maxUnavailable` dentro de cada partição para controlar a prontidão dessa partição; caso contrário, se não especificado, usa `rolloutStrategy.maxUnavailable`.
+* **Partições automáticas**: Use o valor `rolloutStrategy.maxUnavailable` para controlar quando uma partição está pronta.
+
+{product_name} prossegue apenas se o número de partições `NotReady` permanecer abaixo de `maxUnavailablePartitions`.
+
+[NOTE]
+====
+{product_name} realiza implantações em lotes de até `maxNew` clusters por partição (padrão: 50), independentemente de as partições terem mais clusters atribuídos. Após cada lote, {product_name} verifica o limite `maxUnavailable` antes de continuar. Depois que todas as implantações para uma partição foram criadas, `maxUnavailable` também é avaliado. Por exemplo:
+
+* Se uma partição tiver 25 clusters e `maxUnavailable` for 5, {product_name} implanta para todos os 25 antes de verificar `maxUnavailable`.
+* Se uma partição tiver 100 clusters, {product_name} implanta para os primeiros 50 (padrão `maxNew`), verifica `maxUnavailable` e prossegue com os 50 restantes apenas se o limite não for excedido.
+====
+
+O diagrama a seguir exibe como {product_name} gerencia a implantação:
+
+image::flow-rollout-fleet.png[Um ativo visual exibindo o fluxo de implantação em {product_name}.]
+
+Vários limites que podem ser configurados em {product_name}:
+
+[cols="2,5,1", options="header"]
+|===
+| Campo | Descrição | Default
+
+| maxUnavailable
+| Número máximo ou porcentagem de clusters que podem ser `NotReady` antes de interromper a implantação.
+| 100%
+
+| maxUnavailablePartitions
+| Número ou porcentagem de partições que podem ser `NotReady` de uma só vez.
+| 0
+
+| autoPartitionSize
+| Número ou porcentagem de clusters por partição auto-criada.
+| 25%
+
+| autoPartitionThreshold
+| Número mínimo de clusters necessário antes que a auto-partição seja ativada. Abaixo desse limite, todos os clusters são colocados em uma única partição.
+| 200
+
+| maxNew
+| Número máximo de `BundleDeployments` que podem ser agendados por reconciliação.
+| 50
+
+| partições
+| Defina partições manuais por rótulos de cluster ou grupo. Se definido, autoPartitionSize é ignorado.
+| –
+|===
+
+{product_name} suporta partição automática e manual. Para mais informações sobre opções de configuração, consulte a opção xref:reference/ref-fleet-yaml.adoc[`rolloutStrategy` na referência fleet.yaml.]
+
+**Particionamento Automático**: {product_name} cria automaticamente partições usando `autoPartitionSize`.
+
+Por exemplo, você tem 200 clusters e define `autoPartitionSize` para 25%, {product_name} cria quatro partições de 50 clusters cada.  realiza implantações em lotes de 50 clusters, verificando `maxUnavailable` antes de continuar.
+
+A configuração `autoPartitionThreshold` controla quando a auto-partição é ativada:
+
+* **Abaixo do limite**: Todos os clusters são colocados em uma única partição, independentemente da configuração `autoPartitionSize`. Isso evita partições desnecessárias para implantações pequenas.
+* **Igual ou acima do limite**: {product_name} cria várias partições com base em `autoPartitionSize`.
+* **Limite personalizável**: Você pode reduzir o limite para permitir a partição com menos clusters (por exemplo, definir para 50 para testes em pequena escala) ou aumentá-lo para evitar a partição até que você tenha um grande número de clusters (por exemplo, definir para 500).
+* **Desativar auto-partição**: Defina como 0 para forçar todos os clusters em uma única partição, independentemente da contagem.
+
+Por exemplo:
+[source,yaml]
+----
+rolloutStrategy:
+  autoPartitionThreshold: 50  # Enable partitioning with only 50 clusters
+  autoPartitionSize: 50%      # Create partitions of 50% each
+[source,text]
+----
+
+Com 50 clusters, isso cria 2 partições de 25 clusters cada. Sem definir `autoPartitionThreshold`, aqueles 50 clusters estariam em uma única partição (já que o limite padrão é 200).
+
+**Partição Manual**: Você define partições específicas usando a opção `partitions`. Isso fornece controle sobre a seleção de clusters e a ordem de implantação.
+
+[NOTE]
+====
+Se você especificar partições manualmente, o `autoPartitionSize` é ignorado.
+====
+
+Por exemplo, considere:
+
+[source,yaml]
+----
+rolloutStrategy:
+  partitions:
+    - name: demoRollout
+      maxUnavailable: 10%
+      clusterSelector:
+        matchLabels:
+          env: staging
+    - name: stable
+      maxUnavailable: 5%
+      clusterSelector:
+        matchLabels:
+          env: prod
+[source,text]
+----
+
+{product_name} então:
+
+1. Seleciona clusters com base em `clusterSelector`, `clusterGroup` ou `clusterGroupSelector`.
+  * As partições podem ser especificadas por `clusterName`, `clusterSelector`, `clusterGroup` e `clusterGroupSelector`.
+2. Inicia a implantação para a primeira partição.
+3. Aguarda até que a partição seja considerada `Ready` (dependendo do limite `maxUnavailable`).
+4. Prossegue para a próxima partição.
+
+O diagrama a seguir ilustra como {product_name} gerencia a implantação em várias partições, incluindo verificações de prontidão e fluxo de implantação:
+
+image::deploy-targets-partition.png[Um ativo visual exibindo o fluxo de implantação de partição.]
+
+[NOTE]
+====
+`maxNew` controla quantos `BundleDeployments` podem ser agendados por reconciliação. O padrão é 50. Você pode configurar isso via `rolloutStrategy.maxNew` em `fleet.yaml`.
+====
+
+Dentro de cada partição, {product_name} realiza até `maxNew` `BundleDeployments` de cada vez (padrão: 50). O diagrama abaixo mostra como {product_name} determina se deve prosseguir ou esperar durante este processo:
+
+image::partition-rollout-flow.png[Um ativo visual exibindo o fluxo de implantação de alvos em uma partição.]
+
+[NOTE]
+====
+{product_name} recomenda rotular clusters para que você possa usar esses rótulos para atribuir clusters a partições específicas.
+==== 
+
+[NOTE]
+====
+{product_name} processa partições na ordem em que aparecem no arquivo `fleet.yaml`.
+====
+
+=== Partição Única
+
+Se você não definir `rolloutStrategy.partitions`, {product_name} cria partições automaticamente com base no número de clusters alvo:
+
+* Para menos de `autoPartitionThreshold` clusters (padrão 200), {product_name} usa uma única partição.
+* Para `autoPartitionThreshold` ou mais clusters, {product_name} usa o valor `autoPartitionSize` (padrão 25%) para criar partições.
+
+Por exemplo, com 200 clusters (atendendo ao padrão `autoPartitionThreshold`), {product_name} usa o padrão `autoPartitionSize` de 25%. Isso significa que {product_name} cria 4 partições (25% de 200 = 50 clusters por partição). {product_name} processa até 50 clusters de cada vez, o que significa que:
+
+1. Implanta nos primeiros 50 clusters.
+2. Avalia a prontidão com base em `maxUnavailable`.
+. Se a condição for atendida, prossiga para os próximos 50, e assim por diante.
+
+=== Múltiplas Partições
+
+Se você definir várias partições, {product_name} usa `maxUnavailablePartitions` para limitar quantas partições podem ser `NotReady` de uma vez. Se o número de partições `NotReady` exceder `maxUnavailablePartitions`, {product_name} pausa a implantação.
+
+== Prevenindo tempestades de pull de imagem
+
+Durante a implantação, cada cluster downstream puxa imagens de contêineres. Se centenas de clusters começarem a puxar imagens simultaneamente, isso pode sobrecarregar o registro e se comportar como um ataque DDoS.
+
+Para evitar isso, {product_name} pode controlar quantos clusters são atualizados de cada vez. Você pode usar as seguintes opções de configuração de implantação para desacelerar e organizar a implantação:
+
+* `autoPartitionSize`
+* `partitions`
+* `maxUnavailable`
+
+{product_name} não adiciona atrasos artificiais durante a implantação. Em vez disso, prossegue com base no status de `readiness` das cargas de trabalho em cada cluster. Fatores que afetam a prontidão incluem o tempo de puxada da imagem, o tempo de inicialização e as sondas de prontidão. Embora o uso de sondas de prontidão seja recomendado, elas não são estritamente necessárias para controlar a velocidade da implantação.
+
+Por exemplo, você tem 200 clusters, que estão manualmente particionados, cada um com 40 clusters e deseja evitar uma tempestade de puxada de imagens:
+
+* `maxUnavailablePartitions`: Defina como 0.
+* `maxUnavailable`: Defina como 10%.
+
+Como a implantação prossegue:
+
+1. {product_name} começa com a primeira partição (40 clusters).
+2. Implanta até 50 `BundleDeployments` de uma vez. Assim, implanta todos os 40 clusters na partição em um único lote.
+3. {product_name} verifica a prontidão dos clusters na partição.
+* Se mais de 4 clusters não estiverem prontos, então a partição é considerada `NotReady` e a implantação é pausada.
+* Uma vez que ≤4 clusters estejam `NotReady`, {product_name} prossegue com a implantação.
+4. Quando toda a partição estiver quase pronta (90%), {product_name} passa para a próxima partição.
+
+Se você quiser ou precisar processar menos de 40 implantações de uma vez, pode colocar menos clusters em cada partição.
+
+== Casos de Uso e Comportamento
+
+Se o número de clusters não se dividir uniformemente, {product_name} arredonda para baixo os tamanhos das partições. Por exemplo, 230 clusters com `autoPartitionSize: 25%` resulta em:
+
+* Quatro partições de 57 clusters
+* Uma partição de 2 clusters
+
+=== Cenário: 50 Clusters (Partição Única)
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name} cria uma partição contendo todos os 50 clusters, uma vez que nenhuma partição é definida.
+  * Não há necessidade de especificar `maxUnavailablePartitions`, pois apenas uma partição é criada.
+* Embora não haja uma partição manual especificada e `maxUnavailable` esteja definido para 10%, {product_name} implanta todos os 50 clusters de uma vez (o comportamento em lote substitui `maxUnavailable` inicialmente).
+* A avaliação ocorre após todas as implantações serem criadas.
+
+O diagrama a seguir ilustra como {product_name} lida com 50 clusters em uma única partição:
+
+image::deploy-50Clusters.png[cenário de 50 clusters]
+
+=== Cenário: 100 Clusters (Partição Única) 
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name} cria uma partição contendo todos os 100 clusters, uma vez que nenhuma partição é definida.
+  * Não há necessidade de especificar `maxUnavailablePartitions`, pois você tem apenas uma partição.
+* Embora não haja uma partição manual especificada e `maxUnavailable` esteja definido para 10%, {product_name} implanta 50 clusters de uma vez (o comportamento em lote substitui `maxUnavailable` inicialmente).
+
+Se 10 clusters (10% de 100 clusters) estiverem indisponíveis, a implantação dos 50 clusters restantes é pausada até que menos de 10 clusters estejam `NotReady`. 
+
+=== Cenário: 200 Clusters (Múltiplas Partições)
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailablePartitions: 1
+  autoPartitionSize: 10%
+[source,text]
+----
+
+* {product_name} cria 10 partições, cada uma com 20 clusters.
+* A implantação prossegue sequencialmente por partição.
+* Se duas ou mais partições se tornarem `NotReady`, a implantação pausa.
+* Se uma partição estiver `NotReady`, a implantação pode prosseguir para a próxima.
+
+{product_name} cria `BundleDeployments` para 20 clusters, aguarda que eles se tornem `Ready`, e então prossegue para o próximo. Isso efetivamente limita a quantidade de pulls de imagem dos clusters downstream para até ~40 imagens por vez.
+
+=== Cenário: 200 Clusters (Prontidão Estrita, Partições Manuais)
+
+A partição manual permite que você controle o agrupamento de clusters com `maxUnavailablePartitions: 0`. 
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailable: 0
+  maxUnavailablePartitions: 0
+  partitions:
+    - name: demoRollout
+      clusterSelector:
+        matchLabels:
+          stage: demoRollout
+    - name: stable
+      clusterSelector:
+        matchLabels:
+          stage: stable
+[source,text]
+----
+
+* Você define partições manuais usando `clusterSelector` e rótulos como `stage: demoRollout` e `stage: stable`.
+* {product_name} cria `BundleDeployments` para clusters na primeira partição (por exemplo, `demoRollout`).
+* A implantação prossegue estritamente em ordem, {product_name} só se move para a próxima partição quando a atual é considerada pronta.
+* Com `maxUnavailable: 0` e `maxUnavailablePartitions: 0`, {product_name} pausa a implantação se qualquer partição não for considerada pronta.
+
+O diagrama a seguir descreve como {product_name} lida com a continuidade ou pausa da implantação.
+
+image::partition-fleet-rollout.png[Cenário de partições manuais]
+
+Isso garante total prontidão e implementação em etapas em todos os 200 clusters. Use essa abordagem quando você precisar de um sequenciamento preciso da implantação e total prontidão dos clusters antes de avançar. 
+
+== Padrões de Estratégia de Implementação
+
+Se os valores de implementação em nível de partição não estiverem definidos, {product_name} aplica os valores globais de `rolloutStrategy` em `fleet.yaml`. Configurações específicas de partição substituem valores globais quando definidas explicitamente.
+
+Por padrão, {product_name} define:
+
+* `maxUnavailable` para `100%`: Todos os clusters em uma partição podem estar `NotReady` e ainda serem considerados Prontos. 
+* `maxUnavailablePartitions` para `0`: Impede a implementação apenas quando uma ou mais partições são consideradas `NotReady`. No entanto, essa verificação é ineficaz se todas as partições aparecerem como Prontas devido a `maxUnavailable: 100%`.
+
+Por exemplo, considere 200 clusters com configurações padrão:
+
+* {product_name} cria 4 partições de 50 clusters cada (`autoPartitionSize: 25%`).
+* Como `maxUnavailable` é `100%`, cada partição é tratada como `Ready` imediatamente.
+* {product_name} avança por todas as partições, independentemente da prontidão real.
+
+{product_name} recomenda que você controle a implantação definindo:
+
+* Reduza `maxUnavailable`, por exemplo, 10%.
+* Defina `maxUnavailablePartitions` para 0 ou mais, se desejado.
+
+Isso garante:
+
+* As partições atendem à prontidão antes que a implantação continue.
+* {product_name} pausa a implementação se muitas partições não estiverem prontas.

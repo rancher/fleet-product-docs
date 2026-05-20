@@ -1,0 +1,77 @@
+= Uninstall
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+[CAUTION]
+====
+La suppression des CRD supprimera toutes les charges de travail déployées.
+====
+
+
+== {product_name} Autonome
+
+{product_name} est emballé sous la forme de deux charts Helm, donc la désinstallation s'effectue en désinstallant les charts Helm appropriés.
+
+Cependant, {product_name} utilise https://kubernetes.io/docs/concepts/overview/working-with-objects/finalizers/[finalizers], donc désinstallez d'abord les charges de travail pour donner aux contrôleurs {product_name} le temps de nettoyer.
+
+[source,shell]
+----
+kubectl delete clusters.fleet.cattle.io -A
+kubectl delete gitrepos -A
+kubectl delete bundles -A
+----
+
+Notez qu'il peut être plus facile de supprimer les espaces de noms contenant les charges de travail, par exemple{nbsp}:
+
+[source,shell]
+----
+kubectl delete ns fleet-local
+kubectl delete ns fleet-default
+----
+
+Les ressources personnalisées ne sont pas désinstallées par Helm 3, supprimez-les d'abord{nbsp}:
+
+[source,shell]
+----
+kubectl delete crd gitrepos.fleet.cattle.io bundles.fleet.cattle.io contents.fleet.cattle.io \
+  bundledeployments.fleet.cattle.io imagescans.fleet.cattle.io \
+  bundlenamespacemappings.fleet.cattle.io gitreporestrictions.fleet.cattle.io \
+  clusters.fleet.cattle.io clustergroups.fleet.cattle.io \
+  clusterregistrations.fleet.cattle.io clusterregistrationtokens.fleet.cattle.io
+----
+
+Ensuite, pour désinstaller {product_name}, exécutez les commandes suivantes{nbsp}:
+
+[,shell]
+----
+helm -n cattle-fleet-system uninstall fleet
+helm -n cattle-fleet-system uninstall fleet-crd
+----
+
+[NOTE]
+====
+Si la désinstallation est bloquée, cela est probablement dû aux finalizers. Les champs d'état des ressources, par exemple sur un espace de noms, listeront les ressources attendant que leurs finalizers soient supprimés. Les finalizers peuvent être supprimés manuellement avec kubectl, si leurs contrôleurs ne fonctionnent plus.
+====
+
+
+Ensuite, on peut également supprimer les espaces de noms liés à {product_name} et leur contenu{nbsp}:
+
+[source,shell]
+----
+kubectl delete ns cattle-fleet-system
+kubectl delete ns cattle-fleet-clusters-system
+kubectl delete ns -l "fleet.cattle.io/managed=true"
+----
+
+== {product_name} dans Rancher
+
+{product_name} dans Rancher ne peut pas être désinstallé, sans désinstaller Rancher. Cependant, la fonctionnalité GitOps peut être désactivée.
+Lorsqu'elle est désactivée, le déploiement gitjob n'est plus déployé dans la grappe locale du serveur Rancher, et la livraison continue n'est pas affichée dans l'interface utilisateur de Rancher.
+
+ifeval::["{product}" == "fleet"]
+Plus d'informations peuvent être trouvées dans la documentation de Rancher{nbsp}: https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-experimental-features/continuous-delivery.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Plus d'informations peuvent être trouvées dans la documentation de Rancher{nbsp}: https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/experimental-features/continuous-delivery.html.
+endif::[]

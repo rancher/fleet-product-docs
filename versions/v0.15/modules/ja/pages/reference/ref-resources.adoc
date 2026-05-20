@@ -1,0 +1,95 @@
+= デプロイされたリソースの一覧
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Rancherに{product_name}をインストールした後、これらのリソースがアップストリームクラスターに作成されます。
+
+xref:explanations/namespaces.adoc[ネームスペース]も参照してください。
+
+== Helmから、初期セットアップ
+
+[cols="1,1,1",options="header"]
+|===
+|タイプ |名前 |ネームスペース
+
+|ClusterRole |fleet-controller |-
+|ClusterRole |gitjob |-
+|ClusterRoleBinding |fleet-controller |-
+|ClusterRoleBinding |gitjob-binding |-
+|ConfigMap |fleet-controller |cattle-fleet-system
+|展開 |fleet-controller |cattle-fleet-system
+|展開 |gitjob |cattle-fleet-system
+|Role |fleet-controller |cattle-fleet-system
+|Role |gitjob |cattle-fleet-system
+|RoleBinding |fleet-controller |cattle-fleet-system
+|RoleBinding |gitjob |cattle-fleet-system
+|サービス |gitjob |cattle-fleet-system
+|ServiceAccount |fleet-controller |cattle-fleet-system
+|ServiceAccount |gitjob |cattle-fleet-system
+|===
+
+== 起動するにより生成されました
+
+[cols="1,1,1",options="header"]
+|===
+|タイプ |名前 |ネームスペース
+
+|clusters.fleet.cattle.io |local |fleet-local
+|clusters.provisioning.cattle.io |local |fleet-local
+|clusters.management.cattle.io |local |-
+|ClusterGroup |default |fleet-local
+|バンドル |fleet-agent-local |fleet-local
+|===
+
+== 登録された各クラスターについて
+
+[cols="1,1,1",options="header"]
+|===
+|タイプ |名前 |ネームスペース
+
+|clusters.provisioning.cattle.io | |fleet-default（既定）
+|clusters.management.cattle.io |生成済み |-
+|clusters.fleet.cattle.io | |fleet-default
+|シークレット（不透明） |kubeconfig |fleet-default
+|ClusterRegistrationToken | |fleet-default
+|ServiceAccount |インポート |fleet-default
+|RoleBinding |要求 |fleet-default
+|RoleBinding |要求 |cluster-fleet-default
+|Role |要求 |cluster-fleet-default
+|シークレット（サービスアカウントトークン） |import-token |fleet-default
+|ネームスペース |cluster-fleet-default |-
+|クラスター登録 |fleet-default |
+|ServiceAccount |要求 |fleet-default
+|シークレット（エージェント資格情報） |c-ID |fleet-default
+|シークレット（サービスアカウントトークン） |request-token |fleet-default
+|バンドル |fleet-agent-name |fleet-name
+|BundleDeployment |fleet-agent-name |cluster-fleet-default
+|===
+
+== 各バンドルごと、クラスターごと
+
+[cols="1,1,1",options="header"]
+|===
+|タイプ |名前 |ネームスペース
+
+|バンドル |name |fleet-default
+|シークレット（バンドル） |name |fleet-default
+|BundleDeployment |name |cluster-fleet-default
+|シークレット（バンドルデプロイメント） |name |cluster-fleet-default
+|シークレット（不透明、コンテンツアクセス） |name |cluster-fleet-default
+|コンテンツ |- |-
+|===
+
+== 各Gitリポジトリごと
+
+[cols="1,1,1",options="header"]
+|===
+|タイプ |名前 |ネームスペース
+
+|ServiceAccount |name |fleet-default
+|Role |name |fleet-default
+|RoleBinding |name |fleet-default
+|Job |name |fleet-default
+|ConfigMap |name-config |fleet-default
+|Secret |name-cabundle |fleet-default
+|===

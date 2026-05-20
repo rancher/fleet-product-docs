@@ -1,0 +1,145 @@
+= Namespaces
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== Namespaces de Trabalho
+
+=== Comportamento de Criação de Namespace em Bundles
+
+Ao implantar um bundle {product_name}, o namespace especificado será criado automaticamente se ainda não existir.
+
+=== Configurando Namespaces de Trabalho
+
+Ao configurar namespaces de trabalho, é importante estar ciente de que certas opções são projetadas para substituir os valores de outras opções ou definições de namespace em recursos de trabalho. Em alguns casos, definir namespaces usando algumas opções pode resultar em erros se os recursos a serem implantados contiverem recursos sem namespace. Para entender melhor como essas opções interagem, consulte o diagrama abaixo. Para mais detalhes sobre uma opção específica, consulte o xref:reference/ref-gitrepo.adoc[GitRepo] ou a referência xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
+
+image::FleetWorkloadNamespaces.png[Configurando Namespaces de Trabalho]
+
+=== Implantações entre namespaces
+
+É possível criar um GitRepo que será implantado entre namespaces. O principal objetivo disso é que uma equipe central privilegiada possa gerenciar a configuração comum para muitos clusters que são gerenciados por diferentes equipes. A maneira como isso é realizado é criando um recurso `BundleNamespaceMapping` em um cluster.
+
+Se você estiver criando um recurso `BundleNamespaceMapping`, é melhor fazê-lo em um namespace que contenha apenas `GitRepos` e nenhum `Clusters`. Parece confuso se você tiver Clusters no mesmo repositório, pois o `GitRepos` entre namespaces ainda será avaliado em relação ao namespace atual. Portanto, se você tiver clusters no mesmo namespace, pode desejar torná-los clusters canário.
+
+Um `BundleNamespaceMapping` tem apenas dois campos. Que são os seguintes
+
+[,yaml]
+----
+kind: BundleNamespaceMapping
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: not-important
+  namespace: typically-unique
+
+# Bundles to match by label.  The labels are defined in the fleet.yaml
+# labels field or from the GitRepo metadata.labels field
+bundleSelector:
+  matchLabels:
+    foo: bar
+
+# Namespaces to match by label
+namespaceSelector:
+  matchLabels:
+    foo: bar
+----
+
+Se o campo `BundleNamespaceMappings` `bundleSelector` corresponder a um rótulo `Bundles`, então o critério de alvo `Bundle` será avaliado em relação a todos os clusters em todos os namespaces que correspondem a `namespaceSelector`. É possível especificar rótulos para os bundles criados a partir do git colocando rótulos no arquivo `fleet.yaml` ou no campo `metadata.labels` no `GitRepo`.
+
+=== Restringindo GitRepos
+
+Um namespace pode conter múltiplos recursos `GitRepoRestriction`. Todos os `GitRepos` criados nesse namespace serão verificados em relação à lista de restrições. Se um `GitRepo` violar uma das restrições, seu `BundleDeployment` estará em um estado de erro e não será implantado.
+
+Isso também pode ser usado para definir os padrões para os campos `serviceAccount` e `clientSecretName` do GitRepo.
+
+[,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: typically-unique
+allowedClientSecretNames: []
+allowedRepoPatterns: []
+allowedServiceAccounts: []
+allowedTargetNamespaces: []
+defaultClientSecretName: ""
+defaultServiceAccount: ""
+----
+
+==== Namespaces de destino permitidos
+
+Isso pode ser usado para limitar uma implantação a um conjunto de namespaces em um cluster downstream. Se uma restrição de allowedTargetNamespaces estiver presente, todos os `GitRepos` devem especificar um `targetNamespace` e o namespace especificado deve estar na lista de permissões. Isso também impede a criação de recursos em todo o cluster.
+
+==== Selecionador de namespace de destino permitido
+
+`allowedTargetNamespaceSelector` restringe implantações a namespaces em clusters downstream cujos rótulos correspondem ao seletor dado. Quando este campo é definido em um `GitRepoRestriction`, todos os `GitRepos` devem especificar um `targetNamespace`.
+O Fleet agent verifica os rótulos desse namespace no cluster downstream antes de implantar um bundle:
+
+* Se o namespace existir e seus rótulos corresponderem ao seletor, a implantação prossegue.
+* Se o namespace existir, mas seus rótulos não corresponderem, o `BundleDeployment` é
+* definido para um estado de erro e o pacote não é implantado.
+* Se o namespace não existir no cluster downstream, a implantação falha com um erro. Pré-criar o namespace e rotulá-lo corretamente é necessário; a opção `createNamespace` do Helm não se aplica quando este seletor está definido.
+
+Múltiplos recursos `GitRepoRestriction` no mesmo namespace contribuem cada um com seu `allowedTargetNamespaceSelector`. Os seletores são mesclados antes de serem propagados para as implantações de pacotes; um namespace deve satisfazer todos eles.
+
+[source,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: project1
+allowedTargetNamespaceSelector:
+  matchLabels:
+    team: frontend
+----
+
+== {product_name} Namespaces
+
+Todos os tipos no gerenciador {product_name} são namespaced. Os namespaces de um recurso personalizado, por exemplo, GitRepo, não influenciam o namespace dos recursos implantados.
+
+Entender como os namespaces são usados no gerenciador {product_name} é importante para compreender o modelo de segurança e como se pode usar {product_name} de forma multi-tenant.
+
+image::FleetNamespaces.svg[Namespace]
+
+=== GitRepos, Bundles, Clusters, ClusterGroups
+
+Todos os seletores para os alvos `GitRepo` serão avaliados em relação ao `Clusters` e `ClusterGroups` nos mesmos namespaces. Isso significa que se você conceder privilégios `create` ou `update` a um tipo `GitRepo` em um namespace, esse usuário final pode modificar o seletor para corresponder a qualquer cluster nesse namespace. Isso significa, na prática, que se você quiser que duas equipes gerenciem suas próprias inscrições `GitRepo`, mas não devem ser capazes de direcionar os clusters uma da outra, elas devem estar em namespaces diferentes.
+
+O namespace de registro do cluster, chamado 'workspace' no Rancher, contém os recursos `Cluster` e `ClusterRegistration`, bem como quaisquer `GitRepos` e `Bundles`.
+
+O Rancher criará dois workspaces {product_name}: *fleet-default* e *fleet-local*.
+
+* `fleet-default` conterá todos os clusters downstream que já estão registrados através do Rancher.
+* `fleet-local` conterá o cluster local por padrão. O acesso a `fleet-local` é limitado.
+
+[WARNING] 
+.Informações Importantes
+====
+Excluir o workspace, o namespace de registro do cluster, excluirá todos os clusters dentro desse namespace.
+Isso desinstalará todos os bundles implantados, exceto pelo Fleet agent, dos clusters excluídos.
+====
+
+Se você estiver usando {product_name} em um estilo xref:explanations/concepts.adoc[single cluster], o namespace será sempre *fleet-local*.  Consulte a seção <<_cluster_registration_namespace_fleet_local,`fleet-local` namespaces>> para mais informações.
+
+Para um estilo xref:explanations/concepts.adoc[multi-cluster], por favor, assegure-se de usar o repositório correto que será mapeado para os clusters de destino adequados.
+
+=== Namespaces Internos
+
+==== Namespace de registro de cluster: fleet-local
+
+O namespace *fleet-local* é um namespace especial usado para o caso de uso de um único cluster ou para inicializar a configuração do gerenciador {product_name}.
+O acesso ao cluster local deve ser limitado a operadores.
+
+Quando {product_name} é instalado, o namespace `fleet-local` é criado junto com um `Cluster` chamado `local` e um `ClusterGroup` chamado `default`. Se nenhum alvo for especificado em um `GitRepo`, ele é, por padrão, direcionado ao `ClusterGroup` chamado `default`. Isso significa que todos os `GitRepos` criados em `fleet-local` irão automaticamente direcionar o `local` `Cluster`. O `local` `Cluster` refere-se ao cluster em que o gerenciador {product_name} está sendo executado.
+
+==== Namespace do sistema: cattle-fleet-system
+
+O controlador {product_name} e o agente {product_name} são executados neste namespace. Todas as contas de serviço referenciadas por `GitRepos` devem residir neste namespace no cluster downstream.
+
+==== Namespace de registro do sistema: cattle-fleet-clusters-system
+
+Este namespace contém segredos para o processo de registro do cluster. Não deve conter outros recursos, especialmente segredos.
+
+==== Namespaces de cluster
+
+Para cada cluster que é registrado, um namespace é criado pelo gerenciador {product_name} para esse cluster. Esses namespaces são nomeados na forma `cluster-${namespace}-${cluster}-${random}`. O propósito deste namespace é que todos os `BundleDeployments` para esse cluster sejam colocados neste namespace e, em seguida, o cluster downstream recebe acesso para observar e atualizar `BundleDeployments` apenas neste namespace.

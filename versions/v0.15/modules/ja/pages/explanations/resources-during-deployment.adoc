@@ -1,0 +1,7 @@
+= デプロイメント中のカスタムリソース
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+これは、Gitリポジトリからデプロイメントを作成する際に関与するリソース（内部リソースも含む）を示しています。
+
+image::FleetResources.svg[リソース]

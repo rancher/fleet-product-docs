@@ -1,0 +1,78 @@
+= {product_name} CRD 模式摘要
+:revdate: 2026-02-05
+:page-revdate: {revdate}
+
+此表总结了在 *{product_name}* 中使用的自定义资源定义（CRD），包括它们的目的和顶层模式属性。每个 CRD 定义了 {product_name} 如何管理应用程序、部署和集群配置。
+
+[cols="1,4,2,2", options="header"]
+|===
+| 自定义资源定义（CRD） | 说明 | 顶层属性 | 参考手册
+
+| *Bundle v1alpha1*
+| Bundle 包含应用程序的资源及其部署选项。它作为 Helm 图表部署到目标集群。当扫描 GitRepo 时，会生成一个或多个 Bundle。Bundle 是部署到一个或多个集群的资源集合，代表在 {product_name} 中使用的基本部署单元。Bundle 的内容可能包括 Kubernetes 清单、Kustomize 配置或 Helm 图表。无论来源如何，内容都由 Fleet agent 动态渲染为 Helm 图表，并作为 Helm 发布安装到下游集群。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/bundle_v1alpha1.json[Bundle v1alpha1]
+
+| *BundleDeployment v1alpha1*
+| BundleDeployment 由 {product_name} 内部使用，不应直接使用。当 Bundle 部署到集群时，Bundle 的一个实例称为 BundleDeployment。它表示该 Bundle 在特定集群上的状态，并具有集群特定的自定义。Fleet agent 仅了解为其管理的集群创建的 BundleDeployment 资源.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/bundledeployment_v1alpha1.json[BundleDeployment v1alpha1]
+
+| *BundleNamespaceMapping v1alpha1*
+| BundleNamespaceMapping 将 Bundle 映射到其他名称空间中的集群.
+| `apiVersion, bundleSelector, kind, metadata, namespaceSelector`
+| link:reference/crds/bundlenamespacemapping_v1alpha1.json[BundleNamespaceMapping v1alpha1]
+
+| *Cluster v1alpha1*
+| 集群对应于一个 Kubernetes 集群。{product_name} 将 Bundle 部署到目标集群，称为下游集群。在单集群部署中，Fleet 集群同时充当管理者和下游集群。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/cluster_v1alpha1.json[Cluster v1alpha1]
+
+| *ClusterGroup v1alpha1*
+| ClusterGroup 是一个可重用的选择器，用于定位一组集群。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clustergroup_v1alpha1.json[ClusterGroup v1alpha1]
+
+| *ClusterRegistration v1alpha1*
+| ClusterRegistration 由 {product_name} 内部使用，不应直接使用。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clusterregistration_v1alpha1.json[ClusterRegistration v1alpha1]
+
+| *ClusterRegistrationToken v1alpha1*
+| ClusterRegistrationToken 由 Fleet agent 用于注册新集群.
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/clusterregistrationtoken_v1alpha1.json[ClusterRegistrationToken v1alpha1]
+
+| *Content v1alpha1*
+| Content 由 {product_name} 内部使用，不应直接使用。它包含用于特定目标集群的 Bundle 中的资源.
+| `apiVersion, content, kind, metadata, sha256sum`
+| link:reference/crds/content_v1alpha1.json[Content v1alpha1]
+
+| *GitRepo v1alpha1*
+| GitRepo 描述了一个由 {product_name} 监视的 Git 储存库。该资源包含将储存库或其部分部署到目标集群所需的信息。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/gitreporestriction_v1alpha1.json[GitRepo v1alpha1]
+
+| *GitRepoRestriction v1alpha1*
+| GitRepoRestriction 可选地限制同一名称空间内的 GitRepo 选项。
+| `allowedClientSecretNames, allowedRepoPatterns, allowedServiceAccounts, allowedTargetNamespaces, apiVersion, defaultClientSecretName, defaultServiceAccount, kind, metadata`
+| link:reference/crds/gitreporestriction_v1alpha1.json[GitRepoRestriction v1alpha1]
+
+| *HelmOp v1alpha1*
+| HelmOp 描述了将图表部署到目标集群所需的 Helm 图表信息。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/helmop_v1alpha1.json[HelmOp v1alpha1]
+
+| *ImageScan v1alpha1*
+| 组 `fleet.cattle.io` 中 ImageScan (v1alpha1) 的 JSON 架构。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/imagescan_v1alpha1.json[ImageScan v1alpha1]
+
+| *Schedule v1alpha1*
+| Schedule 表示一个部署计划，决定何时允许或限制部署。
+| `apiVersion, kind, metadata, spec, status`
+| link:reference/crds/schedule_v1alpha1.json[Schedule v1alpha1]
+
+|===
+
+有关更多信息，请参阅 https://github.com/rancher/fleet/blob/main/charts/fleet-crd/templates/crds.yaml[fleet-crds.yaml].

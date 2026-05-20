@@ -1,0 +1,94 @@
+= 创建一个捆绑资源
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+捆绑在创建{product_name}时由`GitRepo`自动创建。在大多数情况下，`Bundles`不应由用户手动创建。如果您想从git储存库部署资源，请使用xref:how-tos-for-users/gitrepo-add.adoc[GitRepo]。
+
+如果您想在没有git储存库的情况下部署资源，请按照本指南创建一个`Bundle`。
+
+[NOTE]
+====
+如果您想在不运行Fleet控制器的情况下部署资源。请参考xref:how-tos-for-users/install-use-fleet-cli.adoc#_convert_a_helm_chart_into_a_bundle[使用CLI将Helm图表转换为捆绑。]
+====
+
+在创建`GitRepo`时，{product_name}将从git储存库获取资源，并将其添加到捆绑中。
+在创建`Bundle`时，需要在`Bundle`规格中明确指定资源。
+资源可以使用gz进行压缩。请参见 https://github.com/rancher/rancher/blob/v2.7.3/pkg/controllers/provisioningv2/managedchart/managedchart.go#L149-L153[managedchart.go]，了解Rancher如何在go代码中使用压缩的示例。
+
+如果您想在下游集群中部署，您需要定义目标。目标的工作方式类似于`GitRepo`中的目标。
+请参见xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[映射到下游集群]。
+
+以下示例在本地群集中创建一个nginx `Deployment`：
+
+[,yaml]
+----
+kind: Bundle
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  # Any name can be used here
+  name: my-bundle
+  # For single cluster use fleet-local, otherwise use the namespace of
+  # your choosing
+  namespace: fleet-local
+spec:
+  resources:
+  # List of all resources that will be deployed
+  - content: |
+      apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: nginx-deployment
+        labels:
+          app: nginx
+      spec:
+        replicas: 3
+        selector:
+          matchLabels:
+            app: nginx
+        template:
+          metadata:
+            labels:
+              app: nginx
+          spec:
+            containers:
+              - name: nginx
+                image: nginx:1.14.2
+                ports:
+                  - containerPort: 80
+    name: nginx.yaml
+  targets:
+  - clusterName: local
+----
+
+== 目标
+
+该捆绑可以针对多个集群。它采用与xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[GitRepo]相同的目标配置方式。
+每个目标可以指定额外的xref:reference/ref-fleet-yaml.adoc#_supported_customizations[自定义选项]：
+
+[,yaml]
+----
+targets:
+- clusterSelector:
+    matchLabels:
+      env: dev
+  defaultNamespace: lab-1
+  helm:
+    values:
+      replicas: 1
+----
+
+== 局限性
+
+与下载helm图表相关的Helm选项将被忽略。helm图表由fleet-cli下载，后者创建捆绑。该捆绑必须包含图表中的所有资源。因此，该捆绑将忽略：
+
+* `spec.helm.repo`
+* `spec.helm.charts`
+
+您不能在资源中使用 `fleet.yaml`，它仅由 fleet-cli 用于创建捆绑。
+
+`spec.targetRestrictions` 字段没有用，因为它是 `spec.targets` 中指定目标的允许列表。这不是必需的，因为 `targets` 在捆绑中明确给出，空的 `targetRestrictions` 默认允许。
+
+[Note]
+====
+您可以使用 Fleet CLI 将 Helm 图表转换为 `bundle`。有关更多信息，请参阅 xref:how-tos-for-users/install-use-fleet-cli.adoc[使用 CLI 将 Helm 图表转换为捆绑。].
+====

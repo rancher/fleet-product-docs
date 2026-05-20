@@ -1,0 +1,30 @@
+= limpeza do fleet-controller
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Limpar recursos de controlador desatualizados
+
+----
+fleet-controller cleanup [flags]
+----
+
+== Opções
+
+[source,text]
+----
+  -h, --help                help for cleanup
+      --kubeconfig string   kubeconfig file
+      --namespace string    namespace to watch
+----
+
+== Opções herdadas de comandos pai
+
+[source,text]
+----
+      --debug             Turn on debug logging
+      --debug-level int   If debugging is enabled, set klog -v=X
+----
+
+== CONSULTE TAMBÉM
+
+* xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - Gerenciar o Fleet controller que se comunica com o Fleet agent

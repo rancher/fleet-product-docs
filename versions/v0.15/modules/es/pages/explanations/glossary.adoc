@@ -1,0 +1,110 @@
+= Glosario
+:revdate: 2026-02-18
+:page-revdate: {revdate}
+
+== oficina postal
+
+En el contexto de {product_name}, un agente es una ampliación de Kubernetes responsable de desplegar cargas de trabajo en su clúster.
+Esto implica monitorizar un espacio de nombres específico en el clúster en sentido ascendente y desplegar cualquier ampliación de paquete, que resida en ese espacio de nombres, al clúster en sentido descendente donde reside el agente.
+
+== Bundle
+
+Un paquete es un recurso específico de {product_name} (también conocido como https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Recurso Personalizado] en Kubernetes) que representa una carga de trabajo, o un conjunto de recursos de usuario, que se va a desplegar. Normalmente se genera por {product_name} a partir de una vía de un repositorio git.
+
+== Gráfico
+
+Ver (https://helm.sh/docs/topics/charts/)[documentación de gráficos de Helm].
+
+== Clúster
+
+Un clúster se refiere a:
+* un https://kubernetes.io/docs/concepts/architecture/[clúster de Kubernetes] gestionado por {product_name}
+* un `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[recurso] en la API de Fleet, que {product_name} utiliza para gestionar ese clúster de Kubernetes.
+
+== Entrega continua/Distribución continua
+
+Las definiciones y distinciones entre entrega continua y distribución continua varían enormemente, por ejemplo, dependiendo de:
+* si el paso de despliegue está incluido en el proceso y a qué entorno: producción u otro;
+* qué desencadena un despliegue: ¿es un paso manual o automatizado?
+
+Esto está claro, sin embargo: el objetivo de {product_name} es facilitar la automatización de ampliaciones.
+
+== Recurso Personalizado
+
+Ver https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[documentación oficial de recursos personalizados de Kubernetes].
+En resumen, un recurso personalizado es un recurso definido para los propósitos de una aplicación (en nuestro caso {product_name}), para extender el conjunto de recursos soportados por la API de Kubernetes (pods, ampliaciones, servicios, etc.).
+
+== Definición de Recurso Personalizado
+
+Ver https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[documentación oficial de definiciones de recursos personalizadas de Kubernetes] en la documentación de Kubernetes.
+
+== Distribución
+
+Una ampliación puede referirse a: * una https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[ampliación de Kubernetes], ya sea parte de una carga de trabajo de usuario o parte de {product_name} en sí, como una ampliación de agente, ampliaciones de controladores. * la acción de desplegar una carga de trabajo de usuario, lo que significa que {product_name} lee la configuración (`GitRepo`, `fleet.yaml`, etc.) y, como resultado, crea recursos en clústeres de destino.
+
+== Clúster descendente
+
+Un clúster de destino es un clúster de Kubernetes donde se ejecutarán las cargas de trabajo de usuario, sin que haya controladores de Fleet allí. Es un clúster objetivo para Fleet, donde solo vive un agente de Fleet junto a las cargas de trabajo de usuario.
+
+== fleet.yaml
+
+Un archivo `fleet.yaml` vive en un repositorio git y almacena opciones para un paquete y ampliaciones de paquete que se generarán a partir de ese paquete. Más información está disponible en xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
+
+== GitOps
+
+GitOps se refiere a operaciones desencadenadas por git, donde git es la fuente de verdad y los cambios en un repositorio git conducen a
+cambios que se aplican al estado de uno o más clústeres.
+
+== GitRepo
+
+Un `GitRepo` es un recurso específico de Fleet, que se utiliza como punto de entrada para usar {product_name}.
+Crear un `GitRepo` que apunte a un conjunto de vías en un repositorio git permite que {product_name} supervise esas vías y despliegue recursos almacenados o referenciados allí.
+
+== Etiqueta
+
+Se refiere a una https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[etiqueta de Kubernetes].
+
+== Multi-Cluster
+
+Una configuración de multi-cluster implica más de un clúster: el clúster en sentido ascendente, necesario para gestionar el despliegue de cargas de trabajo, y al menos un clúster en sentido descendente.
+
+== Espacio de nombre
+
+Se refiere a un https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[espacio de nombres de Kubernetes].
+
+== Reconciliar
+
+La reconciliación se utiliza en el contexto de los estados en los clústeres de Kubernetes. Reconciliar un recurso significa actualizarlo para que su estado actual coincida con su estado esperado, ya sea a partir de la configuración, por ejemplo, desde un repositorio git, un gráfico, etc.
+
+Al utilizar GitOps, las actualizaciones en un repositorio git pueden traducirse en nuevos estados esperados para los recursos configurados a través de ese repositorio git. Como resultado, los recursos afectados serán reconciliados.
+El estado de un recurso también puede depender de otro recurso, lo que lleva a una reconciliación adicional. Por ejemplo, el estado de un grupo de clústeres depende de los estados de los clústeres individuales contenidos en ese grupo de clústeres. Por lo tanto, un cambio en el estado de un clúster resultará en que cualquier grupo de clústeres al que pertenezca ese clúster también sea reconciliado.
+
+== Registro
+
+El registro de clústeres es el proceso de hacer que un agente de Fleet, que vive en un clúster en sentido descendente, sea reconocido por los controladores de Fleet en el clúster en sentido ascendente. Una vez que se completa el registro para un clúster descendente, {product_name} puede desplegar cargas de trabajo en ese clúster.
+
+== Repositorio
+
+Un repositorio puede ser:
+* un repositorio git, que almacena código, configuración o cualquier tipo de archivos y realiza un seguimiento de los cambios realizados en esos archivos a través de commits. {product_name} puede supervisar un repositorio git en busca de nuevos commits enviados a una rama o revisión específica, en una o más vías, a través de xref:how-tos-for-users/gitrepo-add.adoc[recursos GitRepo].
+* un repositorio Helm, que alberga gráficos Helm y un archivo de índice que los referencia. {product_name} puede instalar gráficos Helm y aplicar configuración definida por el usuario a ellos.
+
+== Recursos
+
+Esto generalmente se refiere a recursos de Kubernetes, que pueden ser:
+* recursos básicos definidos por Kubernetes mismo, como mapas de configuración, ampliaciones, pods, servicios, etc;
+* recursos personalizados definidos por aplicaciones individuales, como {product_name} mismo, que define GitRepo, Bundle, Bundledeployment y algunos otros.
+
+== Destino
+
+{product_name} utiliza esta palabra en el contexto de determinar dónde se ejecutará una carga de trabajo. Esto representa un clúster de destino para una carga de trabajo.
+
+== Clúster en sentido ascendente
+
+Un clúster de Kubernetes donde se ejecutan los controladores de Fleet. Este es el clúster donde se crean `GitRepo`s, paquetes y ampliaciones de paquete. También se llama clúster de gestión.
+
+== Workload
+
+Una carga de trabajo representa lo que los usuarios quieren desplegar a través de {product_name}. Puede ser un conjunto de gráficos de Helm, manifiestos de Kubernetes, Kustomize, etc., almacenados o referenciados en un repositorio de git.
+
+Cuando un usuario crea un recurso `GitRepo` que apunta a ese repositorio de git, y posteriormente cuando se encuentran cambios relevantes en ese repositorio, {product_name} despliega cargas de trabajo.

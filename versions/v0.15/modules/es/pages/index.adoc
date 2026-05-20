@@ -1,0 +1,16 @@
+= Descripción general
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::fleet-architecture.svg[Estática, 600]
+
+[discrete]
+=== ¿Qué es {product_name}?
+
+* *Motor de clúster*: {product_name} es un motor de gestión y despliegue de contenedores diseñado para ofrecer a los usuarios más control sobre el clúster local y un monitoreo constante a través de *GitOps*. {product_name} se centra no solo en la capacidad de escalar, sino que también proporciona a los usuarios un alto grado de control y visibilidad para monitorear exactamente qué está instalado en el clúster.
+* *Gestión de ampliaciones*: {product_name} puede gestionar ampliaciones desde git de YAML de Kubernetes en bruto, gráficos de Helm, Kustomize, o cualquier combinación de los tres. Independientemente de la fuente, todos los recursos se convierten dinámicamente en gráficos de Helm, y Helm se utiliza como el motor para desplegar todos los recursos en el clúster. Como resultado, los usuarios pueden disfrutar de un alto grado de control, consistencia y auditabilidad de sus clústeres.
+
+[discrete]
+=== Configuration Management
+
+{product_name} es fundamentalmente un conjunto de xref:explanations/concepts.adoc[definiciones de recursos personalizadas (CRDs)] de Kubernetes y controladores que gestionan GitOps para un solo clúster de Kubernetes o una ampliación a gran escala de clústeres de Kubernetes. Es un sistema de inicialización distribuida que facilita la personalización de aplicaciones y la gestión de clústeres de alta disponibilidad desde un único punto.

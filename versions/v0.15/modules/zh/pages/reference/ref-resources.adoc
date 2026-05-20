@@ -1,0 +1,95 @@
+= 已部署资源列表
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+在 Rancher 中安装 {product_name} 后，这些资源会在上游集群中创建。
+
+另请参见 xref:explanations/namespaces.adoc[名称空间]。
+
+== 来自 Helm，初始设置
+
+[cols="1,1,1",options="header"]
+|===
+|类型 |名称 |名称空间
+
+|ClusterRole |fleet-controller |-
+|ClusterRole |gitjob |-
+|ClusterRoleBinding |fleet-controller |-
+|ClusterRoleBinding |gitjob-binding |-
+|ConfigMap |fleet-controller |cattle-fleet-system
+|部署 |fleet-controller |cattle-fleet-system
+|部署 |gitjob |cattle-fleet-system
+|角色 |fleet-controller |cattle-fleet-system
+|角色 |gitjob |cattle-fleet-system
+|角色绑定 |fleet-controller |cattle-fleet-system
+|角色绑定 |gitjob |cattle-fleet-system
+|服务 |gitjob |cattle-fleet-system
+|ServiceAccount |fleet-controller |cattle-fleet-system
+|ServiceAccount |gitjob |cattle-fleet-system
+|===
+
+== 由启动生成
+
+[cols="1,1,1",options="header"]
+|===
+|类型 |名称 |名称空间
+
+|clusters.fleet.cattle.io |本地 |fleet-local
+|clusters.provisioning.cattle.io |本地 |fleet-local
+|clusters.management.cattle.io |本地 |-
+|ClusterGroup |default |fleet-local
+|捆绑包 |fleet-agent-local |fleet-local
+|===
+
+== 对于每个注册的集群
+
+[cols="1,1,1",options="header"]
+|===
+|类型 |名称 |名称空间
+
+|clusters.provisioning.cattle.io | |fleet-default（默认）
+|clusters.management.cattle.io |已生成 |-
+|clusters.fleet.cattle.io | |fleet-default
+|密钥（不透明） |kubeconfig |fleet-default
+|ClusterRegistrationToken | |fleet-default
+|ServiceAccount |导入 |fleet-default
+|角色绑定 |请求 |fleet-default
+|角色绑定 |请求 |cluster-fleet-default
+|角色 |请求 |cluster-fleet-default
+|密钥（服务账户词元） |import-token |fleet-default
+|名称空间 |cluster-fleet-default |-
+|ClusterRegistration |fleet-default |
+|ServiceAccount |请求 |fleet-default
+|密钥（代理凭证） |c-ID |fleet-default
+|密钥（服务账户词元） |请求词元 |fleet-default
+|捆绑包 |fleet-agent-name |fleet-name
+|包部署 |fleet-agent-name |cluster-fleet-default
+|===
+
+== 每个包，每个集群
+
+[cols="1,1,1",options="header"]
+|===
+|类型 |名称 |名称空间
+
+|捆绑包 |name |fleet-default
+|密钥（包） |name |fleet-default
+|包部署 |name |cluster-fleet-default
+|密钥（包部署） |name |cluster-fleet-default
+|密钥（不透明，内容访问） |name |cluster-fleet-default
+|内容 |- |-
+|===
+
+== 每个Git仓库
+
+[cols="1,1,1",options="header"]
+|===
+|类型 |名称 |名称空间
+
+|ServiceAccount |name |fleet-default
+|角色 |name |fleet-default
+|角色绑定 |name |fleet-default
+|作业 |name |fleet-default
+|ConfigMap |name-config |fleet-default
+|机密 |name-cabundle |fleet-default
+|===

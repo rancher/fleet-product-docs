@@ -1,0 +1,69 @@
+= Cycle de vie
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Un bundle est une ressource interne utilisée pour l'orchestration des ressources depuis git. Lorsqu'un GitRepo est analysé, il produira un ou plusieurs bundles.
+
+Pour démontrer le cycle de vie d'un {product_name} bundle, nous utiliserons https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[multi-cluster/helm] comme étude de cas.
+
+. L'utilisateur créera un xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] qui pointe vers le dépôt multi-cluster/helm.
+. Le `gitjob-controller` synchronisera les modifications du GitRepo et détectera les changements provenant du polling ou de l'xref:how-tos-for-users/webhook.adoc[événement webhook]. À chaque changement de commit, le `gitjob-controller` créera un job qui clone le dépôt git, lit le contenu du dépôt tel que `fleet.yaml` et d'autres manifests, et crée le {product_name} xref:reference/ref-status-fields.adoc#_bundles[bundle].
++
+[NOTE]
+====
+Le pod de job avec le nom d'image `rancher/tekton-utils` sera sous le même espace de noms que le GitRepo.
+====
++
+. Le `fleet-controller` synchronise ensuite les modifications du bundle. Selon les cibles, le `fleet-controller` créera des ressources `BundleDeployment`, qui sont une combinaison d'un bundle et d'un cluster cible.
+. Le `fleet-agent` tirera ensuite le `BundleDeployment` depuis le {product_name} plan de contrôle. L'agent déploie les manifests de bundle en tant que https://helm.sh/docs/intro/install/[Helm chart] depuis le `BundleDeployment` vers les clusters en aval.
+. Le `fleet-agent` continuera à surveiller le bundle d'application et à rapporter les statuts dans l'ordre suivant{nbsp}: +bundledeployment+ > +bundle+ > +GitRepo+ > +cluster+.
+
+Ce diagramme montre les différentes étapes de rendu qu'un bundle traverse jusqu'au déploiement.
+
+image::FleetBundleStages.svg[Étapes du Bundle]
+
+[[examining-the-bundle-lifecycle-with-the-cli]]
+== Examen du cycle de vie du bundle avec la CLI
+
+Plusieurs commandes CLI de Fleet aident à nettoyer les bundles.
+
+image::fleetCLI-key-components.svg[Un diagramme expliquant comment fonctionnent les commandes clés de Fleet CLI]
+
+=== fleet apply
+
+xref:reference/cli/fleet-cli/fleet_apply.adoc[Appliquer] rend un dossier avec des ressources Kubernetes, telles qu'un Helm chart, des manifests ou des dossiers kustomize, en une ressource de bundle {product_name}.
+
+----
+git clone https://github.com/rancher/fleet-test-data
+cd fleet-test-data
+fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
+----
+
+Plus d'informations sur la façon de créer des bundles avec `fleet apply` peuvent être trouvées dans la xref:how-tos-for-users/bundle-add.adoc[section sur les bundles].
+
+[[fleet-target]]
+=== fleet target
+
+xref:reference/cli/fleet-cli/fleet_target.adoc[Cible] lit un bundle à partir d'un fichier et travaille avec un cluster en direct pour afficher les ressources `bundledeployment` et `content`, que fleetcontroller créerait. Il prend un espace de noms comme argument, afin de pouvoir rechercher dans cet espace de noms des ressources de cluster, par exemple. Il peut également extraire la structure de données utilisée lors du ciblage, afin que les décisions prises concernant les étiquettes et les noms de cluster puissent être vérifiées.
+
+=== fleet deploy
+
+xref:reference/cli/fleet-cli/fleet_deploy.adoc[Déployer] prend la sortie de `fleet target`, ou une ressource de bundledeployment/content exportée, et la déploie sur un cluster, tout comme le ferait fleet-agent. Il prend en charge un mode de simulation, pour afficher les ressources qui seraient créées, au lieu de les installer avec Helm. Puisque la commande ne crée pas les ressources d'entrée, un fleet-agent en cours d'exécution supprimerait probablement le déploiement.
+
+La commande deploy peut être utilisée pour amener des bundles vers des clusters isolés physiquement.
+
+=== Cycle de vie CLI
+
+Les commandes CLI de Fleet vous aident à nettoyer et à comprendre le cycle de vie des bundles. L'exemple suivant utilise le cycle de vie complet des bundles avec la CLI{nbsp}:
+
+[source,bash]
+----
+git clone https://github.com/rancher/fleet-test-data
+cd fleet-test-data
+fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
+fleet target --bundle-file bundle.yaml --list-inputs  > bd.yaml
+fleet deploy --input-file bd.yaml --dry-run
+----
+
+Pour des informations sur apply, référez-vous à xref:how-tos-for-users/bundle-add.adoc[Créer une ressource de bundle].
+

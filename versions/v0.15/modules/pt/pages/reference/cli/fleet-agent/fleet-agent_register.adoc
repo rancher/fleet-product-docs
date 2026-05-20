@@ -1,0 +1,23 @@
+= Registrar Fleet agent
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Registrar agente com um cluster upstream
+
+----
+fleet-agent register [flags]
+----
+
+== Opções
+
+----
+      --debug               Turn on debug logging
+      --debug-level int     If debugging is enabled, set klog -v=X
+  -h, --help                help for register
+      --kubeconfig string   kubeconfig file for agent's cluster
+      --namespace string    system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
+----
+
+== CONSULTE TAMBÉM
+
+* xref:/reference/cli/fleet-agent/fleet-agent.adoc[Fleet agent]     - Gerenciar operações com o Fleet agent que se comunica com o controlador de Fleet.

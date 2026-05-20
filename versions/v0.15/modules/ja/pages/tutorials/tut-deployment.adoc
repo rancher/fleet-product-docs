@@ -1,0 +1,465 @@
+:doctype: book
+
+= デプロイメントを作成する
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ワークロードをダウンストリームクラスターにデプロイするには、まずGitリポジトリを作成し、次にGitRepoリソースを作成して適用します。
+
+このチュートリアルでは、 https://github.com/rancher/fleet-examples[fleet-examples]リポジトリを使用します。
+
+[NOTE]
+====
+リポジトリの構造と各バンドルのデプロイメントの設定方法の詳細については、xref:explanations/gitrepo-content.adoc[GitRepoの内容]を参照してください。
+各Gitリポジトリで利用可能なオプションの詳細については、xref:how-tos-for-users/gitrepo-add.adoc[GitRepoの追加]を参照してください。
+====
+
+
+== シングルクラスターの例
+
+すべての例は、クラスターごとのカスタマイズなしでコンテンツをクラスターにデプロイします。これは、{product_name}のためのGitリポジトリの構造を理解するための良い出発点です。
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Helmを使用した例。私たちは、ローカルクラスタに https://github.com/rancher/fleet-examples/tree/master/single-cluster/helm[helm example]をデプロイしています。
++
+リポジトリには、Helmチャートとデプロイメントを構成するためのオプションの`fleet.yaml`が含まれています。
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-helm-example
+
+# Custom helm options
+helm:
+  # The release name to use. If empty a generated release name will be used
+  releaseName: guestbook
+
+  # The directory of the chart in the repo.  Also any valid go-getter supported
+  # URL can be used there is specify where to download the chart from.
+  # If repo below is set this value if the chart name in the repo
+  chart: ""
+
+  # An https to a valid Helm repository to download the chart from
+  repo: ""
+
+  # Used if repo is set to look up the version of the chart
+  version: ""
+
+  # Force recreate resource that can not be updated
+  force: false
+
+  # How long for helm to wait for the release to be active. If the value
+  # is less that or equal to zero, we will not wait in Helm
+  timeoutSeconds: 0
+
+  # Custom values that will be passed as values.yaml to the installation
+  values:
+    replicas: 2
+----
+
+Helmマルチチャート::
++
+単一のリポジトリから複数のチャートをデプロイする https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-multi-chart[例]。これは前の例に似ていますが、サブフォルダーから3つのHelmチャートをデプロイし、それぞれが独自の`fleet.yaml`で構成されています。
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-multi-chart
+EOF
+----
+
+HelmとKustomize::
++
+https://github.com/rancher/fleet-examples/blob/master/single-cluster/helm-kustomize[Kustomizeを使用してサードパーティのHelmチャートを変更する例]。Kubernetesのサンプルゲストブックアプリケーションを、サードパーティのソースからダウンロードしたHelmチャートとしてパッケージ化し、Kustomizeを使用してHelmチャートを変更します。アプリは、fleet-helm-kustomize-exampleネームスペースにデプロイされます。
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/helm-kustomize
+EOF
+----
+
+Kustomize::
++
+https://github.com/rancher/fleet-examples/blob/master/single-cluster/kustomize[Kustomizeを使用した例]。
++
+`fleet.yaml`には、必要な`kustomize:``kustomization.yaml`へのパスを指定するキーがあります:
++
+.fleet.yaml
+[source,yaml]
+----
+kustomize:
+  # To use a kustomization.yaml different from the one in the root folder
+  dir: ""
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/kustomize
+EOF
+----
+
+マニフェスト::
++
+生のKubernetes YAMLを使用した https://github.com/rancher/fleet-examples/tree/master/single-cluster/manifests[例]です。
++
+[source,bash]
+----
+kubectl apply -n fleet-local -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - single-cluster/manifests
+EOF
+----
+====
+
+== マルチクラスターの例
+
+以下の例では、複数のクラスターに同時にマルチGitリポジトリをデプロイし、各ターゲットごとに異なる設定でアプリを構成します。
+
+[tabs,sync-group-id=examples]
+====
+Helm::
++
+Helmを使用した例。 https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[helm example]をデプロイし、ターゲットクラスターごとにカスタマイズしています。
++
+リポジトリには、Helmチャートとデプロイメントを構成するためのオプションの`fleet.yaml`が含まれています。`fleet.yaml`は、クラスターのラベルに応じて異なるデプロイメントオプションを構成するために使用されます：
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-helm-example
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
++
+デプロイメントを作成するために、カスタムリソースをアップストリームクラスターに適用します。デフォルトでは、`fleet-default` 名前空間にはダウンストリームクラスターリソースが含まれています。チャートは、`targets:` の下にある任意のエントリと一致するラベル付きクラスターリソースを持つfleet-defaultネームスペース内のすべてのクラスターにデプロイされます。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+アップストリームクラスターにgitrepoリソースを適用することにより、fleetはリポジトリの監視を開始し、デプロイメントを作成します：
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Helm外部::
++
+サードパーティのソースからダウンロードされたHelmチャートを使用し、ターゲットクラスターごとにカスタマイズした https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-external[例]です。カスタマイズは前の例と似ています。
++
+デプロイメントを作成するために、カスタムリソースをアップストリームクラスターに適用します。デフォルトでは、`fleet-default`ネームスペースにはダウンストリームクラスターリソースが含まれています。チャートは、`targets:` の下にある任意のエントリと一致するラベル付きクラスターリソースを持つfleet-defaultネームスペース内のすべてのクラスターにデプロイされます。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-external
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-external
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+アップストリームクラスターにgitrepoリソースを適用することにより、fleet はリポジトリ の監視を開始し、デプロイメントを作成します：
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+HelmとKustomize::
++
+サードパーティのHelmチャートを修正するために https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm-kustomize[Kustomizeを使用した例]です。Kubernetesのサンプルゲストブックアプリケーションを、サードパーティのソースからダウンロードしたHelmチャートとしてパッケージ化し、Kustomizeを使用してHelmチャートを変更します。アプリは、fleet-helm-kustomize-exampleネームスペースにデプロイされます。
++
+アプリケーションは、環境ごとに次のようにカスタマイズされます：
++
+  * 開発クラスター：Redisリーダーのみがデプロイされ、フォロワーはデプロイされません。
+  * テストクラスター：フロントデプロイメントを3にスケールします。 
+  * 本番クラスター：フロントデプロイメントを3にスケールし、サービスの種類をLoadBalancerに設定します。 
++
+`fleet.yaml`は、クラスターのラベルに応じて使用されるオーバーレイを制御するために使用されます。
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-kustomize-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  kustomize:
+    dir: overlays/dev
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  kustomize:
+    dir: overlays/test
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  kustomize:
+    dir: overlays/prod
+----
++
+デプロイメントを作成するために、カスタムリソースをアップストリームクラスターに適用します。デフォルトでは、`fleet-default` 名前空間にはダウンストリームクラスターリソースが含まれています。チャートは、`targets:`の下にある任意のエントリと一致するラベルが付いたクラスターリソースが存在するfleet-defaultのネームスペース内のすべてのクラスターにデプロイされます。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: helm-kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/helm-kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+アップストリームクラスターにgitrepoリソースを適用することにより、fleetはリポジトリの監視を開始し、デプロイメントを作成します：
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+
+Kustomize::
++
+Kustomizeを使用して、ターゲットクラスターごとにカスタマイズした例です。
++
+`fleet.yaml`のカスタマイズは、「Helm & Kustomize」の例と同じです。
++
+デプロイメントを作成するために、カスタムリソースをアップストリームクラスターに適用します。デフォルトでは、`fleet-default`ネームスペースにはダウンストリームクラスターリソースが含まれています。チャートは、`targets:`の下にある任意のエントリと一致するラベルが付いたクラスターリソースが存在するfleet-defaultネームスペース内のすべてのクラスターにデプロイされます。
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f - <<EOF
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: kustomize
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/kustomize
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+EOF
+----
++
+アップストリームクラスターにgitrepoリソースを適用することにより、fleetはリポジトリの監視を開始し、デプロイメントを作成します：
+
+マニフェスト::
++
+生のKubernetes YAMLを使用して、ターゲットクラスターごとにカスタマイズした例です。アプリケーションは、環境ごとに次のようにカスタマイズされます：
++
+* 開発クラスター：Redisリーダーのみがデプロイされ、フォロワーはデプロイされません。
+* テストクラスター：フロントデプロイメントを3にスケールします。 
+* 本番クラスター：フロントデプロイメントを3にスケールし、サービスの種類をLoadBalancerに設定します。 
++
+`fleet.yaml`は、クラスターのラベルに応じて使用される'yaml'オーバーレイを制御するために使用されます。
++
+.fleet.yaml
+[source,yaml]
+----
+namespace: fleet-mc-manifest-example
+targetCustomizations:
+- name: dev
+  clusterSelector:
+    matchLabels:
+      env: dev
+  yaml:
+    overlays:
+    # Refers to overlays/noreplication folder
+    - noreplication
+
+- name: test
+  clusterSelector:
+    matchLabels:
+      env: test
+  yaml:
+    overlays:
+    # Refers to overlays/scale3 folder
+    - scale3
+
+- name: prod
+  clusterSelector:
+    matchLabels:
+      env: prod
+  yaml:
+    # Refers to overlays/servicelb, scale3 folders
+    overlays:
+    - servicelb
+    - scale3
+----
++
+デプロイメントを作成するために、カスタムリソースをアップストリームクラスターに適用します。デフォルトでは、`fleet-default`ネームスペースにはダウンストリームクラスターリソースが含まれています。チャートは、`targets:`の下にある任意のエントリと一致するラベルが付いたクラスターリソースが存在するfleet-defaultのネームスペース内のすべてのクラスターにデプロイされます。
++
+.gitrepo.yaml
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: manifests
+  namespace: fleet-default
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - multi-cluster/manifests
+  targets:
+  - name: dev
+    clusterSelector:
+      matchLabels:
+        env: dev
+
+  - name: test
+    clusterSelector:
+      matchLabels:
+        env: test
+
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+----
++
+[source,bash]
+----
+kubectl apply -n fleet-default -f gitrepo.yaml
+----
+====

@@ -1,0 +1,110 @@
+= 词汇表
+:revdate: 2026-02-18
+:page-revdate: {revdate}
+
+== 代理
+
+在 {product_name} 的上下文中，代理是一个 Kubernetes 部署，负责将工作负载部署到其集群中。
+这涉及到监控上游集群中的特定名称空间，并将该名称空间中存在的任何包部署到代理所在的下游集群。
+
+== 捆绑包
+
+包是一个 {product_name} 特定资源（在 Kubernetes 中也称为 https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[自定义资源]），表示要部署的工作负载或一组用户资源。它通常由 {product_name} 从 git 储存库的路径生成。
+
+== 图表
+
+请参见 (https://helm.sh/docs/topics/charts/)[Helm charts 文档]。
+
+== 群集
+
+集群指的是： +
+* 由 {product_name} 管理的 https://kubernetes.io/docs/concepts/architecture/[Kubernetes 集群]  +
+* Fleet API 中的一个 `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[资源]，{product_name} 用于管理该 Kubernetes 集群。
+
+== 持续交付/部署
+
+持续交付和持续部署之间的定义和区别差异很大，例如取决于： +
+* 部署步骤是否包含在流程中，以及针对哪个环境：生产环境还是其他？ +
+* 触发部署的是什么：是手动步骤还是自动步骤？
+
+不过，这一点是明确的：{product_name} 的目标是使自动化部署变得更容易。
+
+== 自定义资源
+
+请参见 https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[kubernetes 自定义资源官方文档]。
+简而言之，自定义资源是为应用程序的目的定义的资源（在我们的案例中是 {product_name}），以扩展 Kubernetes API 支持的资源集（pods、deployments、services 等）。
+
+== 自定义资源定义
+
+请参见 Kubernetes 文档中的 https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[kubernetes 自定义资源定义官方文档]。
+
+== 部署
+
+部署可以指： +
+* 一个 https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[Kubernetes 部署]， +
+无论是用户工作负载的一部分还是 {product_name} 本身的一部分，例如代理部署、控制器部署。 +
+* 部署用户工作负载的动作，这意味着 {product_name} 读取配置（`GitRepo`、`fleet.yaml` 等），并因此在目标集群上创建资源。
+
+== 下游群集
+
+下游集群是一个 Kubernetes 集群，用户工作负载将在其中运行，而没有任何 Fleet 控制器存在。这是 Fleet 的目标集群，只有一个 Fleet 代理与用户工作负载共存。
+
+== fleet.yaml
+
+一个 `fleet.yaml` 文件存在于 git 储存库中，并存储用于从该包生成的包和包部署的选项。有关更多信息，请参见 xref:reference/ref-fleet-yaml.adoc[fleet.yaml]。
+
+== GitOps
+
+GitOps 指的是由 git 触发的操作，其中 git 是事实来源，对 git 仓库的更改导致对一个或多个集群状态的更改。
+
+== GitRepo
+
+`GitRepo`是特定于Fleet的资源，用作使用{product_name}的入口点。
+创建指向 git 储存库中一组路径的`GitRepo`使得{product_name}能够监控这些路径并部署存储或引用在其中的资源。
+
+== 标签
+
+指的是 https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[Kubernetes 标签]。
+
+== 多集群
+
+多集群设置涉及多个集群：上游集群，用于管理工作负载的部署，以及至少一个下游集群。
+
+== 名称空间
+
+指的是 https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[Kubernetes 名称空间]。
+
+== 协调
+
+在 Kubernetes 集群状态管理的上下文中，‘协调’一词被采用。协调资源意味着更新它，以使其实际状态与预期状态匹配，无论是来自配置，例如来自 git 储存库、图表等。
+
+使用 GitOps 时，对 git 储存库的更新可能会转化为通过该 git 储存库配置的资源的新预期状态。因此，受影响的资源将被协调。
+资源的状态也可能依赖于另一个资源，从而导致额外的协调。例如，集群组的状态依赖于该集群组中包含的单个集群的状态。因此，集群状态的变化将导致该集群所属的任何集群组也被协调。
+
+== 注册
+
+集群注册是使位于下游集群中的 Fleet 代理被上游集群中的 Fleet 控制器识别的过程。一旦下游集群的注册完成，{product_name}就能够向该集群部署工作负载。
+
+== 储存库
+
+一个储存库可以是： +
+* git 储存库，存储代码、配置或任何类型的文件，并通过提交跟踪对这些文件所做的更改。{product_name}可以监控 git 储存库中推送到特定分支或修订版的新提交，在一个或多个路径上，通过xref:how-tos-for-users/gitrepo-add.adoc[GitRepo资源]。 +
+* Helm 储存库，托管 Helm 图表和引用它们的索引文件。{product_name}能够安装 Helm 图表并应用用户定义的配置。
+
+== 资源
+
+这通常指Kubernetes资源，可能是：* Kubernetes本身定义的内核资源，如配置映射、部署、Pod、服务等。* 单个应用程序定义的自定义资源，如{product_name}本身，定义了GitRepo、Bundle、Bundledeployment和其他一些。
+
+== 目标
+
+{product_name}在确定工作负载将运行的位置的上下文中使用这个词。这表示工作负载的目标集群。
+
+== 上游集群
+
+一个运行 Fleet 控制器的 Kubernetes 集群。这是创建 `GitRepo`、包和包部署的集群。也称为管理集群。
+
+== 工作负载
+
+工作负载代表用户希望通过 {product_name} 部署的内容。它可以是一组 Helm 图表、Kubernetes 清单、kustomize 等，存储或引用在 git 储存库中。
+
+当用户创建指向该 git 储存库的 `GitRepo` 资源时，随后在该储存库中发现相关更改时，{product_name} 部署工作负载。

@@ -1,0 +1,105 @@
+= 設定
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+主に内部の設定オプションの参照リストです。
+
+[[configure-install-options-in-rancher]]
+== Rancherでの{product_name}インストールオプションの設定
+
+Rancherは、`rancher-config`ネームスペース内の`cattle-system`というConfigMapでHelmの値を探します。
+{product_name}のための任意のHelmチャート値は、チャートの名前の下に指定できます。Fleetキーの値は文字列であることに注意してください。
+
+いくつかのオプションを追加した後の`rancher-config`はこのようになります：
+
+[source,yaml]
+----
+kind: ConfigMap
+apiVersion: v1
+metadata:
+  name: rancher-config
+  namespace: cattle-system
+data:
+  fleet: |
+    controller:
+      reconciler:
+        workers:
+          gitrepo: "50"
+          bundle: "50"
+          bundledeployment: "50"
+  priorityClassName: rancher-critical
+----
+
+`rancher-config`リソースはRancherチャートによって作成され、パッチを適用できます：
+
+[source,shell]
+----
+kubectl patch cm -n cattle-system rancher-config --type merge \
+  --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
+----
+
+== Helmチャート
+
+Helmチャートは、少なくとも`values.yaml`のデフォルトで示されているオプションを受け入れます：
+
+* https://github.com/rancher/fleet/blob/main/charts/fleet/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
+* https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
+
+== 環境変数
+
+コントローラーは、これらの環境変数で起動できます：
+
+* `CATTLE_DEV_MODE` - wranglerのデバッグに使用され、使用不可
+* `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY` - `fleet apply`のための同時バンドル作成ルーチンの数を構成します。デフォルトは4です。`--bundle-creation-max-concurrency` CLIフラグを介しても設定できます
+* `FLEET_CLUSTER_ENQUEUE_DELAY` - 準備が整っていないクラスターがどのくらいの頻度でチェックされるかを調整します
+* `FLEET_CPU_PPROF_PERIOD` - https://github.com/rancher/fleet/blob/main/docs/performance.md[パフォーマンスプロファイリング]をオンにするために使用されます
+
+== 設定
+
+エージェントとFleet Managerのクラスター構成において。これらを変更すると、完全な再デプロイメントにつながる可能性があります。
+
+設定 https://github.com/rancher/fleet/blob/main/internal/config/config.go#L57[struct]は、両方の設定マップで使用されます：
+
+* cattle-fleet-system/fleet-agent
+* cattle-fleet-system/fleet-controller
+
+== ラベル
+
+Fleetによって使用されるラベル：
+
+* `fleet.cattle.io/agent=true` - エージェントのデプロイメントアフィニティ設定のためのNodeSelectorラベル
+* `fleet.cattle.io/non-managed-agent` - 管理されたエージェントバンドルはこのラベルを持つクラスターをターゲットにしません
+* `fleet.cattle.io/repo-name` - バンドルでgitリポジトリリソースを参照するために使用されます
+* `fleet.cattle.io/bundle-namespace` - バンドルリソースを参照するためにBundleDeploymentで使用されます
+* `fleet.cattle.io/bundle-name` - バンドルリソースを参照するためにBundleDeploymentで使用されます
+* `fleet.cattle.io/managed=true` - このラベルを持つクラスターのネームスペースはクリーンアップされます。他のリソースはラベルに含まれている場合、クリーンアップされます。RancherでFleetネームスペースを識別するために使用されます。
+* `fleet.cattle.io/bootstrap-token` - 未使用
+* `fleet.cattle.io/shard-id=<shard-id>` - FleetコントローラーポッドのシャードID。
+* `fleet.cattle.io/shard-default=true` - これはシャード参照ラベルなしでリソースを管理しているコントローラーであればtrueです。
+* `fleet.cattle.io/shard-ref=<shard-id>` - {product_name}によってリソースに割り当てられたシャードIDを参照し、`GitRepo`から継承され、どの{product_name}コントローラーのデプロイメントがそれらを調整するかを決定します。
+ ** このラベルが提供されないか、空の値である場合、非シャードの{product_name}コントローラーがリソースを処理します。
+ ** このラベルに値があり、{product_name}コントローラーがデプロイされているシャードIDと一致しない場合、リソースは処理されません。
+
+== 注釈
+
+Fleetによって使用される注釈：
+
+* `fleet.cattle.io/agent-namespace`
+* `fleet.cattle.io/bundle-id`
+* `fleet.cattle.io/cluster`, `fleet.cattle.io/cluster-namespace` - クラスター登録ネームスペースとクラスター名を参照するためにクラスターのネームスペースで使用されます
+* `fleet.cattle.io/cluster-group`
+* `fleet.cattle.io/cluster-registration-namespace`
+* `fleet.cattle.io/cluster-registration`
+* `fleet.cattle.io/commit`
+* `fleet.cattle.io/managed` - 未使用のようです
+* `fleet.cattle.io/service-account`
+
+== {product_name} エージェントの設定
+
+トレランス、アフィニティ、リソースは{product_name}エージェントのためにカスタマイズできます。これらのフィールドはxref:reference/ref-crds.adoc#_clusterspec[Cluster]を作成する際に提供できます。クラスターの作成方法についてはxref:how-tos-for-operators/cluster-registration.adoc[ダウンストリームクラスターの登録]を参照してください。これらのフィールドが提供されない場合、デフォルト設定が使用されます。
+
+リソース制限を変更する場合は、制限がFleet agentが正常に動作することを許可していることを確認してください。
+
+{product_name}をv0.7.0より前のバージョンにダウングレードすると、{product_name}はビルトインのデフォルトに戻ることを忘れないでください。
+エージェントはカスタムアフィニティを持っている場合、再展開されます。{product_name}のバージョン番号が変更されない場合、再展開は即座に行われない可能性があります。

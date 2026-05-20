@@ -1,0 +1,343 @@
+= Fleet Monitor
+
+Erweitertes Diagnosetool zur Fehlersuche bei {product_name} Implementierungen.
+
+== Übersicht
+
+Gewinnen Sie Einblicke in den GitOps-Lebenszyklus von {product_name}, indem Sie Snapshots aller relevanten Ressourcen erfassen und automatisierte Diagnosen durchführen. Dieser Befehl hilft dabei, herauszufinden, warum Bundles während der Ziel- und Implementierungsphasen stecken bleiben, und bietet umsetzbare Informationen über den Gesundheitszustand Ihrer {product_name} Installation.
+
+[source,text]
+----
+fleet monitor [flags]
+----
+
+=== Optionen
+
+[source,text]
+----
+  -n, --namespace string          Namespace to monitor (default: all namespaces)
+      --system-namespace string    {product_name} system namespace (default: cattle-fleet-system)
+      --agent-staleness duration  Consider agent stale after this duration (default: 24h)
+      --watch                     Watch for changes and output continuously
+      --interval int              Interval in seconds between checks when watching (default: 60)
+  -h, --help                      help for monitor
+----
+
+=== Kurzanleitung
+
+Der Monitorbefehl gibt **kompaktes JSON** aus (ein Snapshot pro Zeile). Verwenden Sie `jq`, um die Lesbarkeit zu verbessern.
+
+[source,bash]
+----
+# Single snapshot with formatted output
+fleet monitor | jq
+
+# Single snapshot with human-readable analysis
+fleet monitor | fleet analyze
+
+# Continuous monitoring with built-in watch mode (every 60 seconds)
+fleet monitor --watch --interval 60 >> monitor.json
+----
+
+=== Was es erkennt
+
+Der Monitorbefehl führt umfassende Diagnosen durch, um Folgendes zu erkennen:
+
+==== Probleme im Ressourcenlebenszyklus
+*  **Bündel mit Generationsabweichung**: Bündel, die nicht durch ihren Lebenszyklus fortschreiten (generation != observedGeneration)
+*  **Blockierte BundleDeployments**: BundleDeployments, bei denen der Agent keine neuen deploymentIDs anwendet
+*  **Mehrere Finalizer**: Ressourcen mit mehr als einem Finalizer (zeigt Fehler an - nur Inhalte sollten mehrere Finalizer für die Referenzzählung haben, in {product_name} v0.11.1 bis v0.14.x)
+*  **Verwaiste Ressourcen**: Ressourcen mit Löschzeitstempeln, die nicht durch Garbage Collection entfernt werden können.
+
+==== Datenkonsistenzprobleme
+* **API-Zeitreise**: Kubernetes API-Server gibt veraltete zwischengespeicherte Daten zurück (erkannt durch mehrmaliges Abrufen von Ressourcen)
+* **Commit-Hash-Mismatches**: Bundles/BundleDeployments wurden nicht auf das neueste Commit des GitRepo aktualisiert
+* **ForceSyncGeneration Drift**: Bundles spiegeln nicht den forceSyncGeneration-Wert ihres GitRepos wider
+* **UID-Mismatches**: Secrets mit Eigentümerreferenzen zu gelöschten/wiederhergestellten Ressourcen
+* **DeploymentID-Mismatches**: BundleDeployments, bei denen spec.deploymentID != status.appliedDeploymentID
+
+==== Zielabgleichsprobleme
+* **Bundles ohne Implementierungen**: Bundles wurden erstellt, aber keine Cluster entsprachen dem Ziel-Selector
+* **GitRepos ohne Bundles**: GitRepos, die keine Bundles erstellt haben (könnte an einem schlechten Pfad, Zielen oder Verarbeitungsfehlern liegen)
+* **ClusterGroups ohne Cluster**: ClusterGroups mit Selektoren, die mit keinen Clustern übereinstimmen
+* **Verwaiste BundleDeployments**: BundleDeployments, deren übergeordnetes Bundle gelöscht wurde
+
+==== Leistungsprobleme
+* **Große Bundles**: Bundles >1MB, die die Leistung von etcd beeinträchtigen können
+* **Fehlende Inhaltsressourcen**: Bundles mit `resourcesSHA256Sum`, aber ohne entsprechende Inhaltsressource
+* **Hohe Ressourcenanzahl**: Große Mengen an Bundle-Ressourcen, die Druck auf etcd verursachen können
+
+==== Agent- und Clusterprobleme
+* **Agent nicht bereit**: Cluster mit nicht bereitem Agentenstatus
+* **Fehlendes LastSeen**: Cluster ohne Zeitstempel des Agenten-Takts
+* **Veraltetes LastSeen**: Cluster, in denen der Agent sich in letzter Zeit nicht gemeldet hat (Standard: 24h, konfigurierbar mit `--agent-staleness`)
+* **Fehlende Agenten-Bundles**: Cluster-Namespaces ohne erwartete Agenten-BundleDeployments
+
+==== Probleme mit der Eigentumskette
+* **Gebrochene Eigentümerschaft**: Bundles ohne GitRepo-Eigentümer, BundleDeployments ohne Bundle-Eigentümer
+* **Invalid Secret Owners**: Ungültige Secret-Eigentümer Bundle-Secrets mit falschen oder fehlenden Eigentümerreferenzen
+
+==== Generations-/Beobachtungsabweichungen
+* **GitRepo-Generationsdrift**: GitRepo Generierung != beobachteteGenerierung (Controller verarbeitet keine Updates)
+* **Bundle-Generierungsdrift**: Bundle-Generierung != beobachtete Generierung (Controller verarbeitet keine Updates)
+* **BundleDeployment SyncGeneration Drift**: BundleDeployment syncGenerierung != forceSyncGenerierung (Agent hat erzwungenen Sync nicht angewendet)
+* **Veraltete Generation bei Content**: Content-Ressourcen mit veralteten Generierungswerten
+
+=== Nutzungsbeispiele
+
+==== Grundlegende Überwachung
+
+[source,bash]
+----
+# Single snapshot with pretty formatting
+fleet monitor | jq
+
+# Monitor specific namespace
+fleet monitor -n fleet-local | jq
+
+# Check fleet-default namespace (common for local clusters)
+fleet monitor -n fleet-default | jq
+----
+
+==== Kontinuierliche Überwachung
+
+[source,bash]
+----
+# Collect snapshots every 60 seconds using watch mode
+fleet monitor --watch --interval 60 >> monitor.json
+
+# Or monitor with a shorter interval (every 30 seconds)
+fleet monitor --watch --interval 30 >> monitor.json
+----
+
+==== Gezielte Diagnosen
+
+[source,bash]
+----
+# Check for stuck resources
+fleet monitor | jq '.diagnostics | {
+  bundlesWithGenerationMismatch: .bundlesWithGenerationMismatch | length,
+  stuckBundleDeployments: .stuckBundleDeployments | length
+}'
+
+# Find bundles with old commits
+fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies'
+
+# Check agent health across all clusters
+fleet monitor | jq '.diagnostics.clustersWithAgentIssues'
+
+# Find large bundles that might impact etcd
+fleet monitor | jq '.diagnostics.largeBundles'
+
+# Check target matching issues
+fleet monitor | jq '.diagnostics | {
+  bundlesNoDeployments: .bundlesWithNoDeployments | length,
+  gitreposNoBundles: .gitReposWithNoBundles | length,
+  clusterGroupsNoClusters: .clusterGroupsWithNoClusters | length
+}'
+----
+
+==== Zustände vergleichen
+
+[source,bash]
+----
+# Before making changes
+fleet monitor > before.json
+
+# Make changes to GitRepo, bundles, etc.
+kubectl edit gitrepo my-repo
+
+# After changes
+fleet monitor > after.json
+----
+
+=== Häufige Fehlerszenarien
+
+==== Szenario 1: Bundle wird nicht implementiert.
+
+[source,bash]
+----
+# Capture current state
+fleet monitor | jq > bundle-status.json
+
+# Check for bundles with generation mismatch
+jq '.diagnostics.bundlesWithGenerationMismatch' bundle-status.json
+
+# Check if bundle matched any targets
+jq '.diagnostics.bundlesWithNoDeployments' bundle-status.json
+
+# Check bundle-to-gitrepo consistency
+jq '.diagnostics.gitRepoBundleInconsistencies' bundle-status.json
+----
+
+==== Szenario 2: Agent meldet keinen Status
+
+[source,bash]
+----
+# Check agent health
+fleet monitor | jq '.diagnostics.clustersWithAgentIssues'
+
+# See detailed cluster info
+fleet monitor | jq '.clusters[] | select(.agentStatus != "ready")'
+
+# Check when agents last checked in
+fleet monitor | jq '.clusters[] | {name, lastSeen, agentAge}'
+----
+
+==== Szenario 3: Ressourcen mit Löschzeitstempeln festgefahren
+
+[source,bash]
+----
+# Find resources with deletion timestamps
+fleet monitor | jq '{
+  bundles: [.bundles[] | select(.deletionTimestamp != null) | .name],
+  bundledeployments: [.bundledeployments[] | select(.deletionTimestamp != null) | .name]
+}'
+
+# Check finalizers preventing deletion
+fleet monitor | jq '.bundles[] | select(.deletionTimestamp != null) | {name, finalizers}'
+----
+
+==== Szenario 4: Commits werden nicht propagiert
+
+[source,bash]
+----
+# Track commits through the lifecycle
+fleet monitor | jq '{
+  gitrepo: .gitrepos[0].commit[0:8],
+  bundles: [.bundles[] | {name, commit: .commit[0:8]}],
+  bundledeployments: [.bundledeployments[] | {name, commit: .commit[0:8]}]
+}'
+
+# Find commit mismatches
+fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies[] | 
+  select(.commitMismatch == true)'
+----
+
+==== Szenario 5: Leistungsprobleme
+
+[source,bash]
+----
+# Check bundle sizes
+fleet monitor | jq '.diagnostics.largeBundles'
+
+# Find bundles with most resources
+fleet monitor | jq '[.bundles[] | {name, size: .sizeBytes, sizeMB: (.sizeBytes / 1048576 | floor)}] | 
+  sort_by(.size) | reverse'
+
+# Check for missing content resources
+fleet monitor | jq '.diagnostics.bundlesWithMissingContent'
+----
+
+=== Kontinuierlicher Überwachungsworkflow
+
+Für die langfristige Überwachung und Trendanalyse:
+
+[source,bash]
+----
+# 1. Start continuous collection with watch mode (runs in background)
+nohup fleet monitor --watch --interval 60 >> /var/log/fleet-monitor.json 2>&1 &
+
+# 2. Periodically analyze for issues
+watch -n 300 "fleet analyze --issues /var/log/fleet-monitor.json | tail -30"
+
+# 3. Generate daily reports
+fleet analyze --diff /var/log/fleet-monitor.json > fleet-report-$(date +%Y%m%d).txt
+
+# 4. Log rotation (keep last 7 days)
+find /var/log -name "fleet-report-*.txt" -mtime +7 -delete
+----
+
+=== Integration mit Alarmierung
+
+Der Überwachungsbefehl kann in Überwachungssysteme integriert werden:
+
+[source,bash]
+----
+# Check if there are any issues (exit code 0 = healthy, 1 = issues)
+if fleet monitor | jq -e '
+  .diagnostics.bundlesWithGenerationMismatch != [] or
+  .diagnostics.stuckBundleDeployments != [] or
+  .diagnostics.clustersWithAgentIssues != []
+' > /dev/null; then
+  echo "ALERT: Fleet issues detected!"
+  fleet monitor | jq '.diagnostics' | mail -s "Fleet Alert" admin@example.com
+fi
+
+# Prometheus-style metrics export
+fleet monitor | jq -r '
+  "fleet_stuck_bundles \(.diagnostics.bundlesWithGenerationMismatch | length)",
+  "fleet_stuck_bundledeployments \(.diagnostics.stuckBundleDeployments | length)",
+  "fleet_agent_issues \(.diagnostics.clustersWithAgentIssues | length)",
+  "fleet_large_bundles \(.diagnostics.largeBundles | length)"
+'
+----
+
+=== Verständnis der Diagnosen
+
+==== Blockierte Ressourcen
+
+Eine Ressource wird als "blockiert" betrachtet, wenn:
+
+**Bundle (Generationsabweichung):**
+
+* `generation != observedGeneration` (Controller hat die neueste Spezifikation nicht verarbeitet)
+
+**Hinweis:** Bundles mit Löschzeitstempeln werden separat als Anzahl in `diagnostics.bundlesWithDeletionTimestamp` verfolgt.
+
+**BundleDeployment (Stuck):**
+
+* `spec.deploymentID != status.appliedDeploymentID` (Agent hat die neueste Implementierung nicht angewendet)
+* `syncGeneration` stimmt nicht mit `forceSyncGeneration` überein (erzwungene Synchronisierung nicht angewendet)
+* Hat `deletionTimestamp`, existiert aber trotzdem
+
+**BundleDeployment (SyncGeneration Mismatch):**
+
+* `syncGeneration` != `forceSyncGeneration` wenn `forceSyncGeneration > 0` (separat von blockierten BundleDeployments verfolgt)
+
+==== API-Konsistenzprüfung
+
+Der Monitor führt mehrere Abrufe derselben Ressourcen durch, um "Zeitreise" zu erkennen - wenn der Kubernetes-API-Server unterschiedliche Ressourcenversionen aufgrund von veralteter Zwischenspeicherung zurückgibt. Dies ist entscheidend, da veraltete Daten Bundles blockiert erscheinen lassen können, während sie tatsächlich fortschreiten.
+
+==== Commit-Verfolgung
+
+Der Monitor verfolgt Git-Commit-Hashes während des gesamten Lebenszyklus:
+1. **GitRepo** ruft den neuesten Commit ab
+2. **Bundle** sollte diesen Commit widerspiegeln
+3. **BundleDeployment** sollte mit dem Commit des Bundles übereinstimmen
+4. **Bundle-Secrets** speichern den Commit in den Annotationen
+
+Abweichungen zeigen an, wo der Synchronisierungsprozess fehlschlägt.
+
+=== Systemleistung
+
+* Der Monitor ruft alle Fleet-Ressourcen im Cluster ab
+* Für große Installationen (über 1000 Bundles) sollten Sie Folgendes in Betracht ziehen:
+  * `--namespace` verwenden, um den Umfang zu begrenzen
+  * Weniger häufig ausführen (z. B. alle 120+ Sekunden statt 60)
+  * Die Ressourcennutzung des Monitor-Befehls selbst überwachen
+
+=== Fehlerbehebung beim Monitor-Befehl
+
+Wenn der Monitor-Befehl fehlschlägt:
+
+[source,bash]
+----
+# Check Fleet controller is running
+kubectl get pods -n cattle-fleet-system
+
+# Verify you have proper RBAC permissions
+kubectl auth can-i list bundles --all-namespaces
+kubectl auth can-i list bundledeployments --all-namespaces
+
+# Check if CRDs are installed
+kubectl get crds | grep fleet.cattle.io
+
+# Enable verbose logging
+fleet monitor --verbose 2>&1 | tee monitor-debug.log
+----
+
+=== SIEHE AUCH
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[fleet]
+* xref:/reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]

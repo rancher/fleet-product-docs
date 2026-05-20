@@ -1,0 +1,190 @@
+= Cartographie vers les clusters en aval
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} dans Rancher] permet aux utilisateurs de gérer les clusters facilement comme s'ils n'étaient qu'un seul cluster. Les utilisateurs peuvent déployer des bundles, qui peuvent être composés de manifestes de déploiement ou de toute autre ressource Kubernetes, à travers les clusters en utilisant la configuration de regroupement.
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} dans Rancher] permet aux utilisateurs de gérer les clusters facilement comme s'ils n'étaient qu'un seul cluster. Les utilisateurs peuvent déployer des bundles, qui peuvent être composés de manifestes de déploiement ou de toute autre ressource Kubernetes, à travers les clusters en utilisant la configuration de regroupement.
+endif::[]
+[IMPORTANT]
+====
+
+*Multi-cluster uniquement*:
+Cette approche ne s'applique que si vous exécutez {product_name} dans un style multi-cluster. Si aucune cible n'est spécifiée, c'est-à-dire lors de l'utilisation d'un cluster unique, les bundles ciblent le groupe de clusters par défaut.
+====
+
+
+Lors du déploiement de `GitRepos` vers des clusters en aval, les clusters doivent être mappés à une cible.
+
+== Définition des cibles
+
+Les cibles de déploiement de `GitRepo` se font en utilisant le champ `spec.targets` pour faire correspondre les clusters ou les groupes de clusters. La spécification YAML est comme ci-dessous.
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: myrepo
+  namespace: clusters
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - simple
+
+  # Targets are evaluated in order and the first one to match is used. If
+  # no targets match then the evaluated cluster will not be deployed to.
+  targets:
+  # The name of target. This value is largely for display and logging.
+  # If not specified a default name of the format "target000" will be used
+  - name: prod
+    # A selector used to match clusters.  The structure is the standard
+    # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
+    # clusterSelector will be used only to further refine the selection after
+    # clusterGroupSelector and clusterGroup is evaluated.
+    clusterSelector:
+      matchLabels:
+        env: prod
+    # A selector used to match cluster groups.
+    clusterGroupSelector:
+      matchLabels:
+        region: us-east
+    # A specific clusterGroup by name that will be selected
+    clusterGroup: group1
+    # A specific cluster by name that will be selected
+    clusterName: cluster1
+----
+
+== Correspondance des cibles
+
+Tous les clusters et groupes de clusters dans le même espace de noms que le `GitRepo` seront évalués par rapport à toutes les cibles.
+Si l'une des cibles correspond au cluster, alors le `GitRepo` sera déployé sur le cluster en aval. Si aucune correspondance n'est faite, alors le `GitRepo` ne sera pas déployé sur ce cluster.
+
+Il existe trois approches pour faire correspondre les clusters.
+On peut utiliser des sélecteurs de clusters, des sélecteurs de groupes de clusters, ou un nom de groupe de clusters explicite.  Tous les critères sont additifs, donc la correspondance finale est évaluée comme "clusterSelector && clusterGroupSelector && clusterGroup".  Si l'un des trois a la valeur par défaut, elle est exclue des critères.  La valeur par défaut est soit null, soit "".  Il est important de réaliser que la valeur `{}` pour un sélecteur signifie "correspondre à tout."
+
+[,yaml]
+----
+targets:
+  # Match everything
+  - clusterSelector: {}
+  # Selector ignored
+  - clusterSelector: null
+----
+
+Vous pouvez également faire correspondre des clusters par nom{nbsp}:
+
+[,yaml]
+----
+targets:
+  - clusterName: fleetname
+----
+
+Lorsque vous utilisez {product_name} dans Rancher, assurez-vous de mettre le nom de la ressource `clusters.fleet.cattle.io`.
+
+== Cible par défaut
+
+Si aucune cible n'est définie pour le `GitRepo`, alors la valeur par défaut des cibles est appliquée.  La valeur par défaut des cibles est comme ci-dessous.
+
+[,yaml]
+----
+targets:
+- name: default
+  clusterGroup: default
+----
+
+Cela signifie que si vous souhaitez configurer un emplacement par défaut où les GitRepos non configurés iront, il suffit de créer un groupe de clusters appelé par défaut et d'y ajouter des clusters.
+
+== Personnalisation par cluster
+
+[IMPORTANT]
+====
+
+Le `targets:` dans la ressource `GitRepo` sélectionne les clusters sur lesquels déployer. Le `targetCustomizations:` dans `fleet.yaml` remplace uniquement les valeurs Helm et ne modifie pas le ciblage.
+====
+
+
+Pour démontrer comment déployer des manifestes Kubernetes sur différents clusters avec personnalisation en utilisant {product_name}, nous utiliserons https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
+
+*Le contexte :* L'utilisateur a trois clusters avec trois étiquettes différentes{nbsp}: `env=dev`, `env=test` et `env=prod`. L'utilisateur souhaite déployer une application frontend avec une base de données backend sur ces clusters.
+
+*Comportement attendu :*
+
+* Après le déploiement sur le cluster `dev`, la réplication de la base de données n'est pas activée.
+* Après le déploiement sur le cluster `test`, la réplication de la base de données est activée.
+* Après le déploiement sur le cluster `prod`, la réplication de la base de données est activée et les services de répartition de charge sont exposés.
+
+*Avantage de {product_name} :*
+
+Au lieu de déployer l'application sur chaque cluster, {product_name} vous permet de déployer sur tous les clusters en suivant ces étapes{nbsp}:
+
+. Déployez gitRepo `https://github.com/rancher/fleet-examples.git` et spécifiez le chemin `multi-cluster/helm`.
+. Sous `multi-cluster/helm`, un graphique Helm déploiera le service de l'application frontend et le service de la base de données backend.
+. La règle suivante sera définie dans `fleet.yaml`{nbsp}:
+
+[source,yaml]
+----
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
+
+*Résultat :*
+
+{product_name} déploiera le graphique Helm avec votre `values.yaml` personnalisé sur les différents clusters.
+
+
+[NOTE]
+====
+La gestion de la configuration ne se limite pas aux déploiements, mais peut être étendue à la gestion générale de la configuration. {product_name} est capable d'appliquer la gestion de la configuration par le biais de la personnalisation parmi n'importe quel ensemble de clusters automatiquement.
+====
+
+=== Limitations lors de la substitution des paramètres du graphique Helm avec `targetCustomizations`
+
+Bien que `helm.chart`, `helm.repo` et `helm.version` puissent être spécifiés dans `targetCustomizations`, la substitution de ces champs présente d'importantes limitations.
+
+{product_name} récupère le graphique Helm pendant la phase initiale de **Création de Bundle** en utilisant la configuration `helm` de niveau supérieur. Cette récupération est effectuée par la chaîne d'outils Fleet (`GitJob`) avant que `targetCustomizations` ne soient traités.
+
+Comme le graphique est téléchargé à ce stade, `targetCustomizations` ne peut pas être utilisé pour récupérer dynamiquement un graphique différent depuis{nbsp}:
+
+* un répertoire local
+* un autre dépôt Helm
+* un registre OCI séparé (par exemple, un derrière une passerelle de périmètre de sécurité)
+
+Si vous essayez de substituer ces champs, la substitution peut être ignorée lors de la récupération du graphique. Dans certains cas, Fleet peut tenter d'inclure plusieurs versions de graphiques dans le même bundle, ce qui peut augmenter considérablement la taille du bundle et peut dépasser les limites de taille d'etcd.
+
+Si différents environnements nécessitent des graphiques ou des registres différents, utilisez l'une des approches suivantes{nbsp}:
+
+* Définissez des fichiers `fleet.yaml` séparés pour chaque configuration de graphique.
+* Créez des ressources `GitRepo` séparées pour chaque environnement.
+
+
+== Exemples supplémentaires
+
+Des exemples utilisant des YAML Kubernetes bruts, des graphiques Helm, Kustomize et des combinaisons des trois se trouvent dans le dépôt https://github.com/rancher/fleet-examples/[{product_name} Examples repo].

@@ -1,0 +1,109 @@
+= Glossar
+:revdate: 2026-02-18
+:page-revdate: {revdate}
+
+== Agent
+
+Im Kontext von {product_name} ist ein Agent eine Kubernetes-Implementierung, die für die Bereitstellung von Workloads in seinem Cluster verantwortlich ist.
+Dies umfasst die Überwachung eines bestimmten Namespace im Upstream-Cluster und die Bereitstellung von Bundle-Implementierungen, die sich in diesem Namespace befinden, im Downstream-Cluster, in dem der Agent lebt.
+
+== Bundle
+
+Ein Bundle ist eine {product_name}-spezifische Ressource (auch bekannt als https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[benutzerdefinierte Ressource] in Kubernetes), die einen Workload oder eine Menge von Benutzerressourcen darstellt, die implementiert werden sollen. Es wird typischerweise von {product_name} aus einem Pfad eines Git-Repositories generiert.
+
+== Diagramm
+
+Siehe (https://helm.sh/docs/topics/charts/)[Dokumentation zu Helm-Charts].
+
+== Cluster
+
+Ein Cluster bezieht sich auf:
+* ein https://kubernetes.io/docs/concepts/architecture/[Kubernetes-Cluster], das von {product_name} verwaltet wird
+* eine `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[Ressource] in der API von Fleet, die {product_name} verwendet, um dieses Kubernetes-Cluster zu verwalten.
+
+== Continuous Delivery/Continuous Deployment
+
+Die Definitionen und Unterscheidungen zwischen Continuous Delivery und Continuous Deployment variieren erheblich, zum Beispiel je nachdem: +
+* ob der Deploymentschritt im Prozess enthalten ist und in welche Umgebung (Produktion oder andere), +
+* was einen Deployment auslöst – ist es ein manueller oder automatisierter Schritt?
+
+So viel ist jedoch klar: Das Ziel von {product_name} ist es, die Automatisierung von Implementierungen zu erleichtern.
+
+== Benutzerdefinierte Ressource
+
+Siehe https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[offizielle Dokumentation zu Kubernetes-Benutzerressourcen].
+Kurz gesagt, eine benutzerdefinierte Ressource ist eine Ressource, die für die Zwecke einer Anwendung definiert ist (in unserem Fall {product_name}), um die Menge der von der Kubernetes-API unterstützten Ressourcen (Pods, Implementierungen, Services usw.) zu erweitern.
+
+== Benutzerdefinierte Ressourcenbeschreibung
+
+Siehe https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[offizielle Dokumentation zu Kubernetes-benutzerdefinierten Ressourcenbeschreibungen] aus den Kubernetes-Dokumenten.
+
+== Bereitstellung
+
+Eine Implementierung kann sich beziehen auf: +
+* eine https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[Kubernetes-Implementierung], ob Teil eines Benutzer-Workloads oder Teil von {product_name} selbst, zum Beispiel eine Agenten-Implementierung oder Controller-Implementierungen, +
+* die Aktion, einen Benutzer-Workload zu implementieren, was bedeutet, dass {product_name} die Konfiguration (`GitRepo`, `fleet.yaml` usw.) liest und als Ergebnis Ressourcen in Ziel-Clustern erstellt.
+
+== Downstream-Cluster
+
+Ein Downstream-Cluster ist ein Kubernetes-Cluster, in dem Benutzer-Workloads ausgeführt werden, ohne dass dort Fleet-Controller leben. Es ist ein Ziel-Cluster für Fleet, in dem nur ein Fleet-Agent neben Benutzer-Workloads lebt.
+
+== fleet.yaml
+
+Eine `fleet.yaml`-Datei lebt in einem Git-Repository und speichert Optionen für ein Bundle und Bundle-Implementierungen, die aus diesem Bundle generiert werden sollen. Weitere Informationen sind verfügbar xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
+
+== GitOps
+
+GitOps bezieht sich auf git-triggerte Operationen, bei denen git die Quelle der Wahrheit ist und Änderungen an einem Git-Repository zu Änderungen im Zustand von einem oder mehreren Clustern führen.
+
+== GitRepo
+
+Ein `GitRepo` ist eine spezifische Ressource für Fleet, die als Einstiegspunkt zur Nutzung von {product_name} dient.
+Das Erstellen eines `GitRepo`, das auf eine Reihe von Pfaden in einem Git-Repository verweist, ermöglicht es {product_name}, diese Pfade zu überwachen und Ressourcen bereitzustellen, die dort gespeichert oder referenziert werden.
+
+== Kennung
+
+Bezieht sich auf ein https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[Kubernetes-Label].
+
+== Multi-Cluster
+
+Ein Multi-Cluster-Setup umfasst mehr als einen Cluster: den Upstream-Cluster, der benötigt wird, um die Bereitstellung von Workloads zu verwalten, und mindestens einen Downstream-Cluster.
+
+== Namespace
+
+Bezieht sich auf ein https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[Kubernetes-Namespace].
+
+== Abgleichen
+
+Abgleichen wird im Kontext von Zuständen in Kubernetes-Clustern verwendet. Das Abgleichen einer Ressource bedeutet, sie so zu aktualisieren, dass ihr tatsächlicher Zustand mit ihrem erwarteten Zustand übereinstimmt, sei es aus der Konfiguration, z. B. aus einem Git-Repository, Chart usw.
+
+Bei der Verwendung von GitOps können Aktualisierungen eines Git-Repositorys in neue erwartete Zustände für Ressourcen übersetzt werden, die über dieses Git-Repository konfiguriert sind. Infolgedessen werden die betroffenen Ressourcen abgeglichen.
+Der Zustand einer Ressource kann auch von einer anderen Ressource abhängen, was zu zusätzlichem Abgleichen führt. Zum Beispiel hängt der Status einer Clustergruppe von den Status einzelner Cluster ab, die in dieser Clustergruppe enthalten sind. Daher wird eine Änderung im Zustand eines Clusters dazu führen, dass auch alle Clustergruppen, zu denen dieses Cluster gehört, abgeglichen werden.
+
+== Registrierung
+
+Die Clusterregistrierung ist der Prozess, bei dem ein Fleet-Agent, der in einem Downstream-Cluster lebt, von den Fleet-Controllern im Upstream-Cluster erkannt wird. Sobald die Registrierung für einen Downstream-Cluster abgeschlossen ist, kann {product_name} Workloads in diesem Cluster bereitstellen.
+
+== Repository
+
+Ein Repository kann sein: * ein git-Repository, das Code, Konfiguration oder beliebige Arten von Dateien speichert und Änderungen, die an diesen Dateien durch Commits vorgenommen wurden, verfolgt. {product_name} kann ein git-Repository auf neue Commits überwachen, die in einen bestimmten Branch oder eine Revision an einem oder mehreren Pfaden gepusht werden, über xref:how-tos-for-users/gitrepo-add.adoc[GitRepo-Ressourcen]. * ein Helm-Repository, das Helm-Charts und eine Indexdatei, die auf sie verweist, hostet. {product_name} kann Helm-Charts installieren und benutzerdefinierte Konfiguration auf sie anwenden.
+
+== Ressourcen
+
+Dies bezieht sich normalerweise auf Kubernetes-Ressourcen, die sein können: +
+* Kernressourcen, die von Kubernetes selbst definiert sind, wie Config-Maps, Implementierungen, Pods, Services usw., +
+* benutzerdefinierte Ressourcen, die von einzelnen Anwendungen definiert sind, wie {product_name} selbst, das GitRepo, Bundle, Bundle-Implementierung und einige andere definiert.
+
+== Ziel
+
+{product_name} verwendet dieses Wort im Kontext der Bestimmung, wo ein Workload ausgeführt wird. Dies stellt einen Zielcluster für einen Workload dar.
+
+== Upstream-Cluster
+
+Ein Kubernetes-Cluster, in dem Fleet-Controller ausgeführt werden. Dies ist der Cluster, in dem `GitRepo`s, Bundles und Bundle-Implementierungen erstellt werden. Auch als Management-Cluster bezeichnet.
+
+== Workload
+
+Ein Workload repräsentiert, was Benutzer über {product_name} bereitstellen möchten. Es kann sich um eine Sammlung von Helm-Charts, Kubernetes-Manifests, Kustomize usw. handeln, die in einem Git-Repository gespeichert oder referenziert werden.
+
+Wenn ein Benutzer eine `GitRepo`-Ressource erstellt, die auf dieses Git-Repository verweist, und anschließend relevante Änderungen in diesem Repository festgestellt werden, stellt {product_name} Workloads bereit.

@@ -1,0 +1,321 @@
+= ロールアウト戦略
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name}は、アプリがクラスター全体にデプロイされる方法を制御するためにロールアウト戦略を使用します。パーティションを使用してクラスターのデプロイメントの順序とグループ化を定義でき、制御されたロールアウトと安全な更新を可能にします。
+
+{product_name}は、次のパーティションに進むタイミングを決定するために、各`BundleDeployment`の`Ready`ステータスを評価します。詳細については、ステータスフィールドを参照してください。
+
+ロールアウト中、GitRepoのステータスはデプロイメントの進捗を示します。これにより、バンドルが`Ready`になるタイミングを理解するのに役立ちます。
+
+* 初期デプロイメントの場合：
+  * 1つ以上のクラスターが`NotReady`状態にある可能性があります。
+  * 残りのクラスターは`Pending`としてマークされており、デプロイメントは開始されていません。
+* ロールアウトの場合：
+  * 1つ以上のクラスターが`NotReady`状態にある可能性があります。
+  * 残りのクラスターは、デプロイメントが続くまで`OutOfSync`としてマークされます。
+
+ロールアウト設定オプションは、xref:reference/ref-fleet-yaml.adoc[+fleet.yaml+]の`rolloutStrategy`フィールドに文書化されています。
+
+[NOTE]
+====
+`rolloutStrategy`が`fleet.yaml`に指定されていない場合、{product_name}はデフォルト値を使用します。
+====
+
+== パーティショニングはどのように機能しますか？
+
+パーティションは、クラスター全体にわたる`BundleDeployments`のロールアウトをグループ化し制御するためのみに使用されます。それらはデプロイメントオプションに何ら影響を与えません。
+
+ターゲットクラスターが手動パーティショニングの一部でない場合、それらはロールアウトに含まれません。クラスターがパーティションの一部である場合、パーティションが処理されると`BundleDeployment`を受け取ります。
+
+パーティションは、許可された`NotReady`クラスターの数を超えるクラスターを持つ場合、`NotReady`と見なされます。クラスターがオフラインの場合、ターゲットクラスターは`Ready`と見なされず、オンラインに戻り、`BundleDeployment`を正常にデプロイするまで`NotReady`の状態に留まります。
+
+しきい値は次のように決定されます：
+
+* **手動パーティション**：各パーティション内の`maxUnavailable`値を使用して、そのパーティションの準備状態を制御します。指定されていない場合は、`rolloutStrategy.maxUnavailable`を使用します。
+* **自動パーティション**：準備が整ったときにパーティションを制御するために`rolloutStrategy.maxUnavailable`値を使用します。
+
+{product_name}は、`NotReady`パーティションの数が`maxUnavailablePartitions`未満である場合にのみ進行します。
+
+[NOTE]
+====
+{product_name}は、各パーティションごとに最大`maxNew`クラスターのバッチでデプロイメントを展開します（デフォルト：50）、パーティションにより多くのクラスターが割り当てられている場合でも同様です。各バッチの後、{product_name}は`maxUnavailable`のしきい値を確認してから続行します。パーティションのすべてのデプロイメントが作成された後、`maxUnavailable`も評価されます。次に例を示します。
+
+* パーティションに25クラスターがあり、`maxUnavailable`が5の場合、{product_name}は`maxUnavailable`を確認する前に全ての25クラスターにデプロイします。
+* パーティションに100クラスターがある場合、{product_name}は最初の50（デフォルト`maxNew`）にデプロイし、`maxUnavailable`を確認し、しきい値が超えない場合にのみ残りの50にデプロイします。
+====
+
+次の図は、{product_name}がロールアウトをどのように処理するかを示しています：
+
+image::flow-rollout-fleet.png[{product_name}におけるロールアウトの流れを表示するビジュアル資産。]
+
+{product_name}で設定できるさまざまな制限：
+
+[cols="2,5,1", options="header"]
+|===
+| フィールド | 説明 | デフォルト
+
+| maxUnavailable
+| ロールアウトを停止する前に`NotReady`できるクラスターの最大数または割合。
+| 100%
+
+| maxUnavailablePartitions
+| 同時に`NotReady`できるパーティションの数または割合。
+| 0
+
+| autoPartitionSize
+| 自動作成されたパーティションごとのクラスターの数または割合。
+| 25%
+
+| autoPartitionThreshold
+| 自動パーティショニングが有効になる前に必要な最小クラスター数。この閾値を下回ると、すべてのクラスターが単一のパーティションに配置されます。
+| 200
+
+| maxNew
+| 調整ごとにステージングできる`BundleDeployments`の最大数。
+| 50
+
+| パーティション
+| クラスターラベルまたはグループによって手動パーティションを定義します。設定されている場合、autoPartitionSizeは無視されます。
+| –
+|===
+
+{product_name}は自動および手動のパーティショニングをサポートしています。設定オプションに関する詳細は、fleet.yamlリファレンスのxref:reference/ref-fleet-yaml.adoc[`rolloutStrategy`オプションを参照してください。]
+
+**自動パーティショニング**: {product_name}は`autoPartitionSize`を使用して自動的にパーティションを作成します。
+
+例えば、200のクラスターがあり、`autoPartitionSize`を25%に設定すると、{product_name}はそれぞれ50クラスターの4つのパーティションを作成します。ロールアウトは50クラスターのバッチで進行し、続行する前に`maxUnavailable`を確認します。
+
+`autoPartitionThreshold`設定は自動パーティショニングが有効になるタイミングを制御します：
+
+* **閾値未満**：すべてのクラスターは`autoPartitionSize`設定に関係なく単一のパーティションに配置されます。これにより、小規模なデプロイメントに対する不必要なパーティショニングが防止されます。
+* **閾値以上または同等**: {product_name}は`autoPartitionSize`に基づいて複数のパーティションを作成します。
+* **カスタマイズ可能な閾値**:制限を下げることで、少ないクラスターでのパーティショニングを有効にすることができます（例：小規模テストのために50に設定）または、クラスターの数が多くなるまでパーティショニングを避けるために制限を上げることができます（例：500に設定）。
+* **自動パーティショニングを無効にする**:すべてのクラスターを数に関係なく単一のパーティションにまとめるには、0に設定します。
+
+次に例を示します。
+[source,yaml]
+----
+rolloutStrategy:
+  autoPartitionThreshold: 50  # Enable partitioning with only 50 clusters
+  autoPartitionSize: 50%      # Create partitions of 50% each
+[source,text]
+----
+
+50クラスターの場合、25クラスターずつ2つのパーティションが作成されます。`autoPartitionThreshold`を設定しない場合、これら50のクラスターは単一のパーティションにまとめられます（デフォルトの制限は200です）。
+
+**手動パーティショニング**:`partitions`オプションを使って特定のパーティションを定義します。これにより、クラスターの選択やロールアウト順序を制御できます。
+
+[NOTE]
+====
+手動でパーティションを指定した場合、`autoPartitionSize`は無視されます。
+====
+
+例えば、次のように考えてください：
+
+[source,yaml]
+----
+rolloutStrategy:
+  partitions:
+    - name: demoRollout
+      maxUnavailable: 10%
+      clusterSelector:
+        matchLabels:
+          env: staging
+    - name: stable
+      maxUnavailable: 5%
+      clusterSelector:
+        matchLabels:
+          env: prod
+[source,text]
+----
+
+{product_name} 次に：
+
+1. `clusterSelector`、`clusterGroup`、または`clusterGroupSelector`に基づいてクラスターを選択します。
+  * パーティションは`clusterName`、`clusterSelector`、`clusterGroup`、および`clusterGroupSelector`で指定できます。
+2. 最初のパーティションへのロールアウトを開始します。
+3. パーティションが`Ready`と見なされるまで待機します（`maxUnavailable`のしきい値によります）。
+4. 次のパーティションに進みます。
+
+次の図は、{product_name}が複数のパーティションにわたるロールアウトをどのように処理するかを示しており、準備チェックやデプロイメントフローも含みます。
+
+image::deploy-targets-partition.png[パーティションロールアウトのフローを示すビジュアル資産です。]
+
+[NOTE]
+====
+`maxNew`は、調整ごとにいくつの`BundleDeployments`をステージできるかを制御します。デフォルトは50です。これは`rolloutStrategy.maxNew`を使って`fleet.yaml`で設定できます。
+====
+
+各パーティション内で、{product_name}は同時に最大`maxNew``BundleDeployments`を展開します（デフォルト：50).下の図は、{product_name}がこのプロセス中に進むか待つかを決定する方法を示しています。
+
+image::partition-rollout-flow.png[パーティション内のターゲットをデプロイするフローを示すビジュアル資産です。]
+
+[NOTE]
+====
+{product_name}はクラスターにラベルを付けることを推奨しており、それらのラベルを使って特定のパーティションにクラスターを割り当てることができます。
+==== 
+
+[NOTE]
+====
+{product_name}は`fleet.yaml`ファイルに表示される順序でパーティションを処理します。
+====
+
+=== 単一パーティション
+
+`rolloutStrategy.partitions`を定義しない場合、{product_name}はターゲットクラスターの数に基づいて自動的にパーティションを作成します：
+
+* `autoPartitionThreshold`クラスター未満の場合（デフォルト200）、{product_name}は単一パーティションを使用します。
+* `autoPartitionThreshold`以上のクラスターの場合、{product_name}はパーティションを作成するために`autoPartitionSize`値（デフォルト25%）を使用します。
+
+例えば、200クラスターの場合（デフォルトの`autoPartitionThreshold`を満たす）、{product_name}はデフォルトの`autoPartitionSize`である25%を使用します。これは、{product_name}が4つのパーティションを作成することを意味します（200の25%＝1パーティションあたり50クラスター）。{product_name}は同時に最大50クラスターを処理します。つまり、
+
+1. 最初の50クラスターにデプロイします。
+2. `maxUnavailable` に基づいて準備状況を評価します。
+. 条件が満たされている場合、次の50クラスターに進みます。
+
+=== 複数のパーティション
+
+複数のパーティションを定義した場合、{product_name}は同時に`maxUnavailablePartitions`できるパーティションの数を制限するために`NotReady`を使用します。`NotReady` パーティションの数が `maxUnavailablePartitions` を超えると、{product_name} はロールアウトを一時停止します。
+
+== イメージプルストームを防ぐ
+
+ロールアウト中、各ダウンストリームクラスターはコンテナイメージをプルします。数百のクラスターが同時にイメージを引き出し始めると、レジストリが圧倒され、DDoS攻撃のように振る舞う可能性があります。
+
+これを避けるために、{product_name}は一度に更新するクラスターの数を制御できます。以下のロールアウト設定オプションを使用して、ロールアウトを遅くし、段階的に進めることができます。
+
+* `autoPartitionSize`
+* `partitions`
+* `maxUnavailable`
+
+{product_name}はロールアウト中に人工的な遅延を追加しません。代わりに、各クラスターのワークロードの`readiness`ステータスに基づいて進行します。準備状態に影響を与える要因には、イメージの引き出し時間、起動時間、および準備プローブが含まれます。準備プローブの使用が推奨されますが、ロールアウト速度を制御するために厳密には必要ではありません。
+
+例えば、200のクラスターがあり、手動で40のクラスターに分割されている場合、イメージプルストームを防ぎたいとします：
+
+* `maxUnavailablePartitions`:0に設定します。
+* `maxUnavailable`:10%に設定します。
+
+ロールアウトの進行状況：
+
+1. {product_name}は最初のパーティション（40クラスター）から始まります。
+2. 一度に最大50の`BundleDeployments`をロールアウトします。したがって、1回のバッチでパーティション内のすべての40クラスターにロールアウトします。
+3. {product_name}はパーティション内のクラスターの準備状態を確認します。
+* 4つ以上のクラスターが準備ができていない場合、そのパーティションは`NotReady`と見なされ、ロールアウトは一時停止されます。
+* ≤4つのクラスターが`NotReady`になると、{product_name}はロールアウトを進めます。
+4. 全体のパーティションがほぼ準備完了（90%）になると、{product_name}は次のパーティションに移動します。
+
+一度に40のデプロイメントを処理したい、または処理する必要がある場合は、各パーティションに少ないクラスターを配置できます。
+
+== ユースケースと動作
+
+クラスターの数が均等に割り切れない場合、{product_name}はパーティションサイズを切り下げます。例えば、230のクラスターが`autoPartitionSize: 25%`を使用した場合、次のようになります：
+
+* 57クラスターの4つのパーティション
+* 2クラスターの1つのパーティション
+
+=== 場面:50クラスター（単一パーティション）
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name}は、パーティションが定義されていないため、50クラスターすべてを含む1つのパーティションを作成します。
+  * `maxUnavailablePartitions`を指定する必要はありません。なぜなら、1つのパーティションしか作成されないからです。
+* 手動パーティションが指定されておらず、`maxUnavailable`が10%に設定されている場合でも、{product_name}はすべての50クラスターに一度にデプロイします（バッチ動作が最初に`maxUnavailable`を上書きします）。
+* すべてのデプロイメントが作成された後に評価が行われます。
+
+次の図は、{product_name}が単一パーティションで50クラスターをどのように処理するかを示しています：
+
+image::deploy-50Clusters.png[50クラスターのシナリオ]
+
+=== 場面:100クラスター（単一パーティション） 
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name}は、パーティションが定義されていないため、100クラスターすべてを含む1つのパーティションを作成します。
+  * `maxUnavailablePartitions`を指定する必要はありません。なぜなら、1つしか作成されないからです。
+* 手動パーティションが指定されておらず、`maxUnavailable`が10%に設定されている場合でも、{product_name}は50クラスターに一度にデプロイします（バッチ動作が最初に`maxUnavailable`を上書きします）。
+
+100クラスターの10%にあたる10クラスターが利用できない場合、残りの50クラスターのデプロイは、10クラスター未満になるまで`NotReady`一時停止されます。
+
+=== 場面:200クラスタ（複数のパーティション）
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailablePartitions: 1
+  autoPartitionSize: 10%
+[source,text]
+----
+
+* {product_name}は、それぞれ20クラスターを持つ10個のパーティションを作成します。
+* デプロイメントはパーティションごとに順次進行します。
+* 2つ以上のパーティションが`NotReady`になると、ロールアウトは一時停止します。
+* 1つのパーティションが`NotReady`の場合、ロールアウトは次に進むことができます。
+
+{product_name}は20クラスターのために`BundleDeployments`を作成し、それらが`Ready`になるのを待ってから次に進みます。これにより、ダウンストリームクラスターからのイメージプルの量が最大で約40イメージに制限されます。
+
+=== 場面:200クラスター（厳格な準備、手動パーティション）
+
+手動パーティショニングにより、`maxUnavailablePartitions: 0`を使用してクラスターのグループ化を制御できます。
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailable: 0
+  maxUnavailablePartitions: 0
+  partitions:
+    - name: demoRollout
+      clusterSelector:
+        matchLabels:
+          stage: demoRollout
+    - name: stable
+      clusterSelector:
+        matchLabels:
+          stage: stable
+[source,text]
+----
+
+* `clusterSelector`と`stage: demoRollout`、`stage: stable`のようなラベルを使用して手動パーティションを定義します。
+* {product_name}は最初のパーティションのクラスター（例えば、`demoRollout`）のために`BundleDeployments`を作成します。
+* ロールアウトは厳密に順序通りに進行し、{product_name}は現在のパーティションが準備完了と見なされるまで次のパーティションに移動しません。
+* `maxUnavailable: 0`と`maxUnavailablePartitions: 0`を使用すると、{product_name}はどのパーティションも準備完了と見なされない場合、ロールアウトを一時停止します。
+
+以下の図は、{product_name}がロールアウトを続行するか一時停止するかをどのように処理するかを説明しています。
+
+image::partition-fleet-rollout.png[手動パーティションシナリオ]
+
+これにより、全200クラスターにわたる完全な準備と段階的ロールアウトが保証されます。正確なロールアウトのシーケンシングと、進む前の完全なクラスターの準備が必要な場合は、このアプローチを使用してください。
+
+== ロールアウト戦略のデフォルト
+
+パーティションレベルのロールアウト値が定義されていない場合、{product_name}は`fleet.yaml`の`rolloutStrategy`からグローバル値を適用します。パーティション固有の設定は、明示的に設定された場合、グローバル値を上書きします。
+
+デフォルトでは、{product_name}は次のように設定します：
+
+* `maxUnavailable`を`100%`に設定：パーティション内のすべてのクラスターが`NotReady`であっても、準備完了と見なされる場合があります。
+* `maxUnavailablePartitions`を`0`に設定：1つ以上のパーティションが`NotReady`と見なされる場合にのみ、ロールアウトを防ぎます。しかし、このチェックは、すべてのパーティションが`maxUnavailable: 100%`によって準備完了と見なされる場合には効果がありません。
+
+例えば、デフォルト設定で200のクラスターを考えてみてください：
+
+* {product_name}は50クラスターのパーティションを4つ作成します（`autoPartitionSize: 25%`）。
+* `maxUnavailable`が`100%`であるため、各パーティションはすぐに`Ready`として扱われます。
+* {product_name}は実際の準備状況に関係なく、すべてのパーティションを通過します。
+
+{product_name}は、次のようにロールアウトを制御することをお勧めします：
+
+* `maxUnavailable`を下げて、例えば10％にします。
+* 必要に応じて、`maxUnavailablePartitions`を0以上に設定します。
+
+これにより、
+
+* パーティションがロールアウトを続ける前に準備が整います。
+* {product_name}は、準備が整っていないパーティションが多すぎる場合、ロールアウトを一時停止します。

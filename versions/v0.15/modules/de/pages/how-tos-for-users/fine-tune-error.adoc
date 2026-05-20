@@ -1,0 +1,166 @@
+= Feinabstimmung der Fehlererkennung
+:revdate: 2025-09-12
+:page-revdate: {revdate}
+
+{product_name} überwacht das `status`-Feld der bereitgestellten Ressourcen, um festzustellen, ob ein `Bundle` gesund oder fehlerhaft ist. In bestimmten Fällen kann {product_name} einen Zustand im Statusfeld als Fehler interpretieren, auch wenn er erwartet oder harmlos ist.
+
+Sie können dieses Verhalten auf zwei Arten anpassen:
+
+* Bedingungen in `fleet.yaml` ignorieren
+* Fehlerzuordnungen mit Umgebungsvariablen anpassen
+
+image::fine-tune-error-flow.svg[Ein visueller Fluss der Feinabstimmung der Fehlererkennung]
+
+HINWEIS:  +
+Sie sollten selten die Bereitschaftserkennung in {product_name} mit Umgebungsvariablen konfigurieren müssen. Wenn Sie dies tun, öffnen Sie ein Problem oder reichen Sie einen Pull-Request ein, um die standardmäßige Bereitschaftserkennung zu verbessern.
+
+== Bedingungen in `fleet.yaml` ignorieren
+
+Verwenden Sie die `ignore.conditions`-Einstellung in der `fleet.yaml`-Datei, um {product_name} anzuweisen, bestimmte Bedingungen zu ignorieren.
+
+[source,yaml]
+----
+# from ref-fleet-yaml
+
+# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# some conditions in Custom Resources makes the Bundle to be in an error state
+# when it shouldn't.
+ignore:
+
+  # Conditions to be ignored
+  conditions:
+
+    # In this example a condition will be ignored if it contains
+    # {"type": "Active", "status", "False"}
+    - type: Active
+      status: "False"
+----
+
+Diese Methode ist nützlich, wenn eine benutzerdefinierte Ressource oder ein Controller Bedingungen festlegt, die dazu führen, dass {product_name} ein Bundle als fehlgeschlagen markiert, obwohl die Ressource gesund ist.
+
+image::fine-tune-error-ingore.svg[Ein visueller Fluss der Ignorierung von Bedingungen während der Feinabstimmung der Fehlererkennung]
+
+== Fehlerzuordnung mit Umgebungsvariablen konfigurieren
+
+In {product_name} **v0.13** wurde die Fehlererkennung verbessert, um Ihnen mehr Kontrolle zu geben. Sie können die Umgebungsvariable `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` verwenden, um anzupassen, wie Ressourcenzustände interpretiert werden.
+
+Diese Variable ermöglicht es Ihnen, durch `Group`, `Version`, `Kind` (GVK) zu definieren, welche Zustandswerte als Fehler behandelt oder ausdrücklich nicht als Fehler behandelt werden sollen.
+
+Setzen Sie diese Variable in Ihrer Fleet-Helm-Chart-Implementierung (`values.yaml`) mit `extraEnv`. Der Wert muss JSON sein.
+
+[source,yaml]
+----
+# Extra environment variables passed to the fleet pods.
+# extraEnv:
+# - name: OCI_STORAGE
+#   value: "false"
+----
+
+HINWEIS:  +
+Diese Einstellung ist global für alle Fleet-Controller und gilt für jede `GitRepo`. Wenn Sie die Fehlerbehandlung nur für ein bestimmtes Bundle anpassen müssen, verwenden Sie stattdessen die `ignoreConditions`-Option in `fleet.yaml`.
+
+=== Zusammenführungsverhalten
+
+Wenn Sie Zuordnungen mit `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` überschreiben:
+
+* Neue Bedingungen werden mit vordefinierten Bedingungen zusammengeführt.
+* Bedingungswerte werden für jede Bedingung ersetzt, die Sie neu definieren.
+
+Zum Beispiel, betrachten Sie die Standardzuordnung: 
+
+`HelmChart.Failed=["True"]`
+
+Das bedeutet, dass `Failed=True` als Fehler behandelt wird.
+
+Wenn Sie überschreiben mit:
+
+* `HelmChart.Failed=["False"]`
+* `HelmChart.Ready=["False"]`
+
+Das führt zu:
+
+* `Failed=["False"]` ersetzt die Standardzuordnung. Das bedeutet, dass **`Failed=False`** jetzt als Fehler behandelt wird.
+* `Ready=["False"]` wird hinzugefügt, sodass **`Ready=False`** ebenfalls als Fehler behandelt wird.
+* Andere Bedingungen bleiben unverändert.
+
+=== Beispiel zur Deaktivierung der Fehlerinterpretation
+
+Angenommen, jeder Wert von `Failed` wurde zuvor als Fehler interpretiert, zum Beispiel:
+
+[source,json]
+----
+{ "type": "Failed", "status": ["True", "False"] }
+----
+
+Sie können diese Zuordnung einschränken, um nur `Failed=True` als Fehler zu behandeln, indem Sie festlegen:
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] } 
+    ]
+  }
+]
+----
+
+Diese Konfiguration bedeutet, dass nur **`Failed=True`** als Fehler behandelt wird. `Failed=False` wird nicht mehr als Fehler betrachtet.
+
+Sie können auch Fehler für jeden Wert von `Failed` deaktivieren, indem Sie:
+
+[source,json]
+----
+{ "type": "Failed", "status": [""] } 
+----
+
+Diese Konfiguration stellt sicher, dass **kein Wert von `Failed`** als Fehler behandelt wird.
+
+HINWEIS:  +
+Das Überschreiben von Bedingungen betrifft nur die Standardfehlerzuordnungen (siehe xref:default-error-mappings[Standardfehlerzuordnungen]). {product_name} kann weiterhin eine Ressource als Fehler markieren, da andere Überprüfungen, wie die aus der `kstatus` Bibliothek, nach Ihrer Anpassung weiterhin ausgeführt werden.
+
+=== Beispiel zur Aktivierung der Fehlerinterpretation
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] }
+    ]
+  }
+]
+----
+
+Hier wird `Failed=True` als Fehler behandelt.
+
+[[default-error-mappings]]
+== Standardfehlerzuordnungen 
+
+{product_name} fügt Standardfehlerzuordnungen hinzu, um bestimmte Ressourcenbedingungen im `status`-Feld als Fehler zu interpretieren. Diese Zuordnungen werden neben anderen Bereitschaftsprüfungen angewendet, wie sie von der Kubernetes `kstatus`-Bibliothek durchgeführt werden.
+
+Die folgenden Standardzuordnungen gelten:
+
+* **HelmChart** (`helm.cattle.io/v1`)
+  * `JobCreated`: Weder `True` noch `False` werden als Fehler betrachtet.
+  * `Failed`: `True` wird als Fehler betrachtet.
+* **Node** (`v1`)
+  * `OutOfDisk`: `True` wird als Fehler betrachtet.
+  * `MemoryPressure`: `True` wird als Fehler betrachtet.
+  * `DiskPressure`: `True` wird als Fehler betrachtet.
+  * `NetworkUnavailable`: `True` wird als Fehler betrachtet.
+* **Implementierung** (`apps/v1`)
+  * `ReplicaFailure`: `True` wird als Fehler betrachtet.
+  * `Progressing`: `False` wird als Fehler betrachtet.
+* **ReplicaSet** (`apps/v1`)
+  * `ReplicaFailure`: `True` wird als Fehler betrachtet.
+
+=== Fallback-Zuordnung
+
+Wenn eine Ressource nicht mit den aufgeführten GVKs übereinstimmt, wendet {product_name} eine Fallback-Zuordnung an:
+
+* Jede `Group` und `Version` mit irgendeiner Art
+  * `Stalled`: `True` wird als Fehler betrachtet.
+  * `Failed`: `True` wird als Fehler betrachtet.

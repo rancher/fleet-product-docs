@@ -1,0 +1,97 @@
+:doctype: book
+
+= Inicialização Rápida
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::single-cluster.png[]
+
+
+== Instale o
+
+{product_name} é distribuído como um chart Helm. Helm 3 é uma CLI, não possui componente de servidor e seu uso é bastante direto. Para instalar a CLI Helm 3 siga as https://helm.sh/docs/intro/install[instruções de instalação oficiais].
+
+[CAUTION]
+.{product_name} no Rancher
+====
+O Rancher possui charts Helm separados para {product_name} e utiliza um repositório diferente.
+====
+
+
+[tabs]
+====
+Linux/Mac::
++
+[source,bash]
+----
+brew install helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Windows::
++
+[source,bash]
+----
+choco install kubernetes-helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+====
+
+Instale os {product_name} charts Helm (são dois porque separamos os CRDs para máxima flexibilidade.)
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
+    fleet/fleet-crd
+helm -n cattle-fleet-system install --create-namespace --wait fleet \
+    fleet/fleet
+----
+
+== Adicione um repositório Git para monitorar
+
+Altere `spec.repo` para o seu repositório Git de sua escolha.  Os arquivos de manifesto do Kubernetes que devem ser implantados devem estar em `/manifests` no seu repositório.
+
+[source,bash]
+----
+cat > example.yaml << "EOF"
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+  - simple
+EOF
+
+kubectl apply -f example.yaml
+----
+
+== Obter Status
+
+Obter status do que o Fleet está fazendo
+
+[source,shell]
+----
+kubectl -n fleet-local get fleet
+----
+
+Você deve ver algo assim sendo criado em seu cluster.
+
+----
+kubectl get deploy frontend
+----
+
+----
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+frontend   3/3     3            3           116m
+----
+
+== Próximas etapas
+
+Você precisa ...
+* Monitorar repositórios Git ou Helm privados? Verifique xref:how-tos-for-users/gitrepo-add.adoc[Criar um Recurso GitRepo].
+* Personalizar suas implantações por cluster de destino? xref:how-tos-for-users/gitrepo-targets.adoc[Mapeamento para Clusters Downstream].

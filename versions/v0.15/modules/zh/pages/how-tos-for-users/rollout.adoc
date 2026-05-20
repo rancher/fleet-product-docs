@@ -1,0 +1,321 @@
+= 发布策略
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} 使用发布策略来控制 APP 在集群中的部署方式。您可以使用分区定义集群部署的顺序和分组，从而实现受控发布和更安全的更新。
+
+{product_name} 评估每个 `Ready` 的 `BundleDeployment` 状态，以确定何时继续下一个分区。有关详细信息，请参考 xref:reference/ref-status-fields.adoc[状态字段]。
+
+在发布过程中，GitRepo 状态指示部署进度。这有助于您了解在继续之前，捆绑包何时变为 `Ready`：
+
+* 对于初始部署：
+  * 一个或多个集群可能处于 `NotReady` 状态。
+  * 其余集群标记为 `Pending`，这意味着部署尚未开始。
+* 对于发布：
+  * 一个或多个集群可能处于 `NotReady` 状态。
+  * 其余集群在部署继续之前标记为 `OutOfSync`。
+
+发布配置选项记录在 xref:reference/ref-fleet-yaml.adoc[+fleet.yaml+] 的 `rolloutStrategy` 字段中。
+
+[NOTE]
+====
+如果在 `fleet.yaml` 中未指定 `rolloutStrategy`，则 {product_name} 使用默认值。
+====
+
+== 分区是如何工作的？
+
+分区仅用于在集群之间分组和控制 `BundleDeployments` 的发布。它们不会以任何方式影响部署选项。
+
+如果目标集群不属于手动分区，则它们将不包含在发布中。如果集群是分区的一部分，则在处理分区时将收到 `BundleDeployment`。
+
+如果分区的集群数量超过允许的`NotReady`个集群，则该分区被视为`NotReady`。如果某个集群处于离线状态，则目标集群将不被视为`Ready`，并将保持在`NotReady`状态，直到它重新上线并成功部署`BundleDeployment`。
+
+阈值由以下内容决定：
+
+* **手动分区**：在每个分区内使用`maxUnavailable`值来控制该分区的就绪状态，否则，如果未指定，则使用`rolloutStrategy.maxUnavailable`。
+* **自动分区**：使用`rolloutStrategy.maxUnavailable`值来控制分区何时准备就绪。
+
+{product_name}仅在`NotReady`分区的数量保持在`maxUnavailablePartitions`以下时进行。
+
+[NOTE]
+====
+{product_name}以每个分区最多`maxNew`个集群的批次进行部署（默认：50），无论分区中分配的集群数量是否更多。在每个批次之后，{product_name}会检查`maxUnavailable`阈值，然后再继续。在为一个分区创建所有部署后，`maxUnavailable`也会被评估。例如：
+
+* 如果一个分区有25个集群，而`maxUnavailable`为5，则{product_name}会在检查`maxUnavailable`之前部署到所有25个集群。
+* 如果一个分区有100个集群，{product_name}会先部署到前50个（默认`maxNew`），检查`maxUnavailable`，并且仅在未超过阈值的情况下继续部署剩余的50个。
+====
+
+下图展示了{product_name}如何处理发布：
+
+image::flow-rollout-fleet.png[展示{product_name}中发布流程的视觉资产。]
+
+可以在{product_name}中配置的各种限制：
+
+[cols="2,5,1", options="header"]
+|===
+| 字段 | 说明 | 默认值
+
+| maxUnavailable
+| 在停止发布之前，可以`NotReady`的集群的最大数量或百分比。
+| 100%
+
+| maxUnavailablePartitions
+| 可以同时`NotReady`的分区的数量或百分比。
+| 0
+
+| autoPartitionSize
+| 每个自动创建的分区的集群数量或百分比。
+| 25%
+
+| autoPartitionThreshold
+| 启用自动分区所需的最小集群数量。低于此阈值，所有集群将放置在一个单一的分区中。
+| 200
+
+| maxNew
+| 每次对账最多可以暂存的`BundleDeployments`数量。
+| 50
+
+| partitions
+| 通过集群标签或组定义手动分区。如果设置了此项，将忽略autoPartitionSize。
+| –
+|===
+
+{product_name}支持自动和手动分区。有关配置选项的更多信息，请参阅fleet.yaml参考中的xref:reference/ref-fleet-yaml.adoc[`rolloutStrategy`选项。]
+
+**自动分区**：{product_name}使用`autoPartitionSize`自动创建分区。
+
+例如，您有200个集群并将`autoPartitionSize`设置为25%，{product_name}将创建四个每个包含50个集群的分区。发布以50个集群为批次进行，继续之前检查`maxUnavailable`。
+
+`autoPartitionThreshold`设置控制何时启用自动分区：
+
+* **低于阈值**：所有集群将放置在一个单一的分区中，无论`autoPartitionSize`设置如何。这可以防止小规模部署的不必要分区。
+* **在阈值之上或等于阈值**：{product_name}根据`autoPartitionSize`创建多个分区。
+* **可自定义阈值**：您可以降低限制以在较少的集群中启用分区（例如，将其设置为50以进行小规模测试），或提高限制以避免分区，直到您拥有大量集群（例如，将其设置为500）。
+* **禁用自动分区**：设置为 0 以强制所有集群进入单个分区，无论数量如何。
+
+例如：
+[source,yaml]
+----
+rolloutStrategy:
+  autoPartitionThreshold: 50  # Enable partitioning with only 50 clusters
+  autoPartitionSize: 50%      # Create partitions of 50% each
+[source,text]
+----
+
+使用 50 个集群，这会创建 2 个每个包含 25 个集群的分区。如果不设置 `autoPartitionThreshold`，这 50 个集群将会在一个单一的分区中（因为默认限制是 200）。
+
+**手动分区**:您可以使用 `partitions` 选项定义特定的分区。这提供了对集群选择和发布顺序的控制。
+
+[NOTE]
+====
+如果您手动指定分区，则会忽略 `autoPartitionSize`。
+====
+
+例如，考虑：
+
+[source,yaml]
+----
+rolloutStrategy:
+  partitions:
+    - name: demoRollout
+      maxUnavailable: 10%
+      clusterSelector:
+        matchLabels:
+          env: staging
+    - name: stable
+      maxUnavailable: 5%
+      clusterSelector:
+        matchLabels:
+          env: prod
+[source,text]
+----
+
+{product_name} 然后：
+
+1. 根据 `clusterSelector`、`clusterGroup` 或 `clusterGroupSelector` 选择集群。
+  * 分区可以通过 `clusterName`、`clusterSelector`、`clusterGroup` 和 `clusterGroupSelector` 指定。
+2. 开始对第一个分区发布。
+3. 等待直到该分区被认为是 `Ready`（取决于 `maxUnavailable` 阈值）。
+4. 继续到下一个分区。
+
+下图说明了 {product_name} 如何在多个分区之间处理发布，包括就绪检查和发布流程：
+
+image::deploy-targets-partition.png[一个展示分区发布流程的视觉资产。]
+
+[NOTE]
+====
+`maxNew` 控制每次对账可以分阶段的 `BundleDeployments` 数量。默认值为 50。您可以通过 `rolloutStrategy.maxNew` 在 `fleet.yaml` 中进行配置。
+====
+
+在每个分区内，{product_name}一次最多发布 `maxNew` 个 `BundleDeployments`（默认：50)。下图显示了{product_name}在此过程中决定是继续还是等待的方式：
+
+image::partition-rollout-flow.png[一个展示在分区中部署目标流程的视觉资产。]
+
+[NOTE]
+====
+{product_name}建议对集群进行标记，以便您可以使用这些标签将集群分配到特定的分区。
+==== 
+
+[NOTE]
+====
+{product_name}按照它们在`fleet.yaml`文件中出现的顺序处理分区。
+====
+
+=== 单个分区
+
+如果您不定义`rolloutStrategy.partitions`，{product_name}会根据目标集群的数量自动创建分区：
+
+* 对于少于`autoPartitionThreshold`个集群（默认200），{product_name}使用单个分区。
+* 对于`autoPartitionThreshold`个或更多集群，{product_name}使用`autoPartitionSize`值（默认25%）来创建分区。
+
+例如，对于200个集群（满足默认`autoPartitionThreshold`），{product_name}使用默认的`autoPartitionSize`为25%。这意味着，{product_name}创建4个分区（200的25% = 每个分区50个集群）。{product_name}一次处理最多50个集群，这意味着它：
+
+1. 发布到前50个集群。
+2. 根据`maxUnavailable`评估准备情况。
+. 如果条件满足，继续下一个50个，以此类推。
+
+=== 多个分区
+
+如果您定义多个分区，{product_name}使用`maxUnavailablePartitions`来限制一次可以`NotReady`的分区数量。如果`NotReady`分区的数量超过`maxUnavailablePartitions`，{product_name}将暂停发布。
+
+== 防止镜像拉取风暴
+
+在推出过程中，每个下游集群都会拉取容器镜像。如果数百个集群同时开始拉取镜像，这可能会压垮注册表，并表现得像DDoS攻击。
+
+为避免这种情况，{product_name} 可以控制每次更新多少个集群。您可以使用以下发布配置选项来减缓和分阶段发布：
+
+* `autoPartitionSize`
+* `partitions`
+* `maxUnavailable`
+
+{product_name} 在发布期间不会添加人工延迟。相反，它根据每个集群中工作负载的 `readiness` 状态进行推进。影响就绪状态的因素包括镜像拉取时间、启动时间和就绪探针。虽然建议使用就绪探针，但并不严格要求以控制发布速度。
+
+例如，您有 200 个集群，这些集群被手动分区，每个分区有 40 个集群，并希望防止镜像拉取风暴：
+
+* `maxUnavailablePartitions`：设置为 0。
+* `maxUnavailable`：设置为 10%。
+
+发布的进行方式：
+
+1. {product_name} 从第一个分区（40 个集群）开始。
+2. 它一次最多部署 50 个 `BundleDeployments`。因此，它在一个批次中将部署到分区中的所有 40 个集群。
+3. {product_name} 检查分区中集群的就绪状态。
+* 如果有超过 4 个集群未就绪，则该分区被视为 `NotReady`，发布将暂停。
+* 一旦 ≤4 个集群处于 `NotReady` 状态，{product_name} 将继续进行部署。
+4. 当整个分区大部分就绪（90%）时，{product_name} 将转到下一个分区。
+
+如果您希望或需要一次处理少于40个部署，您可以在每个分区中放入较少的集群。
+
+== 用例和行为
+
+如果集群数量不能均匀分配，{product_name} 将向下取整分区大小。例如，230个集群与`autoPartitionSize: 25%`的结果为：
+
+* 57个集群的四个分区
+* 2个集群的一个分区
+
+=== 方案：50个集群（单个分区）
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name}创建一个包含所有50个集群的分区，因为没有定义分区。
+  * 不需要指定`maxUnavailablePartitions`，因为只创建了一个分区。
+* 尽管没有指定手动分区且`maxUnavailable`设置为10%，{product_name}会一次性部署到所有50个集群（批处理行为最初会覆盖`maxUnavailable`）。
+* 所有部署创建后进行评估。
+
+下图说明了{product_name}如何在单个分区中处理50个集群：
+
+image::deploy-50Clusters.png[50个集群场景]
+
+=== 方案：100个集群（单个分区） 
+
+[source,yaml]
+----
+rolloutStrategy: 
+  maxUnavailable: 10%
+[source,text]
+----
+
+* {product_name}创建一个包含所有100个集群的分区，因为没有定义分区。
+  * 不需要指定`maxUnavailablePartitions`，因为只会创建一个分区。
+* 尽管没有指定手动分区且`maxUnavailable`设置为10%，{product_name}会一次性部署到50个集群（批处理行为最初会覆盖`maxUnavailable`）。
+
+如果10个集群（100个集群的10%）不可用，则剩余50个集群的部署将暂停，直到少于10个集群处于`NotReady`状态。
+
+=== 方案：200个集群（多个分区）
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailablePartitions: 1
+  autoPartitionSize: 10%
+[source,text]
+----
+
+* {product_name}创建10个分区，每个分区有20个集群。
+* 部署按分区顺序进行。
+* 如果两个或更多分区变为`NotReady`，则发布暂停。
+* 如果一个分区为`NotReady`，则可以继续发布到下一个分区。
+
+{product_name} 为 20 个集群创建 `BundleDeployments`，等待它们变为 `Ready`，然后继续下一个。这有效地将下游集群的图像拉取量限制为最多 ~40 张图像。
+
+=== 方案：200 个集群（严格准备就绪，手动分区）
+
+手动分区允许您通过 `maxUnavailablePartitions: 0` 控制集群分组。
+
+[source,yaml]
+----
+rolloutStrategy:
+  maxUnavailable: 0
+  maxUnavailablePartitions: 0
+  partitions:
+    - name: demoRollout
+      clusterSelector:
+        matchLabels:
+          stage: demoRollout
+    - name: stable
+      clusterSelector:
+        matchLabels:
+          stage: stable
+[source,text]
+----
+
+* 您使用 `clusterSelector` 和标签如 `stage: demoRollout` 和 `stage: stable` 定义手动分区。
+* {product_name} 为第一个分区中的集群创建 `BundleDeployments`（例如，`demoRollout`）。
+* 发布严格按顺序进行，{product_name} 仅在当前分区被认为就绪时才移动到下一个分区。
+* 使用 `maxUnavailable: 0` 和 `maxUnavailablePartitions: 0`，如果任何分区未被认为就绪，{product_name} 将暂停发布。
+
+下图描述了 {product_name} 如何处理是否继续或暂停发布。
+
+image::partition-fleet-rollout.png[手动分区场景]
+
+这确保了所有 200 个集群的完全准备就绪和分阶段发布。当您需要精确的发布顺序和在推进之前的完全集群准备就绪时，请使用此方法。
+
+== 发布策略默认值
+
+如果未定义分区级发布值，{product_name} 将在 `fleet.yaml` 中应用来自 `rolloutStrategy` 的全局值。分区特定设置在明确设置时会覆盖全局值。
+
+默认情况下，{product_name} 设置：
+
+* `maxUnavailable` 为 `100%`：分区中的所有集群可以是 `NotReady`，仍然被视为准备就绪。
+* `maxUnavailablePartitions` 为 `0`：仅当一个或多个分区被认为是 `NotReady` 时，才会阻止发布。然而，如果所有分区由于 `maxUnavailable: 100%` 而看起来准备就绪，则此检查无效。
+
+例如，考虑使用默认设置的 200 个集群：
+
+* {product_name} 创建 4 个每个包含 50 个集群的分区（`autoPartitionSize: 25%`）。
+* 因为`maxUnavailable`是`100%`，每个分区会立即被视为`Ready`。
+* {product_name} 会遍历所有分区，而不考虑实际的准备情况。
+
+{product_name} 建议您通过设置来控制发布：
+
+* 降低 `maxUnavailable`，例如 10%。
+* 如果需要，将 `maxUnavailablePartitions` 设置为 0 或更高。
+
+这可以确保：
+
+* 在继续发布之前，分区满足准备状态。
+* 如果太多分区未准备好，{product_name}会暂停发布。

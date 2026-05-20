@@ -1,0 +1,165 @@
+= クラスター登録の内部構造
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+== クラスター登録はどのように機能しますか？
+
+このテキストは、より技術的な詳細を伴ったクラスター登録について説明しています。このテキストは、エージェントによる登録を無視しています。これは一般的に使用されていないためです。
+xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[エージェントによる登録]はxref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["\`ClusterRegistrationToken` 最初"]であり、クラスターを事前に作成することは任意です。
+
+クラスターを登録する方法については、xref:how-tos-for-operators/cluster-registration.adoc[ダウンストリームクラスターの登録]を参照してください。
+
+=== クラスター・ファースト
+
+`fleet-controller`が起動し、ローカルクラスタリソースを起動する可能性があります。Rancherでは、ローカルクラスタリソースの作成はfleetclusterコントローラーによって処理されますが、それ以外は処理は同じです。
+
+ローカルクラスタまたは任意のダウンストリームクラスタに対して処理は同じです。クラスターリソースを作成することから始まり、これはkubeconfigシークレットを参照します。
+
+=== ダウンストリームクラスタの起動シークレットの作成
+
+このステップでは、`ClusterRegistationToken`と「インポート」サービスアカウントが`Cluster`リソースに基づいて作成されます。
+
+{product_name}コントローラーはxref:explanations/architecture.adoc#_security[`ClusterRegistrationToken`]を作成し、それが完了するのを待ちます。`ClusterRegistationToken`は「インポート」サービスアカウントの作成をトリガーし、そのアカウントは`ClusterRegistrations`を作成し、システム登録ネームスペース内の任意のシークレットを読み取ることができます（例："cattle-fleet-clusters-system"）。`import.go`コントローラーは「インポート」サービスアカウントが存在するまで自分自身をキューに入れます。このアカウントは`fleet-agent-bootstrap`シークレットを作成するために必要です。
+
+=== {product_name}エージェントデプロイメントの作成
+
+{product_name}コントローラーは、ダウンストリームクラスタ上で{product_name}エージェントデプロイメントと起動シークレットを作成します。
+
+起動シークレットには、アップストリームクラスタのAPIサーバーURLが含まれており、アップストリームクラスタにアクセスするためのkubeconfigを構築するために使用されます。両方の値は{product_name}コントローラーの設定configmapから取得されます。その configmap は helm チャートの一部です。
+
+=== {product_name} エージェントが登録を開始し、リクエストアカウントにアップグレードします。
+
+エージェントは "import" アカウントを使用してリクエストアカウントにアップグレードします。
+
+すぐに {product_name} エージェントは `fleet-agent-bootstrap` シークレットを確認します。"import" kubeconfig を含むブートストラップシークレットが存在する場合、エージェントは登録を開始します。
+
+次に、Fleet agent は管理クラスターの fleet-default にランダムな番号で最終的な `ClusterRegistration` リソースを作成します。ランダムな番号は登録シークレットの名前に使用されます。
+
+{product_name} コントローラーはトリガーを発動し、エージェントのサービスアカウントを作成するための `ClusterRegistration` リクエストを付与し、クライアントの新しい kubeconfig で 'c-*' 登録シークレットを作成しようとします。登録シークレットの名前は `hash("clientID-clientRandom")` です。
+
+新しい kubeconfig は "request" アカウントを使用します。"request" アカウントはクラスターの状態、`BundleDeployments` および `Contents` にアクセスできます。
+
+image::FleetRegistrationToken.svg[スタティック, 600]
+
+[[registered-watches-for-bundledeployments]]
+=== {product_name} エージェントが登録され、`BundleDeployments` を監視します。
+
+この時点で Fleet agent は完全に登録され、"request" アカウントを `fleet-agent` シークレットに永続化します。
+API サーバーの URL と CA はブートストラップシークレットからコピーされ、これらの値は {product_name} コントローラーの Helm チャートの値から継承されます。
+
+ブートストラップシークレットは削除されます。エージェントが再起動すると、ブートストラップシークレットが欠落しているため、再登録は行われません。
+
+エージェントは xref:explanations/namespaces.adoc#_cluster_namespaces[クラスター ネームスペース]" を監視し、`BundleDeployments` を探します。この時点でエージェントはワークロードをデプロイする準備が整いました。
+
+=== 備考
+
+* 登録は "import" アカウントから始まり、"request" アカウントに移行します。
+* Fleet-default のネームスペースにはすべてのクラスター登録があり、"import" アカウントは別のネームスペースを使用します。
+* エージェントが登録されると、`fleet-controller`はクラスターまたはネームスペースの変更時にトリガーされます。その後、`manageagent`コントローラーが既存のエージェントデプロイメントを採用するためのバンドルを作成します。エージェントはバンドルに自分自身を更新し、"generation"環境変数が変更されるため、再起動します。
+* ブートストラップシークレットが存在しない場合、エージェントは再登録しません。
+
+== 図
+
+=== 登録フロー
+
+[mermaid, format=svg]
+....
+グラフ TD
+    サブグラフ "アップストリーム（管理クラスター）"
+        方向 LR
+        サブグラフ "フロー 1:エージェント主導"
+            方向 TB
+            A0（オプション：管理者がクライアントIDでクラスターを作成）--> A1
+            A1（管理者が<br>クラスター登録トークンを作成）--> A2{Fleet Controller Creates Secret<br>for a temporary 'import' ServiceAccount}
+        終了
+        サブグラフ "フロー 2:マネージャー主導（既存のクラスター用）"
+            方向 TB
+            B1（管理者が既存のクラスター用にKubeconfigシークレット<br>を作成）--> B2（管理者がKubeconfigシークレットを参照するクラスターリソース<br>を作成します。ここでクライアントIDを定義できます）
+            B2 --> B3{Fleet Controller uses admin-provided<br>kubeconfig to deploy agent}
+        終了
+    終了
+    サブグラフ "ダウンストリーム（管理クラスター）"
+        方向 LR
+        サブグラフ "Fleet agentインストール（フロー 1）"
+            方向 TB
+            A3（管理者が'インポート'トークンシークレットを使用してHelm経由でFleet agentをインストールします。<br>クライアントIDを提供できます）
+        終了
+        サブグラフ "Fleet agentデプロイ（フロー 2）"
+             方向 TB
+             B4（Fleet agentとブートストラップシークレットがデプロイされます。<br>ブートストラップには'インポート' kubeconfigが含まれています。）
+        終了
+    終了
+    サブグラフ "共通登録ステージ（アイデンティティハンドシェイク）"
+        方向 TB
+        C1（Fleet agentポッドが開始され、ローカルの'agent' SAを使用します。<br>ブートストラップシークレットから'インポート' kubeconfigを見つけて使用し、アップストリームと通信します。）
+        C1 --> C2（'インポート'アイデンティティを使用して、エージェントがアップストリームにClusterRegistrationリソースを作成<br>します）
+        C2 --> C3{Upstream Controller creates a permanent<br>'request' ServiceAccount & a new,<br>long-term kubeconfig/secret for it.}
+        C3 --> C4（エージェントが'request' SA資格情報を受け取り、永続化します。<br>一時的な起動シークレットは削除されます。）
+        C4 --> C5{Upstream Controller creates a dedicated<br>Cluster Namespace for this agent.}
+        C5 --> C6（✅ エージェントが完全に登録されました。<br>自分の'request'アイデンティティを使用して、ネームスペース内のワークロードを監視<br>します。）
+    終了
+    %% スタイリング
+    スタイル A0 塗りつぶし:#e0f2fe,ストローク:#0ea5e9,ストローク幅:2px
+    スタイル A1 塗りつぶし:#e0f2fe,ストローク:#0ea5e9,ストローク幅:2px
+    スタイル B1 塗りつぶし:#e0f2fe,ストローク:#0ea5e9,ストローク幅:2px
+    スタイル A3 塗りつぶし:#d1fae5,ストローク:#10b981,ストローク幅:2px
+    スタイル B2 塗りつぶし:#e0f2fe,ストローク:#0ea5e9,ストローク幅:2px
+    スタイル A2 塗りつぶし:#fef3c7,ストローク:#f59e0b,ストローク幅:2px
+    スタイル B3 塗りつぶし:#fef3c7,ストローク:#f59e0b,ストローク幅:2px
+    スタイル B4 塗りつぶし:#fef3c7,ストローク:#f59e0b,ストローク幅:2px
+    スタイル C1 塗りつぶし:#f3e8ff,ストローク:#8b5cf6,ストローク幅:2px
+    スタイル C2 塗りつぶし:#f3e8ff,ストローク:#8b5cf6,ストローク幅:2px
+    スタイル C3 塗りつぶし:#f3e8ff,ストローク:#8b5cf6,ストローク幅:2px
+    スタイル C4 塗りつぶし:#f3e8ff,ストローク:#8b5cf6,ストローク幅:2px
+    スタイル C5 塗りつぶし:#f3e8ff,ストローク:#8b5cf6,ストローク幅:2px
+    スタイル C6 塗りつぶし:#dcfce7,ストローク:#22c55e,ストローク幅:2px,フォントウェイト:太字
+    %% 接続
+    A2 --> A3
+    B3 --> B4
+    A3 --> C1
+    B4 --> C1
+....
+
+=== 登録処理とコントローラー
+
+クラスターの登録処理の詳細な分析。これは、新しいダウンストリームクラスターまたはローカルクラスターの登録中にコントローラー、リソース、およびサービスアカウントの相互作用を示しています。
+
+これを開始する方法はいくつかあるため、注意が必要です：
+
+* 起動構成を作成します。{product_name}はローカルエージェントのためにこれを行います。
+* kubeconfigを持つ`Cluster`リソースを作成します。Rancherはダウンストリームクラスターのためにこれを行います。xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager-initiated registration]を参照してください。
+* `ClusterRegistrationToken`リソースを作成し、オプションで事前定義された(`clientID`)クラスターのために`Cluster`リソースを作成します。xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[エージェントによる登録]を参照してください。
+
+image::FleetRegistration.svg[登録]
+
+=== エージェントデプロイメント中の秘密
+
+この図は、登録中に作成されるリソースを示し、k8s APIサーバーの設定に焦点を当てています。
+
+`import.go`コントローラーは、クラスターの作成/更新イベントをトリガーし、エージェントをデプロイします。
+
+*この画像は、登録中にAPIサーバーのURLとCAが秘密を通じてどのように伝播するかを示しています:*
+
+図の矢印は、APIサーバーの値がHelmの値からアップストリームクラスターのクラスター登録秘密にコピーされ、最終的にエージェントの起動秘密にダウンストリームされる様子を示しています。
+
+特別なケースがあります。エージェントがローカル/「ブートストラップ」クラスターの場合、サーバーの値はkubeconfigシークレットにも存在し、クラスターリソースによって参照されます。この場合、kubeconfigシークレットにはアップストリームのサーバーURLとCAが含まれ、ダウンストリームのkubeconfigの隣にあります。設定がkubeconfigシークレットに存在する場合、それらは設定済みの値を上書きします。
+
+image::FleetRegistrationSecrets.svg[登録の秘密]
+
+== {product_name} Rancherにおけるクラスター登録
+
+RancherはFleet Helmチャートをインストールします。APIサーバーのURLとCAは https://github.com/rancher/rancher/blob/release/v2.9/pkg/controllers/dashboard/fleetcharts/controller.go#L111-L112[Rancherの設定から派生しています]。
+
+{product_name}はこれらの値を{product_name}エージェントに渡し、それが{product_name}コントローラーに接続できるようにします。
+
+=== Rancherにクラスターをインポート
+
+ユーザーが`curl | kubectl apply`を実行すると、適用されたマニフェストにはRancherエージェントのデプロイメントが含まれます。
+
+デプロイメントには、API URLとトークンを含むシークレット`cattle-credentials-`が含まれています。
+
+Rancherエージェントが起動し、ダウンストリームのkubeconfigをアップストリームに報告します。
+
+Rancherは次に、 https://github.com/rancher/rancher/blob/871b6d9137246bd93733f01184ea435f40c5d56c/pkg/provisioningv2/kubeconfig/manager.go#L69[kubeconfigシークレット]を参照するFleet Clusterリソースを作成します。
+
+👉{product_name}はこのkubeconfigを使用して、ダウンストリームクラスターにエージェントをデプロイします。

@@ -1,0 +1,89 @@
+= 安排日程
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+[WARNING]
+====
+这是一个试验性的功能。
+====
+
+{product_name}支持（从版本0.13开始，并在试验模式下）定义**计划时间间隔**，在此期间允许对现有部署进行新的更新。
+
+这使用户能够控制**何时应用更改**，而不管更新何时推送到Git储存库——如果需要的话。
+
+有很多原因可能会导致人们希望定义允许对集群进行更改的时间窗口。例如：
+
+* 非工作时间
+* 在特定时间安排更新
+* 在不同环境之间区分更新窗口（例如，开发与生产）
+
+更新调度目前应用于`Cluster`级别。
+
+定义了一个`Schedule`资源，指定了哪些`Clusters`受到影响。这些集群只有在定义的`Schedule`允许的情况下才会安装新的更新。
+
+在Git储存库中由{product_name}检测到的任何更改仍将在`Bundle`级别应用。然而，负责在每个受影响集群中部署更改的**代理**只有在集群当前被相应的`Schedule`允许时才会启动部署。
+
+这意味着当在储存库中检测到更改时，它将应用于`Bundle`，状态将变为*等待更新*，直到`Cluster`代理处于活动状态并被允许根据其`Schedule`执行部署。
+
+如果`Cluster`未与任何`Schedule`关联，则更新将立即应用。
+
+== 计划资源
+
+现在让我们看看如何定义一个`Schedule`以及可用的字段。
+
+一个`Schedule`本质上由以下内容定义：
+
+* 一个指示其开始时间的**cron表达式**
+* 一个**持续时间**
+* 适用的**目标**（集群）
+
+这是一个`Schedule`使用简单目标定义的基本示例：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-local
+spec:
+  schedule: "0 0 22 * * *"
+  duration: 1h
+  targets:
+    clusters:
+      - name: local
+        clusterName: local
+----
+
+这定义了一个每天从**22:00:00**开始的**1小时时间窗口**，并适用于`fleet-local`名称空间中名为*local*的集群。
+一个 `Schedule` 的目标使用与 `Schedule` 相同的 **名称空间**。
+
+换句话说：*local* `Cluster` 只会接受来自 **22:00:00 到 23:00:00** 的更改。
+
+现在让我们看另一个示例，其中 `Schedule` 用于向标记为 *env=dev* 的 **下游集群** 部署更新：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Schedule
+metadata:
+  name: schedule-test
+  namespace: fleet-default
+spec:
+  schedule: "0 0 */3 * * *"
+  duration: 1h 
+  targets:
+    clusters:
+      - name: targets-dev
+        clusterSelector:
+          matchLabels:
+            env: dev
+----
+
+在这种情况下，`Schedule`允许对标记为*env=dev*的`Clusters`进行更新，每隔**3小时**启动一次更新窗口，持续**1小时**。
+
+您定义目标 `Clusters` 的方式与为 `GitRepo` 资源定义目标的方式 **相同**。
+
+有关更多信息，请参阅 xref:how-tos-for-users/gitrepo-targets.adoc[GitRepo 目标]。这同样适用于 `Schedule` 目标。
+
+您可以查看 xref:reference/ref-schedule.adoc[Schedule] 的完整 CRD。

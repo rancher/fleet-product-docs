@@ -1,0 +1,144 @@
+= Stockage OCI
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} stocke par défaut les ressources de bundle Kubernetes dans etcd. Cependant, etcd a des limites de taille strictes et n'est pas optimisé pour de grandes charges de travail. Si vos ressources de bundle dépassent les limites de taille d'etcd dans le cluster cible, envisagez d'utiliser un registre OCI comme backend de stockage.
+
+[NOTE]
+====
+Pour réduire la taille du bundle, compressez et encodez en base64 le contenu du bundle avant de le télécharger sur le registre OCI.
+====
+
+Utiliser un registre OCI vous aide à{nbsp}:
+
+* Réduire la charge d'etcd en déchargeant le contenu volumineux du bundle.
+* Utiliser un backend de stockage standardisé pour de grands manifests ou des charts Helm.
+
+image::fleet-ociStorage-flow.png[Un actif visuel affichant le flux de {product_name} avec le stockage OCI.]
+
+[NOTE]
+====
+{product_name} vérifie l'intégrité des artefacts OCI et étiquette les artefacts OCI comme `latest`.
+====
+
+== Conditions préalables
+
+* Un registre OCI en cours d'exécution.
+* Un secret Kubernetes avec des identifiants valides.
+* Une installation de {product_name} (v2.12.0 ou ultérieure).
+
+== Comment activer le stockage OCI
+
+Pour activer le stockage OCI, créez un secret qui inclut les informations nécessaires et les options d'accès pour le registre OCI. Il existe deux façons de définir des secrets{nbsp}:
+
+* *Secret global :* Un secret exactement nommé `ocistorage` dans le même espace de noms que vos `GitRepo`s.
+** Ceci est le secret de secours. Si aucun secret de niveau `GitRepo` n'est spécifié, {product_name} utilise ce secret pour tous les `GitRepo` dans l'espace de noms.
+* *Secret de niveau GitRepo:* Un secret personnalisé pour des ressources `GitRepo` spécifiques.
+** Ceci est un secret défini par l'utilisateur qui peut avoir n'importe quel nom et doit être référencé dans la ressource `GitRepo`.
+** Définissez le champ `ociRegistrySecret` dans la spécification `GitRepo` au nom du secret.
+
+[NOTE]
+====
+{product_name} ne se rabat pas sur etcd si le secret est manquant ou invalide. Au lieu de cela, il enregistre une erreur et saute le déploiement.
+====
+
+Créez un Secret Kubernetes qui contient l'adresse du registre et des identifiants optionnels{nbsp}:
+
+[source,yaml]
+----
+apiVersion: v1
+kind: Secret
+metadata:
+  name: ocistorage
+  namespace: fleet-local
+type: fleet.cattle.io/bundle-oci-storage/v1alpha1
+data:
+  reference: <base64-encoded-registry-url> # Only the reference field is required. All other fields are optional.
+  username: <base64-encoded-user>
+  password: <base64-encoded-password>
+  insecureSkipTLS: <base64-encoded-true/false>
+  basicHTTP: <base64-encoded-true/false>
+  agentUsername: <base64-encoded-readonly-user>
+  agentPassword: <base64-encoded-password>
+----
+
+[NOTE]
+====
+Le secret doit avoir le type{nbsp}: `fleet.cattle.io/bundle-oci-storage/v1alpha1`. {product_name} exige cette valeur et rejette tout secret d'un type différent.
+====
+
+Changer le secret ne déclenche pas un redéploiement. {product_name} utilise le nouveau registre uniquement après une mise à jour Git ou une mise à jour manuelle forcée.
+
+=== Référence du champ Secret
+
+Les champs que vous pouvez configurer sont{nbsp}:
+
+[cols="1,3,1,3",options="header"]
+|===
+| Champ | Description | Format | Notes
+
+| `reference`       | URL du registre OCI.                    | Chaîne encodée en Base64       | N'utilisez pas de préfixes comme `oci://` ou similaires.
+| `username`        | Nom d'utilisateur avec accès en écriture au registre. | Chaîne encodée en Base64       | Si non spécifié, {product_name} accède au registre sans authentification.
+| `password`        | Mot de passe pour l'utilisateur avec accès en écriture.         | Chaîne encodée en Base64       | Si non spécifié, {product_name} accède au registre sans authentification.
+| `agentUsername`   | Nom d'utilisateur en lecture seule pour les agents.              | Chaîne encodée en Base64       | Utilisez des identifiants en lecture seule pour les agents afin d'améliorer la sécurité. Si vous ne définissez pas ces identifiants, l'agent utilise le nom d'utilisateur.
+| `agentPassword`   | Mot de passe en lecture seule pour les agents.              | Chaîne encodée en Base64       | Utilisez des identifiants en lecture seule pour les agents afin d'améliorer la sécurité. Si vous ne définissez pas ces identifiants, l'agent utilise le mot de passe utilisateur.
+| `insecureSkipTLS` | Ignore la validation du certificat TLS.           | codé en Base64 `true/false` | À utiliser uniquement pour le développement ou les tests. Par défaut, `insecureSkipTLS` est défini sur `false`.
+| `basicHTTP`       | Active HTTP au lieu de HTTPS.              | codé en Base64 `true/false` | Non recommandé. Permet le trafic non sécurisé. Par défaut, `basicHTTP` est défini sur `false`.
+|===
+
+== {product_name} Exemple
+
+Considérez le `GitRepo` fichier suivant{nbsp}:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: frontend-oci
+  namespace: fleet-local
+spec:
+  repo: https://github.com/your-org/fleet-oci-example.git
+  branch: main
+  paths:
+    - ./frontend
+  ociRegistrySecret: ocistorage
+----
+
+Vous pouvez soit créer et appliquer un fichier YAML contenant l'adresse du registre et des identifiants optionnels similaires à l'exemple ci-dessus. Ensuite, exécutez{nbsp}:
+
+[source,bash]
+----
+kubectl apply -f secrets/oci-secret.yaml
+----
+
+Ou vous pouvez utiliser `kubectl` pour créer le secret en utilisant du texte non encodé. Kubernetes convertira automatiquement les valeurs en base64.
+
+[source,bash]
+----
+kubectl -n fleet-local create secret generic ocistorage \
+  --type=fleet.cattle.io/bundle-oci-storage/v1alpha1 \
+  --from-literal=username=fleet-ci \
+  --from-literal=password=fleetRocks \
+  --from-literal=reference=192.168.1.39:8082 \
+  --from-literal=insecureSkipTLS=true \
+  --from-literal=basicHTTP=false \
+  --from-literal=agentUsername=fleet-ci-readonly \
+  --from-literal=agentPassword=readonlypass
+----
+
+Pour valider votre secret, exécutez{nbsp}:
+
+[source,bash]
+----
+kubectl get secret ocistorage -n fleet-local -o yaml
+----
+
+Pour déchiffrer et afficher votre secret{nbsp}:
+
+[source,bash]
+----
+kubectl get secret ocistorage -n fleet-local -o json | jq '.data | map_values(@base64d)'
+----
+
+image::ociStorage-secret-ss.png[Une capture d'écran des secrets OCI activés pour {product_name}]

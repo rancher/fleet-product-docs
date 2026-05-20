@@ -1,0 +1,166 @@
+= Détection d'erreurs de réglage fin
+:revdate: 2025-09-12
+:page-revdate: {revdate}
+
+{product_name} surveille le champ `status` des ressources déployées pour déterminer si un `Bundle` est sain ou en erreur. Dans certains cas, {product_name} peut interpréter une condition dans le champ d'état comme une erreur, même si elle est attendue ou inoffensive.
+
+Vous pouvez ajuster ce comportement de deux manières :
+
+* Ignorer les conditions dans `fleet.yaml`
+* Personnaliser les mappages d'erreurs avec des variables d'environnement
+
+image::fine-tune-error-flow.svg[Un flux visuel de détection d'erreurs de réglage fin]
+
+REMARQUE :  +
+Vous devriez rarement avoir besoin de configurer la détection de disponibilité dans {product_name} avec des variables d'environnement. Si c'est le cas, ouvrez une issue ou soumettez une pull request pour contribuer à améliorer la détection de disponibilité par défaut.
+
+== Ignorer les conditions dans `fleet.yaml`
+
+Utilisez le paramètre `ignore.conditions` dans le fichier `fleet.yaml` pour indiquer à {product_name} d'ignorer des conditions spécifiques.
+
+[source,yaml]
+----
+# from ref-fleet-yaml
+
+# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# some conditions in Custom Resources makes the Bundle to be in an error state
+# when it shouldn't.
+ignore:
+
+  # Conditions to be ignored
+  conditions:
+
+    # In this example a condition will be ignored if it contains
+    # {"type": "Active", "status", "False"}
+    - type: Active
+      status: "False"
+----
+
+Cette méthode est utile lorsqu'une ressource ou un contrôleur personnalisé définit des conditions qui amènent {product_name} à marquer un Bundle comme échoué, même si la ressource est saine.
+
+image::fine-tune-error-ingore.svg[Un flux visuel d'ignorance des conditions lors de la détection d'erreurs de réglage fin]
+
+== Configurer le mappage des erreurs avec des variables d'environnement
+
+Dans {product_name} **v0.13**, la détection d'erreurs a été améliorée pour vous donner plus de contrôle. Vous pouvez utiliser la variable d'environnement `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` pour personnaliser la façon dont les conditions des ressources sont interprétées.
+
+Cette variable vous permet de définir, par `Group`, `Version`, `Kind` (GVK), quelles valeurs de condition doivent être considérées comme des erreurs ou explicitement non considérées comme des erreurs.
+
+Définissez cette variable dans le déploiement Helm de Fleet (`values.yaml`) en utilisant `extraEnv`. La valeur doit être au format JSON.
+
+[source,yaml]
+----
+# Extra environment variables passed to the fleet pods.
+# extraEnv:
+# - name: OCI_STORAGE
+#   value: "false"
+----
+
+REMARQUE :  +
+Ce paramètre est global à tous les contrôleurs Fleet et s'applique à chaque `GitRepo`. Si vous devez ajuster la gestion des erreurs uniquement pour un Bundle spécifique, utilisez l'option `ignoreConditions` dans `fleet.yaml` à la place.
+
+=== Comportement de fusion
+
+Lorsque vous remplacez les mappages par `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` :
+
+* Les nouvelles conditions sont fusionnées avec les conditions prédéfinies.
+* Les valeurs des conditions sont remplacées pour toute condition que vous redéfinissez.
+
+Par exemple, considérez le mappage par défaut : 
+
+`HelmChart.Failed=["True"]`
+
+Cela signifie que `Failed=True` est traité comme une erreur.
+
+Lorsque vous remplacez par{nbsp}:
+
+* `HelmChart.Failed=["False"]`
+* `HelmChart.Ready=["False"]`
+
+Cela donne{nbsp}:
+
+* `Failed=["False"]` remplace le mappage par défaut. Cela signifie que **`Failed=False`** est maintenant traité comme une erreur.
+* `Ready=["False"]` est ajouté, donc **`Ready=False`** est également traité comme une erreur.
+* Autres conditions inchangées.
+
+=== Désactiver l'exemple d'interprétation des erreurs
+
+Supposons que chaque valeur de `Failed` ait été précédemment interprétée comme une erreur, par exemple{nbsp}:
+
+[source,json]
+----
+{ "type": "Failed", "status": ["True", "False"] }
+----
+
+Vous pouvez restreindre ce mappage pour traiter uniquement `Failed=True` comme une erreur en définissant :
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] } 
+    ]
+  }
+]
+----
+
+Cette configuration signifie que seule **`Failed=True`** est traitée comme une erreur. `Failed=False` n'est plus considérée comme une erreur.
+
+Vous pouvez également désactiver les erreurs pour toute valeur de `Failed` en{nbsp}:
+
+[source,json]
+----
+{ "type": "Failed", "status": [""] } 
+----
+
+Cette configuration garantit que **aucune valeur de `Failed`** est traitée comme une erreur.
+
+REMARQUE :  +
+Le remplacement des conditions n'affecte que les mappages d'erreurs par défaut (voir xref:default-error-mappings[mappages d'erreurs par défaut]). {product_name} peut toujours marquer une ressource comme une erreur car d'autres vérifications, telles que celles de la bibliothèque `kstatus`, continuent de s'exécuter après votre personnalisation.
+
+=== Activer l'exemple d'interprétation des erreurs
+
+[source,json]
+----
+[
+  {
+    "gvk": "sample.cattle.io/v1, Kind=Sample",
+    "conditionMappings": [
+      { "type": "Failed", "status": ["True"] }
+    ]
+  }
+]
+----
+
+Ici, `Failed=True` est traité comme une erreur.
+
+[[default-error-mappings]]
+== Mappages d'erreurs par défaut 
+
+{product_name} ajoute des mappages d'erreurs par défaut pour interpréter certaines conditions de ressources dans le champ `status` comme des erreurs. Ces mappages sont appliqués en plus d'autres vérifications de disponibilité, telles que celles effectuées par la bibliothèque Kubernetes `kstatus`.
+
+Les mappages par défaut suivants s'appliquent{nbsp}:
+
+* **HelmChart** (`helm.cattle.io/v1`)
+  * `JobCreated` : Ni `True` ni `False` ne sont considérés comme une erreur.
+  * `Failed` : `True` est considéré comme une erreur.
+* **Node** (`v1`)
+  * `OutOfDisk` : `True` est considéré comme une erreur.
+  * `MemoryPressure` : `True` est considéré comme une erreur.
+  * `DiskPressure` : `True` est considéré comme une erreur.
+  * `NetworkUnavailable` : `True` est considéré comme une erreur.
+* **Déploiement** (`apps/v1`)
+  * `ReplicaFailure` : `True` est considéré comme une erreur.
+  * `Progressing` : `False` est considéré comme une erreur.
+* **ReplicaSet** (`apps/v1`)
+  * `ReplicaFailure` : `True` est considéré comme une erreur.
+
+=== Mappage de secours
+
+Si une ressource ne correspond pas aux GVKs listés, {product_name} applique un mappage de secours{nbsp}:
+
+* Tout `Group` et `Version` de tout type
+  * `Stalled` : `True` est considéré comme une erreur.
+  * `Failed` : `True` est considéré comme une erreur.

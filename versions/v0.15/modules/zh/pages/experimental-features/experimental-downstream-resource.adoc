@@ -1,0 +1,55 @@
+= 自动将资源复制到下游集群
+:revdate: 2025-11-04
+:page-revdate: {revdate}
+
+[WARNING]
+====
+这是一个实验性功能。
+====
+
+从 {product_name} v0.14.0 开始，{product_name} 支持将外部资源传播到下游集群。
+
+这简化了处理图表依赖关系的过程，例如来自外部资源的值。
+另请参见 xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom]。
+
+== 工作方式
+
+HelmOps 支持一个新的 `downstreamResources` 字段，可以用来按种类和名称引用资源。
+这些资源必须：
+
+* 是机密或配置映射。当前不支持其他 `kind`。
+* 在被 HelmOp 引用之前必须存在，并且与引用它们的 HelmOp 位于同一名称空间。
+
+示例：
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+[...] # metadata
+spec:
+  helm:
+    [...] # Helm options
+  downstreamResources:
+    - kind: Secret
+      name: my-secret
+    - kind: ConfigMap
+      name: my-config
+----
+
+这指示 Fleet 控制器在将工作负载（在此情况下通过 Helm 图表指定）部署到所述下游集群之前，将这些资源复制到每个目标下游集群。
+
+当集群不再作为目标时，Fleet agent 也会从该集群中删除这些资源。不过，它们将保留在上游集群中。
+
+[NOTE]
+====
+如果通过 `downstreamResources` 引用的资源在不再作为目标后仍应保留在下游集群中，则应在 HelmOp 上将 xref:/reference/ref-bundle.adoc[keepResources] 设置为 `true`。
+====
+
+== 监控
+
+从版本 v0.15.0 开始，{product_name} 监控在 `DownstreamResources` 中列出的机密和配置映射的更改。它还检查在 Bundle 创建后是否创建了机密或配置映射。
+
+当在上游集群中创建或更新引用的机密或配置映射时，Fleet 将把这些更改传播到下游集群，并重新部署工作负载。
+
+这使得部署能够使用这些引用资源的最新版本，这些版本可能代表配置、Helm 值等。

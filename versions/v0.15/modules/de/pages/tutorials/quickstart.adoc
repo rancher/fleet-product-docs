@@ -1,0 +1,97 @@
+:doctype: book
+
+= Kurzanleitung
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+image::single-cluster.png[]
+
+
+== Installieren
+
+{product_name} wird als Helm-Chart verteilt. Helm 3 ist eine Kommandozeilenschnittstelle, hat keine serverseitige Komponente und seine Verwendung ist ziemlich unkompliziert. Um die Helm 3 Kommandozeilenschnittstelle zu installieren, folgen Sie den https://helm.sh/docs/intro/install[offiziellen Installationsanweisungen].
+
+[CAUTION]
+.{product_name} in Rancher
+====
+Rancher hat separate Helm-Charts für {product_name} und verwendet ein anderes Repository.
+====
+
+
+[tabs]
+====
+Linux/Mac::
++
+[source,bash]
+----
+brew install helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+
+Windows::
++
+[source,bash]
+----
+choco install kubernetes-helm
+helm repo add fleet https://rancher.github.io/fleet-helm-charts/
+----
+====
+
+Installieren Sie die {product_name} Helm-Charts (es gibt zwei, weil wir CRDs für maximale Flexibilität trennen).
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
+    fleet/fleet-crd
+helm -n cattle-fleet-system install --create-namespace --wait fleet \
+    fleet/fleet
+----
+
+== Fügen Sie ein Git-Repo hinzu, das überwacht werden soll
+
+Ändern Sie `spec.repo` in Ihr bevorzugtes Git-Repo.  Kubernetes-Manifestdateien, die bereitgestellt werden sollen, sollten sich in `/manifests` in Ihrem Repo befinden.
+
+[source,bash]
+----
+cat > example.yaml << "EOF"
+apiVersion: fleet.cattle.io/v1alpha1
+kind: GitRepo
+metadata:
+  name: sample
+  # This namespace is special and auto-wired to deploy to the local cluster
+  namespace: fleet-local
+spec:
+  # Everything from this repo will be run in this cluster. You trust me right?
+  repo: "https://github.com/rancher/fleet-examples"
+  paths:
+  - simple
+EOF
+
+kubectl apply -f example.yaml
+----
+
+== Status abrufen
+
+Status abrufen, was Fleet tut
+
+[source,shell]
+----
+kubectl -n fleet-local get fleet
+----
+
+Sie sollten sehen, dass etwas Ähnliches in Ihrem Cluster erstellt wird.
+
+----
+kubectl get deploy frontend
+----
+
+----
+NAME       READY   UP-TO-DATE   AVAILABLE   AGE
+frontend   3/3     3            3           116m
+----
+
+== Nächste Schritte
+
+Müssen Sie...
+* Private Git- oder Helm-Repositories überwachen? Überprüfen Sie xref:how-tos-for-users/gitrepo-add.adoc[Erstellen Sie eine GitRepo-Ressource].
+* Passen Sie Ihre Bereitstellungen pro Ziel-Cluster an? xref:how-tos-for-users/gitrepo-targets.adoc[Zuordnung zu Downstream-Clustern].

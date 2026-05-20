@@ -1,0 +1,30 @@
+= Fleet
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Verwalten Sie {product_name} Operationen
+
+----
+fleet [flags]
+----
+
+== Optionen
+
+----
+  -h, --help   help for fleet
+----
+
+== SIEHE AUCH
+=== Hauptbefehle
+
+* xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]     - Erstellen Sie Bündel aus Verzeichnissen und geben Sie sie aus oder wenden Sie sie auf einem Cluster an
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]     - Bereinigen Sie veraltete Clusterregistrierungen
+* xref:/reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]     - Stellen Sie eine Bündelbereitstellung/Inhaltsressource auf einem Cluster bereit, indem Sie ein Helm-Release erstellen. Dies wird die Bündelbereitstellung/Inhaltsressourcen nicht direkt auf dem Cluster bereitstellen.
+* xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]     - Klont ein Git-Repository
+* xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]     - Verfügbare Ziele für ein Bündel anzeigen
+
+=== Fehlerbehebung und Diagnose
+
+* xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]     - Überwachen Sie Fleet-Setups auf Probleme
+* xref:/reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]     - Analysieren Sie Snapshots, die von `fleet monitor` erstellt wurden
+* xref:/reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]     - Exportieren Sie Clusterdaten in ein Archiv

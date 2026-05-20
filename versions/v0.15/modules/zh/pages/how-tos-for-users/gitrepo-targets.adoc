@@ -1,0 +1,190 @@
+= 映射到下游集群
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ifeval::["{product}" == "fleet"]
+https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet[{product_name} 在 Rancher] 允许用户像管理一个集群一样轻松管理集群。用户可以部署捆绑包，这些捆绑包可以由部署清单或任何其他 Kubernetes 资源组成，跨集群使用分组配置。
+
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html[{product_name} 在 Rancher] 允许用户像管理一个集群一样轻松管理集群。用户可以部署捆绑包，这些捆绑包可以由部署清单或任何其他 Kubernetes 资源组成，跨集群使用分组配置。
+endif::[]
+[IMPORTANT]
+====
+
+*仅限多集群*:
+此方法仅适用于您以多集群方式运行 {product_name}。如果未指定目标，即在使用单集群时，捆绑包将针对默认集群组。
+====
+
+
+在将 `GitRepos` 部署到下游集群时，集群必须映射到目标。
+
+== 定义目标
+
+使用 `spec.targets` 字段来匹配集群或集群组来完成 `GitRepo` 的部署目标。YAML 规范如下。
+
+[,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: myrepo
+  namespace: clusters
+spec:
+  repo: https://github.com/rancher/fleet-examples
+  paths:
+  - simple
+
+  # Targets are evaluated in order and the first one to match is used. If
+  # no targets match then the evaluated cluster will not be deployed to.
+  targets:
+  # The name of target. This value is largely for display and logging.
+  # If not specified a default name of the format "target000" will be used
+  - name: prod
+    # A selector used to match clusters.  The structure is the standard
+    # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
+    # clusterSelector will be used only to further refine the selection after
+    # clusterGroupSelector and clusterGroup is evaluated.
+    clusterSelector:
+      matchLabels:
+        env: prod
+    # A selector used to match cluster groups.
+    clusterGroupSelector:
+      matchLabels:
+        region: us-east
+    # A specific clusterGroup by name that will be selected
+    clusterGroup: group1
+    # A specific cluster by name that will be selected
+    clusterName: cluster1
+----
+
+== 目标匹配
+
+与 `GitRepo` 在同一命名空间中的所有集群和集群组将与所有目标进行评估。
+如果任何目标与集群匹配，则 `GitRepo` 将被部署到下游集群。如果没有匹配，则 `GitRepo` 将不会被部署到该集群。
+
+有三种匹配集群的方法。
+可以使用集群选择器、集群组选择器或显式集群组名称。 所有标准是累加的，因此最终匹配被评估为 "clusterSelector && clusterGroupSelector && clusterGroup"。 如果三个中的任何一个具有默认值，则从标准中删除。 默认值为 null 或 ""。 重要的是要意识到选择器的值 `{}` 意味着 "匹配所有"。
+
+[,yaml]
+----
+targets:
+  # Match everything
+  - clusterSelector: {}
+  # Selector ignored
+  - clusterSelector: null
+----
+
+您还可以通过名称匹配集群：
+
+[,yaml]
+----
+targets:
+  - clusterName: fleetname
+----
+
+在 Rancher 中使用 {product_name} 时，请确保输入 `clusters.fleet.cattle.io` 资源的名称。
+
+== 默认目标
+
+如果未为 `GitRepo` 设置目标，则应用默认目标值。 默认目标值如下。
+
+[,yaml]
+----
+targets:
+- name: default
+  clusterGroup: default
+----
+
+这意味着如果您希望为未配置的 GitRepos 设置一个默认位置，只需创建一个名为 default 的集群组并将集群添加到其中。
+
+== 每个集群的自定义
+
+[IMPORTANT]
+====
+
+在 `GitRepo` 资源中的 `targets:` 选择要部署的集群。在 `fleet.yaml` 中的 `targetCustomizations:` 仅覆盖 Helm 值，不更改目标。
+====
+
+
+为了演示如何使用 {product_name} 在不同集群之间部署 Kubernetes 清单并进行自定义，我们将使用 https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml]。
+
+*状况：*用户有三个集群，分别带有三个不同的标签：`env=dev`、`env=test` 和 `env=prod`。用户希望在这些集群上部署一个前端应用程序和一个后端数据库。
+
+*预期行为:*
+
+* 在 `dev` 集群上部署后，数据库复制未启用。
+* 在 `test` 集群上部署后，数据库复制已启用。
+* 在 `prod` 集群上部署后，数据库复制已启用，并且负载均衡服务已暴露。
+
+* {product_name} 的优势:*
+
+{product_name} 允许您按照以下步骤在所有集群上进行部署，而不是在每个集群上部署应用程序：
+
+. 部署 gitRepo `https://github.com/rancher/fleet-examples.git` 并指定路径 `multi-cluster/helm`。
+. 在 `multi-cluster/helm` 下，Helm 图表将部署前端应用服务和后端数据库服务。
+. 将在 `fleet.yaml` 中定义以下规则：
+
+[source,yaml]
+----
+targetCustomizations:
+- name: dev
+  helm:
+    values:
+      replication: false
+  clusterSelector:
+    matchLabels:
+      env: dev
+
+- name: test
+  helm:
+    values:
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: test
+
+- name: prod
+  helm:
+    values:
+      serviceType: LoadBalancer
+      replicas: 3
+  clusterSelector:
+    matchLabels:
+      env: prod
+----
+
+*结果：*
+
+{product_name} 将使用您自定义的 `values.yaml` 部署 Helm 图表到不同的集群。
+
+
+[NOTE]
+====
+配置管理不仅限于部署，还可以扩展到一般的配置管理。{product_name} 能够通过在任意集群之间的自定义自动应用配置管理。
+====
+
+=== 使用`targetCustomizations`覆盖Helm图表设置时的限制。
+
+尽管可以在`targetCustomizations`中指定`helm.chart`、`helm.repo`和`helm.version`，但覆盖这些字段有重要的限制。
+
+{product_name} 在初始 **捆绑创建** 阶段使用顶层 `helm` 配置检索 Helm 图表。此检索由 Fleet 工具链 (`GitJob`) 在处理 `targetCustomizations` 之前执行。
+
+由于在此阶段图表已被下载，`targetCustomizations` 无法用于动态从以下来源获取其他图表:
+
+* 本地目录
+* 不同的 Helm 储存库
+* 单独的 OCI 注册表（例如，防火墙后面的一个）
+
+如果您尝试覆盖这些字段，则在图表检索期间可能会忽略该覆盖。在某些情况下，Fleet 可能会尝试在同一捆绑中包含多个图表版本，这可能会显著增加捆绑包大小，并可能超过 etcd 大小限制。
+
+如果不同的环境需要不同的图表或注册表，请使用以下方法之一：
+
+* 为每个图表配置定义单独的`fleet.yaml`文件。
+* 为每个环境创建单独的`GitRepo`资源。
+
+
+== 附加示例
+
+使用原始Kubernetes YAML、Helm图表、Kustomize及三者组合的示例在 https://github.com/rancher/fleet-examples/[{product_name}示例储存库]中。
