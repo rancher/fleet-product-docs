@@ -41,7 +41,7 @@ Add a compare patch when Kubernetes components modify resources automatically in
 
 Do not use comparePatches to hide unexpected configuration drift or manual changes.
 
-If an administrator manually edits a {product_name}-managed resource using kubectl edit, {product_name} marks the bundle as ++Modified++.
+If an administrator manually edits or patches a {product_name}-managed resource, {product_name} marks the bundle as ++Modified++.
 
 Do not ignore these changes with a diff rule. Instead either revert the manual change to match the Git repository or update the Git repository with the new desired state.
 
