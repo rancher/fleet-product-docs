@@ -47,7 +47,7 @@ Do not ignore these changes with a diff rule. Instead either revert the manual c
 
 [NOTE]
 ====
-You may not need to create diff rules for replica count changes managed by an HPA. Since,  {product_name} automatically ignores changes to the replicas field for Deployment and StatefulSet resources when the values remain within the HPA-managed range.
+You may not need to create diff rules for replica count changes managed by an HPA. Since v0.15.0, {product_name} automatically ignores changes to the replicas field for Deployment and StatefulSet resources when the values remain within the HPA-managed range.
 ====
 
 == Configure compare patches example
