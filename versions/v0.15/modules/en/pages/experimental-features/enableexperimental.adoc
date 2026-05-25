@@ -12,8 +12,9 @@ For more information, refer to Configure xref:reference/ref-configuration.adoc#c
 
 {product_name} currently supports the following experimental features, toggled through their respective environment variables:
 
-* xref:experimental-features/scheduling.adoc[Scheduling]
-* xref:experimental-features/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
+* xref:experimental-features/scheduling.adoc[Scheduling]: `EXPERIMENTAL_SCHEDULES`
+* xref:experimental-features/experimental-downstream-resource.adoc[Automated propagation of resources to downstream
+  clusters]: `EXPERIMENTAL_COPY_RESOURCES_DOWNSTREAM`
 
 == Enabling an experimental feature
 
