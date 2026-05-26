@@ -17,6 +17,7 @@
 * <<GitRepo,GitRepo>>
 * <<GitRepoRestriction,GitRepoRestriction>>
 * <<ImageScan,ImageScan>>
+* <<Policy,Policy>>
 
 == Sub Resources
 
@@ -82,6 +83,9 @@
 * <<OCIRegistrySpec,OCIRegistrySpec>>
 * <<ResourcePerClusterState,ResourcePerClusterState>>
 * <<GitRepoRestrictionList,GitRepoRestrictionList>>
+* <<GitRepoPolicySpec,GitRepoPolicySpec>>
+* <<HelmOpPolicySpec,HelmOpPolicySpec>>
+* <<PolicyList,PolicyList>>
 * <<AlphabeticalPolicy,AlphabeticalPolicy>>
 * <<ImagePolicyChoice,ImagePolicyChoice>>
 * <<ImageScanList,ImageScanList>>
@@ -2585,6 +2589,11 @@ ResourcePerClusterState is generated for each non-ready resource of the bundles.
 
 === GitRepoRestriction
 
+[WARNING]
+====
+Deprecated for multi-tenancy. Use the xref:reference/ref-policy.adoc[Policy] custom resource instead. GitRepoRestriction remains supported but is not a security boundary on its own. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
+====
+
 GitRepoRestriction is a resource that can optionally be used to restrict the options of GitRepos in the same namespace.
 
 |===
@@ -2631,6 +2640,11 @@ GitRepoRestriction is a resource that can optionally be used to restrict the opt
 
 === GitRepoRestrictionList
 
+[WARNING]
+====
+Deprecated for multi-tenancy. Use the xref:reference/ref-policy.adoc[Policy] custom resource instead. GitRepoRestriction remains supported but is not a security boundary on its own. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
+====
+
 GitRepoRestrictionList contains a list of GitRepoRestriction
 
 |===
@@ -2645,6 +2659,130 @@ GitRepoRestrictionList contains a list of GitRepoRestriction
 |
 | []<<GitRepoRestriction,GitRepoRestriction>>
 | true
+|===
+
+<<Resources,Back to Custom Resources>>
+
+
+=== Policy
+
+Policy restricts what GitRepo, HelmOp, and Bundle resources in the same namespace may do. Top-level fields are checked by the GitRepo, HelmOp, and Bundle reconcilers. Sub-object fields (`gitRepo`, `helmOp`) are read only by their respective reconciler, and any default values they set are applied before the top-level validators run. Multiple Policy objects in the same namespace are aggregated with OR/union semantics, sorted by name. See xref:reference/ref-policy.adoc[Policy Resource] for the field-by-field semantics and the aggregation rules.
+
+|===
+| Field | Description | Scheme | Required
+
+| metadata
+|
+| metav1.ObjectMeta
+| false
+
+| requireServiceAccount
+| RequireServiceAccount, when true, rejects any GitRepo, HelmOp, or Bundle whose ServiceAccount is empty after any defaulting has been applied.
+| bool
+| false
+
+| allowedServiceAccounts
+| AllowedServiceAccounts lists service accounts that may be used. If non-empty, the ServiceAccount must appear in this list. When RequireServiceAccount is also true, an empty ServiceAccount is rejected regardless of this list.
+| []string
+| false
+
+| gitRepo
+| GitRepo contains restrictions and defaults applied only by the GitRepo reconciler.
+| <<GitRepoPolicySpec,GitRepoPolicySpec>>
+| false
+
+| helmOp
+| HelmOp contains restrictions and defaults applied only by the HelmOp reconciler.
+| <<HelmOpPolicySpec,HelmOpPolicySpec>>
+| false
+|===
+
+<<Resources,Back to Custom Resources>>
+
+
+=== PolicyList
+
+PolicyList contains a list of Policy
+
+|===
+| Field | Description | Scheme | Required
+
+| metadata
+|
+| metav1.ListMeta
+| false
+
+| items
+|
+| []<<Policy,Policy>>
+| true
+|===
+
+<<Resources,Back to Custom Resources>>
+
+
+=== GitRepoPolicySpec
+
+GitRepoPolicySpec holds GitRepo-specific defaults and source restrictions, applied only by the GitRepo reconciler before the top-level validators run.
+
+|===
+| Field | Description | Scheme | Required
+
+| defaultServiceAccount
+| DefaultServiceAccount is applied to GitRepo objects whose ServiceAccount is empty, before the top-level RequireServiceAccount check runs.
+| string
+| false
+
+| defaultClientSecretName
+| DefaultClientSecretName is applied to GitRepo objects whose ClientSecretName is empty.
+| string
+| false
+
+| allowedClientSecretNames
+| AllowedClientSecretNames lists client secret names that GitRepo objects may reference.
+| []string
+| false
+
+| allowedRepoPatterns
+| AllowedRepoPatterns is a list of regex patterns restricting the Repo field of GitRepo objects.
+| []string
+| false
+|===
+
+<<Resources,Back to Custom Resources>>
+
+
+=== HelmOpPolicySpec
+
+HelmOpPolicySpec holds HelmOp-specific defaults and source restrictions, applied only by the HelmOp reconciler before the top-level validators run.
+
+|===
+| Field | Description | Scheme | Required
+
+| defaultServiceAccount
+| DefaultServiceAccount is applied to HelmOp objects whose ServiceAccount is empty, before the top-level RequireServiceAccount check runs.
+| string
+| false
+
+| defaultHelmSecretName
+| DefaultHelmSecretName is applied to HelmOp objects whose HelmSecretName is empty.
+| string
+| false
+
+| allowedHelmSecretNames
+| AllowedHelmSecretNames lists credential secret names that HelmOp objects may reference.
+| []string
+| false
+
+| allowedHelmRepoPatterns
+| AllowedHelmRepoPatterns is a list of regex patterns restricting the spec.helm.repo field of HelmOp objects.
+| []string
+| false
+
+| allowedChartPatterns
+| AllowedChartPatterns is a list of regex patterns restricting the spec.helm.chart field of HelmOp objects.
+| []string
+| false
 |===
 
 <<Resources,Back to Custom Resources>>

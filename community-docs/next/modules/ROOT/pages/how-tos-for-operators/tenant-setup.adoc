@@ -1,0 +1,423 @@
+= Tenant Setup
+:revdate: 2026-05-21
+:page-revdate: {revdate}
+:page-aliases: how-tos-for-operators/multi-user.adoc, /multi-user, /tenant-setup
+
+This guide walks through setting up a tenant — a team or project that shares a {product_name} manager (and often downstream clusters) with other tenants — with proper isolation. For the trust model behind the steps below, see xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
+
+A tenant is isolated by three things working together:
+
+. *Upstream RBAC* that gives the tenant the {product_name} verbs they need and explicitly withholds the ones that would let them widen their own restrictions.
+. *Downstream RBAC* on a `ServiceAccount` that exists on every downstream cluster the tenant deploys to. This RBAC is the source of truth for what the tenant may do on each cluster.
+. *A `Policy`* in the tenant's upstream namespace that pins the tenant to the allowed `ServiceAccount`(s) and to allowed source repositories and credential secrets.
+
+The remainder of this page is the recipe.
+
+[CAUTION]
+====
+Tenant isolation in {product_name} relies on each of the three layers being configured correctly. Skipping any one of them — or granting the tenant write access to `Policy` resources — defeats the model. See <<Common Mistakes>>.
+====
+
+
+== Step 1 — Upstream Tenant RBAC
+
+Each tenant gets one or more upstream namespaces (in stand-alone {product_name}) or one or more `FleetWorkspace` objects (in a Rancher-integrated setup). Inside those namespaces, the tenant may create and manage their own `GitRepo`, `HelmOp`, and `Bundle` resources. They may *read* the `Policy` objects placed in their namespace by the operator, but they may *not* create, update, patch, or delete `Policy` objects.
+
+The reason for the read-only restriction on `Policy` is structural. Multiple `Policy` objects in the same namespace aggregate with union semantics — see xref:explanations/multi-tenancy.adoc#_aggregation[Aggregation] — so a tenant who can write a `Policy` can extend the allow-list and reference service accounts the operator did not intend to grant.
+
+=== Stand-alone {product_name}
+
+This creates a tenant whose service account can manage their own resources in namespace `project1`, including reading any `Policy` the operator has placed there, but not modifying `Policy` objects.
+
+[source,bash]
+----
+kubectl create namespace project1
+
+kubectl create serviceaccount tenant1 -n default
+
+# Tenant gets write access to their own GitRepo / HelmOp / Bundle resources.
+kubectl create clusterrole tenant1-write \
+  --verb=get,list,watch,create,update,patch,delete \
+  --resource=gitrepos.fleet.cattle.io,helmops.fleet.cattle.io,bundles.fleet.cattle.io
+
+# Tenant gets read-only access to Policy. They must not be able to create
+# or modify Policy objects — that would let them widen their own allow-list.
+kubectl create clusterrole tenant1-policy-read \
+  --verb=get,list,watch \
+  --resource=policies.fleet.cattle.io
+
+kubectl create rolebinding tenant1-write -n project1 \
+  --serviceaccount=default:tenant1 --clusterrole=tenant1-write
+kubectl create rolebinding tenant1-policy-read -n project1 \
+  --serviceaccount=default:tenant1 --clusterrole=tenant1-policy-read
+----
+
+For a second tenant in their own namespace, repeat with a different name and namespace; the two `ClusterRole` objects can be reused.
+
+=== Rancher-integrated {product_name}
+
+In a Rancher-integrated setup, each tenant gets a `FleetWorkspace` and the tenant's users get a `GlobalRole` that grants the necessary verbs on the workspace's backing namespace.
+
+[source,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project1
+---
+apiVersion: management.cattle.io/v3
+kind: FleetWorkspace
+metadata:
+  name: project2
+----
+
+Then the `GlobalRole`. Note that the rules are split into two blocks: one for resources the tenant may write, one for `Policy` which the tenant may only read.
+
+[source,yaml]
+----
+apiVersion: management.cattle.io/v3
+kind: GlobalRole
+metadata:
+  name: fleet-projects1and2
+namespacedRules:
+  project1:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - helmops
+        - bundles
+        - clusterregistrationtokens
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - policies
+      verbs:
+        - get
+        - list
+        - watch
+  project2:
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - gitrepos
+        - helmops
+        - bundles
+        - clusterregistrationtokens
+        - clusters
+        - clustergroups
+      verbs:
+        - '*'
+    - apiGroups:
+        - fleet.cattle.io
+      resources:
+        - policies
+      verbs:
+        - get
+        - list
+        - watch
+rules:
+  - apiGroups:
+      - management.cattle.io
+    resourceNames:
+      - project1
+      - project2
+    resources:
+      - fleetworkspaces
+    verbs:
+      - '*'
+----
+
+ifeval::["{product}" == "fleet"]
+Assign the `GlobalRole` to users or groups; see the https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher docs] for details.
+endif::[]
+
+ifeval::["{product}" == "continuous-delivery"]
+Assign the `GlobalRole` to users or groups; see the https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher docs] for details.
+endif::[]
+
+=== Allow Tenants to Target Downstream Clusters
+
+In multi-cluster setups, the tenant's `GitRepo` resources need to be able to see downstream `Cluster` objects. The typical pattern is a `BundleNamespaceMapping` placed by the operator in each tenant's namespace, which connects the tenant's bundles to the cluster registration namespace.
+
+[source,yaml]
+----
+kind: BundleNamespaceMapping
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: mapping
+  namespace: project1
+# Bundles to match by label. The labels are defined in fleet.yaml's labels
+# field or in the GitRepo metadata.labels field.
+bundleSelector:
+  matchLabels:
+    tenant: project1
+# Namespaces containing clusters, matched by label.
+namespaceSelector:
+  matchLabels:
+    kubernetes.io/metadata.name: fleet-default
+----
+
+See xref:explanations/namespaces.adoc#_cross_namespace_deployments[Cross Namespace Deployments] for the full mechanism.
+
+
+== Step 2 — Downstream ServiceAccount and RBAC
+
+For each downstream cluster a tenant will deploy to, the operator creates a `ServiceAccount` plus a `Role` (or `ClusterRole`) and `RoleBinding` describing what that tenant may do on the cluster. This RBAC is the source of truth for the tenant's downstream authority — see xref:explanations/multi-tenancy.adoc#_the_pre_existing_serviceaccount_requirement[The Pre-Existing ServiceAccount Requirement].
+
+The `ServiceAccount` lives in the {product_name} agent's namespace on the downstream cluster (`cattle-fleet-system`). The `Role`/`RoleBinding` describe what verbs that account holds on the actual workload namespaces.
+
+The example below sets up two tenants, each scoped to one workload namespace on the downstream cluster.
+
+[source,yaml]
+----
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenant-1-deployer
+  namespace: cattle-fleet-system
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tenant-2-deployer
+  namespace: cattle-fleet-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-1-deploy
+  namespace: project1-workloads
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["services", "configmaps", "secrets", "serviceaccounts"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-1-deploy
+  namespace: project1-workloads
+subjects:
+  - kind: ServiceAccount
+    name: tenant-1-deployer
+    namespace: cattle-fleet-system
+roleRef:
+  kind: Role
+  name: tenant-1-deploy
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-2-deploy
+  namespace: project2-workloads
+rules:
+  - apiGroups: ["apps"]
+    resources: ["deployments", "statefulsets", "daemonsets"]
+    verbs: ["*"]
+  - apiGroups: [""]
+    resources: ["services", "configmaps", "secrets", "serviceaccounts"]
+    verbs: ["*"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-2-deploy
+  namespace: project2-workloads
+subjects:
+  - kind: ServiceAccount
+    name: tenant-2-deployer
+    namespace: cattle-fleet-system
+roleRef:
+  kind: Role
+  name: tenant-2-deploy
+  apiGroup: rbac.authorization.k8s.io
+----
+
+This `Role` grants the tenant write access to a small set of resource kinds in a specific namespace. Adapt the resource list, verbs, and namespace set to what each tenant actually needs.
+
+=== Bootstrap Pattern: Roll Out Tenant ServiceAccounts to All Downstream Clusters
+
+In a realistic deployment with many downstream clusters, the operator does not apply the YAML above to each cluster by hand. Instead, the operator uses {product_name} itself — from a privileged upstream namespace that the operator alone controls — to fan the manifests out to every relevant downstream cluster.
+
+The pattern: place the `ServiceAccount` / `Role` / `RoleBinding` manifests in a git repository, then declare a `GitRepo` in an operator-owned namespace (typically `fleet-default`) that targets all downstream clusters that should host tenants.
+
+[source,yaml]
+----
+# In the operator-owned upstream namespace, e.g. fleet-default.
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: tenant-rbac-bootstrap
+  namespace: fleet-default
+spec:
+  repo: https://github.com/example-org/fleet-operator-config
+  branch: main
+  paths:
+    - tenant-rbac
+  # This bootstrap GitRepo runs as the operator. It needs cluster-admin
+  # equivalent permissions on the downstream cluster to create Roles and
+  # RoleBindings. Tenants do not get this serviceAccount in their Policy.
+  serviceAccount: operator-bootstrap
+  # Target every downstream cluster that should host tenant workloads.
+  # Adjust the selector or use a ClusterGroup to match your inventory.
+  targets:
+    - clusterSelector: {}
+----
+
+Inside the `tenant-rbac` directory in the git repository, place the `ServiceAccount` / `Role` / `RoleBinding` YAML for *all tenants* the operator has provisioned. Every downstream cluster matched by the selector will receive the manifests for every tenant. Adding or removing a tenant becomes a git commit on the operator's repository.
+
+A few things to note about this bootstrap:
+
+* The bootstrap `GitRepo` runs with an operator-level `ServiceAccount` (`operator-bootstrap` above), which must itself pre-exist on every downstream cluster and have permission to create cluster-scoped RBAC. The operator's `Policy` should keep this `ServiceAccount` off the tenant allow-list.
+* If you use a `ClusterGroup` for the downstream cluster set, target the `ClusterGroup` instead of using `clusterSelector: {}`.
+* For tenants whose downstream surface differs per cluster, structure the git repository so each cluster's RBAC lives in a per-cluster directory and use the GitRepo's `targetCustomizations` to select the right directory per cluster.
+
+
+== Step 3 — The Policy
+
+With the upstream RBAC and downstream `ServiceAccount`s in place, the `Policy` in the tenant's upstream namespace ties the two together. It declares that the tenant must use one of the allowed `ServiceAccount`s and may pull from a restricted set of repositories and credential secrets.
+
+[source,yaml]
+----
+kind: Policy
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: tenant-1-policy
+  namespace: project1
+requireServiceAccount: true
+allowedServiceAccounts:
+  - tenant-1-deployer
+gitRepo:
+  defaultServiceAccount: tenant-1-deployer
+  defaultClientSecretName: tenant-1-git-credentials
+  allowedClientSecretNames:
+    - tenant-1-git-credentials
+  allowedRepoPatterns:
+    - ^https://github\.com/tenant-1/.*$
+helmOp:
+  defaultServiceAccount: tenant-1-deployer
+  defaultHelmSecretName: tenant-1-helm-credentials
+  allowedHelmSecretNames:
+    - tenant-1-helm-credentials
+  allowedHelmRepoPatterns:
+    - ^https://charts\.tenant-1\.example\.com/.*$
+  allowedChartPatterns:
+    - ^tenant-1/.*$
+----
+
+For the field-by-field reference, see xref:reference/ref-policy.adoc[Policy Resource]. Repeat for each tenant in their own namespace, adjusting the allowed `ServiceAccount`, allowed repositories, and allowed secrets.
+
+
+== Step 4 — Tenant's First GitRepo
+
+A tenant working under the configuration above creates a `GitRepo` like this:
+
+[source,yaml]
+----
+kind: GitRepo
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: simpleapp
+  namespace: project1
+  labels:
+    tenant: project1
+spec:
+  repo: https://github.com/tenant-1/simpleapp
+  paths:
+    - manifests
+  # The serviceAccount line may be omitted: the Policy's
+  # gitRepo.defaultServiceAccount fills it in before validation runs.
+  serviceAccount: tenant-1-deployer
+  targets:
+    - clusterSelector:
+        matchLabels:
+          env: dev
+----
+
+The `BundleNamespaceMapping` from Step 1 lets this `GitRepo` find downstream `Cluster` objects in the `fleet-default` namespace; the `Policy` from Step 3 pins it to the `tenant-1-deployer` service account; and the downstream RBAC from Step 2 determines what `tenant-1-deployer` may actually do on the matched clusters.
+
+If the tenant submits a `GitRepo` that violates the `Policy` — for example, a `serviceAccount` that is not in the allow-list, or a `repo` URL that does not match the allowed patterns — the `GitRepo`'s status reports the violation and no deployment proceeds.
+
+A tenant's `HelmOp` works the same way, validated against the `helmOp.*` fields of the same `Policy`.
+
+
+== Verifying Isolation
+
+After applying the configuration, verify each layer:
+
+* As the tenant, attempt to create a `Policy` in your own namespace. The request should be denied by the upstream RBAC.
+* As the tenant, attempt to create a `GitRepo` that references a `serviceAccount` outside the allow-list. The request should be accepted, but the `GitRepo`'s status condition should report the `Policy` violation and no `Bundle` should be produced.
+* As the tenant, attempt to create a `GitRepo` whose `repo` URL does not match `allowedRepoPatterns`. Same outcome.
+* On a downstream cluster, attempt to use the tenant's `ServiceAccount` to write to a namespace not granted by the `Role`. The request should be denied by Kubernetes RBAC.
+
+
+== Common Mistakes
+
+* *Granting tenants write access to `Policy`.* Allow-lists union across all `Policy` objects in a namespace, so a tenant who can write `Policy` can widen their own restrictions. Tenants must have at most `get`/`list`/`watch` on `policies.fleet.cattle.io`.
+* *Forgetting `requireServiceAccount: true`.* Without this field, a tenant who omits `serviceAccount` from their `GitRepo` or `HelmOp` leaves it empty, which the downstream agent may resolve to a privileged identity. Set it explicitly.
+* *Setting a `defaultServiceAccount` that is not in `allowedServiceAccounts`.* The default is applied to empty fields without re-validation. If your default is not in your allow-list, you may silently allow a `ServiceAccount` you did not intend to allow. Keep defaults inside the allow-list.
+* *Forgetting to bootstrap the downstream `ServiceAccount` on every cluster the tenant targets.* Deployments to clusters without the `ServiceAccount` fail at the agent. Use the bootstrap pattern in Step 2 to keep coverage in sync with the cluster inventory.
+* *Configuring `Policy` for `GitRepo` only, ignoring `HelmOp`.* The `helmOp.*` block must be set if tenants have RBAC to create `HelmOp` resources. Without it, only the top-level `requireServiceAccount` / `allowedServiceAccounts` constrain HelmOps; source repositories, charts, and Helm credential secrets remain unrestricted.
+
+
+== Migration from GitRepoRestriction
+
+`GitRepoRestriction` is the predecessor to `Policy` and is no longer recommended for multi-tenant isolation. It remains supported by the controller. To migrate:
+
+. Author a `Policy` in the same namespace as the existing `GitRepoRestriction`, translating each field per the table below.
+. Add the downstream `ServiceAccount` + RBAC layer from Step 2 if it is not already present. The downstream RBAC replaces `allowedTargetNamespaces` and `allowedTargetNamespaceSelector`, which have no equivalent in `Policy` — see xref:explanations/multi-tenancy.adoc#_what_policy_deliberately_does_not_cover[What Policy Deliberately Does Not Cover].
+. Set `requireServiceAccount: true` on the new `Policy` and confirm the allow-list is exhaustive.
+. Tighten tenant RBAC to remove any write access to `policies` (and, while it exists, `gitreporestrictions`).
+. Once the new configuration is verified, delete the `GitRepoRestriction`.
+
+=== Field Mapping
+
+[cols="2,2,3", options="header"]
+|===
+| GitRepoRestriction field | Policy equivalent | Notes
+
+| `defaultServiceAccount`
+| `gitRepo.defaultServiceAccount`
+| Policy also offers `helmOp.defaultServiceAccount`.
+
+| `allowedServiceAccounts`
+| `allowedServiceAccounts` (top-level)
+| Now applies to GitRepo, HelmOp, and Bundle — not just GitRepo.
+
+| `defaultClientSecretName`
+| `gitRepo.defaultClientSecretName`
+|
+
+| `allowedClientSecretNames`
+| `gitRepo.allowedClientSecretNames`
+|
+
+| `allowedRepoPatterns`
+| `gitRepo.allowedRepoPatterns`
+|
+
+| `allowedTargetNamespaces`
+| no equivalent
+| Express as a `Role` on the tenant's downstream `ServiceAccount` restricting the namespaces it may write to.
+
+| `allowedTargetNamespaceSelector`
+| no equivalent
+| Same: encode namespace selection in the downstream `ServiceAccount`'s RBAC.
+
+| _(no equivalent in GitRepoRestriction)_
+| `requireServiceAccount`
+| New: declares explicitly that `ServiceAccount` must be set.
+
+| _(no equivalent in GitRepoRestriction)_
+| `helmOp.*`
+| New: HelmOp source and credential restrictions, which `GitRepoRestriction` could not express. Must be configured for tenants who can create `HelmOp` resources.
+|===
