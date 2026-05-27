@@ -27,6 +27,13 @@ The reason is structural. Multiple `Policy` objects in the same namespace aggreg
 
 Granting tenants *read* access to `Policy` is optional. A `Policy` violation surfaces as a status condition on the rejected resource with a clear message, so tenants can diagnose issues without reading the `Policy` directly. Read access is a convenience: it lets tenants see their constraints up front rather than discovering them through trial-and-error.
 
+Whether to grant access to `Cluster`, `ClusterGroup`, and `ClusterRegistrationToken` resources depends on the cluster ownership model:
+
+* *Operator manages clusters* — the operator registers downstream clusters in a privileged namespace and maps them into tenant namespaces via `BundleNamespaceMapping`. Tenants need no access to cluster resources. Do not grant read access to `Cluster` objects either: their status aggregates deployment state across all tenants targeting that cluster, which is a cross-tenant information leak. Tenants can check their own deployment status on their `GitRepo` and `Bundle` objects.
+* *Tenant registers their own clusters* — the tenant has full control over `Cluster`, `ClusterGroup`, and `ClusterRegistrationToken` resources in their namespace and manages their own cluster registration. No `BundleNamespaceMapping` is needed.
+
+Both examples below include the cluster resources. Remove them if using the operator-managed model.
+
 === Stand-alone {product_name}
 
 This creates a tenant whose service account can manage their own resources in namespace `project1`. The `tenant1-policy-read` role is optional — omit it if you prefer tenants not to see the `Policy` directly.
@@ -39,10 +46,12 @@ kubectl create namespace project1
 # cluster. Co-locating it with the tenant's namespace is cleaner than using 'default'.
 kubectl create serviceaccount tenant1 -n project1
 
-# Tenant gets write access to their own GitRepo / HelmOp / Bundle resources.
+# Tenant gets write access to their own GitRepo / HelmOp / Bundle resources,
+# and to cluster resources if they register their own downstream clusters.
+# Remove the three cluster resources if using the operator-managed model.
 kubectl create clusterrole tenant1-write \
   --verb=get,list,watch,create,update,patch,delete \
-  --resource=gitrepos.fleet.cattle.io,helmops.fleet.cattle.io,bundles.fleet.cattle.io
+  --resource=gitrepos.fleet.cattle.io,helmops.fleet.cattle.io,bundles.fleet.cattle.io,clusters.fleet.cattle.io,clustergroups.fleet.cattle.io,clusterregistrationtokens.fleet.cattle.io
 
 # Optional: read-only access to Policy lets tenants see their constraints
 # without trial-and-error. Omit if you prefer they not read Policy objects.
@@ -76,7 +85,7 @@ metadata:
   name: project2
 ----
 
-Then the `GlobalRole`. The rules are split into two blocks: one for resources the tenant may write, and an optional block granting read-only access to `Policy`. Omit the `policies` block if you prefer tenants not to see `Policy` objects directly.
+Then the `GlobalRole`. The `policies` block is optional — see above. The cluster resources follow the same model described above: remove them if the operator manages cluster registration.
 
 [source,yaml]
 ----
@@ -92,6 +101,7 @@ namespacedRules:
         - gitrepos
         - helmops
         - bundles
+        # Remove the three resources below if using the operator-managed model.
         - clusterregistrationtokens
         - clusters
         - clustergroups
@@ -112,6 +122,7 @@ namespacedRules:
         - gitrepos
         - helmops
         - bundles
+        # Remove the three resources below if using the operator-managed model.
         - clusterregistrationtokens
         - clusters
         - clustergroups
@@ -147,7 +158,7 @@ endif::[]
 
 === Allow Tenants to Target Downstream Clusters
 
-In multi-cluster setups, the tenant's `GitRepo` resources need to be able to see downstream `Cluster` objects. The typical pattern is a `BundleNamespaceMapping` placed by the operator in each tenant's namespace, which connects the tenant's bundles to the cluster registration namespace.
+In the operator-managed model, the operator places a `BundleNamespaceMapping` in the tenant's namespace to connect their bundles to the clusters registered in the operator-owned namespace. In the tenant-managed model, no `BundleNamespaceMapping` is needed — the tenant's resources and clusters share the same namespace.
 
 [source,yaml]
 ----
