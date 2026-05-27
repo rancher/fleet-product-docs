@@ -3,6 +3,8 @@
 :page-revdate: {revdate}
 :page-aliases: how-tos-for-operators/multi-user.adoc, /multi-user, /tenant-setup
 
+This guide applies only to setups where multiple independent teams share a {product_name} manager. If all users are administrators with full trust, none of this is required.
+
 This guide walks through setting up a tenant — a team or project that shares a {product_name} manager (and often downstream clusters) with other tenants — with proper isolation. For the trust model behind the steps below, see xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
 
 A tenant is isolated by three things working together:
