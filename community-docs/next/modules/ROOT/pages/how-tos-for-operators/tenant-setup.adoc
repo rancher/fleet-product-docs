@@ -21,13 +21,15 @@ Tenant isolation in {product_name} relies on each of the three layers being conf
 
 == Step 1 — Upstream Tenant RBAC
 
-Each tenant gets one or more upstream namespaces (in stand-alone {product_name}) or one or more `FleetWorkspace` objects (in a Rancher-integrated setup). Inside those namespaces, the tenant may create and manage their own `GitRepo`, `HelmOp`, and `Bundle` resources. They may *read* the `Policy` objects placed in their namespace by the operator, but they may *not* create, update, patch, or delete `Policy` objects.
+Each tenant gets one or more upstream namespaces (in stand-alone {product_name}) or one or more `FleetWorkspace` objects (in a Rancher-integrated setup). Inside those namespaces, the tenant may create and manage their own `GitRepo`, `HelmOp`, and `Bundle` resources. They must *not* create, update, patch, or delete `Policy` objects.
 
-The reason for the read-only restriction on `Policy` is structural. Multiple `Policy` objects in the same namespace aggregate with union semantics — see xref:explanations/multi-tenancy.adoc#_aggregation[Aggregation] — so a tenant who can write a `Policy` can extend the allow-list and reference service accounts the operator did not intend to grant.
+The reason is structural. Multiple `Policy` objects in the same namespace aggregate with union semantics — see xref:explanations/multi-tenancy.adoc#_aggregation[Aggregation] — so a tenant who can write a `Policy` can extend the allow-list and reference service accounts the operator did not intend to grant.
+
+Granting tenants *read* access to `Policy` is optional. A `Policy` violation surfaces as a status condition on the rejected resource with a clear message, so tenants can diagnose issues without reading the `Policy` directly. Read access is a convenience: it lets tenants see their constraints up front rather than discovering them through trial-and-error.
 
 === Stand-alone {product_name}
 
-This creates a tenant whose service account can manage their own resources in namespace `project1`, including reading any `Policy` the operator has placed there, but not modifying `Policy` objects.
+This creates a tenant whose service account can manage their own resources in namespace `project1`. The `tenant1-policy-read` role is optional — omit it if you prefer tenants not to see the `Policy` directly.
 
 [source,bash]
 ----
@@ -40,8 +42,9 @@ kubectl create clusterrole tenant1-write \
   --verb=get,list,watch,create,update,patch,delete \
   --resource=gitrepos.fleet.cattle.io,helmops.fleet.cattle.io,bundles.fleet.cattle.io
 
-# Tenant gets read-only access to Policy. They must not be able to create
-# or modify Policy objects — that would let them widen their own allow-list.
+# Optional: read-only access to Policy lets tenants see their constraints
+# without trial-and-error. Omit if you prefer they not read Policy objects.
+# Tenants must never be able to create or modify Policy objects.
 kubectl create clusterrole tenant1-policy-read \
   --verb=get,list,watch \
   --resource=policies.fleet.cattle.io
@@ -71,7 +74,7 @@ metadata:
   name: project2
 ----
 
-Then the `GlobalRole`. Note that the rules are split into two blocks: one for resources the tenant may write, one for `Policy` which the tenant may only read.
+Then the `GlobalRole`. The rules are split into two blocks: one for resources the tenant may write, and an optional block granting read-only access to `Policy`. Omit the `policies` block if you prefer tenants not to see `Policy` objects directly.
 
 [source,yaml]
 ----
