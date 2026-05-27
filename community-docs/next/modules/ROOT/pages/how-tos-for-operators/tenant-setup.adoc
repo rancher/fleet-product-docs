@@ -260,7 +260,7 @@ roleRef:
   apiGroup: rbac.authorization.k8s.io
 ----
 
-This `Role` grants the tenant write access to a small set of resource kinds in a specific namespace. Adapt the resource list, verbs, and namespace set to what each tenant actually needs.
+This `Role` grants the tenant write access to a small set of resource kinds in a specific namespace. Using `Role` rather than `ClusterRole` is deliberate: a `Role` confines the tenant to the named namespace and prevents creation of cluster-scoped resources such as `Namespace`, `ClusterRole`, or `PersistentVolume`. If a tenant genuinely needs to manage cluster-scoped resources, use a `ClusterRole` and be explicit about which resource kinds and verbs are granted — a `ClusterRole` with `verbs: ["*"]` on all resources is equivalent to cluster-admin. Adapt the resource list, verbs, and namespace set to what each tenant actually needs.
 
 === Bootstrap Pattern: Roll Out Tenant ServiceAccounts to All Downstream Clusters
 
