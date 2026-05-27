@@ -320,16 +320,16 @@ gitRepo:
   allowedClientSecretNames:
     - tenant-1-git-credentials
   allowedRepoPatterns:
-    - ^https://github\.com/tenant-1/.*$
+    - https://github\.com/tenant-1/.*
 helmOp:
   defaultServiceAccount: tenant-1-deployer
   defaultHelmSecretName: tenant-1-helm-credentials
   allowedHelmSecretNames:
     - tenant-1-helm-credentials
   allowedHelmRepoPatterns:
-    - ^https://charts\.tenant-1\.example\.com/.*$
+    - https://charts\.tenant-1\.example\.com/.*
   allowedChartPatterns:
-    - ^tenant-1/.*$
+    - tenant-1/.*
 ----
 
 For the field-by-field reference, see xref:reference/ref-policy.adoc[Policy Resource]. Repeat for each tenant in their own namespace, adjusting the allowed `ServiceAccount`, allowed repositories, and allowed secrets.

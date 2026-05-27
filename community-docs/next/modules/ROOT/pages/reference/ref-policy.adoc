@@ -44,8 +44,10 @@ gitRepo:
     - tenant-1-git-credentials
 
   # Regex patterns. A GitRepo's spec.repo must match at least one entry.
+  # The controller anchors every pattern as ^(?:<pattern>)$, so explicit
+  # ^ and $ anchors are not required.
   allowedRepoPatterns:
-    - ^https://github\.com/tenant-1/.*$
+    - https://github\.com/tenant-1/.*
 
 # HelmOp-specific defaults and restrictions. Applied only by the HelmOp
 # reconciler, before the top-level checks run.
@@ -62,12 +64,14 @@ helmOp:
     - tenant-1-helm-credentials
 
   # Regex patterns. A HelmOp's spec.helm.repo must match at least one entry.
+  # The controller anchors every pattern as ^(?:<pattern>)$, so explicit
+  # ^ and $ anchors are not required.
   allowedHelmRepoPatterns:
-    - ^https://charts\.tenant-1\.example\.com/.*$
+    - https://charts\.tenant-1\.example\.com/.*
 
   # Regex patterns. A HelmOp's spec.helm.chart must match at least one entry.
   allowedChartPatterns:
-    - ^tenant-1/.*$
+    - tenant-1/.*
 ----
 
 == Aggregation
