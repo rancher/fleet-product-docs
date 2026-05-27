@@ -2591,7 +2591,7 @@ ResourcePerClusterState is generated for each non-ready resource of the bundles.
 
 [WARNING]
 ====
-Deprecated for multi-tenancy. Use the xref:reference/ref-policy.adoc[Policy] custom resource instead. GitRepoRestriction remains supported but is not a security boundary on its own. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
+Deprecated. Use the xref:reference/ref-policy.adoc[Policy] custom resource instead. `GitRepoRestriction` will be removed in a future release. It has known security limitations: repo patterns are matched unanchored (a pattern like `github.com/myorg` also matches `evil.com/?ref=github.com/myorg`), and it does not cover `HelmOp` or `Bundle` resources. Migration is strongly recommended. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
 ====
 
 GitRepoRestriction is a resource that can optionally be used to restrict the options of GitRepos in the same namespace.
@@ -2642,7 +2642,7 @@ GitRepoRestriction is a resource that can optionally be used to restrict the opt
 
 [WARNING]
 ====
-Deprecated for multi-tenancy. Use the xref:reference/ref-policy.adoc[Policy] custom resource instead. GitRepoRestriction remains supported but is not a security boundary on its own. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
+Deprecated. Use the xref:reference/ref-policy.adoc[Policy] custom resource instead. `GitRepoRestriction` will be removed in a future release. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy].
 ====
 
 GitRepoRestrictionList contains a list of GitRepoRestriction

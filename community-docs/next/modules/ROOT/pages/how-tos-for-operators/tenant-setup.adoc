@@ -371,7 +371,7 @@ After applying the configuration, verify each layer:
 
 == Migration from GitRepoRestriction
 
-`GitRepoRestriction` is the predecessor to `Policy` and is no longer recommended for multi-tenant isolation. It remains supported by the controller. To migrate:
+`GitRepoRestriction` is deprecated and will be removed in a future release. Migration is strongly recommended for security reasons: its repo patterns are matched unanchored (a pattern like `github.com/myorg` also matches `https://evil.com/?ref=github.com/myorg`), and it provides no coverage of `HelmOp` or `Bundle` resources. It remains supported by the controller in the meantime. To migrate:
 
 . Author a `Policy` in the same namespace as the existing `GitRepoRestriction`, translating each field per the table below.
 . Add the downstream `ServiceAccount` + RBAC layer from Step 2 if it is not already present. The downstream RBAC replaces `allowedTargetNamespaces` and `allowedTargetNamespaceSelector`, which have no equivalent in `Policy` — see xref:explanations/multi-tenancy.adoc#_what_policy_deliberately_does_not_cover[What Policy Deliberately Does Not Cover].
@@ -403,7 +403,7 @@ After applying the configuration, verify each layer:
 
 | `allowedRepoPatterns`
 | `gitRepo.allowedRepoPatterns`
-|
+| Policy patterns are anchored (`^(?:...)$`); GitRepoRestriction patterns were matched unanchored. Review each pattern before copying — a pattern that was accidentally permissive under GitRepoRestriction may need tightening.
 
 | `allowedTargetNamespaces`
 | no equivalent

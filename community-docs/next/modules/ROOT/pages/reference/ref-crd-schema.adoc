@@ -55,7 +55,7 @@ This table summarizes the Custom Resource Definitions (CRDs) used in *{product_n
 | xref:attachment$crds/gitrepo_v1alpha1.json[GitRepo v1alpha1]
 
 | *GitRepoRestriction v1alpha1*
-| *Deprecated for multi-tenancy.* Use xref:ref-policy.adoc[Policy] instead. GitRepoRestriction remains supported but is not a security boundary on its own. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy]. GitRepoRestriction optionally restricts GitRepo options within the same namespace.
+| *Deprecated.* Use xref:ref-policy.adoc[Policy] instead. GitRepoRestriction will be removed in a future release. It has known security limitations (unanchored regex patterns, no coverage of HelmOp or Bundle resources) and migration is strongly recommended. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy]. GitRepoRestriction optionally restricts GitRepo options within the same namespace.
 | `allowedClientSecretNames, allowedRepoPatterns, allowedServiceAccounts, allowedTargetNamespaces, apiVersion, defaultClientSecretName, defaultServiceAccount, kind, metadata`
 | xref:attachment$crds/gitreporestriction_v1alpha1.json[GitRepoRestriction v1alpha1]
 

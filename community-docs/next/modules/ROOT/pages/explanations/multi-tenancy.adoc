@@ -66,7 +66,7 @@ The `Policy` resource declares `requireServiceAccount` as a distinct field rathe
 
 == Where GitRepoRestriction Fits
 
-The `GitRepoRestriction` custom resource predates `Policy` and overlaps with parts of its functionality. It remains supported by the controller but should not be used as the basis for multi-tenant isolation. `Policy` covers what `GitRepoRestriction` did for `GitRepo` and extends the same model to `HelmOp` and `Bundle`, with a clearer separation between upstream enforcement and downstream authority.
+The `GitRepoRestriction` custom resource predates `Policy` and is deprecated. It will be removed in a future release. Do not use it for security-sensitive setups: its repo patterns are matched unanchored, meaning a pattern like `github.com/myorg` also matches a URL such as `https://evil.com/?ref=github.com/myorg`. It also has no coverage of `HelmOp` or `Bundle` resources, so a tenant who can create those resources bypasses `GitRepoRestriction` entirely. `Policy` covers what `GitRepoRestriction` did for `GitRepo` and extends the same model to `HelmOp` and `Bundle`, with anchored regex patterns and a clearer separation between upstream enforcement and downstream authority.
 
 Operators migrating an existing setup should follow xref:how-tos-for-operators/tenant-setup.adoc#_migration_from_gitreporestriction[Migration from GitRepoRestriction] in the Tenant Setup guide.
 
