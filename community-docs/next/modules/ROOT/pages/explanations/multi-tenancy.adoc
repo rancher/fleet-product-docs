@@ -55,7 +55,7 @@ If a tenant's resource names a `ServiceAccount` that does not exist on the downs
 
 If a tenant should only be able to write to namespaces `app-1` and `app-2` on a downstream cluster, the operator expresses this as a `Role` granting the relevant verbs on those namespaces, bound to the tenant's `ServiceAccount`. There is nothing for `Policy` to add — the deployment will succeed or fail based on whether the `ServiceAccount` has the required RBAC, which is the same outcome any other actor would observe.
 
-Splitting the responsibility this way means downstream RBAC remains the single source of truth for downstream authority. {product_name}'s job is to make sure the right `ServiceAccount` is used; the `ServiceAccount`'s permissions are the operator's job to set.
+Splitting the responsibility this way means downstream RBAC remains the single source of truth for downstream authority. {product_name}'s job is to make sure the right `ServiceAccount` is used; the permissions of that `ServiceAccount` are the operator's job to set.
 
 == Why `requireServiceAccount` Is Its Own Field
 

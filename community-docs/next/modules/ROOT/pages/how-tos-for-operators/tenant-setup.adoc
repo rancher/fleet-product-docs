@@ -302,7 +302,7 @@ A few things to note about this bootstrap:
 
 == Step 3 — The Policy
 
-With the upstream RBAC and downstream `ServiceAccount`s in place, the `Policy` in the tenant's upstream namespace ties the two together. It declares that the tenant must use one of the allowed `ServiceAccount`s and may pull from a restricted set of repositories and credential secrets.
+With the upstream RBAC and downstream ``ServiceAccount``s in place, the `Policy` in the tenant's upstream namespace ties the two together. It declares that the tenant must use one of the allowed ``ServiceAccount``s and may pull from a restricted set of repositories and credential secrets.
 
 [source,yaml]
 ----
