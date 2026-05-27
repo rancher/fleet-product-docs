@@ -379,6 +379,13 @@ After applying the configuration, verify each layer:
 . Tighten tenant RBAC to remove any write access to `policies` (and, while it exists, `gitreporestrictions`).
 . Once the new configuration is verified, delete the `GitRepoRestriction`.
 
+[WARNING]
+====
+While a `GitRepoRestriction` and a `Policy` coexist in the same namespace, their allow-lists are *unioned*: a repo, service account, or secret allowed by either object is allowed overall. The namespace is only as restrictive as the `Policy` alone once the `GitRepoRestriction` is deleted. Do not treat step 1 as a completed migration — the restriction is not tightened until step 5.
+
+Default values follow the same merging: `GitRepoRestriction` defaults take precedence over `Policy` defaults. If both set a `defaultServiceAccount`, the `GitRepoRestriction` value wins until it is removed.
+====
+
 === Field Mapping
 
 [cols="2,2,3", options="header"]
