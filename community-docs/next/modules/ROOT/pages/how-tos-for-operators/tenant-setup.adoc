@@ -35,7 +35,9 @@ This creates a tenant whose service account can manage their own resources in na
 ----
 kubectl create namespace project1
 
-kubectl create serviceaccount tenant1 -n default
+# The ServiceAccount represents the tenant's upstream identity on the management
+# cluster. Co-locating it with the tenant's namespace is cleaner than using 'default'.
+kubectl create serviceaccount tenant1 -n project1
 
 # Tenant gets write access to their own GitRepo / HelmOp / Bundle resources.
 kubectl create clusterrole tenant1-write \
@@ -50,16 +52,16 @@ kubectl create clusterrole tenant1-policy-read \
   --resource=policies.fleet.cattle.io
 
 kubectl create rolebinding tenant1-write -n project1 \
-  --serviceaccount=default:tenant1 --clusterrole=tenant1-write
+  --serviceaccount=project1:tenant1 --clusterrole=tenant1-write
 kubectl create rolebinding tenant1-policy-read -n project1 \
-  --serviceaccount=default:tenant1 --clusterrole=tenant1-policy-read
+  --serviceaccount=project1:tenant1 --clusterrole=tenant1-policy-read
 ----
 
 For a second tenant in their own namespace, repeat with a different name and namespace; the two `ClusterRole` objects can be reused.
 
 === Rancher-integrated {product_name}
 
-In a Rancher-integrated setup, each tenant gets a `FleetWorkspace` and the tenant's users get a `GlobalRole` that grants the necessary verbs on the workspace's backing namespace.
+In a Rancher-integrated setup, Rancher's own auth provider (local users, LDAP, OIDC) manages tenant identity — no `ServiceAccount` needs to be created. Each tenant gets a `FleetWorkspace` and the tenant's users get a `GlobalRole` that grants the necessary verbs on the workspace's backing namespace.
 
 [source,yaml]
 ----
