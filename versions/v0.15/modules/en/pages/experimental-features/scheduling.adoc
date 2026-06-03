@@ -27,6 +27,7 @@ This means that when a change is detected in the repository, it will be applied 
 
 If a `Cluster` is not associated with any `Schedule`, updates will be applied immediately.
 
+[#_schedule-resource]
 == Schedule Resource
 
 Now let’s look at how to define a `Schedule` and what fields are available.

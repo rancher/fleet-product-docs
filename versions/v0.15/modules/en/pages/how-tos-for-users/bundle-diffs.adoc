@@ -20,6 +20,7 @@ image::ModifiedBundle.png[Static, 600]
 
 With the patch, users can instruct {product_name} to ignore object modifications and entire objects.
 
+[#_generating-comparepatches-with-fleet-bundlediff]
 == Generating comparePatches with `fleet bundlediff`
 
 The `fleet bundlediff` CLI command reads the diff information already present in
@@ -27,6 +28,7 @@ The `fleet bundlediff` CLI command reads the diff information already present in
 It can also generate a ready-to-use `diff:` snippet in `fleet.yaml` format so you can
 accept the observed drift without manually constructing JSON Patch paths.
 
+[#_viewing-diffs]
 === Viewing diffs
 
 [source,bash]
@@ -67,6 +69,7 @@ BundleDeployments with diffs: 1
     }
 ----
 
+[#_generating-a-fleetyaml-comparepatches-snippet]
 === Generating a `fleet.yaml` `comparePatches` snippet
 
 Use `--fleet-yaml` together with `--bundle-deployment` to produce a `diff:` block that
@@ -121,14 +124,17 @@ is merged with the existing `comparePatches` from the associated `Bundle`.
 See xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
 [{product_name} bundlediff] for the full flag reference.
 
+[#_ignoring-object-modifications]
 == Ignoring object modifications
 
+[#_simple-example]
 === Simple Example
 
 In this simple example, we create a Service and ConfigMap that we apply a bundle diff onto.
 
 https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
 
+[#_gatekeeper-example]
 === Gatekeeper Example
 
 In this example, we are trying to deploy opa-gatekeeper using Continuous Delivery to our clusters.
@@ -167,6 +173,7 @@ Based on this summary, there are three objects which need to be patched.
 
 We will look at these one at a time.
 
+[#_1-validatingwebhookconfiguration]
 ==== 1. ValidatingWebhookConfiguration:
 
 The gatekeeper-validating-webhook-configuration validating webhook has two ValidatingWebhooks in its spec.
@@ -264,6 +271,7 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path":"/webhooks/1/rules"}
 ----
 
+[#_2-deployment-gatekeeper-controller-manager]
 ==== 2. Deployment gatekeeper-controller-manager:
 
 The gatekeeper-controller-manager deployment is modified since there are cpu limits and tolerations applied (which are not in the actual bundle).
@@ -311,6 +319,7 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
+[#_3-deployment-gatekeeper-audit]
 ==== 3. Deployment gatekeeper-audit:
 
 The gatekeeper-audit deployment is modified in a similarly, to the gatekeeper-controller-manager, with additional cpu limits and tolerations applied.
@@ -358,6 +367,7 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
+[#_combining-it-all-together]
 ==== Combining It All Together
 
 We can now combine all these patches as follows:
@@ -394,6 +404,7 @@ We can add these now to the bundle directly to test and also commit the same to 
 
 Once these are added, the GitRepo should deploy and be in "Active" status.
 
+[#_ignoring-entire-objects]
 == Ignoring entire objects
 
 When installing a chart such as link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul], a job named
@@ -456,6 +467,7 @@ namespace (in this example in the `consul` namespace) will be ignored.
 
 More information on the supported regex syntax link:https://pkg.go.dev/regexp/syntax[here].
 
+[#_horizontal-pod-autoscaling]
 == Horizontal Pod Autoscaling
 
 When dealing with Deployments or StatefulSets referenced by a Horizontal Pod Autoscaler, bundle diffs are no longer

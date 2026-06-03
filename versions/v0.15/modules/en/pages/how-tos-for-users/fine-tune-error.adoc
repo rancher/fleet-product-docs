@@ -14,6 +14,7 @@ image::fine-tune-error-flow.svg[A visual flow of fine tuning error detections]
 NOTE: 
 You should rarely need to configure readiness detection in {product_name} with environment variables. If you do, open an issue or submit a pull request to help improve the default readiness detection.
 
+[#_ignore-conditions-in-fleetyaml]
 == Ignore conditions in `fleet.yaml`
 
 Use the `ignore.conditions` setting in the `fleet.yaml` file to tell {product_name} to ignore specific conditions.
@@ -40,6 +41,7 @@ This method is useful when a custom resource or controller sets conditions that 
 
 image::fine-tune-error-ingore.svg[A visual flow of ignore condition during fine tuning error detection]
 
+[#_configure-error-mapping-with-environment-variables]
 == Configure error mapping with environment variables
 
 In {product_name} **v0.13**, error detection was enhanced to give you more control. You can use the environment variable `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` to customize how resource conditions are interpreted.
@@ -59,6 +61,7 @@ Set this variable in your Fleet Helm chart deployment (`values.yaml`) using `ext
 NOTE: 
 This setting is global to all Fleet controllers and applies to every `GitRepo`. If you need to adjust error handling only for a specific Bundle, use the `ignoreConditions` option in `fleet.yaml` instead.
 
+[#_merging-behavior]
 === Merging behavior
 
 When you override mappings with `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING`:
@@ -83,6 +86,7 @@ This results in:
 * `Ready=["False"]` is added, so **`Ready=False`** is also treated as an error.
 * Other conditions unchanged.
 
+[#_disable-error-interpretation-example]
 === Disable error interpretation example
 
 Assume that every value of `Failed` was previously interpreted as an error, for example:
@@ -118,8 +122,9 @@ You can also disable errors for any value of `Failed` by:
 This configuration ensures that **no value of `Failed`** is treated as an error.
 
 NOTE: 
-Overriding conditions only affects the default error mappings (refer to xref:default-error-mappings[Default error mappings]). {product_name} may still mark a resource as an error because other checks, such as those from the `kstatus` library, continue to run after your customization.
+Overriding conditions only affects the default error mappings (refer to xref:#_default-error-mappings[Default error mappings]). {product_name} may still mark a resource as an error because other checks, such as those from the `kstatus` library, continue to run after your customization.
 
+[#_enable-error-interpretation-example]
 === Enable error interpretation example
 
 [source,json]
@@ -136,7 +141,7 @@ Overriding conditions only affects the default error mappings (refer to xref:def
 
 Here, `Failed=True` is treated as an error.
 
-[[default-error-mappings]]
+[#_default-error-mappings]
 == Default error mappings 
 
 {product_name} adds default error mappings to interpret certain resource conditions in the `status` field as errors. These mappings are applied besides other readiness checks, such as those performed by the Kubernetes `kstatus` library.
@@ -157,6 +162,7 @@ The following default mappings apply:
 * **ReplicaSet** (`apps/v1`)
   * `ReplicaFailure`: `True` is considered an error.
 
+[#_fallback-mapping]
 === Fallback mapping
 
 If a resource does not match the listed GVKs, {product_name} applies a fallback mapping:
