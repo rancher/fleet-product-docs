@@ -291,6 +291,15 @@ For example, to add a secret in kubectl, run
 
 After secret is created, specify the secret to `gitRepo.spec.helmSecretName`. Make sure secret is created under the same namespace with gitrepo.
 
+[NOTE]
+====
+`helmSecretName` only covers authentication for pulling the Helm chart. If the chart deploys workloads whose
+container images are hosted in a private registry, the downstream clusters also need a
+`kubernetes.io/dockerconfigjson` secret to pull those images at runtime. For HelmOps, this can be propagated
+automatically using `downstreamResources`. Refer to
+xref:how-tos-for-users/helm-ops.adoc#_propagating_image_pull_secrets_to_downstream_clusters[Propagating image pull secrets to downstream clusters].
+====
+
 === Use different helm credentials for each path
 
 {product_name} allows you to define unique credentials for each Helm chart path in a Git repository using the helmSecretNameForPaths field.
