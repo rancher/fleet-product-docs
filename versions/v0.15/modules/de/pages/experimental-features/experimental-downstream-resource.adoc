@@ -10,8 +10,9 @@ Dies ist eine experimentelle Funktion.
 Ab {product_name} v0.14.0 unterstützt {product_name} die Weitergabe externer Ressourcen an Downstream-Cluster.
 
 Dies vereinfacht den Umgang mit Abhängigkeiten von Charts, wie z.B. Werten, die aus externen Ressourcen stammen.
-Siehe auch xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
+Siehe auch xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom].
 
+[#_funktionsweise]
 == Funktionsweise
 
 HelmOps unterstützen ein neues `downstreamResources` Feld, das verwendet werden kann, um Ressourcen nach Art und Name zu referenzieren.
@@ -46,6 +47,7 @@ Wenn ein Cluster nicht mehr angezielt wird, wird der Fleet-Agent diese Ressource
 Wenn Ressourcen, die über `downstreamResources` referenziert werden, auch dann in Downstream-Clustern verbleiben sollen, wenn sie nicht mehr angezielt werden, sollte xref:/reference/ref-bundle.adoc[keepResources] auf `true` in der HelmOp gesetzt werden.
 ====
 
+[#_berwachung]
 == Überwachung
 
 Ab Version v0.15.0 überwacht {product_name} Änderungen an Secrets und ConfigMaps, die in `DownstreamResources` aufgeführt sind. Es wird auch überprüft, ob ein Secret oder eine ConfigMap nach der Erstellung des Bundles erstellt wurde.

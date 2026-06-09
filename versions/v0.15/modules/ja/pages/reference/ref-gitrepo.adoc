@@ -148,5 +148,5 @@ spec:
 
 詳細については、を参照してください。
 
-* xref:how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Create a GitRepo Resource]。
+* xref:how-tos-for-users/gitrepo-add.adoc#_use-different-helm-credentials-for-each-path[Create a GitRepo Resource]。
 * xref:how-tos-for-users/webhook.adoc[ポーリングの代わりにWebhooksを使用する]。

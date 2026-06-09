@@ -8,6 +8,7 @@
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
+[#_]
 == オプション
 
 ----
@@ -52,6 +53,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
+[#_]
 === 知っておくと良いこと
 
 `fleet apply`は環境変数から`known_hosts``データを読み取ります（`FLEET_KNOWN_HOSTS`）、これはgitクローンが行うことに似ています。
@@ -62,5 +64,6 @@ fleet apply [flags] BUNDLE_NAME PATH...
 
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
+[#_]
 == 関連項目
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - {product_name}操作を管理する

@@ -22,6 +22,7 @@ Les options de configuration de déploiement sont documentées dans le champ `ro
 Si `rolloutStrategy` n'est pas spécifié dans `fleet.yaml`, {product_name} utilise les valeurs par défaut.
 ====
 
+[#_comment-fonctionne-le-partitionnementnbsp]
 == Comment fonctionne le partitionnement{nbsp}?
 
 Les partitions sont uniquement utilisées pour regrouper et contrôler le déploiement de `BundleDeployments` à travers les clusters. Elles n'affectent en rien les options de déploiement.
@@ -161,6 +162,7 @@ image::partition-rollout-flow.png[Un actif visuel affichant le flux de déploiem
 {product_name} traite les partitions dans l'ordre dans lequel elles apparaissent dans le fichier `fleet.yaml`.
 ====
 
+[#_partition-unique]
 === Partition unique
 
 Si vous ne définissez pas `rolloutStrategy.partitions`, {product_name} crée des partitions automatiquement en fonction du nombre de clusters ciblés{nbsp}:
@@ -174,10 +176,12 @@ Par exemple, avec 200 clusters (répondant au `autoPartitionThreshold` par défa
 2. Évalue la préparation en fonction de `maxUnavailable`.
 . Si la condition est remplie, passe aux 50 suivants, et ainsi de suite.
 
+[#_multiples-partitions]
 === Multiples partitions
 
 Si vous définissez plusieurs partitions, {product_name} utilise `maxUnavailablePartitions` pour limiter le nombre de partitions pouvant être `NotReady` à la fois. Si le nombre de partitions `NotReady` dépasse `maxUnavailablePartitions`, {product_name} met en pause le déploiement.
 
+[#_pr-venir-les-temp-tes-de-tirage-d-images]
 == Prévenir les tempêtes de tirage d'images
 
 Pendant le déploiement, chaque cluster en aval tire des images de conteneur. Si des centaines de clusters commencent à tirer des images simultanément, cela peut submerger le registre et se comporter comme une attaque DDoS.
@@ -206,6 +210,7 @@ Comment le déploiement progresse{nbsp}:
 
 Si vous souhaitez ou devez traiter moins de 40 déploiements à la fois, vous pouvez mettre moins de clusters dans chaque partition.
 
+[#_cas-d-utilisation-et-comportement]
 == Cas d'utilisation et comportement
 
 Si le nombre de clusters ne se divise pas uniformément, {product_name} arrondit les tailles de partition. Par exemple, 230 clusters avec `autoPartitionSize: 25%` donne{nbsp}:
@@ -213,6 +218,7 @@ Si le nombre de clusters ne se divise pas uniformément, {product_name} arrondit
 * Quatre partitions de 57 clusters
 * Une partition de 2 clusters
 
+[#_sc-nario-50-clusters-partition-unique]
 === Scénario : 50 Clusters (Partition unique)
 
 [source,yaml]
@@ -231,6 +237,7 @@ Le diagramme suivant illustre comment {product_name} gère 50 clusters dans une 
 
 image::deploy-50Clusters.png[scénario de 50 clusters]
 
+[#_sc-nario-100-clusters-partition-unique]
 === Scénario : 100 Clusters (Partition unique) 
 
 [source,yaml]
@@ -246,6 +253,7 @@ rolloutStrategy:
 
 Si 10 clusters (10 % de 100 clusters) ne sont pas disponibles, le déploiement des 50 clusters restants est suspendu jusqu'à ce que moins de 10 clusters soient `NotReady`. 
 
+[#_sc-nario-200-clusters-multiples-partitions]
 === Scénario : 200 Clusters (Multiples partitions)
 
 [source,yaml]
@@ -263,6 +271,7 @@ rolloutStrategy:
 
 {product_name} crée `BundleDeployments` pour 20 clusters, attend qu'ils deviennent `Ready`, puis passe au suivant. Cela limite effectivement le nombre de téléchargements d'images depuis les clusters en aval à environ 40 images à la fois.
 
+[#_sc-nario-200-clusters-pr-paration-stricte-partitions-manuelles]
 === Scénario : 200 Clusters (Préparation stricte, Partitions manuelles)
 
 La partition manuelle vous permet de contrôler le regroupement des clusters avec `maxUnavailablePartitions: 0`. 
@@ -295,6 +304,7 @@ image::partition-fleet-rollout.png[Scénario de partitions manuelles]
 
 Cela garantit une préparation complète et un déploiement par étapes sur les 200 clusters. Utilisez cette approche lorsque vous avez besoin d'une séquence de déploiement précise et d'une préparation complète des clusters avant d'avancer. 
 
+[#_valeurs-par-d-faut-de-la-strat-gie-de-d-ploiement]
 == Valeurs par défaut de la stratégie de déploiement
 
 Si les valeurs de déploiement au niveau de la partition ne sont pas définies, {product_name} applique les valeurs globales de `rolloutStrategy` dans `fleet.yaml`. Les paramètres spécifiques à la partition remplacent les valeurs globales lorsqu'ils sont explicitement définis.

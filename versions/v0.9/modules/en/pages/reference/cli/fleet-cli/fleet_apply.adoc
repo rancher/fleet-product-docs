@@ -8,6 +8,7 @@ Render a bundle into a Kubernetes resource and apply it in the {product_name} Ma
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
+[#_options]
 == Options
 
 ----
@@ -37,6 +38,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --username string                        Basic auth username for helm repo
 ----
 
+[#_options-inherited-from-parent-commands]
 == Options inherited from parent commands
 
 ----
@@ -46,6 +48,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
+[#_see-also]
 === SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

@@ -8,12 +8,14 @@ Limpar recursos desatualizados
 fleet cleanup [flags]
 ----
 
+[#_op-es]
 == Opções
 
 ----
   -h, --help   help for cleanup
 ----
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gerenciar operações {product_name}

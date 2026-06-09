@@ -3,6 +3,7 @@
 :page-revdate: {revdate}
 :doctype: book
 
+[#_recursos]
 == Recursos
 
 * <<Bundle,Pacote>>
@@ -17,6 +18,7 @@
 * <<GitRepoRestriction,Restrição de Repositório Git>>
 * <<ImageScan,ImageScan>>
 
+[#_recursos-secund-rios]
 == Recursos Secundários
 
 * <<BundleDisplay,Exibição de Pacote>>
@@ -90,6 +92,7 @@
 * <<FleetYAML,FleetYAML>>
 * <<ImageScanYAML,ImageScanYAML>>
 
+[#_pacote]
 === Pacote
 
 O pacote contém os recursos de um aplicativo e suas opções de implantação. Ele será implantado como um Helm chart em clusters de destino.
@@ -118,6 +121,7 @@ Quando um repositório Git é verificado, ele produzirá um ou mais pacotes. Pac
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledisplay]
 === BundleDisplay
 
 A Exibição do Pacote contém o número de clusters prontos, desejados e um estado resumido para o pacote.
@@ -139,6 +143,7 @@ A Exibição do Pacote contém o número de clusters prontos, desejados e um est
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundlelist]
 === BundleList
 
 A Lista de Pacotes contém uma lista de Pacotes
@@ -160,6 +165,7 @@ A Lista de Pacotes contém uma lista de Pacotes
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundleref]
 === BundleRef
 
 |===
@@ -179,6 +185,7 @@ A Lista de Pacotes contém uma lista de Pacotes
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundleresource]
 === BundleResource
 
 O Recurso do Pacote representa o conteúdo de um único recurso do pacote, como um manifesto YAML.
@@ -205,6 +212,7 @@ O Recurso do Pacote representa o conteúdo de um único recurso do pacote, como 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundlespec]
 === BundleSpec
 
 |===
@@ -250,6 +258,7 @@ O Recurso do Pacote representa o conteúdo de um único recurso do pacote, como 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundlestatus]
 === BundleStatus
 
 |===
@@ -324,6 +333,7 @@ O Recurso do Pacote representa o conteúdo de um único recurso do pacote, como 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_resumo-do-pacote]
 === Resumo do Pacote
 
 Resumo do Pacote contém o número de implantações de pacotes em cada estado e uma lista de recursos não prontos. É usado no status do pacote, do grupo de cluster, do cluster e do gitrepo.
@@ -380,6 +390,7 @@ Resumo do Pacote contém o número de implantações de pacotes em cada estado e
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundletarget-alvo-do-pacote]
 === BundleTarget \-> Alvo do Pacote
 
 Alvo do Pacote declara os clusters para os quais implantar. {product_name} irá mesclar as Opções de Implantação de Pacote das personalizações nesta estrutura.
@@ -431,6 +442,7 @@ Alvo do Pacote declara os clusters para os quais implantar. {product_name} irá 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundletargetrestriction]
 === BundleTargetRestriction
 
 A Restrição de Alvo de Pacote é usada internamente por {product_name} e não deve ser modificada. Ela atua como uma lista de permissão, para evitar a criação de BundleDeployments a partir de Targets criados por TargetCustomizations em fleet.yaml.
@@ -467,6 +479,7 @@ A Restrição de Alvo de Pacote é usada internamente por {product_name} e não 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_nonreadyresource]
 === NonReadyResource
 
 RecursoNãoPronto contém informações sobre um pacote que não está pronto para um determinado estado como "ErrApplied". Ele contém uma lista de recursos não prontos ou modificados e seus estados.
@@ -503,6 +516,7 @@ RecursoNãoPronto contém informações sobre um pacote que não está pronto pa
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_parti-o]
 === Partição
 
 Partição define uma estratégia de distribuição separada para um conjunto de clusters.
@@ -544,6 +558,7 @@ Partição define uma estratégia de distribuição separada para um conjunto de
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_partitionstatus]
 === PartitionStatus
 
 StatusDaPartição é o status de uma única partição de distribuição.
@@ -580,6 +595,7 @@ StatusDaPartição é o status de uma única partição de distribuição.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_chaverecurso]
 === ChaveRecurso
 
 ChaveRecurso lista recursos, que provavelmente serão implantados.
@@ -611,6 +627,7 @@ ChaveRecurso lista recursos, que provavelmente serão implantados.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_rolloutstrategy]
 === RolloutStrategy
 
 RolloverStrategy controla a distribuição do pacote entre os clusters.
@@ -652,6 +669,7 @@ RolloverStrategy controla a distribuição do pacote entre os clusters.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeployment]
 === BundleDeployment
 
 BundleDeployment é usado internamente por {product_name} e não deve ser usado diretamente. Quando um pacote é implantado em um cluster, uma instância de um pacote é chamada de BundleDeployment. Um BundleDeployment representa o estado desse pacote em um cluster específico com suas personalizações específicas do cluster. O agente {product_name} está ciente apenas dos recursos BundleDeployment que são criados para o cluster que o agente está gerenciando.
@@ -678,6 +696,7 @@ BundleDeployment é usado internamente por {product_name} e não deve ser usado 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeploymentdisplay]
 === BundleDeploymentDisplay
 
 |===
@@ -702,6 +721,7 @@ BundleDeployment é usado internamente por {product_name} e não deve ser usado 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeploymentlist]
 === BundleDeploymentList
 
 A Lista de Implantação de Pacote contém uma lista de Implantação de Pacote
@@ -723,6 +743,7 @@ A Lista de Implantação de Pacote contém uma lista de Implantação de Pacote
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeploymentoptions]
 === BundleDeploymentOptions
 
 |===
@@ -812,6 +833,7 @@ Se você não quiser que o Fleet aplique o `helm.sh/resource-policy: keep`, conf
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeploymentresource]
 === BundleDeploymentResource
 
 BundleDeploymentResource contém os metadados de um recurso implantado.
@@ -848,6 +870,7 @@ BundleDeploymentResource contém os metadados de um recurso implantado.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeploymentspec]
 === BundleDeploymentSpec
 
 |===
@@ -897,6 +920,7 @@ BundleDeploymentResource contém os metadados de um recurso implantado.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundledeploymentstatus]
 === BundleDeploymentStatus
 
 |===
@@ -956,6 +980,7 @@ BundleDeploymentResource contém os metadados de um recurso implantado.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_comparepatch]
 === ComparePatch
 
 ComparePatch combina um recurso e remove campos da verificação de modificações.
@@ -997,6 +1022,7 @@ ComparePatch combina um recurso e remove campos da verificação de modificaçõ
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_configmapkeyselector]
 === ConfigMapKeySelector
 
 |===
@@ -1016,6 +1042,7 @@ ComparePatch combina um recurso e remove campos da verificação de modificaçõ
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_diffoptions]
 === DiffOptions
 
 |===
@@ -1030,6 +1057,7 @@ ComparePatch combina um recurso e remove campos da verificação de modificaçõ
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_helmoptions]
 === HelmOptions
 
 HelmOptions para a implantação. Para pacotes baseados em Helm, todas as opções podem ser usadas, caso contrário, algumas opções são ignoradas. Por exemplo, ReleaseName funciona com todos os tipos de pacotes.
@@ -1126,6 +1154,7 @@ HelmOptions para a implantação. Para pacotes baseados em Helm, todas as opçõ
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_ignoreoptions]
 === IgnoreOptions
 
 IgnorarOpções define condições a serem ignoradas ao monitorar o pacote.
@@ -1142,6 +1171,7 @@ IgnorarOpções define condições a serem ignoradas ao monitorar o pacote.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_kustomizeoptions]
 === KustomizeOptions
 
 OpçõesKustomize para uma implantação.
@@ -1158,6 +1188,7 @@ OpçõesKustomize para uma implantação.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_localobjectreference]
 === LocalObjectReference
 
 |===
@@ -1172,6 +1203,7 @@ OpçõesKustomize para uma implantação.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_modifiedstatus]
 === ModifiedStatus
 
 StatusModificado é usado para relatar o status de um recurso que foi modificado. Indica se a modificação foi uma criação, uma exclusão ou um patch.
@@ -1223,6 +1255,7 @@ StatusModificado é usado para relatar o status de um recurso que foi modificado
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_nonreadystatus]
 === NonReadyStatus
 
 StatusNãoPronto é usado para relatar o status de um recurso que não está pronto. Inclui um resumo.
@@ -1264,6 +1297,7 @@ StatusNãoPronto é usado para relatar o status de um recurso que não está pro
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_opera-o]
 === Operação
 
 Operação de um ComparePatch, geralmente "remover".
@@ -1290,6 +1324,7 @@ Operação de um ComparePatch, geralmente "remover".
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_secretkeyselector]
 === SecretKeySelector
 
 |===
@@ -1309,6 +1344,7 @@ Operação de um ComparePatch, geralmente "remover".
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_valuesfrom]
 === ValuesFrom
 
 Defina valores helm que podem vir de configmap, secret ou externo. Crédito: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
@@ -1330,6 +1366,7 @@ Defina valores helm que podem vir de configmap, secret ou externo. Crédito: htt
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_yamloptions]
 === YAMLOptions
 
 YAMLOptions, se estiver usando YAML bruto, esses são nomes que mapeiam para arquivos overlays/{name} que serão usados para substituir ou patch um recurso.
@@ -1346,6 +1383,7 @@ YAMLOptions, se estiver usando YAML bruto, esses são nomes que mapeiam para arq
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundlenamespacemapping]
 === BundleNamespaceMapping
 
 BundleNamespaceMapping mapeia Bundles para clusters em outros namespaces.
@@ -1372,6 +1410,7 @@ BundleNamespaceMapping mapeia Bundles para clusters em outros namespaces.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_bundlenamespacemappinglist]
 === BundleNamespaceMappingList
 
 BundleNamespaceMappingList contém uma lista de BundleNamespaceMapping
@@ -1393,6 +1432,7 @@ BundleNamespaceMappingList contém uma lista de BundleNamespaceMapping
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_agentstatus]
 === AgentStatus
 
 |===
@@ -1412,6 +1452,7 @@ BundleNamespaceMappingList contém uma lista de BundleNamespaceMapping
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_cluster]
 === Cluster
 
 Cluster corresponde a um cluster Kubernetes. {product_name} implanta bundles em clusters alvo. Clusters para os quais {product_name} implanta manifests são chamados de clusters downstream. No caso de uso de cluster único, o cluster Kubernetes {product_name} é tanto o cluster gerenciador quanto o cluster downstream ao mesmo tempo.
@@ -1438,6 +1479,7 @@ Cluster corresponde a um cluster Kubernetes. {product_name} implanta bundles em 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterdisplay]
 === ClusterDisplay
 
 |===
@@ -1457,6 +1499,7 @@ Cluster corresponde a um cluster Kubernetes. {product_name} implanta bundles em 
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterlist]
 === ClusterList
 
 ClusterList contém uma lista de Cluster
@@ -1478,6 +1521,7 @@ ClusterList contém uma lista de Cluster
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterspec]
 === ClusterSpec
 
 |===
@@ -1552,6 +1596,7 @@ ClusterList contém uma lista de Cluster
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterstatus]
 === ClusterStatus
 
 |===
@@ -1676,6 +1721,7 @@ ClusterList contém uma lista de Cluster
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clustergroup]
 === ClusterGroup
 
 ClusterGroup é um seletor reutilizável para direcionar um grupo de clusters.
@@ -1702,6 +1748,7 @@ ClusterGroup é um seletor reutilizável para direcionar um grupo de clusters.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clustergroupdisplay]
 === ClusterGroupDisplay
 
 |===
@@ -1726,6 +1773,7 @@ ClusterGroup é um seletor reutilizável para direcionar um grupo de clusters.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clustergrouplist]
 === ClusterGroupList
 
 ClusterGroupList contém uma lista de ClusterGroup
@@ -1747,6 +1795,7 @@ ClusterGroupList contém uma lista de ClusterGroup
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clustergroupspec]
 === ClusterGroupSpec
 
 |===
@@ -1761,6 +1810,7 @@ ClusterGroupList contém uma lista de ClusterGroup
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clustergroupstatus]
 === ClusterGroupStatus
 
 |===
@@ -1805,6 +1855,7 @@ ClusterGroupList contém uma lista de ClusterGroup
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistration]
 === ClusterRegistration
 
 ClusterRegistration é usado internamente por {product_name} e não deve ser usado diretamente.
@@ -1831,6 +1882,7 @@ ClusterRegistration é usado internamente por {product_name} e não deve ser usa
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationlist]
 === ClusterRegistrationList
 
 ClusterRegistrationList contém uma lista de ClusterRegistration
@@ -1852,6 +1904,7 @@ ClusterRegistrationList contém uma lista de ClusterRegistration
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationspec]
 === ClusterRegistrationSpec
 
 |===
@@ -1876,6 +1929,7 @@ ClusterRegistrationList contém uma lista de ClusterRegistration
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationstatus]
 === ClusterRegistrationStatus
 
 |===
@@ -1895,6 +1949,7 @@ ClusterRegistrationList contém uma lista de ClusterRegistration
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationtoken]
 === ClusterRegistrationToken
 
 ClusterRegistrationToken é usado por agentes para registrar um novo cluster.
@@ -1921,6 +1976,7 @@ ClusterRegistrationToken é usado por agentes para registrar um novo cluster.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationtokenlist]
 === ClusterRegistrationTokenList
 
 ListaDeTokenDeRegistroDeCluster contém uma lista de TokenDeRegistroDeCluster
@@ -1942,6 +1998,7 @@ ListaDeTokenDeRegistroDeCluster contém uma lista de TokenDeRegistroDeCluster
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationtokenspec]
 === ClusterRegistrationTokenSpec
 
 |===
@@ -1956,6 +2013,7 @@ ListaDeTokenDeRegistroDeCluster contém uma lista de TokenDeRegistroDeCluster
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_clusterregistrationtokenstatus]
 === ClusterRegistrationTokenStatus
 
 |===
@@ -1975,6 +2033,7 @@ ListaDeTokenDeRegistroDeCluster contém uma lista de TokenDeRegistroDeCluster
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_conte-do]
 === conteúdo
 
 Content é usado internamente por {product_name} e não deve ser usado diretamente. Ele contém os recursos de um Bundle para um cluster-alvo específico.
@@ -2001,6 +2060,7 @@ Content é usado internamente por {product_name} e não deve ser usado diretamen
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_contentlist]
 === ContentList
 
 ListaDeConteúdo contém uma lista de Conteúdo
@@ -2022,6 +2082,7 @@ ListaDeConteúdo contém uma lista de Conteúdo
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_commitspec]
 === CommitSpec
 
 CommitSpec especifica como efetuar um commit no repositório git.
@@ -2048,6 +2109,7 @@ CommitSpec especifica como efetuar um commit no repositório git.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_correctdrift]
 === CorrectDrift
 
 |===
@@ -2072,6 +2134,7 @@ CommitSpec especifica como efetuar um commit no repositório git.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitrepo]
 === GitRepo
 
 GitRepo descreve um repositório git que é monitorado por {product_name}. O recurso contém as informações necessárias para implantar o repositório, ou partes dele, em clusters-alvo.
@@ -2098,6 +2161,7 @@ GitRepo descreve um repositório git que é monitorado por {product_name}. O rec
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitrepodisplay]
 === GitRepoDisplay
 
 |===
@@ -2127,6 +2191,7 @@ GitRepo descreve um repositório git que é monitorado por {product_name}. O rec
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitrepolist]
 === GitRepoList
 
 ListaGitRepo contém uma lista de GitRepo
@@ -2148,6 +2213,7 @@ ListaGitRepo contém uma lista de GitRepo
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitreporesource]
 === GitRepoResource
 
 RecursoGitRepo contém metadados sobre os recursos de um pacote.
@@ -2219,6 +2285,7 @@ RecursoGitRepo contém metadados sobre os recursos de um pacote.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitreporesourcecounts]
 === GitRepoResourceCounts
 
 GitRepoResourceCounts contém o número de recursos em cada estado.
@@ -2270,6 +2337,7 @@ GitRepoResourceCounts contém o número de recursos em cada estado.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitrepospec]
 === GitRepoSpec
 
 |===
@@ -2394,6 +2462,7 @@ GitRepoResourceCounts contém o número de recursos em cada estado.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitrepostatus]
 === GitRepoStatus
 
 |===
@@ -2478,6 +2547,7 @@ GitRepoResourceCounts contém o número de recursos em cada estado.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gittarget]
 === GitTarget
 
 AlvoGit é um cluster ou grupo de clusters para implantar.
@@ -2513,6 +2583,7 @@ AlvoGit é um cluster ou grupo de clusters para implantar.
 
 <<Resources,Voltar para Recursos Personalizados>>
 
+[#_ociregistryspec]
 === OCIRegistrySpec
 
 |===
@@ -2541,6 +2612,7 @@ AlvoGit é um cluster ou grupo de clusters para implantar.
 
 <<Resources,Voltar para Recursos Personalizados>>
 
+[#_resourceperclusterstate]
 === ResourcePerClusterState
 
 ResourcePerClusterState é gerado para cada recurso não pronto dos bundles.
@@ -2582,6 +2654,7 @@ ResourcePerClusterState é gerado para cada recurso não pronto dos bundles.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitreporestriction]
 === GitRepoRestriction
 
 GitRepoRestriction é um recurso que pode ser usado opcionalmente para restringir as opções de GitRepos no mesmo namespace.
@@ -2628,6 +2701,7 @@ GitRepoRestriction é um recurso que pode ser usado opcionalmente para restringi
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_gitreporestrictionlist]
 === GitRepoRestrictionList
 
 ListaDeRestricaoDeGitRepo contém uma lista de GitRepoRestriction.
@@ -2648,6 +2722,7 @@ ListaDeRestricaoDeGitRepo contém uma lista de GitRepoRestriction.
 
 <<Resources,Voltar para Recursos Personalizados>>
 
+[#_pol-ticaalfab-tica]
 === PolíticaAlfabética
 
 PolíticaAlfabética especifica uma política de ordenação alfabética.
@@ -2664,6 +2739,7 @@ PolíticaAlfabética especifica uma política de ordenação alfabética.
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_imagepolicychoice]
 === ImagePolicyChoice
 
 EscolhaDePolíticaDeImagem é uma união de todos os tipos de política que podem ser fornecidos.
@@ -2685,6 +2761,7 @@ EscolhaDePolíticaDeImagem é uma união de todos os tipos de política que pode
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_imagescan]
 === ImageScan
 
 |===
@@ -2709,6 +2786,7 @@ EscolhaDePolíticaDeImagem é uma união de todos os tipos de política que pode
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_imagescanlist]
 === ImageScanList
 
 A ListaImagemScan contém uma lista de ImageScan
@@ -2730,6 +2808,7 @@ A ListaImagemScan contém uma lista de ImageScan
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_imagescanspec]
 === ImageScanSpec
 
 A API é obtida de https://github.com/fluxcd/image-reflector-controller
@@ -2776,6 +2855,7 @@ A API é obtida de https://github.com/fluxcd/image-reflector-controller
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_imagescanstatus]
 === ImageScanStatus
 
 |===
@@ -2820,6 +2900,7 @@ A API é obtida de https://github.com/fluxcd/image-reflector-controller
 <<Resources,Voltar para Recursos Personalizados>>
 
 
+[#_semverpolicy]
 === SemVerPolicy
 
 SemVerPolicy especifica uma política de versão semântica.
@@ -2835,6 +2916,7 @@ SemVerPolicy especifica uma política de versão semântica.
 
 <<Resources,Voltar para Recursos Personalizados>>
 
+[#_fleetyaml]
 === FleetYAML
 
 FleetYAML é a estrutura de nível superior do arquivo fleet.yaml. O arquivo fleet.yaml adiciona opções a um bundle. Qualquer diretório com um fleet.yaml é automaticamente transformado em um bundle.
@@ -2875,6 +2957,7 @@ FleetYAML é a estrutura de nível superior do arquivo fleet.yaml. O arquivo fle
 
 <<Resources,Voltar para Recursos Personalizados>>
 
+[#_imagescanyaml]
 === ImageScanYAML
 
 ImageScanYAML é uma única entrada na lista de ImageScan do fleet.yaml.

@@ -8,13 +8,16 @@
 fleet [flags]
 ----
 
+[#_]
 == 选项
 
 ----
   -h, --help   help for fleet
 ----
 
+[#_]
 == 另请参阅
+[#_]
 === 主要命令
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[Fleet apply]     - 从目录创建捆绑，并将其输出或应用于集群
@@ -23,6 +26,7 @@ fleet [flags]
 * xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[Fleet gitcloner]     - 克隆一个 git 储存库
 * xref:/reference/cli/fleet-cli/fleet_target.adoc[Fleet target]     - 打印可用的捆绑目标
 
+[#_]
 === 故障排除和诊断
 
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]     - 监控 Fleet 设置中的问题

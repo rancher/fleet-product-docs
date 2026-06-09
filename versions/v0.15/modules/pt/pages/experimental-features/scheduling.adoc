@@ -27,6 +27,7 @@ Isso significa que quando uma mudança é detectada no repositório, ela será a
 
 Se um `Cluster` não estiver associado a nenhum `Schedule`, as atualizações serão aplicadas imediatamente.
 
+[#_recurso-de-agendamento]
 == Recurso de Agendamento
 
 Agora vamos ver como definir um `Schedule` e quais campos estão disponíveis.

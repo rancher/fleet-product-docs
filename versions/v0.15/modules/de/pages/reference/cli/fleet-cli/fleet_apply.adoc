@@ -8,6 +8,7 @@ Erstellen Sie Bündel aus Verzeichnissen und geben Sie sie aus oder wenden Sie s
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
+[#_optionen]
 == Optionen
 
 ----
@@ -52,6 +53,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
+[#_wissenswertes]
 === Wissenswertes
 
 `fleet apply` liest `known_hosts`` Daten aus einer Umgebungsvariable (`FLEET_KNOWN_HOSTS`), ähnlich wie es der Git-Kloner tut.
@@ -62,5 +64,6 @@ Die Anzahl der gleichzeitigen Bündelerstellungsroutinen kann über das `--bundl
 
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
+[#_siehe-auch]
 == SIEHE AUCH
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Verwalten Sie {product_name} Operationen

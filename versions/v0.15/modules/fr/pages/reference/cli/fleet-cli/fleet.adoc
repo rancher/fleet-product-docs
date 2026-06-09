@@ -8,13 +8,16 @@ Gérer les opérations {product_name}
 fleet [flags]
 ----
 
+[#_options]
 == Options
 
 ----
   -h, --help   help for fleet
 ----
 
+[#_voir-galement]
 == VOIR ÉGALEMENT
+[#_commandes-principales]
 === Commandes principales
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]     - Créer des bundles à partir de répertoires, et les exporter ou les appliquer sur un cluster
@@ -23,6 +26,7 @@ fleet [flags]
 * xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]     - Clone un dépôt git
 * xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]     - Afficher les cibles disponibles pour un bundle
 
+[#_d-pannage-et-diagnostics]
 === Dépannage et diagnostics
 
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]     - Surveiller les configurations de Fleet pour détecter des problèmes

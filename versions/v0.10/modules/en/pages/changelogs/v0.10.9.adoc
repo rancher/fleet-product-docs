@@ -5,8 +5,10 @@
 
 *Released on 2025-02-19 17:08:31 +0000 UTC by `github-actions[bot]`.*
 
+[#_description]
 == Description
 
+[#_what-s-changed]
 === What's Changed
 
 * Always returns result with RequeueAfter set by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3239[#3239]
@@ -16,6 +18,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.8...v0.10.9[v0.10.8...v0.10.9]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.10.9/fleet-agent-0.10.9.tgz[fleet-agent-v0.10.9.tgz]

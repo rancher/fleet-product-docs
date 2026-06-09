@@ -21,12 +21,14 @@ image::fleet-ociStorage-flow.png[展示{product_name}与OCI存储流程的视觉
 {product_name}检查OCI工件的完整性，并将OCI工件标记为`latest`。
 ====
 
+[#_]
 == 先决条件
 
 * 一个正在运行的OCI注册表。
 * 一个具有有效凭据的Kubernetes秘密。
 * 一个{product_name}安装（v2.12.0或更高版本）。
 
+[#_oci]
 == 如何启用OCI存储
 
 要启用OCI存储，请创建一个包含OCI注册表所需信息和访问选项的秘密。定义秘密有两种方式：
@@ -69,6 +71,7 @@ data:
 
 更改秘密不会触发重新部署。{product_name}仅在Git更新或手动强制更新后使用新的注册表。
 
+[#_]
 === 秘密字段引用
 
 您可以配置的字段有：
@@ -86,6 +89,7 @@ data:
 | `basicHTTP`       | 启用 HTTP 而不是 HTTPS。              | Base64 编码的 `true/false`| 不推荐。允许不安全的流量。默认情况下，`basicHTTP` 设置为 `false`。
 |===
 
+[#_product-name]
 == {product_name} 示例
 
 请考虑以下 `GitRepo` 文件：

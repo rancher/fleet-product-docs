@@ -412,7 +412,7 @@ The chart reference can be one of the following:
 * Helm repository (`repo` + `chart` + optional `version`)
 * OCI Helm repository (`repo: oci://...` + optional `version`)
 
-[#_helmrepo]
+[#_helm-repo]
 ==== `helm.repo`
 
 For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it like this:
@@ -426,7 +426,7 @@ helm:
 
 This is consistent with how OCI registries are referenced in xref:how-tos-for-users/helm-ops.adoc#_oci-registry[HelmOp resources].
 
-[#_helmchart]
+[#_helm-chart]
 ==== `helm.chart`
 
 Specifies a local path or go-getter URL for the Helm chart. When `helm.repo` is set to a standard (non-OCI) Helm repository URL, `helm.chart` holds the chart name within that repository.
@@ -463,7 +463,7 @@ helm:
 ----
 ====
 
-[#_helmversion]
+[#_helm-version]
 ==== `helm.version`
 
 Determines which chart to download from OCI registries.

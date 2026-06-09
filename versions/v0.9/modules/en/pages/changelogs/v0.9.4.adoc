@@ -5,8 +5,10 @@
 
 *(rancherio-gh-m) released this 2024-05-02 12:48:10 +0000 UTC*
 
+[#_release-note]
 == Release Note
 
+[#_what-s-changed]
 === What's Changed
 
 * Bump github.com/hashicorp/go-getter to v1.7.4 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2350[#2350]
@@ -15,6 +17,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.3...v0.9.4[v0.9.3\...v0.9.4]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.4/sha256sum-amd64.txt[sha256sum-amd64.txt]

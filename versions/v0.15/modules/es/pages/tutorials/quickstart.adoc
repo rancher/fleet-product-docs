@@ -7,6 +7,7 @@
 image::single-cluster.png[]
 
 
+[#_instale]
 == Instale
 
 {product_name} se distribuye como un Helm chart. Helm 3 es una CLI, no tiene componente del lado del servidor, y su uso es bastante sencillo. Para instalar la CLI de Helm 3, sigue las https://helm.sh/docs/intro/install[instrucciones de instalación oficiales].
@@ -47,6 +48,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet \
     fleet/fleet
 ----
 
+[#_a-adir-un-repositorio-de-git-a-vigilar]
 == Añadir un repositorio de Git a vigilar
 
 Cambia `spec.repo` por tu repositorio de git preferido.  Los archivos de manifiesto de Kubernetes que deben ser desplegados deben estar en `/manifests` en tu repositorio.
@@ -70,6 +72,7 @@ EOF
 kubectl apply -f example.yaml
 ----
 
+[#_obtener-estado]
 == Obtener estado
 
 Obtener el estado de lo que está haciendo la Fleet
@@ -90,6 +93,7 @@ NAME       READY   UP-TO-DATE   AVAILABLE   AGE
 frontend   3/3     3            3           116m
 ----
 
+[#_pasos-siguientes]
 == Pasos siguientes
 
 ¿Necesitas...

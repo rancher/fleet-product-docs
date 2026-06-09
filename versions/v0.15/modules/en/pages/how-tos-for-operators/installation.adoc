@@ -85,7 +85,7 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 You can now xref:how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
 
-[#_tweaking-your-product-installation]
+[#_tweaking-your-product-name-installation]
 == Tweaking Your {product_name} Installation
 
 [#_controller-and-agent-replicas]
@@ -101,7 +101,6 @@ Starting with {product_name} v0.13, the Helm chart exposes replica count setting
 Each defaults to one replica.
 
 
-[[enabling-imagescan]]
 [#_enabling-imagescan]
 === Enabling imagescan
 
@@ -115,7 +114,6 @@ The xref:how-tos-for-users/imagescan.adoc[imagescan] feature is disabled by defa
 
 To remedy this, install Fleet with `--set imagescan.enabled=true`.
 
-[[additional-ssh-known-hosts]]
 [#_additional-ssh-known-hosts]
 === Additional SSH known hosts
 
@@ -148,7 +146,6 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet 
   --set additionalKnownHosts={'ourgitserver.company ssh-rsa <fingerprint>','our-other-git-server.company ssh-ed25519 <fingerprint2>'}
 ----
 
-[[multi-controller-install-sharding]]
 [#_multi-controller-installation-sharding]
 == Multi-Controller Installation: Sharding
 

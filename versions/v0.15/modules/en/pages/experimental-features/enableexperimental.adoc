@@ -19,7 +19,7 @@ For more information, refer to Configure xref:reference/ref-configuration.adoc#_
 [#_enabling-an-experimental-feature]
 == Enabling an experimental feature
 
-[#_enabling-when-installing-product-stand-alone]
+[#_enabling-when-installing-product-name-stand-alone]
 === Enabling when installing {product_name} stand-alone
 
 All you need to do is pass something like:
@@ -37,7 +37,7 @@ to your `helm install` or `helm upgrade` command.
 You have to use `--set-string` because otherwise the boolean value won't work as expected.
 ====
 
-[#_enabling-when-installing-product-with-rancher]
+[#_enabling-when-installing-product-name-with-rancher]
 === Enabling when installing {product_name} with Rancher
 
 You can also activate the experimental features in {product_name} when installing Rancher.

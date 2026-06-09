@@ -8,6 +8,7 @@ Gerencie operações com o Fleet agent que se comunica com o Fleet controller
 fleet-agent [flags]
 ----
 
+[#_op-es]
 == Opções
 
 ----
@@ -24,6 +25,7 @@ fleet-agent [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 * xref:/reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]     - Relate continuamente o status dos recursos para o cluster upstream
 * xref:/reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register] - Registre o agente com um cluster upstream

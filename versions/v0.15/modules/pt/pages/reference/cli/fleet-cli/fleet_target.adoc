@@ -8,6 +8,7 @@ Imprimir alvos disponíveis para um pacote
 fleet target [flags]
 ----
 
+[#_op-es]
 == Opções
 
 ----
@@ -23,6 +24,7 @@ fleet target [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gerenciar operações {product_name}

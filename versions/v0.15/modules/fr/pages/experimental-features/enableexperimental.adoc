@@ -8,6 +8,7 @@ L'activation ou la désactivation des fonctionnalités expérimentales se fait �
 
 Pour plus d'informations, consultez Configurer les options d'installation de xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} dans Rancher]
 
+[#_fonctionnalit-s-exp-rimentales-disponibles]
 == Fonctionnalités expérimentales disponibles
 
 {product_name} prend actuellement en charge les fonctionnalités expérimentales suivantes, activées via leurs variables d'environnement respectives{nbsp}:
@@ -15,8 +16,10 @@ Pour plus d'informations, consultez Configurer les options d'installation de xre
 * xref:experimental-features/scheduling.adoc[Planification]
 * xref:experimental-features/experimental-downstream-resource.adoc[Propagation automatisée des ressources vers les clusters en aval]
 
+[#_activation-d-une-fonctionnalit-exp-rimentale]
 == Activation d'une fonctionnalité expérimentale
 
+[#_activation-lors-de-l-installation-de-product-name-en-mode-autonome]
 === Activation lors de l'installation de {product_name} en mode autonome
 
 Tout ce que vous avez à faire est de passer quelque chose comme{nbsp}:
@@ -34,6 +37,7 @@ Tout ce que vous avez à faire est de passer quelque chose comme{nbsp}:
 Vous devez utiliser `--set-string` car sinon la valeur booléenne ne fonctionnera pas comme prévu.
 ====
 
+[#_activation-lors-de-l-installation-de-product-name-avec-rancher]
 === Activation lors de l'installation de {product_name} avec Rancher
 
 Vous pouvez également activer les fonctionnalités expérimentales dans {product_name} lors de l'installation de Rancher.

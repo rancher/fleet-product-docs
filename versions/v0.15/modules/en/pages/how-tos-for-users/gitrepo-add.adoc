@@ -32,7 +32,7 @@ If you are using {product_name} in a xref:explanations/concepts.adoc[single clus
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
-[#_override-workloads-namespace]
+[#_override-workload-s-namespace]
 == Override Workload's Namespace
 
 The `targetNamespace` field will override any namespace in the bundle. If the deployment contains cluster scoped resources, it will fail.

@@ -7,7 +7,7 @@
 [IMPORTANT]
 ====
 
-有关 CRD 命名约定的更多信息，请点击 xref:troubleshooting.adoc#_naming_conventions_for_crds[CRD 命名约定]。
+有关 CRD 命名约定的更多信息，请点击 xref:troubleshooting.adoc#_naming-conventions-for-crds[CRD 命名约定]。
 ====
 
 以下是 {product_name} 的一些概念，这些概念在整个文档中将非常有用：
@@ -35,6 +35,6 @@ ____
  ** 要查看*分发包的生命周期*，请点击xref:explanations/ref-bundle-stages.adoc[分发包生命周期]。
 * *分发包部署*：当`Bundle`被部署到集群时，`Bundle`的一个实例称为`BundleDeployment`。
   `BundleDeployment`表示该`Bundle`在特定集群上的状态及其集群特定的自定义。{product_name}代理仅了解为其管理的集群创建的`BundleDeployment`资源。
- ** 要查看如何使用{product_name}自定义在集群之间部署Kubernetes清单的示例，请点击xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[每个集群的自定义]。
+ ** 要查看如何使用{product_name}自定义在集群之间部署Kubernetes清单的示例，请点击xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[每个集群的自定义]。
 * *下游集群*：{product_name}部署清单的集群称为下游集群。在单一集群使用案例中，{product_name} 管理器所在的 Kubernetes 集群同时充当管理器和下游集群。
 * *集群注册词元*:代理用于注册新集群的词元。

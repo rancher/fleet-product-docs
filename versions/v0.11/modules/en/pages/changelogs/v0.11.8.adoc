@@ -3,8 +3,10 @@
 :page-revdate: {revdate}
 :date: 2025-05-16 08:32:50 +0000 UTC
 
+[#_release-note]
 == Release Note
 
+[#_what-s-changed]
 === What's Changed
 
 * Stable BundleDeployment modified/nonReady status by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3533[#3533]
@@ -17,6 +19,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.7...v0.11.8[v0.11.7...v0.11.8]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.11.8/fleet-crd-0.11.8.tgz[fleet-crd-0.11.8.tgz]

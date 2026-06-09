@@ -8,6 +8,7 @@
 
 詳細については、Rancherのxref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name}インストールオプション設定]を参照してください。
 
+[#_]
 == 利用可能な実験的機能
 
 {product_name}は現在、各環境変数を通じて切り替え可能な以下の実験的機能をサポートしています：
@@ -15,8 +16,10 @@
 * xref:experimental-features/scheduling.adoc[スケジューリング]
 * xref:experimental-features/experimental-downstream-resource.adoc[ダウンストリームクラスターへのリソースの自動伝播]
 
+[#_]
 == 実験的機能を有効にする
 
+[#_product-name]
 === {product_name}をスタンドアロンでインストールする際の有効化
 
 必要なのは、次のようなものを渡すことだけです：
@@ -34,6 +37,7 @@
 `--set-string`を使用する必要があります。そうしないと、ブール値が期待通りに機能しません。
 ====
 
+[#_rancher-product-name]
 === Rancherで{product_name}をインストールする際の有効化
 
 Rancherをインストールする際に、{product_name}で実験的機能を有効にすることもできます。

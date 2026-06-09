@@ -3,8 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-07-17 16:29:25 +0000 UTC
 
+[#_release-note]
 == Release Note
 
+[#_what-s-changed]
 === What's Changed
 
 * Honor Helm's MaxHistory when using drift correction by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2517[#2517]
@@ -16,6 +18,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.5...v0.9.6[v0.9.5\...v0.9.6]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.6/fleet-agent-0.9.6.tgz[fleet-agent-0.9.6.tgz]

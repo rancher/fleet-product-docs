@@ -8,6 +8,7 @@
 fleet target [flags]
 ----
 
+[#_]
 == オプション
 
 ----
@@ -23,6 +24,7 @@ fleet target [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_]
 == 関連項目
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name}の操作を管理する

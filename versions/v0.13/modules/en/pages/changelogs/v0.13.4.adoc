@@ -5,6 +5,7 @@
 
 
 
+[#_what-s-changed]
 == What's Changed
 * Don't requeue for missing resources by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4175
 * Support git auth with access token by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4190
@@ -15,6 +16,7 @@ _Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.3...v0.13.4[v0.
 
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.13.4/fleet-crd-0.13.4.tgz[fleet-crd-0.13.4.tgz]

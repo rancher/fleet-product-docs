@@ -4,6 +4,7 @@
 
 Cluster-Daten in ein Archiv exportieren.
 
+[#_bersicht]
 == Übersicht
 
 Daten aus einem Cluster in ein Archiv exportieren, einschließlich:
@@ -16,6 +17,7 @@ Daten aus einem Cluster in ein Archiv exportieren, einschließlich:
 fleet dump <flags>
 ----
 
+[#_flaggen]
 == Flaggen
 
 [source,text]
@@ -23,8 +25,10 @@ fleet dump <flags>
   -p <path>         Path to the archive file to generate
 ----
 
+[#_ausgabe]
 == Ausgabe
 
+[#_inhalt]
 === Inhalt
 
 Der `dump`-Befehl erzeugt ein `.tgz`-Archiv, das die folgenden Daten enthält:
@@ -50,6 +54,7 @@ Der `dump`-Befehl erzeugt ein `.tgz`-Archiv, das die folgenden Daten enthält:
 Dies umfasst typischerweise `monitoring-gitjob`- und `monitoring-fleet-controller`-Dienste sowie deren
 xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[sharded] Gegenstücke, falls vorhanden.
 
+[#_format]
 ==== Format
 
 Rohressourcen von {product_name} werden jeweils in einer anderen Datei gespeichert, die als `<kind>_<namespace>_<name>` (Dateiname) benannt ist, wobei `<kind>` einer der in dem vorherigen Abschnitt genannten Rohressourcennamen in Kleinbuchstaben ist.
@@ -60,6 +65,7 @@ Sie enthalten ein Ereignis pro Zeile, wobei jedes Ereignis in JSON kodiert ist.
 Metriken werden in Dateien nach Dienst gespeichert, wobei jede Datei als `metrics_<service_name>` (Dateiname) benannt ist.
 Ihr Inhalt sind `GET`-Antwortkörper, die von jedem Dienst über den `/metrics`-Endpunkt empfangen wurden, unverändert.
 
+[#_siehe-auch]
 == SIEHE AUCH
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]

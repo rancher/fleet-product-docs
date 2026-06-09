@@ -8,6 +8,7 @@ Das Entfernen der CRDs entfernt alle bereitgestellten Workloads.
 ====
 
 
+[#_product-name-einzelplatzbetrieb]
 == {product_name} Einzelplatzbetrieb
 
 {product_name} ist als zwei Helm-Charts verpackt, sodass die Deinstallation durch das Deinstallieren der entsprechenden Helm-Charts erfolgt.
@@ -63,6 +64,7 @@ kubectl delete ns cattle-fleet-clusters-system
 kubectl delete ns -l "fleet.cattle.io/managed=true"
 ----
 
+[#_product-name-in-rancher]
 == {product_name} in Rancher
 
 {product_name} in Rancher kann nicht deinstalliert werden, ohne Rancher zu deinstallieren. Allerdings kann die GitOps-Funktion deaktiviert werden.

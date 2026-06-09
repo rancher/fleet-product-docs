@@ -21,7 +21,7 @@ For more information, see xref:how-tos-for-operators/installation.adoc[Install F
 
 Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases[Fleet GitHub releases page].
 
-[#_linuxmacos]
+[#_linux-macos]
 === Linux/macOS
 
 [source,bash]
@@ -166,7 +166,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 === Verify Agent and Controller Status
 
 Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
-For more information, see xref:reference/ref-registration.adoc#_product-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+For more information, see xref:reference/ref-registration.adoc#_product-name-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
 
 If a bundle is not ready on a given cluster, check the following:
 

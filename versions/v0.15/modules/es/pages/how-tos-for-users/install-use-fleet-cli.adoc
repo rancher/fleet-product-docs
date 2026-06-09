@@ -16,10 +16,12 @@ Puedes usar `fleet apply` sin instalar {product_name} en tus clústeres. Sin emb
 Para más información, consulta xref:how-tos-for-operators/installation.adoc[Instalar Fleet].
 ====
 
+[#_instalar-fleet-cli]
 == Instalar Fleet CLI
 
 Fleet CLI es un binario independiente que puedes descargar desde la link:https://github.com/rancher/fleet/releases[Página de lanzamientos de Fleet en GitHub].
 
+[#_linux-macos]
 === Linux/macOS
 
 [source,bash]
@@ -31,6 +33,7 @@ chmod +x fleet
 sudo mv fleet /usr/local/bin/
 ----
 
+[#_windows-powershell]
 === Windows (PowerShell)
 
 [source,powershell]
@@ -38,6 +41,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
+[#_verificar-la-instalaci-n]
 === Verificar la instalación
 
 [source,bash]
@@ -45,6 +49,7 @@ Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/downloa
 fleet --version
 ----
 
+[#_requisitos-previos]
 == Requisitos previos
 
 Asegúrate de tener las siguientes herramientas instaladas y configuradas:
@@ -54,6 +59,7 @@ Asegúrate de tener las siguientes herramientas instaladas y configuradas:
 * Helm está instalado.
 * Fleet CLI está instalado y accesible en tu terminal.
 
+[#_verifica-los-requisitos-previos]
 === Verifica los requisitos previos
 
 [source,bash]
@@ -63,6 +69,7 @@ helm version
 fleet --version
 ----
 
+[#_comandos-clave]
 == Comandos Clave
 
 {product_name} proporciona varios comandos de CLI para crear, previsualizar y desplegar paquetes. Estos comandos son útiles para depurar y entender el ciclo de vida del paquete.
@@ -91,6 +98,7 @@ Puedes usarlo en estos escenarios:
 
 image::fleetCLI-key-components.svg[Un diagrama que explica cómo funcionan los comandos clave de Fleet CLI]
 
+[#_desplegar-un-paquete-de-muestra-usando-fleet-cli]
 == Desplegar un Paquete de Muestra Usando Fleet CLI
 
 Puedes desplegar cargas de trabajo sin usar GitRepos aplicándolas localmente con la CLI. Por ejemplo, usa el link:https://github.com/rancher/fleet-examples[repositorio de ejemplos de Fleet]:
@@ -110,6 +118,7 @@ fleet apply -o my-cool-bundle manifests
 
 Este comando crea un recurso `Bundle` en el espacio de nombres.
 
+[#_convierte-un-helm-chart-en-un-paquete]
 == Convierte un Helm Chart en un Paquete
 
 Puedes usar Fleet CLI para convertir un Helm chart en un paquete. Por ejemplo, para convertir el chart del operador *external-secrets*:
@@ -138,6 +147,7 @@ Asegúrate de usar un selector de clúster en `targets.yaml` que coincida con to
 
 Para más información, consulta link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Despliegue Multi-Clúster con la Ayuda de Secretos Externos].
 
+[#_soluci-n-de-problemas]
 == Solución de problemas
 
 Si el paquete no está listo:
@@ -152,6 +162,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Elimina y reaplica el paquete si encuentras conflictos de propiedad de Helm.
 
+[#_verifica-el-estado-del-agente-y-del-controlador]
 === Verifica el Estado del Agente y del Controlador
 
 Antes de solucionar problemas de paquetes o ampliaciones, verifica que el Fleet agent esté registrado y en ejecución en el clúster descendente.

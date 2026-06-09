@@ -15,19 +15,23 @@ In the single-cluster setup, the same cluster runs both the Fleet manager and th
 The cluster connects directly to the Git server to deploy resources locally.  
 This is a simple, production-supported setup ideal for development, testing, and small-scale use.
 
+[#_prerequisites]
 == Prerequisites
 
+[#_helm-3]
 === Helm 3
 
 {product_name} is distributed as a Helm chart. Helm 3 is a client-only CLI with no server-side component.  
 To install Helm 3, follow the official instructions at https://helm.sh/docs/intro/install[Helm installation guide].
 
+[#_kubernetes]
 === Kubernetes
 
 {product_name} runs as a controller on an existing Kubernetes cluster.  
 For a single-cluster setup, install {product_name} on the same cluster that you intend to manage with GitOps.  
 {product_name} supports any community-supported Kubernetes version, typically {versions.next.kubernetes} or later.
 
+[#_default-installation]
 == Default Installation
 
 Install the following Helm charts to set up {product_name}.
@@ -38,6 +42,7 @@ Install the following Helm charts to set up {product_name}.
 Rancher includes separate Helm charts for {product_name} and uses a different repository.
 ====
 
+[#_add-the-fleet-helm-repository]
 === Add the Fleet Helm repository
 
 [source,bash]
@@ -45,6 +50,7 @@ Rancher includes separate Helm charts for {product_name} and uses a different re
 helm repo add fleet https://rancher.github.io/fleet-helm-charts/
 ----
 
+[#_install-the-fleet-customresourcedefinitions]
 === Install the Fleet CustomResourceDefinitions
 
 [source,bash]
@@ -53,6 +59,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
     fleet/fleet-crd
 ----
 
+[#_install-the-fleet-controllers]
 === Install the Fleet controllers
 
 [source,bash]
@@ -61,6 +68,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet \
     fleet/fleet
 ----
 
+[#_verify-the-installation]
 === Verify the installation
 
 Run the following commands to verify that the {product_name} controller pods are running:
@@ -81,8 +89,10 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 You can now xref:how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
 
+[#_tweaking-your-fleet-installation]
 == Tweaking Your Fleet Installation
 
+[#_controller-and-agent-replicas]
 === Controller and Agent Replicas
 
 Starting with {product_name} v0.13, the Helm chart exposes replica count settings for each controller type and the agent:
@@ -94,8 +104,10 @@ Starting with {product_name} v0.13, the Helm chart exposes replica count setting
 
 Each defaults to one replica.
 
+[#_multi-controller-installation-sharding]
 == Multi-Controller Installation: Sharding
 
+[#_deployment]
 === Deployment
 
 From version 0.10 onward, {product_name} supports static sharding.  
@@ -145,6 +157,7 @@ kubectl -n cattle-fleet-system get pods -l app=gitjob \
   -o=custom-columns='Name:.metadata.name,Shard-ID:.metadata.labels.fleet\.cattle\.io/shard-id,Node:spec.nodeName'
 ----
 
+[#_how-it-works]
 === How It Works
 
 Each Fleet controller processes resources labeled with its shard ID.  
@@ -173,6 +186,7 @@ Unknown shard IDs (for example, `boo`) are ignored.
 
 To add or remove shards, redeploy {product_name} with an updated shard list.
 
+[#_configuration-for-multi-cluster]
 == Configuration for Multi-Cluster
 
 [CAUTION]
@@ -189,6 +203,7 @@ For manager-initiated registration, additional API server details are required.
 Without them, only agent-initiated registration is possible.
 ====
 
+[#_api-server-url-and-ca-certificate]
 === API Server URL and CA Certificate
 
 The Fleet manager requires access to the Kubernetes API server.  
@@ -205,6 +220,7 @@ clusters:
     server: https://example.com:6443
 ----
 
+[#_extract-ca-certificate]
 ==== Extract CA Certificate
 
 The `certificate-authority-data` field is Base64 encoded.  
@@ -229,6 +245,7 @@ For multi-cluster kubeconfigs:
 kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem
 ----
 
+[#_extract-api-server]
 ==== Extract API Server
 
 [source,bash]
@@ -237,6 +254,7 @@ API_SERVER_URL=$(kubectl config view -o json --raw | jq -r '.clusters[] | select
 API_SERVER_CA="ca.pem"
 ----
 
+[#_validate]
 ==== Validate
 
 Verify the API server URL:
@@ -269,6 +287,7 @@ ZXItY2FAMTU5ODM5MDQ0NzAeFw0yMDA4MjUyMTIwNDdaFw0zMDA4MjMyMTIwNDda
 -----END CERTIFICATE-----
 ----
 
+[#_install-for-multi-cluster]
 === Install for Multi-Cluster
 
 Assume the API server URL is `https://example.com:6443` and CA is in `ca.pem`.  
@@ -305,6 +324,7 @@ helm -n cattle-fleet-system install --create-namespace --wait \
     fleet fleet/fleet
 ----
 
+[#_verify]
 === Verify
 
 [source,bash]

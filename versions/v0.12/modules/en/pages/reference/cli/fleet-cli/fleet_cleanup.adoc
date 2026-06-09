@@ -8,12 +8,14 @@ Clean up outdated resources
 fleet cleanup [flags]
 ----
 
+[#_options]
 == Options
 
 ----
   -h, --help   help for cleanup
 ----
 
+[#_see-also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

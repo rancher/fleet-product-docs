@@ -14,6 +14,7 @@ image::fine-tune-error-flow.svg[Un flux visuel de détection d'erreurs de régla
 REMARQUE :  +
 Vous devriez rarement avoir besoin de configurer la détection de disponibilité dans {product_name} avec des variables d'environnement. Si c'est le cas, ouvrez une issue ou soumettez une pull request pour contribuer à améliorer la détection de disponibilité par défaut.
 
+[#_ignorer-les-conditions-dans-fleet-yaml]
 == Ignorer les conditions dans `fleet.yaml`
 
 Utilisez le paramètre `ignore.conditions` dans le fichier `fleet.yaml` pour indiquer à {product_name} d'ignorer des conditions spécifiques.
@@ -40,6 +41,7 @@ Cette méthode est utile lorsqu'une ressource ou un contrôleur personnalisé d�
 
 image::fine-tune-error-ingore.svg[Un flux visuel d'ignorance des conditions lors de la détection d'erreurs de réglage fin]
 
+[#_configurer-le-mappage-des-erreurs-avec-des-variables-d-environnement]
 == Configurer le mappage des erreurs avec des variables d'environnement
 
 Dans {product_name} **v0.13**, la détection d'erreurs a été améliorée pour vous donner plus de contrôle. Vous pouvez utiliser la variable d'environnement `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` pour personnaliser la façon dont les conditions des ressources sont interprétées.
@@ -59,6 +61,7 @@ Définissez cette variable dans le déploiement Helm de Fleet (`values.yaml`) en
 REMARQUE :  +
 Ce paramètre est global à tous les contrôleurs Fleet et s'applique à chaque `GitRepo`. Si vous devez ajuster la gestion des erreurs uniquement pour un Bundle spécifique, utilisez l'option `ignoreConditions` dans `fleet.yaml` à la place.
 
+[#_comportement-de-fusion]
 === Comportement de fusion
 
 Lorsque vous remplacez les mappages par `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` :
@@ -83,6 +86,7 @@ Cela donne{nbsp}:
 * `Ready=["False"]` est ajouté, donc **`Ready=False`** est également traité comme une erreur.
 * Autres conditions inchangées.
 
+[#_d-sactiver-l-exemple-d-interpr-tation-des-erreurs]
 === Désactiver l'exemple d'interprétation des erreurs
 
 Supposons que chaque valeur de `Failed` ait été précédemment interprétée comme une erreur, par exemple{nbsp}:
@@ -120,6 +124,7 @@ Cette configuration garantit que **aucune valeur de `Failed`** est traitée comm
 REMARQUE :  +
 Le remplacement des conditions n'affecte que les mappages d'erreurs par défaut (voir xref:default-error-mappings[mappages d'erreurs par défaut]). {product_name} peut toujours marquer une ressource comme une erreur car d'autres vérifications, telles que celles de la bibliothèque `kstatus`, continuent de s'exécuter après votre personnalisation.
 
+[#_activer-l-exemple-d-interpr-tation-des-erreurs]
 === Activer l'exemple d'interprétation des erreurs
 
 [source,json]
@@ -137,6 +142,7 @@ Le remplacement des conditions n'affecte que les mappages d'erreurs par défaut 
 Ici, `Failed=True` est traité comme une erreur.
 
 [[default-error-mappings]]
+[#_mappages-d-erreurs-par-d-faut]
 == Mappages d'erreurs par défaut 
 
 {product_name} ajoute des mappages d'erreurs par défaut pour interpréter certaines conditions de ressources dans le champ `status` comme des erreurs. Ces mappages sont appliqués en plus d'autres vérifications de disponibilité, telles que celles effectuées par la bibliothèque Kubernetes `kstatus`.
@@ -157,6 +163,7 @@ Les mappages par défaut suivants s'appliquent{nbsp}:
 * **ReplicaSet** (`apps/v1`)
   * `ReplicaFailure` : `True` est considéré comme une erreur.
 
+[#_mappage-de-secours]
 === Mappage de secours
 
 Si une ressource ne correspond pas aux GVKs listés, {product_name} applique un mappage de secours{nbsp}:

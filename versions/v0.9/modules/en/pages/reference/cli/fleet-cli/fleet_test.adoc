@@ -8,6 +8,7 @@ Match a bundle to a target and render the output
 fleet test [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -24,6 +25,7 @@ fleet test [flags]
   -t, --target string         Explicit target to match
 ----
 
+[#_options-inherited-from-parent-commands]
 == Options inherited from parent commands
 
 ----
@@ -33,6 +35,7 @@ fleet test [flags]
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
+[#_see-also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

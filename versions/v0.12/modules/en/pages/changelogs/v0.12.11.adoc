@@ -6,6 +6,7 @@
 *Released on 2026-01-21 14:39:34 +0000 UTC by `github-actions[bot]`.*
 
 
+[#_what-s-changed]
 == What's Changed
 * Update Kubernetes dependencies to v0.33.7 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4523
 * Update base images to version 15.7 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4543
@@ -14,6 +15,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.12.10...v0.12.11[v0.12.10...v0.12.11]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.11/fleet-0.12.11.tgz[fleet-0.12.11.tgz]

@@ -17,6 +17,7 @@ Os campos `resources` descritos nesta página ainda se aplicam. Especifique os c
 Para mais informações, consulte xref:reference/ref-configuration.adoc[Configuração].
 ====
 
+[#_recursos-padr-o]
 == Recursos Padrão
 
 Defina um padrão para todos os contêineres de controlador usando o campo `resources` de nível superior:
@@ -43,6 +44,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   --set resources.requests.memory=768Mi
 ----
 
+[#_substitui-es-por-componente]
 == Substituições por Componente
 
 Contêineres de controlador individuais podem substituir o padrão com configurações específicas do componente.
@@ -94,6 +96,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   -f values.yaml
 ----
 
+[#_recursos-do-agente-do-cluster-downstream]
 == Recursos do Agente do Cluster Downstream
 
 Para configurar limites e solicitações de recursos para o Fleet agent em um cluster downstream específico, defina `agentResources` no recurso `Cluster` correspondente:

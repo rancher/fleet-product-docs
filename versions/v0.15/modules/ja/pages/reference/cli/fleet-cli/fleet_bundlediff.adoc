@@ -18,6 +18,7 @@
 fleet bundlediff [flags]
 ----
 
+[#_]
 == オプション
 
 [source,text]
@@ -39,6 +40,7 @@ fleet bundlediff [flags]
                                  'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_]
 == 例
 
 [source,bash]
@@ -63,6 +65,7 @@ fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluste
 fleet bundlediff -n cluster-fleet-local-local-abc123
 ----
 
+[#_]
 == 関連項目
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - {product_name}操作を管理する

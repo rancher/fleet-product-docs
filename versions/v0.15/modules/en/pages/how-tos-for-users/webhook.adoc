@@ -199,7 +199,6 @@ kubectl create secret generic gitjob-webhook \
   --from-literal=azure-password=pass123
 ----
 
-[[option-2-configure-secret]]
 [#_option-2-configure-a-secret-per-gitrepo]
 === Option 2: Configure a Secret per GitRepo
 

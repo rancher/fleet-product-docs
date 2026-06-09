@@ -18,6 +18,7 @@ image::fetch-Helm-from-OCI.svg[Un activo visual que muestra el flujo de obtenci�
 Por ejemplo, si gestionas múltiples clústeres con {product_name}, los desarrolladores pueden subir gráficos de Helm a un registro interno de OCI. {product_name} luego descarga los gráficos directamente del registro y los despliega en clústeres en sentido descendente.
 Este enfoque evita mantener un repositorio de gráficos separado y reutiliza tu infraestructura de registro existente.
 
+[#_gr-fico-de-helm-en-fleet-yaml]
 == Gráfico de Helm en fleet.yaml
 
 Para obtener un gráfico de Helm de un registro de OCI, referencia el gráfico utilizando el campo `repo` en un archivo `fleet.yaml`:
@@ -44,6 +45,7 @@ helm:
 El campo `repo` es la forma canónica de especificar URLs de registros de OCI en un archivo `fleet.yaml`. Es consistente con la forma en que se hace referencia a los registros de OCI en los recursos de HelmOp.
 ====
 
+[#_obsoleto-url-de-oci-en-helm-chart]
 === Obsoleto: URL de OCI en `helm.chart`
 
 Antes de este cambio, {product_name} esperaba que la URL de OCI se colocara en el campo `chart` en lugar de `repo`:
@@ -58,8 +60,9 @@ helm:
 
 Este formulario aún funciona por compatibilidad hacia atrás, pero está obsoleto y producirá una advertencia en los registros de {product_name}. Migra los archivos existentes de `fleet.yaml` para usar `helm.repo` para las URLs de OCI.
 
+[#_usando-registros-autenticados]
 == Usando registros autenticados
 
 {product_name} utiliza este secreto para descargar el gráfico y desplegarlo en los clústeres objetivo.
 
-Para más información, consulta xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml con autenticación].
+Para más información, consulta xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[fleet.yaml con autenticación].

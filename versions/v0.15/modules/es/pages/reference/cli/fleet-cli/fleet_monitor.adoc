@@ -2,6 +2,7 @@
 
 Herramienta de diagnóstico avanzada para solucionar problemas de ampliaciones {product_name}.
 
+[#_descripci-n-general]
 == Descripción general
 
 Extrae información del ciclo de vida de GitOps de {product_name} capturando instantáneas de todos los recursos relevantes y realizando diagnósticos automatizados. Este comando ayuda a identificar por qué los paquetes se quedan atascados durante las fases de direccionamiento y ampliación, y proporciona información útil sobre la salud de tu instalación de {product_name}.
@@ -11,6 +12,7 @@ Extrae información del ciclo de vida de GitOps de {product_name} capturando ins
 fleet monitor [flags]
 ----
 
+[#_opciones]
 === Opciones
 
 [source,text]
@@ -23,6 +25,7 @@ fleet monitor [flags]
   -h, --help                      help for monitor
 ----
 
+[#_inicio-r-pido]
 === Inicio rápido
 
 El comando monitor genera **JSON compacto** (una instantánea por línea). Utiliza `jq` para formatear para una mejor legibilidad.
@@ -39,16 +42,19 @@ fleet monitor | fleet analyze
 fleet monitor --watch --interval 60 >> monitor.json
 ----
 
+[#_lo-que-detecta]
 === Lo que Detecta
 
 El comando monitor realiza diagnósticos exhaustivos para detectar:
 
+[#_problemas-del-ciclo-de-vida-de-recursos]
 ==== Problemas del Ciclo de Vida de Recursos
 *  **Paquetes con Desajuste de Generación**: Paquetes que no avanzan a través de su ciclo de vida (generación != generación observada)
 *  **Despliegues de Paquetes Atascados**: Despliegues de paquetes donde el agente no está aplicando nuevos IDs de ampliación
 *  **Múltiples Finalizadores**: Recursos con más de un finalizador (indica errores - solo los Contenidos deberían tener múltiples finalizadores para el conteo de referencias, en {product_name} v0.11.1 a v0.14.x)
 *  **Recursos Huérfanos**: Recursos con marcas de tiempo de eliminación que no pueden ser recolectados como basura
 
+[#_problemas-de-consistencia-de-datos]
 ==== Problemas de Consistencia de Datos
 * **Viaje en el Tiempo de la API**: Servidor API de Kubernetes devolviendo datos en caché obsoletos (detectado al obtener recursos múltiples veces)
 * **Desajustes de Hash de Compromiso**: Los Bundles/BundleDeployments no se han actualizado al último compromiso de GitRepo
@@ -56,35 +62,42 @@ El comando monitor realiza diagnósticos exhaustivos para detectar:
 * **Desajustes de UID**: Secretos con referencias de propietario a recursos eliminados/recreados
 * **Desajustes de ID de Despliegue**: BundleDeployments where spec.deploymentID != status.appliedDeploymentID
 
+[#_problemas-de-coincidencia-de-objetivos]
 ==== Problemas de Coincidencia de Objetivos
 * **Bundles sin ampliaciones**: Bundles creados pero ningún clúster coincidió con el selector de objetivo
 * **GitRepos sin Bundles**: GitRepos que no han creado ningún bundle (podría ser una mala vía, objetivos o errores de procesamiento)
 * **Grupos de Clústeres sin Clústeres**: Grupos de Clústeres con selectores que no coinciden con ningún clúster
 * **BundleDeployments Huérfanos**: BundleDeployments cuyo Bundle padre fue eliminado
 
+[#_problemas-de-rendimiento]
 ==== Problemas de Rendimiento
 * **Bundles Grandes**: Bundles >1MB que pueden afectar el rendimiento de etcd
 * **Recursos de Contenido Faltantes**: Paquetes con `resourcesSHA256Sum` pero sin recurso de contenido correspondiente
 * **Altas Cantidades de Recursos**: Grandes cantidades de recursos de paquetes que pueden causar presión en etcd
 
+[#_problemas-de-agente-y-cl-ster]
 ==== Problemas de Agente y Clúster
 * **Agente No Listo**: Clústeres con estado de agente no listo
 * **Última Vez Vista Faltante**: Clústeres sin marca de tiempo de pulsación del agente
 * **Última Vez Vista Obsoleta**: Clústeres donde el agente no ha registrado su presencia recientemente (por defecto: 24h, configurable con `--agent-staleness`)
 * **Missing Agent Bundles**: Bundles de Agente Faltantes Espacios de nombres de clúster sin ampliaciones de paquetes de agente esperadas
 
+[#_problemas-de-cadena-de-propiedad]
 ==== Problemas de Cadena de Propiedad
 * **Propiedad Rota**: Bundles sin propietarios de GitRepo, BundleDeployments sin propietarios de Bundle
 * **Propietarios de Secreto Inválidos**: Bundle Secrets con referencias de propietario incorrectas o faltantes
 
+[#_desajustes-de-generaci-n-observaci-n]
 ==== Desajustes de Generación/Observación
 * **Desviación de Generación de GitRepo**: La generación de GitRepo != generación observada (el controlador no está procesando actualizaciones)
 * **Generación de Drift de Bundle**: La generación de Bundle != generación observada (el controlador no está procesando actualizaciones)
 * **Desviación de Generación de Sincronización de BundleDeployment**: La sincronización de generación de BundleDeployment != generación de sincronización forzada (el agente no ha aplicado la sincronización forzada)
 * **Generación Obsoleta del Contenido**: Recursos de contenido con valores de generación obsoletos
 
+[#_ejemplos-de-uso]
 === Ejemplos de Uso
 
+[#_monitoreo-b-sico]
 ==== Monitoreo Básico
 
 [source,bash]
@@ -99,6 +112,7 @@ fleet monitor -n fleet-local | jq
 fleet monitor -n fleet-default | jq
 ----
 
+[#_monitoreo-continuo]
 ==== Monitoreo Continuo
 
 [source,bash]
@@ -110,6 +124,7 @@ fleet monitor --watch --interval 60 >> monitor.json
 fleet monitor --watch --interval 30 >> monitor.json
 ----
 
+[#_diagn-sticos-dirigidos]
 ==== Diagnósticos Dirigidos
 
 [source,bash]
@@ -137,6 +152,7 @@ fleet monitor | jq '.diagnostics | {
 }'
 ----
 
+[#_comparando-estados]
 ==== Comparando Estados
 
 [source,bash]
@@ -151,8 +167,10 @@ kubectl edit gitrepo my-repo
 fleet monitor > after.json
 ----
 
+[#_escenarios-comunes-de-soluci-n-de-problemas]
 === Escenarios Comunes de Solución de Problemas
 
+[#_situaci-n-1-bundle-no-despleg-ndose]
 ==== Situación 1: Bundle No Desplegándose
 
 [source,bash]
@@ -170,6 +188,7 @@ jq '.diagnostics.bundlesWithNoDeployments' bundle-status.json
 jq '.diagnostics.gitRepoBundleInconsistencies' bundle-status.json
 ----
 
+[#_situaci-n-2-agente-no-reportando-estado]
 ==== Situación 2: Agente No Reportando Estado
 
 [source,bash]
@@ -184,6 +203,7 @@ fleet monitor | jq '.clusters[] | select(.agentStatus != "ready")'
 fleet monitor | jq '.clusters[] | {name, lastSeen, agentAge}'
 ----
 
+[#_escenario-3-recursos-atascados-con-tiempos-de-eliminaci-n]
 ==== Escenario 3: Recursos Atascados con Tiempos de Eliminación
 
 [source,bash]
@@ -198,6 +218,7 @@ fleet monitor | jq '{
 fleet monitor | jq '.bundles[] | select(.deletionTimestamp != null) | {name, finalizers}'
 ----
 
+[#_caso-pr-ctico-n-4-commits-no-propag-ndose]
 ==== Caso práctico n.º 4: Commits No Propagándose
 
 [source,bash]
@@ -214,6 +235,7 @@ fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies[] |
   select(.commitMismatch == true)'
 ----
 
+[#_caso-pr-ctico-n-5-problemas-de-rendimiento]
 ==== Caso práctico n.º 5: Problemas de Rendimiento
 
 [source,bash]
@@ -229,6 +251,7 @@ fleet monitor | jq '[.bundles[] | {name, size: .sizeBytes, sizeMB: (.sizeBytes /
 fleet monitor | jq '.diagnostics.bundlesWithMissingContent'
 ----
 
+[#_flujo-de-trabajo-de-monitoreo-continuo]
 === Flujo de Trabajo de Monitoreo Continuo
 
 Para el monitoreo a largo plazo y el análisis de tendencias:
@@ -248,6 +271,7 @@ fleet analyze --diff /var/log/fleet-monitor.json > fleet-report-$(date +%Y%m%d).
 find /var/log -name "fleet-report-*.txt" -mtime +7 -delete
 ----
 
+[#_integraci-n-con-alertas]
 === Integración con Alertas
 
 El comando de monitorización se puede integrar con sistemas de monitoreo:
@@ -273,8 +297,10 @@ fleet monitor | jq -r '
 '
 ----
 
+[#_comprensi-n-de-diagn-sticos]
 === Comprensión de Diagnósticos
 
+[#_recursos-atascados]
 ==== Recursos Atascados
 
 Un recurso se considera "atascado" cuando:
@@ -295,10 +321,12 @@ Un recurso se considera "atascado" cuando:
 
 * `syncGeneration` != `forceSyncGeneration` cuando `forceSyncGeneration > 0` (rastreados por separado de los BundleDeployments atascados)
 
+[#_verificaci-n-de-consistencia-de-api]
 ==== Verificación de Consistencia de API
 
 El monitor realiza múltiples recuperaciones de los mismos recursos para detectar "viaje en el tiempo" - cuando el servidor API de Kubernetes devuelve diferentes versiones de recursos debido a caché obsoleta. Esto es crítico porque los datos obsoletos pueden hacer que los paquetes parezcan atascados cuando en realidad están progresando.
 
+[#_seguimiento-de-commits]
 ==== Seguimiento de Commits
 
 El monitor rastrea los hashes de commits de Git a lo largo de todo el ciclo de vida:
@@ -309,6 +337,7 @@ El monitor rastrea los hashes de commits de Git a lo largo de todo el ciclo de v
 
 Las discrepancias indican dónde está fallando el proceso de sincronización.
 
+[#_consideraciones-referentes-al-rendimiento]
 === Consideraciones referentes al rendimiento
 
 * El monitor obtiene todos los recursos de Fleet en el clúster
@@ -317,6 +346,7 @@ Las discrepancias indican dónde está fallando el proceso de sincronización.
   * Ejecutar con menos frecuencia (por ejemplo, cada 120+ segundos en lugar de 60)
   * Monitorear el uso de recursos del propio comando monitor
 
+[#_solucionar-problemas-del-comando-monitor]
 === Solucionar problemas del comando monitor
 
 Si el comando monitor falla:
@@ -337,6 +367,7 @@ kubectl get crds | grep fleet.cattle.io
 fleet monitor --verbose 2>&1 | tee monitor-debug.log
 ----
 
+[#_v-ase]
 === VÉASE
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

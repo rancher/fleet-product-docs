@@ -5,8 +5,10 @@
 
 *Released on 2025-06-20 06:29:24 +0000 UTC by `github-actions[bot]`.*
 
+[#_description]
 == Description
 
+[#_what-s-changed]
 === What's Changed
 
 * Fix panic found in OCI test by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3790[#3790]
@@ -16,6 +18,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.12.3...v0.12.4[v0.12.3...v0.12.4  ]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.4/fleet-agent-0.12.4.tgz[fleet-agent-0.12.4.tgz]

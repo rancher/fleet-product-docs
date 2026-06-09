@@ -3,13 +3,16 @@
 :page-revdate: {revdate}
 :toc_max_heading_level: 4
 
+[#_workload-namespaces]
 == Workload Namespaces
 
+[#_namespace-creation-behavior-in-bundles]
 === Namespace Creation Behavior in Bundles
 
 When deploying a {product_name} bundle, the specified namespace will automatically be
 created if it does not already exist.
 
+[#_configuring-workload-namespaces]
 === Configuring Workload Namespaces
 
 When configuring workload namespaces, it is important to be aware that certain
@@ -23,6 +26,7 @@ xref:reference/ref-fleet-yaml.adoc[fleet.yaml] reference.
 
 image::FleetWorkloadNamespaces.png[Configuring Workload Namespaces]
 
+[#_cross-namespace-deployments]
 === Cross Namespace Deployments
 
 It is possible to create a GitRepo that will deploy across namespaces. The
@@ -66,6 +70,7 @@ in all namespaces that match `namespaceSelector`. One can specify labels for the
 created bundles from git by putting labels in the `fleet.yaml` file or on the
 `metadata.labels` field on the `GitRepo`.
 
+[#_restricting-gitrepos]
 === Restricting GitRepos
 
 A namespace can contain multiple `GitRepoRestriction` resources. All `GitRepos`
@@ -91,6 +96,7 @@ defaultClientSecretName: ""
 defaultServiceAccount: ""
 ----
 
+[#_allowed-target-namespaces]
 ==== Allowed Target Namespaces
 
 This can be used to limit a deployment to a set of namespaces on a downstream
@@ -98,6 +104,7 @@ cluster. If an allowedTargetNamespaces restriction is present, all `GitRepos`
 must specify a `targetNamespace` and the specified namespace must be in the
 allow list. This also prevents the creation of cluster wide resources.
 
+[#_product-name-namespaces]
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom
@@ -109,6 +116,7 @@ multi-tenant fashion.
 
 image::FleetNamespaces.svg[Namespace]
 
+[#_gitrepos-bundles-clusters-clustergroups]
 === GitRepos, Bundles, Clusters, ClusterGroups
 
 All selectors for `GitRepo` targets will be evaluated against the `Clusters`
@@ -138,13 +146,15 @@ This will uninstall all deployed bundles, except for the fleet agent, from the d
 ====
 
 If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace
-will always be *fleet-local*. Refer to the <<_cluster_registration_namespace_fleet_local,`fleet-local` namespaces section>> for more information.
+will always be *fleet-local*. Refer to the <<_cluster-registration-namespace-fleet-local,`fleet-local` namespaces section>> for more information.
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct
 repo that will map to the right target clusters.
 
+[#_internal-namespaces]
 === Internal Namespaces
 
+[#_cluster-registration-namespace-fleet-local]
 ==== Cluster Registration Namespace: fleet-local
 
 The *fleet-local* namespace is a special namespace used for the single cluster
@@ -158,17 +168,20 @@ named `default`. This means that all `GitRepos` created in `fleet-local` will
 automatically target the `local` `Cluster`. The `local` `Cluster` refers to the
 cluster the {product_name} manager is running on.
 
+[#_system-namespace-cattle-fleet-system]
 ==== System Namespace: cattle-fleet-system
 
 The {product_name} controller and {product_name} agent run in this namespace. All service accounts
 referenced by `GitRepos` are expected to live in this namespace in the
 downstream cluster.
 
+[#_system-registration-namespace-cattle-fleet-clusters-system]
 ==== System Registration Namespace: cattle-fleet-clusters-system
 
 This namespace holds secrets for the cluster registration process. It should
 contain no other resources in it, especially secrets.
 
+[#_cluster-namespaces]
 ==== Cluster Namespaces
 
 For every cluster that is registered a namespace is created by the {product_name} manager

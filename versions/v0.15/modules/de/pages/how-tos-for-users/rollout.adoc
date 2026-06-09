@@ -22,6 +22,7 @@ Die Rollout-Konfigurationsoptionen sind im `rolloutStrategy` Feld der xref:refer
 Wenn `rolloutStrategy` in `fleet.yaml` nicht angegeben ist, verwendet {product_name} die Standardwerte.
 ====
 
+[#_wie-funktioniert-die-partitionierung]
 == Wie funktioniert die Partitionierung?
 
 Partitionen werden ausschließlich zur Gruppierung und Steuerung des Rollouts von `BundleDeployments` über Cluster verwendet. Sie beeinflussen die Implementierungsoptionen in keiner Weise.
@@ -161,6 +162,7 @@ image::partition-rollout-flow.png[Ein visuelles Asset, das den Ablauf der Bereit
 {product_name} verarbeitet Partitionen in der Reihenfolge, in der sie in der `fleet.yaml`-Datei erscheinen.
 ====
 
+[#_einzelne-partition]
 === Einzelne Partition
 
 Wenn Sie `rolloutStrategy.partitions` nicht definieren, erstellt {product_name} Partitionen automatisch basierend auf der Anzahl der angestrebten Cluster:
@@ -174,10 +176,12 @@ Zum Beispiel, mit 200 Clustern (entsprechend dem Standard `autoPartitionThreshol
 2. Die Bereitschaft basierend auf `maxUnavailable` bewertet.
 . Wenn die Bedingung erfüllt ist, fahren Sie mit den nächsten 50 fort, und so weiter.
 
+[#_mehrere-partitionen]
 === Mehrere Partitionen
 
 Wenn Sie mehrere Partitionen definieren, verwendet {product_name} `maxUnavailablePartitions`, um zu begrenzen, wie viele Partitionen gleichzeitig `NotReady` sein können. Wenn die Anzahl der `NotReady` Partitionen `maxUnavailablePartitions` überschreitet, pausiert {product_name} den Rollout.
 
+[#_verhindern-von-bildabrufst-rmen]
 == Verhindern von Bildabrufstürmen
 
 Während des Rollouts zieht jeder Downstream-Cluster Container-Images ab. Wenn Hunderte von Clustern gleichzeitig Container abrufen, kann dies das Repository überwältigen und sich wie ein DDoS-Angriff verhalten.
@@ -206,6 +210,7 @@ So verläuft der Rollout:
 
 Wenn Sie weniger als 40 Implementierungen gleichzeitig verarbeiten möchten oder müssen, können Sie weniger Cluster in jede Partition einfügen.
 
+[#_anwendungsf-lle-und-verhalten]
 == Anwendungsfälle und Verhalten
 
 Wenn die Anzahl der Cluster sich nicht gleichmäßig teilt, rundet {product_name} die Partitionsgrößen ab. Zum Beispiel führen 230 Cluster mit `autoPartitionSize: 25%` zu:
@@ -213,6 +218,7 @@ Wenn die Anzahl der Cluster sich nicht gleichmäßig teilt, rundet {product_name
 * Vier Partitionen von 57 Clustern
 * Eine Partition von 2 Clustern
 
+[#_szenario-50-cluster-einzelpartition]
 === Szenario: 50 Cluster (Einzelpartition)
 
 [source,yaml]
@@ -231,6 +237,7 @@ Das folgende Diagramm veranschaulicht, wie {product_name} 50 Cluster in einer ei
 
 image::deploy-50Clusters.png[50 Cluster-Szenario]
 
+[#_szenario-100-cluster-einzelpartition]
 === Szenario: 100 Cluster (Einzelpartition) 
 
 [source,yaml]
@@ -246,6 +253,7 @@ rolloutStrategy:
 
 Wenn 10 Cluster (10% von 100 Clustern) nicht verfügbar sind, wird die Implementierung der verbleibenden 50 Cluster pausiert, bis weniger als 10 Cluster `NotReady` sind. 
 
+[#_szenario-200-cluster-mehrere-partitionen]
 === Szenario: 200 Cluster (Mehrere Partitionen)
 
 [source,yaml]
@@ -263,6 +271,7 @@ rolloutStrategy:
 
 {product_name} erstellt `BundleDeployments` für 20 Cluster, wartet darauf, dass sie `Ready` werden, und fährt dann mit dem nächsten fort. Dies begrenzt effektiv die Anzahl der Bildabrufe von Downstream-Clustern auf bis zu ~40 Bilder gleichzeitig.
 
+[#_szenario-200-cluster-strikte-bereitschaft-manuelle-partitionen]
 === Szenario: 200 Cluster (Strikte Bereitschaft, Manuelle Partitionen)
 
 Manuelle Partitionierung ermöglicht Ihnen die Kontrolle über die Clustergruppierung mit `maxUnavailablePartitions: 0`. 
@@ -295,6 +304,7 @@ image::partition-fleet-rollout.png[Manuelles Partitionen-Szenario]
 
 Dies gewährleistet volle Bereitschaft und gestaffelten Rollout über alle 200 Cluster. Verwenden Sie diesen Ansatz, wenn Sie eine präzise Rollout-Sequenzierung und volle Clusterbereitschaft vor dem Fortschreiten benötigen. 
 
+[#_rollout-strategie-standardeinstellungen]
 == Rollout-Strategie-Standardeinstellungen
 
 Wenn die Rollout-Werte auf Partitionsebene nicht definiert sind, wendet {product_name} die globalen Werte aus `rolloutStrategy` in `fleet.yaml` an. Partitionsspezifische Einstellungen überschreiben globale Werte, wenn sie ausdrücklich festgelegt sind.

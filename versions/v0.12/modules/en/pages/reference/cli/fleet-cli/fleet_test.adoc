@@ -8,6 +8,7 @@ Match a bundle to a target and render the output (deprecated)
 fleet test [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -22,6 +23,7 @@ fleet test [flags]
   -t, --target string         Explicit target to match
 ----
 
+[#_see-also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

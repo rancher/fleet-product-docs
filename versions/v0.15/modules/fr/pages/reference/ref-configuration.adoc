@@ -5,6 +5,7 @@
 Une liste de références des options de configuration, principalement internes.
 
 [[configure-install-options-in-rancher]]
+[#_configurer-product-name-options-d-installation-dans-rancher]
 == Configurer {product_name} Options d'installation dans Rancher
 
 Rancher recherche les valeurs Helm dans un ConfigMap appelé `rancher-config` dans l'espace de noms `cattle-system`.
@@ -38,6 +39,7 @@ kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
 ----
 
+[#_les-helm-charts]
 == Les Helm charts
 
 Les charts Helm acceptent, au moins, les options telles qu'indiquées avec leur valeur par défaut dans `values.yaml`{nbsp}:
@@ -46,6 +48,7 @@ Les charts Helm acceptent, au moins, les options telles qu'indiquées avec leur 
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
+[#_variables-d-environnement]
 == Variables d'environnement
 
 Les contrôleurs peuvent être démarrés avec ces variables d'environnement{nbsp}:
@@ -55,6 +58,7 @@ Les contrôleurs peuvent être démarrés avec ces variables d'environnement{nbs
 * `FLEET_CLUSTER_ENQUEUE_DELAY` - ajuste la fréquence à laquelle les clusters non prêts sont vérifiés
 * `FLEET_CPU_PPROF_PERIOD` - utilisé pour activer https://github.com/rancher/fleet/blob/main/docs/performance.md[profilage de performance]
 
+[#_configuration]
 == Configuration
 
 Dans la configuration du cluster pour l'agent et le Fleet Manager. Modifier ces paramètres peut entraîner des déploiements complets.
@@ -64,6 +68,7 @@ La configuration https://github.com/rancher/fleet/blob/main/internal/config/conf
 * cattle-fleet-system/fleet-agent
 * cattle-fleet-system/fleet-controller
 
+[#_libell-s]
 == Libellés
 
 Étiquettes utilisées par Fleet :
@@ -81,6 +86,7 @@ La configuration https://github.com/rancher/fleet/blob/main/internal/config/conf
  ** Si cette étiquette n'est pas fournie ou a une valeur vide, alors le contrôleur {product_name} non shardé traitera la ressource.
  ** Si cette étiquette a une valeur qui ne correspond à aucun ID de shard pour lequel un contrôleur {product_name} est déployé, alors la ressource ne sera pas traitée.
 
+[#_annotations]
 == Annotations
 
 Annotations utilisées par Fleet :
@@ -95,6 +101,7 @@ Annotations utilisées par Fleet :
 * `fleet.cattle.io/managed` - apparaît non utilisé
 * `fleet.cattle.io/service-account`
 
+[#_product-name-configuration-de-l-agent-fleet]
 == {product_name} Configuration de l'agent Fleet
 
 Les tolérances, l'affinité et les ressources peuvent être personnalisées pour {product_name} l'agent. Ces champs peuvent être fournis lors de la création d'un xref:reference/ref-crds.adoc#_clusterspec[Cluster], voir xref:how-tos-for-operators/cluster-registration.adoc[Enregistrement du Cluster en aval] pour plus d’informations sur la création de clusters. La configuration par défaut sera utilisée si ces champs ne sont pas fournis.

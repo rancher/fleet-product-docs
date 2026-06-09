@@ -16,10 +16,12 @@ Sie können `fleet apply` verwenden, ohne {product_name} in Ihren Clustern zu in
 Für weitere Informationen siehe xref:how-tos-for-operators/installation.adoc[Install Fleet].
 ====
 
+[#_installieren-sie-fleet-cli]
 == Installieren Sie Fleet CLI
 
 Fleet CLI ist eine eigenständige Binärdatei, die Sie von der link:https://github.com/rancher/fleet/releases[Fleet GitHub Releases-Seite] herunterladen können.
 
+[#_linux-macos]
 === Linux/macOS
 
 [source,bash]
@@ -31,6 +33,7 @@ chmod +x fleet
 sudo mv fleet /usr/local/bin/
 ----
 
+[#_windows-powershell]
 === Windows (PowerShell)
 
 [source,powershell]
@@ -38,6 +41,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
+[#_installation-berpr-fen]
 === Installation überprüfen
 
 [source,bash]
@@ -45,6 +49,7 @@ Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/downloa
 fleet --version
 ----
 
+[#_voraussetzungen]
 == Voraussetzungen
 
 Stellen Sie sicher, dass Sie die folgenden Tools installiert und konfiguriert haben:
@@ -54,6 +59,7 @@ Stellen Sie sicher, dass Sie die folgenden Tools installiert und konfiguriert ha
 * Helm ist installiert.
 * Fleet CLI ist installiert und in Ihrem Terminal zugänglich.
 
+[#_voraussetzungen-berpr-fen]
 === Voraussetzungen überprüfen
 
 [source,bash]
@@ -63,6 +69,7 @@ helm version
 fleet --version
 ----
 
+[#_wichtige-befehle]
 == Wichtige Befehle
 
 {product_name} bietet mehrere CLI-Befehle zum Erstellen, Vorschauen und Bereitstellen von Bundles. Diese Befehle sind nützlich zum Debuggen und Verstehen des Bundle-Lebenszyklus.
@@ -91,6 +98,7 @@ Sie können es in diesen Szenarien verwenden:
 
 image::fleetCLI-key-components.svg[Ein Diagramm, das erklärt, wie die wichtigsten Befehle von Fleet CLI funktionieren]
 
+[#_ein-beispiel-bundle-mit-fleet-cli-bereitstellen]
 == Ein Beispiel-Bundle mit Fleet CLI bereitstellen
 
 Sie können Workloads bereitstellen, ohne GitRepos zu verwenden, indem Sie sie lokal mit der Kommandozeilenschnittstelle anwenden. Zum Beispiel verwenden Sie das link:https://github.com/rancher/fleet-examples[Fleet-Beispiele-Repository]:
@@ -110,6 +118,7 @@ fleet apply -o my-cool-bundle manifests
 
 Dieser Befehl erstellt eine `Bundle` Ressource im Namespace.
 
+[#_konvertieren-sie-ein-helm-chart-in-ein-bundle]
 == Konvertieren Sie ein Helm-Chart in ein Bundle.
 
 Sie können die Fleet CLI verwenden, um ein Helm-Chart in ein Bundle zu konvertieren. Zum Beispiel, um das *external-secrets* Operator-Chart zu konvertieren:
@@ -138,6 +147,7 @@ Stellen Sie sicher, dass Sie einen Cluster-Selector in `targets.yaml` verwenden,
 
 Für weitere Informationen siehe link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster-Bereitstellung mit Hilfe von External Secrets].
 
+[#_fehlerbehebung]
 == Fehlerbehebung
 
 Wenn das Bundle nicht bereit ist:
@@ -152,6 +162,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Löschen und wenden Sie das Bundle erneut an, wenn Sie auf Konflikte mit Helm-Besitzrechten stoßen.
 
+[#_berpr-fen-sie-den-status-von-agent-und-controller]
 === Überprüfen Sie den Status von Agent und Controller.
 
 Bevor Sie Probleme mit dem Bundle oder der Bereitstellung beheben, vergewissern Sie sich, dass der Fleet-Agent registriert ist und im Downstream-Cluster aktiv ist.

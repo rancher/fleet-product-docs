@@ -16,10 +16,12 @@
 詳細については、xref:how-tos-for-operators/installation.adoc[Fleetのインストール]を参照してください。
 ====
 
+[#_install-fleet-cli]
 == Install Fleet CLI
 
 Fleet CLIは、link:https://github.com/rancher/fleet/releases[Fleet GitHubリリースページ]からダウンロードできるスタンドアロンのバイナリです。
 
+[#_linux-macos]
 === Linux/macOS
 
 [source,bash]
@@ -31,6 +33,7 @@ chmod +x fleet
 sudo mv fleet /usr/local/bin/
 ----
 
+[#_windows-powershell]
 === Windows（PowerShell）
 
 [source,powershell]
@@ -38,6 +41,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
+[#_]
 === インストールを確認してください
 
 [source,bash]
@@ -45,6 +49,7 @@ Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/downloa
 fleet --version
 ----
 
+[#_]
 == 前提条件
 
 次のツールがインストールされ、構成されていることを確認してください：
@@ -54,6 +59,7 @@ fleet --version
 * Helmがインストールされています。
 * Fleet CLIはインストールされており、ターミナルでアクセス可能です。
 
+[#_]
 === 前提条件の確認
 
 [source,bash]
@@ -63,6 +69,7 @@ helm version
 fleet --version
 ----
 
+[#_]
 == 主要コマンド
 
 {product_name}は、バンドルを作成、プレビュー、およびデプロイするためのいくつかのCLIコマンドを提供します。これらのコマンドは、デバッグやバンドルライフサイクルの理解に役立ちます。
@@ -91,6 +98,7 @@ fleet target my-bundle ./manifests
 
 image::fleetCLI-key-components.svg[Fleet CLIの主要コマンドの動作を説明する図]
 
+[#_fleet-cli]
 == Fleet CLIを使用してサンプルバンドルをデプロイする
 
 CLIを使用してローカルに適用することで、GitReposを使用せずにワークロードをデプロイできます。例えば、link:https://github.com/rancher/fleet-examples[Fleetのサンプルリポジトリ]を使用します：
@@ -110,6 +118,7 @@ fleet apply -o my-cool-bundle manifests
 
 このコマンドは、ネームスペースに`Bundle`リソースを作成します。
 
+[#_helm]
 == Helmチャートをバンドルに変換する
 
 Fleet CLIを使用してHelmチャートをバンドルに変換できます。例えば、*external-secrets*オペレーターのチャートを変換するには：
@@ -138,6 +147,7 @@ kubectl apply -f eso-bundle.yaml
 
 詳細については、link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Multi-Cluster Deployment with the Help of External Secrets]を参照してください。
 
+[#_]
 == トラブルシューティング
 
 バンドルが準備できていない場合：
@@ -152,6 +162,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Helmの所有権の競合が発生した場合は、バンドルを削除して再適用してください。
 
+[#_]
 === エージェントとコントローラーのステータスを確認する
 
 バンドルやデプロイメントの問題をトラブルシューティングする前に、Fleet agentがダウンストリームクラスターに登録されて実行中であることを確認してください。

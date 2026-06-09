@@ -7,7 +7,7 @@
 [IMPORTANT]
 ====
 
-CRDの命名規則についての詳細は、xref:troubleshooting.adoc#_naming_conventions_for_crds[CRDの命名規則]をクリックしてください。
+CRDの命名規則についての詳細は、xref:troubleshooting.adoc#_naming-conventions-for-crds[CRDの命名規則]をクリックしてください。
 ====
 
 以下は、このドキュメント全体で役立つ{product_name}の主な概念です：
@@ -35,6 +35,6 @@ ____
  ** *バンドルのライフサイクル*を表示するには、xref:explanations/ref-bundle-stages.adoc[バンドルライフサイクル]をクリックしてください。
 * *バンドルデプロイメント*:`Bundle`がクラスターにデプロイされると、`Bundle`のインスタンスは`BundleDeployment`と呼ばれます。
   `BundleDeployment`は、特定のクラスターにおけるその`Bundle`の状態を、クラスター固有のカスタマイズと共に表します。{product_name}エージェントは、エージェントが管理しているクラスターのために作成された`BundleDeployment`リソースのみを認識しています。
- ** {product_name}カスタマイズを使用してクラスター間でKubernetesマニフェストをデプロイする方法の例については、xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[クラスターごとのカスタマイズ]をクリックしてください。
+ ** {product_name}カスタマイズを使用してクラスター間でKubernetesマニフェストをデプロイする方法の例については、xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[クラスターごとのカスタマイズ]をクリックしてください。
 * *ダウンストリームクラスター*:{product_name}がマニフェストをデプロイするクラスターは、ダウンストリームクラスターと呼ばれます。単一クラスターのユースケースでは、{product_name}マネージャーKubernetesクラスターが同時にマネージャーとダウンストリームクラスターの役割を果たします。
 * *クラスタ登録トークン*:新しいクラスターを登録するためにエージェントによって使用されるトークン。

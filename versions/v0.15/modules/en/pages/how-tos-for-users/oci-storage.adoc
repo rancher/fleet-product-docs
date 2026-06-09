@@ -89,7 +89,7 @@ The fields you can configure are:
 | `basicHTTP`       | Enables HTTP instead of HTTPS.              | Base64-encoded `true/false` | Not recommended. Allows insecure traffic. By default, `basicHTTP` is set to `false`.
 |===
 
-[#_product-example]
+[#_product-name-example]
 == {product_name} Example
 
 Consider the following `GitRepo` file:

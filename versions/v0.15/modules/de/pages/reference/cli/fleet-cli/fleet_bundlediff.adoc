@@ -18,6 +18,7 @@ Verwenden Sie das `-n`-Flag, um die Suche auf einen bestimmten Namespace einzusc
 fleet bundlediff [flags]
 ----
 
+[#_optionen]
 == Optionen
 
 [source,text]
@@ -39,6 +40,7 @@ fleet bundlediff [flags]
                                  'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_beispiele]
 == Beispiele
 
 [source,bash]
@@ -63,6 +65,7 @@ fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluste
 fleet bundlediff -n cluster-fleet-local-local-abc123
 ----
 
+[#_siehe-auch]
 == Siehe auch
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}] - {product_name}-Operationen verwalten

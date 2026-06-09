@@ -20,6 +20,7 @@ Für Installationen mit vielen Repositories oder wenn Sie die Latenz (die Zeit z
 * Bitbucket Server
 * Gogs
 
+[#_1-konfigurieren-sie-den-webhook-dienst]
 == 1. Konfigurieren Sie den Webhook-Dienst
 
 {product_name} verwendet einen `gitjob`-Dienst, um Webhook-Anfragen zu bearbeiten.
@@ -126,6 +127,7 @@ Dieser Ansatz ermöglicht eine reibungslose Migration von Ingress Nginx zu Traef
 Sie können https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] auf Ingress für eine sichere Kommunikation konfigurieren.
 ====
 
+[#_2-konfigurieren-sie-die-webhook-callback-url]
 == 2. Konfigurieren Sie die Webhook-Callback-URL
 
 Gehen Sie zu Ihrem Git-Anbieter und konfigurieren Sie die Webhook-Callback-URL.
@@ -149,6 +151,7 @@ Nur `application/json` wird aufgrund von Einschränkungen in der Webhook-Bibliot
 Wenn ein Webhook konfiguriert ist, passt sich das Abfrageintervall automatisch auf eine Stunde an.
 ====
 
+[#_3-optional-konfigurieren-sie-ein-webhook-secret]
 == 3. (Optional) Konfigurieren Sie ein Webhook-Secret
 
 Das Webhook-Secret validiert die von Ihrem Git-Anbieter gesendete Nutzlast.
@@ -166,6 +169,7 @@ Jeder unterstützte Anbieter verwendet einen spezifischen Schlüsselnamen im Kub
 | Azure DevOps | `azure-password`
 |===
 
+[#_option-1-konfigurieren-sie-ein-clusterweites-secret]
 === Option 1: Konfigurieren Sie ein clusterweites Secret.
 
 In diesem Ansatz gilt das Secret für das gesamte Cluster, und alle GitRepos verwenden es automatisch.
@@ -196,6 +200,7 @@ kubectl create secret generic gitjob-webhook \
 ----
 
 [[option-2-configure-secret]]
+[#_option-2-konfigurieren-sie-ein-secret-pro-gitrepo]
 === Option 2: Konfigurieren Sie ein Secret pro GitRepo.
 
 Sie können ein einzigartiges Webhook-Secret für jedes GitRepo definieren.
@@ -220,6 +225,7 @@ spec:
 
 Wenn sowohl ein clusterweites Secret als auch ein pro-GitRepo-Secret existieren, verwendet {product_name} das pro-GitRepo-Secret.
 
+[#_4-testen-sie-den-webhook]
 == 4. Testen Sie den Webhook
 
 Gehen Sie zu Ihrem Git-Anbieter und testen Sie die Webhook-Verbindung. Sie sollten einen HTTP-Antwortcode erhalten, der die Lieferung des Webhooks bestätigt.

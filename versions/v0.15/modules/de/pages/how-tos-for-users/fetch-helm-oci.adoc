@@ -18,6 +18,7 @@ image::fetch-Helm-from-OCI.svg[Ein visuelles Asset, das den Ablauf des Abrufens 
 {product_name}{product_name} zieht dann die Charts direkt aus der OCI-Registrierung und stellt sie in Downstream-Clustern bereit.
 Dieser Ansatz vermeidet die Notwendigkeit, ein separates Chart-Repository zu pflegen, und nutzt Ihre bestehende Registry-Infrastruktur.
 
+[#_helm-chart-in-fleet-yaml]
 == Helm-Chart in fleet.yaml
 
 Um ein Helm-Chart aus einer OCI-Registrierung abzurufen, verweisen Sie in einer `fleet.yaml` Datei auf das Chart mit dem `repo` Feld:
@@ -44,6 +45,7 @@ helm:
 Das `repo` Feld ist die kanonische Methode, um OCI-Registrierungs-URLs in einer `fleet.yaml` Datei anzugeben. Es ist konsistent mit der Art und Weise, wie OCI-Registrierungen in HelmOp-Ressourcen referenziert werden.
 ====
 
+[#_veraltet-oci-url-in-helm-chart]
 === Veraltet: OCI-URL in `helm.chart`
 
 Vor dieser Änderung erwartete {product_name}, dass die OCI-URL im `chart`-Feld anstelle von `repo` platziert wird:
@@ -58,8 +60,9 @@ helm:
 
 Dieses Formular funktioniert weiterhin aus Gründen der Rückwärtskompatibilität, ist jedoch veraltet und erzeugt eine Warnung in den {product_name}-Protokollen. Migrieren Sie vorhandene `fleet.yaml`-Dateien, um `helm.repo` für OCI-URLs zu verwenden.
 
+[#_verwendung-authentifizierter-oci-registrierungen]
 == Verwendung authentifizierter OCI-Registrierungen
 
 Wenn die OCI-Registrierung eine Authentifizierung erfordert, verweisen Sie auf ein Kubernetes-Geheimnis in der GitRepo-Ressource. {product_name} verwendet dieses Geheimnis, um das Chart abzurufen und es in den Zielclustern bereitzustellen.
 
-Für weitere Informationen siehe xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml mit Authentifizierung].
+Für weitere Informationen siehe xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[fleet.yaml mit Authentifizierung].

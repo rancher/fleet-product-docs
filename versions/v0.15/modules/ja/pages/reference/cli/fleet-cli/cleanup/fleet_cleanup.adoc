@@ -8,12 +8,14 @@
 fleet cleanup [flags]
 ----
 
+[#_]
 == オプション
 
 ----
   -h, --help   help for cleanup
 ----
 
+[#_]
 == 関連項目
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name}の運用を管理する

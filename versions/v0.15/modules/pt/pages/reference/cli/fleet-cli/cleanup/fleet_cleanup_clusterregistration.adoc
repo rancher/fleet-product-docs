@@ -8,6 +8,7 @@ Remover registros de cluster desatualizados
 fleet cleanup clusterregistration [flags]
 ----
 
+[#_op-es]
 == Opções
 
 ----
@@ -22,6 +23,7 @@ fleet cleanup clusterregistration [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - Remover recursos desatualizados

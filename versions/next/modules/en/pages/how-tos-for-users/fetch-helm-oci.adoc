@@ -11,13 +11,14 @@ Using OCI registries for Helm charts helps you:
 * Push and pull charts using standard OCI commands, making them easy to distribute across environments.
 * Manage charts in registries designed for high availability and global distribution.
 
-For more information about HelmOps with OCI registry, refer to xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOps].
+For more information about HelmOps with OCI registry, refer to xref:how-tos-for-users/helm-ops.adoc#_oci-registry[HelmOps].
 
 image::fetch-Helm-from-OCI.svg[A visual asset displaying flow of fetching Helm charts from an OCI registry]
 
 For example, if you manage multiple clusters with {product_name}, developers can push Helm charts to an internal OCI registry. {product_name} then pulls the charts directly from the registry and deploys them to downstream clusters.  
 This approach avoids maintaining a separate chart repository and reuses your existing registry infrastructure.
 
+[#_helm-chart-in-fleet-yaml]
 == Helm chart in fleet.yaml
 
 To fetch a Helm chart from an OCI registry, reference the chart using the `repo` field in a `fleet.yaml` file:
@@ -44,6 +45,7 @@ helm:
 The `repo` field is the canonical way to specify OCI registry URLs in a `fleet.yaml` file. It is consistent with how OCI registries are referenced in HelmOp resources.
 ====
 
+[#_deprecated-oci-url-in-helm-chart]
 === Deprecated: OCI URL in `helm.chart`
 
 Prior to this change, {product_name} expected the OCI URL to be placed in the `chart` field instead of `repo`:
@@ -58,8 +60,9 @@ helm:
 
 This form still works for backwards compatibility, but it is deprecated and will produce a warning in the {product_name} logs. Migrate existing `fleet.yaml` files to use `helm.repo` for OCI URLs.
 
+[#_using-authenticated-registries]
 == Using authenticated registries
 
 If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. {product_name} uses this secret to pull the chart and deploy it to the targeted clusters.
 
-For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml with authentication].
+For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[fleet.yaml with authentication].

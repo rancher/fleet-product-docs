@@ -6,7 +6,7 @@ Un paquete es un recurso interno utilizado para la orquestación de recursos des
 
 Para demostrar el ciclo de vida de un {product_name} paquete, utilizaremos https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[multi-cluster/helm] como estudio de caso.
 
-. El usuario creará un xref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo] que apunte al repositorio multi-cluster/helm.
+. El usuario creará un xref:how-tos-for-users/gitrepo-add.adoc#_create-gitrepo-instance[GitRepo] que apunte al repositorio multi-cluster/helm.
 . El `gitjob-controller` sincronizará los cambios del GitRepo y detectará cambios del sondeo o del xref:how-tos-for-users/webhook.adoc[evento webhook]. Con cada cambio de commit, el `gitjob-controller` creará un trabajo que clonará el repositorio git, leerá contenido del repositorio como `fleet.yaml` y otros manifiestos, y creará el {product_name} xref:reference/ref-status-fields.adoc#_bundles[paquete].
 +
 [NOTE]
@@ -23,12 +23,14 @@ Este diagrama muestra las diferentes etapas de renderizado que atraviesa un paqu
 image::FleetBundleStages.svg[Etapas del Paquete]
 
 [[examining-the-bundle-lifecycle-with-the-cli]]
+[#_examinando-el-ciclo-de-vida-del-paquete-con-la-cli]
 == Examinando el Ciclo de Vida del Paquete con la CLI
 
 Varios comandos de la CLI de fleet ayudan con la depuración de paquetes.
 
 image::fleetCLI-key-components.svg[Un diagrama que explica cómo funcionan los comandos clave de Fleet CLI]
 
+[#_fleet-apply]
 === fleet apply
 
 xref:reference/cli/fleet-cli/fleet_apply.adoc[Aplicar] renderiza una carpeta con recursos de Kubernetes, como un gráfico de Helm, manifiestos o carpetas de kustomize, en un recurso de {product_name} paquete.
@@ -42,16 +44,19 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 Más información sobre cómo crear paquetes con `fleet apply` se puede encontrar en la xref:how-tos-for-users/bundle-add.adoc[sección sobre paquetes].
 
 [[fleet-target]]
+[#_fleet-target]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Objetivo] lee un paquete de un archivo y trabaja con un clúster en vivo para imprimir el recurso `bundledeployment` y `content`, que crearía el fleetcontroller. Toma un espacio de nombres como argumento, por lo que puede buscar en ese espacio de nombres recursos de clúster, por ejemplo. También puede volcar la estructura de datos que se utiliza durante "la fijación de objetivos", para que se puedan verificar las decisiones tomadas respecto a las etiquetas y nombres de clúster.
 
+[#_fleet-deploy]
 === fleet deploy
 
 xref:reference/cli/fleet-cli/fleet_deploy.adoc[Desplegar] toma la salida de `fleet target`, o un recurso de bundledeployment/contenido volcado y lo despliega en un clúster, tal como lo haría el fleet-agent. Soporta un modo de prueba en seco, para imprimir los recursos que se crearían, en lugar de instalarlos con Helm. Dado que el comando no crea los recursos de entrada, un Fleet agent en funcionamiento probablemente eliminaría la ampliación.
 
 El comando deploy se puede utilizar para llevar paquetes a clústeres en entorno aislado.
 
+[#_cli-de-ciclo-de-vida]
 === CLI de ciclo de vida
 
 Los comandos de la CLI de Fleet te ayudan a depurar y entender el ciclo de vida del paquete. El siguiente ejemplo utiliza el ciclo de vida completo del paquete usando CLI:

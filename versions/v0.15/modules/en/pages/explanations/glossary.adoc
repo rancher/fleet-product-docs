@@ -25,7 +25,7 @@ A cluster refers to:
 * a https://kubernetes.io/docs/concepts/architecture/[Kubernetes cluster] managed by {product_name}
 * a `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[resource] in Fleet's API, which {product_name} uses to manage that Kubernetes cluster
 
-[#_continuous-deliverydeployment]
+[#_continuous-delivery-deployment]
 == Continuous Delivery/Deployment
 
 Definitions and distinctions between Continuous Delivery and Continuous Deployment greatly vary, for instance
@@ -60,7 +60,7 @@ as a result, creating resources on target clusters.
 
 A downstream cluster is a Kubernetes cluster where user workloads will run, without any Fleet controllers living there. It is a target cluster for Fleet, where only a Fleet agent lives beside user workloads.
 
-[#_fleetyaml]
+[#_fleet-yaml]
 == fleet.yaml
 
 A `fleet.yaml` file lives in a git repository and stores options for a bundle and bundle deployments to be generated from that bundle. More information is available xref:reference/ref-fleet-yaml.adoc[fleet.yaml].

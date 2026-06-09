@@ -6,6 +6,7 @@ Para mais informações sobre como personalizar bundles usando `fleet.yaml`, vej
 
 O conteúdo de `fleet.yaml` corresponde à estrutura `FleetYAML` em https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`], que contém o xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
+[#_exemplo-completo]
 == Exemplo Completo
 
 [%collapsible]
@@ -340,6 +341,7 @@ overrideTargets:
 ----
 ====
 
+[#_configura-o-geral-do-bundle]
 == Configuração Geral do Bundle
 
 Essas opções definem as propriedades e o comportamento fundamentais do bundle em si e se aplicam a todos os tipos de bundle.
@@ -349,11 +351,12 @@ Essas opções definem as propriedades e o comportamento fundamentais do bundle 
 
 | `paused` | Se verdadeiro, o bundle não será atualizado em clusters downstream. Em vez disso, será marcado como *Fora de Sincronização*. Você pode então aprovar manualmente a implantação. | Todos
 | `labels` | Um mapa de pares chave-valor definidos no nível do bundle. Esses podem ser usados em um `dependsOn.selector` para definir dependências. | Todos
-| `dependsOn` | Uma lista de bundles dos quais este bundle depende. O bundle atual é implantado somente após todas as dependências estarem em um estado aceito. Estados aceitos correspondem a qualquer xref:reference/ref-status-fields.adoc#_bundle_statuses[estado de bundle] válido. | Todos
+| `dependsOn` | Uma lista de bundles dos quais este bundle depende. O bundle atual é implantado somente após todas as dependências estarem em um estado aceito. Estados aceitos correspondem a qualquer xref:reference/ref-status-fields.adoc#_bundle-statuses[estado de bundle] válido. | Todos
 | `ignore` | Especifica campos a serem ignorados ao monitorar o status do bundle. Útil para evitar estados de erro falsos de Recursos Personalizados. | Todos
 | `overrideTargets` | Uma lista de personalizações de destino que substituem quaisquer alvos definidos no GitRepo. | Todos
 |===
 
+[#_configura-o-de-namespace]
 === Configuração de Namespace
 
 Essas opções controlam o namespace do Kubernetes onde os recursos serão implantados.
@@ -367,6 +370,7 @@ Essas opções controlam o namespace do Kubernetes onde os recursos serão impla
 | `namespaceAnnotations` | Anotações a serem adicionadas ao namespace criado por {product_name}. | Todos
 |===
 
+[#_configura-o-do-bundle-helm]
 == Configuração do Bundle Helm
 
 Todos os bundles são implantados usando o Helm, mas essas opções são específicas para *bundles no estilo Helm* (aqueles com um arquivo `Chart.yaml`).
@@ -384,6 +388,7 @@ O Fleet baixa o gráfico durante a fase inicial de **criação do Bundle**. Isso
 Se um cluster específico deve usar um registro ou fonte de gráfico diferente (por exemplo, devido a restrições de rede ou gateway de segurança), configure-o usando um recurso `GitRepo` separado ou um caminho de bundle diferente.
 ====
 
+[#_fonte-do-gr-fico]
 === Fonte do Gráfico
 
 Essas opções especificam como baixar o gráfico. A referência pode ser um caminho local, URL do go-getter, repositório Helm ou repositório OCI do Helm.
@@ -405,6 +410,7 @@ A referência do gráfico pode ser uma das seguintes:
 * Repositório Helm (`repo` + `chart` + `version` opcional)
 * Repositório OCI Helm (`repo: oci://...` + `version` opcional)
 
+[#_helm-repo]
 ==== `helm.repo`
 
 Para registros OCI, `helm.repo` é o campo canônico para a URL OCI. Use assim:
@@ -418,6 +424,7 @@ helm:
 
 Isso é consistente com a forma como os registros OCI são referenciados em xref:how-tos-for-users/helm-ops.adoc#oci-registry[recursos HelmOp].
 
+[#_helm-chart]
 ==== `helm.chart`
 
 Especifica um caminho local ou URL do go-getter para o gráfico Helm. Quando `helm.repo` é definido como uma URL de repositório Helm padrão (não OCI), `helm.chart` contém o nome do gráfico dentro desse repositório.
@@ -454,6 +461,7 @@ helm:
 ----
 ====
 
+[#_helm-version]
 ==== `helm.version`
 
 Determina qual gráfico baixar dos registros OCI.
@@ -464,6 +472,7 @@ Registros OCI não suportam o caractere `+` em tags semver. O Helm substitui `+`
 Use a versão `+` em `fleet.yaml`; {product_name} realiza a mesma substituição internamente.
 ====
 
+[#_valores]
 === Valores
 
 Opções para personalizar os valores do gráfico Helm.
@@ -478,10 +487,11 @@ Opções para personalizar os valores do gráfico Helm.
 
 Não é necessário especificar o próprio `values.yaml` de um gráfico. É sempre usado por padrão.
 
-Veja xref:/explanations/gitrepo-content.adoc#_using_helm_values[Usando Valores do Helm] para mais informações.
+Veja xref:/explanations/gitrepo-content.adoc#_using-helm-values[Usando Valores do Helm] para mais informações.
 
 Para estágios de processamento de valores, consulte xref:explanations/ref-bundle-stages.adoc[Ciclo de vida do bundle].
 
+[#_templates-de-valores]
 === Templates de Valores
 
 O {product_name} suporta expressões de template Go para necessidades avançadas de templates.
@@ -535,6 +545,7 @@ ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }m
 ----
 ====
 
+[#_implanta-o-do-helm]
 == Implantação do Helm
 
 Essas opções controlam como o agente do Fleet implanta recursos.
@@ -553,6 +564,7 @@ Elas também se aplicam a *kustomize-* e *pacotes de estilo manifest*.
 | `helm.skipSchemaValidation` | Pule a validação `values.schema.json`. | Todos
 |===
 
+[#_configura-o-do-kustomize]
 == Configuração do Kustomize
 
 Usado ao implantar a partir de um diretório contendo um arquivo `kustomization.yaml`.
@@ -562,6 +574,7 @@ Usado ao implantar a partir de um diretório contendo um arquivo `kustomization.
 | `kustomize.dir` | Pasta personalizada para recursos do Kustomize. Deve conter um arquivo `kustomization.yaml`. | Kustomize
 |===
 
+[#_estrat-gia-de-implanta-o-rollout]
 == Estratégia de Implantação (Rollout)
 
 Essas opções controlam como as atualizações são distribuídas nos clusters.
@@ -579,6 +592,7 @@ Essas opções controlam como as atualizações são distribuídas nos clusters.
 
 Para mais informações, veja xref:how-tos-for-users/rollout.adoc[Estratégia de Rollout].
 
+[#_direcionamento-e-personaliza-o]
 == Direcionamento e Personalização
 
 Essas opções permitem personalizar implantações para clusters ou grupos de clusters específicos.
@@ -601,6 +615,7 @@ Essas opções permitem personalizar implantações para clusters ou grupos de c
 | `targetCustomizations.correctDrift` | Habilita a correção de desvio para recursos gerenciados. | Todos
 |===
 
+[#_personaliza-es-suportadas]
 === Personalizações suportadas
 
 * xref:/reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]

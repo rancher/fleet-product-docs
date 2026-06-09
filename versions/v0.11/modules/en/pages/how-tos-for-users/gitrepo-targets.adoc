@@ -22,6 +22,7 @@ If no targets are specified, i.e. when using a single-cluster, the bundles targe
 
 When deploying `GitRepos` to downstream clusters the clusters must be mapped to a target.
 
+[#_defining-targets]
 == Defining Targets
 
 The deployment targets of `GitRepo` is done using the `spec.targets` field to
@@ -62,6 +63,7 @@ spec:
     clusterName: cluster1
 ----
 
+[#_target-matching]
 == Target Matching
 
 All clusters and cluster groups in the same namespace as the `GitRepo` will be evaluated against all targets.
@@ -93,6 +95,7 @@ targets:
 
 When using {product_name} in Rancher, make sure to put the name of the `clusters.fleet.cattle.io` resource.
 
+[#_default-target]
 == Default Target
 
 If no target is set for the `GitRepo` then the default targets value is applied.  The default targets value is as below.
@@ -107,6 +110,7 @@ targets:
 This means if you wish to setup a default location non-configured GitRepos will go to, then just create a cluster group called default
 and add clusters to it.
 
+[#_customization-per-cluster]
 == Customization per Cluster
 
 [IMPORTANT]
@@ -168,6 +172,7 @@ targetCustomizations:
 
 NOTE: Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
 
+[#_supported-customizations]
 === Supported Customizations
 
 * xref:reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]
@@ -205,6 +210,7 @@ etcd's configured maximum blob size. See https://github.com/rancher/fleet/issues
 * xref:reference/ref-crds.adoc#_yamloptions[YAML.Overlays]
 * xref:reference/ref-crds.adoc#_diffoptions[Diff.ComparePatches]
 
+[#_additional-examples]
 == Additional Examples
 
 Examples using raw Kubernetes YAML, Helm charts, Kustomize, and combinations

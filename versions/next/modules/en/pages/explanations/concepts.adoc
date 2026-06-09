@@ -8,7 +8,7 @@ to manage GitOps for a single Kubernetes cluster or a large-scale deployment of 
 [IMPORTANT]
 ====
 
-For more on the naming conventions of CRDs, click xref:troubleshooting.adoc#_naming_conventions_for_crds[Naming conventions for CRDs].
+For more on the naming conventions of CRDs, click xref:troubleshooting.adoc#_naming-conventions-for-crds[Naming conventions for CRDs].
 ====
 
 Below are some of the concepts of {product_name} that will be useful throughout this documentation:
@@ -46,6 +46,6 @@ ____
   A `BundleDeployment` represents the state of that `Bundle` on a specific cluster with its cluster specific
   customizations. The {product_name} agent is only aware of `BundleDeployment` resources that are created for
   the cluster the agent is managing.
- ** For an example of how to deploy Kubernetes manifests across clusters using {product_name} customization, click xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customization per cluster].
+ ** For an example of how to deploy Kubernetes manifests across clusters using {product_name} customization, click xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[customization per cluster].
 * *Downstream Cluster*: Clusters to which {product_name} deploys manifests are referred to as downstream clusters. In the single cluster use case, the {product_name} manager Kubernetes cluster is both the manager and downstream cluster at the same time.
 * *Cluster Registration Token*: Tokens used by agents to register a new cluster.

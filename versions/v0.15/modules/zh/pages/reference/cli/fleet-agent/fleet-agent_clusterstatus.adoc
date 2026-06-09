@@ -8,6 +8,7 @@
 fleet-agent clusterstatus [flags]
 ----
 
+[#_]
 == 选项
 
 ----
@@ -19,6 +20,7 @@ fleet-agent clusterstatus [flags]
       --namespace string          system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
+[#_]
 == 另请参阅
 
 * xref:/reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]     - 管理与 Fleet controller 通信的 Fleet agent 的操作

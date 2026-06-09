@@ -2,6 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
+[#_display-states]
 == Display States
 
 GitRepos, HelmOps, Clusters, and Bundles have different states in each phase of applying Bundles.
@@ -83,6 +84,7 @@ From best to worst:
 * WaitApplied
 * ErrApplied
 
+[#_bundles]
 == Bundles
 
 === Bundle Statuses
@@ -97,6 +99,7 @@ From best to worst:
 * *WaitApplied* : Bundles are synced but waiting to deploy. Persistent display of this state may indicate an unreachable target cluster.
 * *ErrApplied* : Bundles synced successfully but encountered errors during deployment.
 
+[#_clusters]
 == Clusters
 
 === Cluster-Specific States
@@ -113,6 +116,7 @@ From best to worst:
 * *WaitApplied* : Some Bundles are waiting to be applied.
 * *ErrApplied* : Some Bundles have errors.
 
+[#_gitrepo]
 == GitRepo
 
 * *Ready* : `True` if desired and current states match. If `False`, the message contains:
@@ -124,12 +128,14 @@ From best to worst:
 * *Stalled* : The controller encountered an error or failed to make progress.
 * *Accepted* : GitRepo restrictions were applied and external Helm secrets exist.
 
+[#_helmop-conditions]
 == HelmOp Conditions
 
 * *Ready* : `True` if all BundleDeployments were deployed successfully; `False` if any are not ready.
 * *Accepted* : `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
 * *Polled* : `True` if polling succeeded. `False` otherwise, with an error message.
 
+[#_status-display]
 == `status.display`
 
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
@@ -139,6 +145,7 @@ The `status.display` fields are shared between GitRepos and GitOps. Both resourc
 * `message` : Contains relevant deployment condition messages.
 * `error` : `true` if an error message exists.
 
+[#_resources-list]
 == Resources List
 
 Resources deployed to target clusters are categorized under `GitRepos` and `HelmOps`.
@@ -151,6 +158,7 @@ The deployed resources are listed under `GitRepos` in `status.Resources`, derive
 
 Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
 
+[#_resource-counts]
 == Resource Counts
 
 This shows how resource counts propagate between resources.
@@ -224,6 +232,7 @@ In Clusters, `status.ResourceCounts` is derived from GitRepos.
 
 In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.
 
+[#_class-diagram]
 == Class Diagram
 
 [mermaid]

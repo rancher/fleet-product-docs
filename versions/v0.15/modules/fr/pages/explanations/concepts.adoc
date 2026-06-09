@@ -7,7 +7,7 @@
 [IMPORTANT]
 ====
 
-Pour en savoir plus sur les conventions de nommage des CRD, cliquez sur xref:troubleshooting.adoc#_naming_conventions_for_crds[Conventions de nommage pour les CRD].
+Pour en savoir plus sur les conventions de nommage des CRD, cliquez sur xref:troubleshooting.adoc#_naming-conventions-for-crds[Conventions de nommage pour les CRD].
 ====
 
 Voici quelques-uns des concepts de {product_name} qui seront utiles tout au long de cette documentation{nbsp}:
@@ -35,6 +35,6 @@ ____
  ** Pour voir le *cycle de vie d'un bundle*, cliquez sur xref:explanations/ref-bundle-stages.adoc[cycle de vie du bundle] :
 * *BundleDeployment* : Lorsqu'un `Bundle` est déployé sur un cluster, une instance d'un `Bundle` est appelée un `BundleDeployment`.
   Un `BundleDeployment` représente l'état de ce `Bundle` sur un cluster spécifique avec ses personnalisations spécifiques au cluster. L'agent {product_name} n'a connaissance que des ressources `BundleDeployment` qui sont créées pour le cluster que l'agent gère.
- ** Pour un exemple de déploiement de manifestes Kubernetes à travers des clusters en utilisant la personnalisation {product_name}, cliquez sur xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[personnalisation par cluster] :
+ ** Pour un exemple de déploiement de manifestes Kubernetes à travers des clusters en utilisant la personnalisation {product_name}, cliquez sur xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[personnalisation par cluster] :
 * *Cluster en aval* : Les clusters auxquels {product_name} déploie des manifestes sont appelés des clusters en aval. Dans le cas d'un cluster unique, le cluster Kubernetes {product_name} jouant le rôle de gestionnaire est à la fois le gestionnaire et le cluster en aval.
 * *Jeton d'enregistrement de cluster* : Jetons utilisés par les agents pour enregistrer un nouveau cluster.

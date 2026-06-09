@@ -8,6 +8,7 @@ fleet-controller gitjob-Operationen konfigurieren
 fleet-controller gitjob [flags]
 ----
 
+[#_optionen]
 == Optionen
 
 ----
@@ -25,6 +26,7 @@ fleet-controller gitjob [flags]
       --shard-node-selector string    node selector to apply to jobs based on the shard ID, if any
 ----
 
+[#_siehe-auch]
 == SIEHE AUCH
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - Verwalten Sie den fleet-controller, der mit dem Fleet agent kommuniziert

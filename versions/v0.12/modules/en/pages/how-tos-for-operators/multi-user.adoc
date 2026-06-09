@@ -4,7 +4,7 @@
 
 {product_name} uses Kubernetes RBAC where possible.
 
-One addition on top of RBAC is the xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
+One addition on top of RBAC is the xref:explanations/namespaces.adoc#_restricting-gitrepos[`GitRepoRestriction`] resource, which can be used to control GitRepo resources in a namespace.
 
 A multi-user fleet setup looks like this:
 
@@ -32,6 +32,7 @@ deploy resources without conflicts.
 ====
 
 
+[#_example-product-name-standalone]
 == Example {product_name} Standalone
 
 This would create a user 'fleetuser', who can only manage GitRepo resources in the 'project1' namespace.
@@ -55,6 +56,7 @@ If we want to give access to multiple namespaces, we can use a single cluster ro
 
 This makes sure, tenants can't interfere with GitRepo resources from other tenants, since they don't have access to their namespaces.
 
+[#_isolated-workspaces-in-rancher]
 == Isolated Workspaces in Rancher
 
 Users belonging to a specific group/organization within the company, may want to disable visibility of their clusters to users from other groups/organizations of the same company.
@@ -151,11 +153,12 @@ The user now has access to the `Continuous Delivery` tab in Rancher and can depl
 
 In order to have a well organized environment, each workspace should have its own related `GlobalRole` to help with the separation of duties and isolation required by the customer. This way, each user can be assigned to one or more `GlobalRoles`, depending on the needs.
 
+[#_allow-access-to-clusters]
 == Allow Access to Clusters
 
 This assumes all GitRepos created by 'fleetuser' have the `team: one` label. Different labels could be used, to select different cluster namespaces.
 
-In each of the user's namespaces, as an admin create a xref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`].
+In each of the user's namespaces, as an admin create a xref:explanations/namespaces.adoc#_cross-namespace-deployments[`BundleNamespaceMapping`].
 
 [,yaml]
 ....
@@ -184,6 +187,7 @@ namespaceSelector:
 
 The xref:how-tos-for-users/gitrepo-targets.adoc[`target` section] in the GitRepo resource can be used to deploy only to a subset of the matched clusters.
 
+[#_restricting-access-to-downstream-clusters]
 == Restricting Access to Downstream Clusters
 
 Admins can further restrict tenants by creating a `GitRepoRestriction` in each of their namespaces.
@@ -202,6 +206,7 @@ allowedTargetNamespaces:
 
 This will deny the creation of cluster wide resources, which may interfere with other tenants and limit the deployment to the 'project1simpleapp' namespace.
 
+[#_an-example-gitrepo-resource]
 == An Example GitRepo Resource
 
 A GitRepo resource created by a tenant, without admin access could look like this:

@@ -206,7 +206,7 @@ Unsupported:
 * Double asterisks (`**`)
 * Explicit inclusions with `!`
 
-[#_fleetyaml]
+[#_fleet-yaml]
 == fleet.yaml
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
@@ -276,7 +276,7 @@ Hardened clusters should add the Fleet CRDs to the xref:how-tos-for-users/gitrep
 
 ====
 
-[#_understanding-helm-valuesyaml-vs-fleet-valuesfiles]
+[#_understanding-helm-values-yaml-vs-fleet-valuesfiles]
 === Understanding Helm `values.yaml` vs Fleet `valuesFiles`
 
 Installing Helm charts with Fleet offers multiple ways of configuring and referencing values, using the chart’s built-in `values.yaml` and additional values files referenced in `fleet.yaml`. These files serve different purposes, and it’s important to understand how they interact.
@@ -311,7 +311,7 @@ A Helm chart's `values.yaml` does not support templating. Any substitutions happ
 * If pass:[`${var}`] appears, Helm treats it as plain text—you don’t need to escape it.
 ====
 
-[#_fleet-valuesfiles-referenced-from-fleetyaml]
+[#_fleet-valuesfiles-referenced-from-fleet-yaml]
 === Fleet valuesFiles referenced from fleet.yaml
 
 Fleet lets you reference additional values files through `fleet.yaml`. These files override or extend the chart’s baseline defaults.

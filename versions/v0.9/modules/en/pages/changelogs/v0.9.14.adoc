@@ -6,6 +6,7 @@
 
 *(*github-actions[bot]) released this 2025-02-20 09:56:41 +0000 UTC*
 
+[#_what-s-changed]
 == What's Changed
 
 * Update go git to v5.13.1 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3207
@@ -14,6 +15,7 @@
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.13...v0.9.14[v0.9.13\...v0.9.14]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.14/fleet-crd-0.9.14.tgz[fleet-crd-0.9.14.tgz]

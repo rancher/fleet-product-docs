@@ -8,6 +8,7 @@ Nettoyer les git jobs obsolètes
 fleet cleanup gitjob [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -20,6 +21,7 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
+[#_voir-galement]
 == VOIR ÉGALEMENT
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]     - Nettoyer les ressources obsolètes

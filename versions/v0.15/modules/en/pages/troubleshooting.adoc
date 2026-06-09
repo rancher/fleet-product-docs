@@ -82,7 +82,7 @@ kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"
 
 Check the xref:troubleshooting.adoc#_fetch-the-log-from-fleet-controller[`fleet-controller` logs] and the xref:troubleshooting.adoc#_fetch-the-log-from-the-fleet-agent[`fleet-agent` logs].
 
-[#_check-errors-about-watching-or-checking-out-the-gitrepo-or-about-the-downloaded-helm-repo-in-fleetyaml]
+[#_check-errors-about-watching-or-checking-out-the-gitrepo-or-about-the-downloaded-helm-repo-in-fleet-yaml]
 === Check errors about watching or checking out the `GitRepo`, or about the downloaded Helm repo in `fleet.yaml`?
 
 Check the `gitjob-controller` logs using the following command with your specific `gitjob` pod name filled in:
@@ -161,7 +161,7 @@ for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.f
 done ; wait
 ====
 
-[#_additional-solutions-for-other-product-issues]
+[#_additional-solutions-for-other-product-name-issues]
 == *Additional Solutions for Other {product_name} Issues*
 
 [#_naming-conventions-for-crds]
@@ -188,7 +188,7 @@ endif::[]
 +
 . Use your token as the secret.
 
-[#_product-fails-with-bad-response-code-403]
+[#_product-name-fails-with-bad-response-code-403]
 === {product_name} fails with bad response code: 403
 
 If your GitJob returns the error below, the problem may be that {product_name} cannot access the Helm repo you specified in your xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]:
@@ -227,7 +227,7 @@ Certificate:
 ...
 ----
 
-[#_product-deployment-stuck-in-modified-state]
+[#_product-name-deployment-stuck-in-modified-state]
 === {product_name} deployment stuck in modified state
 
 When you deploy bundles to {product_name}, some of the components are modified, and this causes the "modified" flag in the {product_name} environment.
@@ -365,7 +365,7 @@ You can force a redeployment of an agent for a given cluster by setting `redeplo
 kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
 ----
 
-[#_migrate-the-local-cluster-to-the-product-default-cluster-workspace]
+[#_migrate-the-local-cluster-to-the-product-name-default-cluster-workspace]
 === Migrate the local cluster to the {product_name} default cluster workspace?
 
 Users can create new workspaces and move clusters across workspaces.

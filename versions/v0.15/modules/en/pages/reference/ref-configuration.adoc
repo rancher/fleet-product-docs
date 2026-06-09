@@ -102,7 +102,7 @@ Annotations used by fleet:
 * `fleet.cattle.io/managed` - appears unused
 * `fleet.cattle.io/service-account`
 
-[#_product-agent-configuration]
+[#_product-name-agent-configuration]
 == {product_name} agent configuration
 
 Tolerations, affinity and resources can be customized for the {product_name} agent. These fields can be provided when creating a

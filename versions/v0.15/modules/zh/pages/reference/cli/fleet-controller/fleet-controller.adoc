@@ -8,6 +8,7 @@
 fleet-controller [flags]
 ----
 
+[#_]
 == 选项
 
 ----
@@ -25,6 +26,7 @@ fleet-controller [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_]
 == 另请参阅
 * xref:/reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[舰队控制器 代理管理]     - 配置 Fleet agent 管理
 * xref:/reference/cli/fleet-controller/fleet-controller_cleanup.adoc[舰队控制器 清理]     - 清理过时的控制器资源

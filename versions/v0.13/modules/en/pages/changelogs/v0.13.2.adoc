@@ -4,6 +4,7 @@
 :page-date: 2025-09-18 13:37:20 +0000 UTC
 
 
+[#_what-s-changed]
 == What's Changed
 * Adds basicHTTP to HelmOps (#3990) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/4064
 * Enable Helm releases in `pending-install` state to be replaced by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4065
@@ -16,6 +17,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.1...v0.13.2[v0.13.1...v0.13.2]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.13.2/fleet-crd-0.13.2.tgz[fleet-crd-0.13.2.tgz]

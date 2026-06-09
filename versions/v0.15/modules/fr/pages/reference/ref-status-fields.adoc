@@ -2,6 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
+[#_tats-d-affichage]
 == États d’affichage
 
 Les GitRepos, HelmOps, Clusters et Bundles ont différents états à chaque phase d'application des Bundles.
@@ -10,6 +11,7 @@ Puisque les états des BundleDeployments sont propagés au Bundle, GitRepo, Clus
 
 En regardant le GitRepo, les états de toutes les ressources liées au GitRepo y sont affichés. En regardant le Cluster, les états de tous les Bundles dans ce Cluster sont affichés, ce qui peut s'étendre sur plusieurs GitRepos. En regardant le Bundle, les états de tous les BundleDeployments dans ce Bundle sont affichés.
 
+[#_condition-pr-te]
 === Condition Prête
 
 La condition `Ready` est utilisée pour déterminer si les BundleDeployments sont dans un état `Ready`.
@@ -30,20 +32,24 @@ status:
     type: Ready
 ----
 
+[#_d-termination-de-l-tat-pr-t]
 ==== Détermination de l'état Prêt
 
 {product_name} utilise le paquet `kstatus` du module `sigs.k8s.io/cli-utils` pour déterminer l'état Prêt des BundleDeployments en fonction de l'état de leurs ressources.
 Pour plus de détails, voir le README du paquet link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus`].
 
+[#_propagation-de-l-tat-pr-t]
 ==== Propagation de l'état Prêt
 
 image::PropogationReadyStatus.svg[Propagation de l'état Prêt]
 
+[#_tat-d-affichage]
 === État d'affichage
 
 Le champ `status.display` fournit un résumé de l'état. Les états sont classés, et le pire état possible est utilisé comme `state` dans le champ `status.display`.
 
 [[state-ranking]]
+[#_rang-des-tats]
 ==== Rang des états
 
 C'est le rang selon lequel les états sont affichés. Si un Bundle a des BundleDeployments dans différents états, le pire état est utilisé dans le champ `status.display.state`.
@@ -59,8 +65,10 @@ Du meilleur au pire{nbsp}:
 * Attente appliquée
 * Erreur appliquée
 
+[#_ensembles]
 == Ensembles
 
+[#_statuts-des-bundles]
 === Statuts des Bundles
 
 * *Prêt*  : Les Bundles ont été déployés, et toutes les ressources sont prêtes. Sinon, le champ `message` de la condition `Ready` contient une agrégation des états des BundleDeployments.
@@ -73,12 +81,15 @@ Du meilleur au pire{nbsp}:
 * *Attente appliquée*{nbsp}: Les Bundles sont synchronisés mais en attente de déploiement. L'affichage persistant de cet état peut indiquer un cluster cible injoignable.
 * *Erreur appliquée*{nbsp}: Les Bundles ont été synchronisés avec succès mais ont rencontré des erreurs lors du déploiement.
 
+[#_clusters]
 == Clusters
 
+[#_tats-sp-cifiques-au-cluster]
 === États spécifiques au cluster
 
 * *Attente d'enregistrement*{nbsp}: En attente que l'agent rapporte les informations d'enregistrement et l'état du cluster.
 
+[#_tats-des-bundles]
 === États des Bundles
 
 * *Prêt*{nbsp}: Tous les Bundles dans ce cluster sont déployés et les ressources sont prêtes.
@@ -89,6 +100,7 @@ Du meilleur au pire{nbsp}:
 * *Attente appliquée*{nbsp}: Certains paquets attendent d'être appliqués.
 * *Erreur appliquée*{nbsp}: Certains Bundles contiennent des erreurs.
 
+[#_gitrepo]
 == GitRepo
 
 * *Prêt*{nbsp}: `True` si les états désirés et actuels correspondent. Si `False`, le message contient{nbsp}:
@@ -100,12 +112,14 @@ Du meilleur au pire{nbsp}:
 * *Bloqué*{nbsp}: Le contrôleur a rencontré une erreur ou n'a pas réussi à progresser.
 * *Accepté*{nbsp}: Des restrictions GitRepo ont été appliquées et des secrets Helm externes existent.
 
+[#_conditions-helmop]
 == Conditions HelmOp
 
 * *Prêt*{nbsp}: `True` si tous les BundleDeployments ont été déployés avec succès{nbsp}; `False` si certains ne sont pas prêts.
 * *Accepté*{nbsp}: `False` si les options Helm sont invalides, si les versions de chart ne peuvent pas être résolues, si le polling a échoué, ou si la création du Bundle a échoué.
 * *Pollé*{nbsp}: `True` si le polling a réussi. `False` sinon, avec un message d'erreur.
 
+[#_status-display]
 == status.display
 
 Les champs `status.display` sont partagés entre GitRepos et GitOps. Les deux ressources contiennent un champ `status.display` résumant l'état de la ressource. La valeur de `state` peut différer selon le type de ressource.
@@ -115,10 +129,12 @@ Les champs `status.display` sont partagés entre GitRepos et GitOps. Les deux re
 * `message`{nbsp}: Contient des messages de condition de déploiement pertinents.
 * `error`{nbsp}: `true` si un message d'erreur existe.
 
+[#_liste-des-ressources]
 == Liste des ressources
 
 Les ressources déployées sur les clusters cibles sont classées sous `GitRepos` et `HelmOps`.
 
+[#_gitrepos]
 === GitRepos
 
 La liste `status.ResourceCounts` pour les GitRepos est dérivée de `bundleDeployments`.
@@ -169,6 +185,7 @@ perClusterResourceCounts:
 
 Cela aide à identifier rapidement quels clusters ont des déploiements incomplets ou incohérents.
 
+[#_bundledeployment]
 === BundleDeployment
 
 La ressource `BundleDeployment` comprend deux champs supplémentaires pour une meilleure visibilité{nbsp}:
@@ -176,30 +193,37 @@ La ressource `BundleDeployment` comprend deux champs supplémentaires pour une m
 * `incompleteState`{nbsp}: qui est défini sur vrai si le statut des ressources non prêtes ou modifiées a plus de 10 éléments.
 * `resourceCounts`{nbsp}: qui compte le nombre de ressources par leur état.
 
+[#_helmops]
 === HelmOps
 
 La liste `status.ResourceCounts` pour HelmOps est dérivée de `bundleDeployments`.
 
+[#_comptes-de-ressources]
 == Comptes de ressources
 
 Cela montre comment les comptes de ressources se propagent entre les ressources.
 
+[#_gitrepos]
 === GitRepos
 
 Les ressources déployées sont listées sous `GitRepos` dans `status.Resources`, dérivées de `bundleDeployments`.
 
+[#_helmops]
 === HelmOps
 
 De même, les ressources déployées pour `HelmOps` sont listées dans `status.Resources`, dérivées de `bundleDeployments`.
 
+[#_clusters]
 === Clusters
 
 Dans les Clusters, `status.ResourceCounts` est dérivé de GitRepos.
 
+[#_clustergroups]
 === ClusterGroups
 
 Dans les Groupes de Clusters, `status.ResourceCounts` est dérivé de GitRepos.
 
+[#_diagramme-de-classe]
 == Diagramme de classe
 
 image::ClusterGroups_classDiagram.svg[Propagation de l'état Prêt]

@@ -69,7 +69,7 @@ BundleDeployments with diffs: 1
     }
 ----
 
-[#_generating-a-fleetyaml-comparepatches-snippet]
+[#_generating-a-fleet-yaml-comparepatches-snippet]
 === Generating a `fleet.yaml` `comparePatches` snippet
 
 Use `--fleet-yaml` together with `--bundle-deployment` to produce a `diff:` block that

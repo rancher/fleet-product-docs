@@ -6,6 +6,7 @@ Après l'installation de {product_name} dans Rancher, ces ressources sont créé
 
 Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 
+[#_depuis-helm-configuration-initiale]
 == Depuis Helm, configuration initiale
 
 [cols="1,1,1",options="header"]
@@ -28,6 +29,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |ServiceAccount |gitjob |cattle-fleet-system
 |===
 
+[#_g-n-r-par-bootstrap]
 == Généré par Bootstrap
 
 [cols="1,1,1",options="header"]
@@ -41,6 +43,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |Ensemble |fleet-agent-local |fleet-local
 |===
 
+[#_pour-chaque-cluster-enregistr]
 == Pour chaque cluster enregistré
 
 [cols="1,1,1",options="header"]
@@ -66,6 +69,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |DéploiementBundle |fleet-agent-name |cluster-fleet-default
 |===
 
+[#_pour-chaque-bundle-par-cluster]
 == Pour chaque bundle, par cluster
 
 [cols="1,1,1",options="header"]
@@ -80,6 +84,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |Contenu |- |-
 |===
 
+[#_pour-chaque-gitrepo]
 == Pour chaque GitRepo
 
 [cols="1,1,1",options="header"]

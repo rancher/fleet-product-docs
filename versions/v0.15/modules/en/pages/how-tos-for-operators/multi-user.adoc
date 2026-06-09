@@ -32,7 +32,7 @@ deploy resources without conflicts.
 ====
 
 
-[#_example-product-standalone]
+[#_example-product-name-standalone]
 == Example {product_name} Standalone
 
 This would create a user 'fleetuser', who can only manage GitRepo resources in the 'project1' namespace.

@@ -27,6 +27,7 @@ Esto significa que cuando se detecta un cambio en el repositorio, se aplicará a
 
 Si un `Cluster` no está asociado con ningún `Schedule`, las actualizaciones se aplicarán de inmediato.
 
+[#_recurso-de-programaci-n]
 == Recurso de Programación
 
 Ahora veamos cómo definir un `Schedule` y qué campos están disponibles.

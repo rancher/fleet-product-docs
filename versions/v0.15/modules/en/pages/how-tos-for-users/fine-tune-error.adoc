@@ -14,7 +14,7 @@ image::fine-tune-error-flow.svg[A visual flow of fine tuning error detections]
 NOTE: 
 You should rarely need to configure readiness detection in {product_name} with environment variables. If you do, open an issue or submit a pull request to help improve the default readiness detection.
 
-[#_ignore-conditions-in-fleetyaml]
+[#_ignore-conditions-in-fleet-yaml]
 == Ignore conditions in `fleet.yaml`
 
 Use the `ignore.conditions` setting in the `fleet.yaml` file to tell {product_name} to ignore specific conditions.

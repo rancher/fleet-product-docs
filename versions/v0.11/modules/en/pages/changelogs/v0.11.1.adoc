@@ -3,6 +3,7 @@
 :page-revdate: {revdate}
 :date: 2024-11-15 15:30:49 +0000 UTC
 
+[#_release-note]
 == Release Note
 
 {product_name} v0.11.1 improves several log and status messages. It reduces the amount of reconciles done by the controllers for resource changes.
@@ -23,6 +24,7 @@ There are a few known issues with this 0.11.1 release:
 * Target customization for namespace labels and annotations cannot modify/remove labels when updating.
 * In version 0.10, GitRepo resources provided a comprehensive list of all deployed resources across all clusters in their status. However, in version 0.11, this list has been modified to report resources only once until the feature is integrated into the Rancher UI. While this change addresses a UI freeze issue, it may result in potential inaccuracies in the list of resources and resource counts under some conditions.
 
+[#_what-s-changed]
 === What's Changed
 
 * Add dev docs for logging by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2812[#2812]
@@ -68,6 +70,7 @@ There are a few known issues with this 0.11.1 release:
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.4...v0.11.1[v0.10.4\...v0.11.1]
 
+[#_additions]
 === Additions
 
 * Adds k8s events to the gitops controller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2698[#2698]
@@ -84,6 +87,7 @@ There are a few known issues with this 0.11.1 release:
 * Increase worker count for reconcilers by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2897[#2897]
 * Fleet deploy prints hook resources too by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2968[#2968]
 
+[#_bugfixes]
 === Bugfixes
 
 * KubeVersion fix for fleet deploy --dry-run by https://github.com/ampie[@ampie] in https://github.com/rancher/fleet/pull/2686[#2686]
@@ -100,6 +104,7 @@ There are a few known issues with this 0.11.1 release:
 * Fix namespace target customization support with no defaults (https://github.com/rancher/fleet/pull/3052[#3052]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3057[#3057]
 * Fix defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3080[#3080]
 
+[#_new-contributors]
 === New Contributors
 
 * https://github.com/ampie[@ampie] made their first contribution in https://github.com/rancher/fleet/pull/2686[#2686]
@@ -107,6 +112,7 @@ There are a few known issues with this 0.11.1 release:
 * https://github.com/k0da[@k0da] made their first contribution in https://github.com/rancher/fleet/pull/2782[#2782]
 * https://github.com/SuperTux88[@SuperTux88] made their first contribution in https://github.com/rancher/fleet/pull/2850[#2850]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.11.1/fleet-crd-0.11.1.tgz[fleet-crd-0.11.1.tgz]

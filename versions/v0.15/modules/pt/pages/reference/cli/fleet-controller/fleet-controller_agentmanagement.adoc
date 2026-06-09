@@ -8,6 +8,7 @@ Configurar gerenciamento de Fleet agent
 fleet-controller agentmanagement [flags]
 ----
 
+[#_op-es]
 == Opções
 
 [source,text]
@@ -20,6 +21,7 @@ fleet-controller agentmanagement [flags]
       --namespace string    namespace to watch
 ----
 
+[#_op-es-herdadas-de-comandos-pai]
 == Opções herdadas de comandos pai
 
 [source,text]
@@ -28,6 +30,7 @@ fleet-controller agentmanagement [flags]
       --shard-id string   only manage resources labeled with a specific shard ID
 ----
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[controlador de frota]     - Gerenciar o controlador de frota que se comunica com o Fleet agent

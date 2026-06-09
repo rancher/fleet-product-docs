@@ -6,6 +6,7 @@
 
 另请参见 xref:explanations/namespaces.adoc[名称空间]。
 
+[#_helm]
 == 来自 Helm，初始设置
 
 [cols="1,1,1",options="header"]
@@ -28,6 +29,7 @@
 |ServiceAccount |gitjob |cattle-fleet-system
 |===
 
+[#_]
 == 由启动生成
 
 [cols="1,1,1",options="header"]
@@ -41,6 +43,7 @@
 |捆绑包 |fleet-agent-local |fleet-local
 |===
 
+[#_]
 == 对于每个注册的集群
 
 [cols="1,1,1",options="header"]
@@ -66,6 +69,7 @@
 |包部署 |fleet-agent-name |cluster-fleet-default
 |===
 
+[#_]
 == 每个包，每个集群
 
 [cols="1,1,1",options="header"]
@@ -80,6 +84,7 @@
 |内容 |- |-
 |===
 
+[#_git]
 == 每个Git仓库
 
 [cols="1,1,1",options="header"]

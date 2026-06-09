@@ -8,6 +8,7 @@ For installations with multiple tens up to hundreds of Git repos, and in general
 
 {product_name} currently supports Azure DevOps, GitHub, GitLab, Bitbucket, Bitbucket Server, and Gogs.
 
+[#_1-configure-the-webhook-service-product-name-uses-a-gitjob-service-to-handle-webhook-requests-create-an-ingress-that-points-to-the-gitjob-service]
 == 1. Configure the webhook service. {product_name} uses a gitjob service to handle webhook requests. Create an ingress that points to the gitjob service.
 
 [,yaml]
@@ -64,6 +65,7 @@ You can configure https://kubernetes.io/docs/concepts/services-networking/ingres
 ====
 
 
+[#_2-go-to-your-webhook-provider-and-configure-the-webhook-callback-url-here-is-a-github-example]
 == 2. Go to your webhook provider and configure the webhook callback url. Here is a Github example.
 
 image::webhook.png[Static, 600]
@@ -86,6 +88,7 @@ If you configured the webhook the polling interval will be automatically adjuste
 ====
 
 
+[#_3-optional-configure-webhook-secret-the-secret-is-for-validating-webhook-payload-make-sure-to-put-it-in-a-k8s-secret-called-gitjob-webhook-in-cattle-fleet-system]
 == 3. (Optional) Configure webhook secret. The secret is for validating webhook payload. Make sure to put it in a k8s secret called `gitjob-webhook` in `cattle-fleet-system`.
 
 |===
@@ -130,4 +133,5 @@ For Azure DevOps:
 kubectl create secret generic gitjob-webhook -n cattle-fleet-system --from-literal=azure-username=user --from-literal=azure-password=pass123
 ----
 
+[#_4-go-to-your-git-provider-and-test-the-connection-you-should-get-a-http-response-code]
 == 4. Go to your git provider and test the connection. You should get a HTTP response code.

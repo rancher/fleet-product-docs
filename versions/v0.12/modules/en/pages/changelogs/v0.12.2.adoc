@@ -3,14 +3,17 @@
 :page-revdate: {revdate}
 :date: 2025-04-22 14:43:11 +0000 UTC
 
+[#_release-note]
 == Release Note
 
+[#_what-s-changed]
 === What's Changed
 
 * Avoids returning nil map when ++options.Helm++ is used by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3571[#3571]
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.12.1...v0.12.2[v0.12.1...v0.12.2]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.2/fleet-crd-0.12.2.tgz[fleet-crd-0.12.2.tgz]

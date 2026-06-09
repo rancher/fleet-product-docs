@@ -136,7 +136,7 @@ allowedTargetNamespaceSelector:
     team: frontend
 ----
 
-[#_product-namespaces]
+[#_product-name-namespaces]
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom

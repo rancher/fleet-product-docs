@@ -22,7 +22,6 @@ This diagram shows the different rendering stages a bundle goes through until de
 
 image::FleetBundleStages.svg[Bundle Stages]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
 [#_examining-the-bundle-lifecycle-with-the-cli]
 == Examining the Bundle Lifecycle With the CLI
 
@@ -43,7 +42,6 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users/bundle-add.adoc[section on bundles].
 
-[[fleet-target]]
 [#_fleet-target]
 === fleet target
 

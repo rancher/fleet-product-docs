@@ -8,6 +8,7 @@ Implante um recurso bundledeployment/content em um cluster, criando um release H
 fleet deploy [flags]
 ----
 
+[#_op-es]
 == Opções
 
 ----
@@ -25,6 +26,7 @@ fleet deploy [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gerenciar {product_name} operações

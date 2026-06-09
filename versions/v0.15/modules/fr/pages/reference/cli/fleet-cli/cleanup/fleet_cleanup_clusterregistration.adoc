@@ -8,6 +8,7 @@ Nettoyer les enregistrements de cluster obsolètes
 fleet cleanup clusterregistration [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -22,6 +23,7 @@ fleet cleanup clusterregistration [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
+[#_voir-galement]
 == VOIR ÉGALEMENT
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - Nettoyer les ressources obsolètes

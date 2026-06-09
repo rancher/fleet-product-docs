@@ -20,11 +20,13 @@ image::ModifiedBundle.png[Statisch, 600]
 
 Mit dem Patch können Benutzer {product_name} anweisen, Objektmodifikationen und ganze Objekte zu ignorieren.
 
+[#_generierung-von-comparepatches-mit-fleet-bundlediff]
 == Generierung von comparePatches mit `fleet bundlediff`
 
 Der `fleet bundlediff` CLI-Befehl liest die bereits in `Bundle` und `BundleDeployment` Statusfeldern vorhandenen Diff-Informationen und zeigt sie in einer menschenlesbaren Form an.
 Es kann auch einen einsatzbereiten `diff:` Snippet im `fleet.yaml`-Format generieren, sodass Sie die beobachtete Abweichung akzeptieren können, ohne JSON-Patch-Pfade manuell zu erstellen.
 
+[#_anzeigen-von-diffs]
 === Anzeigen von Diffs
 
 [source,bash]
@@ -64,6 +66,7 @@ BundleDeployments with diffs: 1
     }
 ----
 
+[#_generierung-eines-fleet-yaml-comparepatches-snippets]
 === Generierung eines `fleet.yaml` `comparePatches` Snippets
 
 Verwenden Sie `--fleet-yaml` zusammen mit `--bundle-deployment`, um einen `diff:`-Block zu erzeugen, den Sie direkt in Ihr `fleet.yaml` einfügen können. Der Befehl konvertiert das beobachtete JSON Merge Patch in `remove` Operationen und fügt sie mit allen bereits auf dem `comparePatches` konfigurierten `Bundle` zusammen, sodass bestehende Ignorierungen intakt bleiben.
@@ -111,14 +114,17 @@ Das `--fleet-yaml` Flag erfordert `--bundle-deployment`, da die generierte Ausga
 
 Siehe xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff] [{product_name} bundlediff] für die vollständige Flaggenreferenz.
 
+[#_ignorieren-von-objektmodifikationen]
 == Ignorieren von Objektmodifikationen
 
+[#_einfaches-beispiel]
 === Einfaches Beispiel
 
 In diesem einfachen Beispiel erstellen wir einen Service und eine ConfigMap, auf die wir einen Bundle-Diff anwenden.
 
 https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
 
+[#_gatekeeper-beispiel]
 === Gatekeeper-Beispiel
 
 In diesem Beispiel versuchen wir, opa-gatekeeper mithilfe von Continuous Delivery in unseren Clustern bereitzustellen.
@@ -157,6 +163,7 @@ Basierend auf dieser Zusammenfassung gibt es drei Objekte, die mit einem Patch v
 
 Wir werden uns diese nacheinander ansehen.
 
+[#_1-validatingwebhookconfiguration]
 ==== 1. ValidatingWebhookConfiguration:
 
 Die gatekeeper-validating-webhook-configuration ValidatingWebhook hat zwei ValidatingWebhooks in ihrer Spezifikation.
@@ -254,6 +261,7 @@ Basierend auf diesen Informationen würde unser Diff-Patch wie folgt aussehen:
     - {"op": "remove", "path":"/webhooks/1/rules"}
 ----
 
+[#_2-deployment-gatekeeper-controller-manager]
 ==== 2. Deployment gatekeeper-controller-manager:
 
 Das Deployment gatekeeper-controller-manager wurde geändert, da CPU-Limits und Toleranzen angewendet wurden (die nicht im aktuellen Bundle enthalten sind).
@@ -301,6 +309,7 @@ Basierend auf diesen Informationen würde unser Diff-Patch wie folgt aussehen:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
+[#_3-deployment-gatekeeper-audit]
 ==== 3. Deployment gatekeeper-audit:
 
 Das Deployment gatekeeper-audit wurde ähnlich wie das gatekeeper-controller-manager geändert, mit zusätzlichen CPU-Limits und Toleranzen.
@@ -348,6 +357,7 @@ Basierend auf diesen Informationen würde unser Diff-Patch wie folgt aussehen:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
+[#_alles-zusammenbringen]
 ==== Alles Zusammenbringen
 
 Wir können jetzt all diese Patches wie folgt zusammenfassen:
@@ -384,6 +394,7 @@ Wir können diese jetzt direkt zum Bundle hinzufügen, um zu testen, und auch da
 
 Sobald diese hinzugefügt sind, sollte das GitRepo bereitgestellt werden und den Status "Aktiv" erhalten.
 
+[#_gesamte-objekte-ignorieren]
 == Gesamte Objekte ignorieren
 
 Beim Installieren eines Charts wie link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul] wird ein Job mit dem Namen `consul-server-acl-init` erstellt und anschließend gelöscht, sobald er erfolgreich abgeschlossen ist.
@@ -442,6 +453,7 @@ diff:
 
 Weitere Informationen zur unterstützten Regex-Syntax link:https://pkg.go.dev/regexp/syntax[hier].
 
+[#_horizontaler-pod-autoscaler]
 == Horizontaler Pod-Autoscaler
 
 Beim Umgang mit Deployments oder StatefulSets, die von einem Horizontalen Pod-Autoscaler referenziert werden, sind Bundle-Diffs nicht mehr notwendig, um Aktualisierungen der Replikazahlen innerhalb des konfigurierten Intervalls des HPA zu adressieren.

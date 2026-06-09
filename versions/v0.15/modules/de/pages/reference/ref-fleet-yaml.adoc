@@ -8,6 +8,7 @@ Der Inhalt von `fleet.yaml` entspricht der `FleetYAML` Struktur in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`],
 die die xref:reference/ref-crds.adoc#_bundlespec[BundleSpec] enthält.
 
+[#_vollst-ndiges-beispiel]
 == Vollständiges Beispiel
 
 [%collapsible]
@@ -342,6 +343,7 @@ overrideTargets:
 ----
 ====
 
+[#_allgemeine-bundle-konfiguration]
 == Allgemeine Bundle-Konfiguration
 
 Diese Optionen definieren die grundlegenden Eigenschaften und das Verhalten des Bundles selbst und gelten für alle Bundle-Typen.
@@ -351,11 +353,12 @@ Diese Optionen definieren die grundlegenden Eigenschaften und das Verhalten des 
 
 | `paused` | Wenn wahr, wird das Bundle in Downstream-Clustern nicht aktualisiert. Stattdessen wird es als *OutOfSync* markiert. Sie können dann die Bereitstellung manuell genehmigen. | Alle
 | `labels` | Eine Karte von Schlüssel-Wert-Paaren, die auf Bundle-Ebene festgelegt sind. Diese können in einem `dependsOn.selector` verwendet werden, um Abhängigkeiten zu definieren. | Alle
-| `dependsOn` | Eine Liste von Bundles, von denen dieses Bundle abhängt. Das aktuelle Bundle wird nur bereitgestellt, nachdem alle Abhängigkeiten in einem akzeptierten Zustand sind. Akzeptierte Zustände entsprechen allen gültigen xref:reference/ref-status-fields.adoc#_bundle_statuses[Bundle-Zuständen]. | Alle
+| `dependsOn` | Eine Liste von Bundles, von denen dieses Bundle abhängt. Das aktuelle Bundle wird nur bereitgestellt, nachdem alle Abhängigkeiten in einem akzeptierten Zustand sind. Akzeptierte Zustände entsprechen allen gültigen xref:reference/ref-status-fields.adoc#_bundle-statuses[Bundle-Zuständen]. | Alle
 | `ignore` | Spezifiziert Felder, die beim Überwachen des Bundle-Status ignoriert werden sollen. Nützlich, um falsche Fehlerzustände von benutzerdefinierten Ressourcen zu verhindern. | Alle
 | `overrideTargets` | Eine Liste von Zielanpassungen, die alle in Git-Repository definierten Ziele überschreiben. | Alle
 |===
 
+[#_namespace-konfiguration]
 === Namespace-Konfiguration
 
 Diese Optionen steuern den Kubernetes-Namespace, in dem Ressourcen bereitgestellt werden.
@@ -369,6 +372,7 @@ Diese Optionen steuern den Kubernetes-Namespace, in dem Ressourcen bereitgestell
 | `namespaceAnnotations` | Annotationen, die dem durch {product_name} erstellten Namespace hinzugefügt werden sollen. | Alle
 |===
 
+[#_helm-bundle-konfiguration]
 == Helm-Bundle-Konfiguration
 
 Alle Bundles werden mit Helm bereitgestellt, aber diese Optionen sind spezifisch für *Helm-Stil-Bundles* (die eine `Chart.yaml`-Datei haben).
@@ -386,6 +390,7 @@ Fleet lädt das Chart während der initialen **Bundle-Erstellungsphase** herunte
 Wenn ein bestimmter Cluster eine andere Registry oder Chart-Quelle verwenden muss (zum Beispiel aufgrund von Netzwerk- oder Firewall-Beschränkungen), konfigurieren Sie es mit einer separaten `GitRepo`-Ressource oder einem anderen Bundle-Pfad.
 ====
 
+[#_chart-quelle]
 === Chart-Quelle
 
 Diese Optionen geben an, wie das Chart heruntergeladen werden soll. Der Verweis kann ein lokaler Pfad, eine Go-Getter-URL, ein Helm-Repository oder ein OCI-Helm-Repository sein.
@@ -407,6 +412,7 @@ Der Chart-Verweis kann einer der folgenden sein:
 * Helm-Repository (`repo` + `chart` + optional `version`)
 * OCI-Helm-Repository (`repo: oci://...` + optional `version`)
 
+[#_helm-repo]
 ==== `helm.repo`
 
 Für OCI-Registries ist `helm.repo` das kanonische Feld für die OCI-URL. Verwenden Sie es so:
@@ -420,6 +426,7 @@ helm:
 
 Dies ist konsistent mit der Art und Weise, wie OCI-Registries in xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOp-Ressourcen] referenziert werden.
 
+[#_helm-chart]
 ==== `helm.chart`
 
 Gibt einen lokalen Pfad oder eine go-getter-URL für das Helm-Chart an. Wenn `helm.repo` auf eine Standard-(nicht-OCI) Helm-Repository-URL gesetzt ist, enthält `helm.chart` den Chart-Namen innerhalb dieses Repositories.
@@ -456,6 +463,7 @@ helm:
 ----
 ====
 
+[#_helm-version]
 ==== `helm.version`
 
 Bestimmt, welches Chart aus OCI-Registries heruntergeladen werden soll.
@@ -466,6 +474,7 @@ OCI-Registries unterstützen das Zeichen `+` nicht in semver-Tags. Helm ersetzt 
 Verwenden Sie die `+`-Version in `fleet.yaml`; {product_name} führt denselben Ersatz intern durch.
 ====
 
+[#_werte]
 === Werte
 
 Optionen zur Anpassung der Helm-Chart-Werte.
@@ -480,10 +489,11 @@ Optionen zur Anpassung der Helm-Chart-Werte.
 
 Es ist nicht notwendig, das eigene `values.yaml` eines Charts anzugeben. Es wird standardmäßig immer verwendet.
 
-Siehe xref:/explanations/gitrepo-content.adoc#_using_helm_values[Verwendung von Helm-Werten] für weitere Informationen.
+Siehe xref:/explanations/gitrepo-content.adoc#_using-helm-values[Verwendung von Helm-Werten] für weitere Informationen.
 
 Für die Phasen der Wertverarbeitung siehe xref:explanations/ref-bundle-stages.adoc[Bundle-Lebenszyklus].
 
+[#_werte-templating]
 === Werte-Templating
 
 {product_name} unterstützt Go-Template-Ausdrücke für erweiterte Templating-Bedürfnisse.
@@ -537,6 +547,7 @@ ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }m
 ----
 ====
 
+[#_helm-bereitstellung]
 == Helm-Bereitstellung
 
 Diese Optionen steuern, wie Fleets Agent Ressourcen bereitstellt.
@@ -555,6 +566,7 @@ Sie gelten auch für *kustomize-* und *Manifest-Stil-Bundles*.
 | `helm.skipSchemaValidation` | Überspringen Sie die `values.schema.json` Validierung. | Alle
 |===
 
+[#_kustomize-konfiguration]
 == Kustomize-Konfiguration
 
 Wird verwendet, wenn aus einem Verzeichnis mit einer `kustomization.yaml`-Datei bereitgestellt wird.
@@ -564,6 +576,7 @@ Wird verwendet, wenn aus einem Verzeichnis mit einer `kustomization.yaml`-Datei 
 | `kustomize.dir` | Benutzerdefinierter Ordner für Kustomize-Ressourcen. Muss eine `kustomization.yaml`-Datei enthalten. | Kustomize
 |===
 
+[#_bereitstellungsstrategie-rollout]
 == Bereitstellungsstrategie (Rollout)
 
 Diese Optionen steuern, wie Updates über Cluster verteilt werden.
@@ -581,6 +594,7 @@ Diese Optionen steuern, wie Updates über Cluster verteilt werden.
 
 Für weitere Informationen siehe xref:how-tos-for-users/rollout.adoc[Rollout-Strategie].
 
+[#_zielgerichtete-anpassung]
 == Zielgerichtete Anpassung
 
 Diese Optionen ermöglichen es Ihnen, Bereitstellungen für bestimmte Cluster oder Clustergruppen anzupassen.
@@ -603,6 +617,7 @@ Diese Optionen ermöglichen es Ihnen, Bereitstellungen für bestimmte Cluster od
 | `targetCustomizations.correctDrift` | Aktiviert die Driftkorrektur für verwaltete Ressourcen. | Alle
 |===
 
+[#_unterst-tzte-anpassungen]
 === Unterstützte Anpassungen
 
 * xref:/reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]

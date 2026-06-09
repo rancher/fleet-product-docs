@@ -89,7 +89,7 @@ The monitor command performs comprehensive diagnostics to detect:
 * **Broken Ownership**: Bundles without GitRepo owners, BundleDeployments without Bundle owners
 * **Invalid Secret Owners**: Bundle secrets with incorrect or missing owner references
 
-[#_generationobservation-mismatches]
+[#_generation-observation-mismatches]
 ==== Generation/Observation Mismatches
 * **GitRepo Generation Drift**: GitRepo generation != observedGeneration (controller not processing updates)
 * **Bundle Generation Drift**: Bundle generation != observedGeneration (controller not processing updates)

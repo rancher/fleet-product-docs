@@ -18,6 +18,7 @@ image::fetch-Helm-from-OCI.svg[Um ativo visual exibindo o fluxo de recuperação
 Por exemplo, se você gerencia múltiplos clusters com {product_name}, os desenvolvedores podem enviar Helm charts para um registro OCI interno. {product_name} então recupera os charts diretamente do registro e os implanta nos clusters downstream.
 Essa abordagem evita a manutenção de um repositório de charts separado e reutiliza sua infraestrutura de registro existente.
 
+[#_helm-chart-em-fleet-yaml]
 == Helm chart em fleet.yaml
 
 Para recuperar um Helm chart de um registro OCI, faça referência ao chart usando o campo `repo` em um arquivo `fleet.yaml`:
@@ -44,6 +45,7 @@ helm:
 O campo `repo` é a maneira canônica de especificar URLs de registro OCI em um arquivo `fleet.yaml`. É consistente com a forma como os registros OCI são referenciados em recursos HelmOp.
 ====
 
+[#_descontinuado-url-oci-em-helm-chart]
 === Descontinuado: URL OCI em `helm.chart`
 
 Antes dessa mudança, {product_name} esperava que a URL OCI fosse colocada no campo `chart` em vez de `repo`:
@@ -58,8 +60,9 @@ helm:
 
 Este formulário ainda funciona para compatibilidade retroativa, mas está descontinuado e gerará um aviso nos logs de {product_name}. Migre os arquivos `fleet.yaml` existentes para usar `helm.repo` para URLs OCI.
 
+[#_usando-registros-autenticados]
 == Usando registros autenticados
 
 Se o registro OCI exigir autenticação, faça referência a um segredo do Kubernetes no recurso GitRepo. {product_name} usa esse segredo para recuperar o chart e implantá-lo nos clusters alvo.
 
-Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml com autenticação].
+Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[fleet.yaml com autenticação].

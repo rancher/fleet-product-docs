@@ -8,6 +8,7 @@ Crie pacotes a partir de diretórios e os envie ou aplique-os em um cluster
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
+[#_op-es]
 == Opções
 
 ----
@@ -52,6 +53,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
+[#_bom-saber]
 === Bom saber
 
 `fleet apply` lê `known_hosts`` dados de uma variável de ambiente (`FLEET_KNOWN_HOSTS`), de forma semelhante ao que o cloner do git faz.
@@ -62,5 +64,6 @@ O número de rotinas de criação de pacotes concorrentes pode ser configurado a
 
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
+[#_consulte-tamb-m]
 == CONSULTE TAMBÉM
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Gerenciar operações de {product_name}

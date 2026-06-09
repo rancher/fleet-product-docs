@@ -24,14 +24,14 @@ In this step a `ClusterRegistationToken` and an "import" service account are cre
 
 The {product_name} controller creates a xref:explanations/architecture.adoc#_security[`ClusterRegistrationToken`] and waits for it to be complete. The `ClusterRegistationToken` triggers the creation of the "import" service account, which can create `ClusterRegistrations` and read any secret in the system registration namespace (eg "cattle-fleet-clusters-system"). The `import.go` controller will enqueue itself until the "import" service account exists, because that account is needed to create the `fleet-agent-bootstrap` secret.
 
-[#_creating-the-product-agent-deployment]
+[#_creating-the-product-name-agent-deployment]
 === Creating the {product_name} Agent Deployment
 
 The {product_name} controller will now create the {product_name} agent deployment and the bootstrap secret on the downstream cluster.
 
 The bootstrap secret contains the API server URL of the upstream cluster and is used to build a kubeconfig to access the upstream cluster. Both values are taken from the {product_name} controller config configmap. That configmap is part of the helm chart.
 
-[#_product-agent-starts-registration-upgrades-to-request-account]
+[#_product-name-agent-starts-registration-upgrades-to-request-account]
 === {product_name} Agent Starts Registration, Upgrades to Request Account
 
 The agent uses the "import" account to upgrade to a request account.
@@ -46,7 +46,7 @@ The new kubeconfig uses the "request" account. The "request" account can access 
 
 image::FleetRegistrationToken.svg[Static, 600]
 
-[#_product-agent-is-registered-watches-for-bundledeployments]
+[#_product-name-agent-is-registered-watches-for-bundledeployments]
 === {product_name} Agent is Registered, Watches for `BundleDeployments`
 
 At this point the agent is fully registered and will persist the "request" account into a `fleet-agent` secret.
@@ -163,7 +163,7 @@ override the configured values.
 
 image::FleetRegistrationSecrets.svg[Registration Secrets]
 
-[#_product-cluster-registration-in-rancher]
+[#_product-name-cluster-registration-in-rancher]
 == {product_name} Cluster Registration in Rancher
 
 Rancher installs the fleet helm chart. The API server URL and CA are https://github.com/rancher/rancher/blob/release/v2.9/pkg/controllers/dashboard/fleetcharts/controller.go#L111-L112[derived from Rancher's settings].

@@ -11,7 +11,6 @@ Since the states from the BundleDeployments are propagated to the Bundle, GitRep
 
 By looking at the GitRepo, the states of all resources related to the GitRepo are displayed there. When looking at the Cluster, the states of all Bundles in that Cluster are displayed, which may span across many GitRepos. When looking at the Bundle, the states of all BundleDeployments in that Bundle are displayed.
 
-[#_ready-condition]
 === Ready Condition
 
 The `Ready` condition is used to determine if the BundleDeployments are in a `Ready` state.  
@@ -32,18 +31,15 @@ status:
     type: Ready
 ----
 
-[#_ready-status-determination]
 ==== Ready Status Determination
 
 {product_name} uses the `kstatus` package of the `sigs.k8s.io/cli-utils` module to determine the Ready status of BundleDeployments based on the status of their resources.  
 For details, see the link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` package README].
 
-[#_propagation-of-ready-status]
 ==== Propagation of Ready Status
 
 image::PropogationReadyStatus.svg[Propagation of Ready status]
 
-[#_display-state]
 === Display State
 
 The `status.display` field provides a summary of the state. States are ranked, and the worst possible state is used as the `state` in the `status.display` field.
@@ -83,12 +79,10 @@ From best to worst:
 [#_clusters]
 == Clusters
 
-[#_cluster-specific-states]
 === Cluster-Specific States
 
 * *WaitCheckIn* : Waiting for the agent to report registration info and cluster status.
 
-[#_states-from-bundles]
 === States from Bundles
 
 * *Ready* : All Bundles in this cluster are deployed, and resources are ready.
@@ -118,7 +112,7 @@ From best to worst:
 * *Accepted* : `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
 * *Polled* : `True` if polling succeeded. `False` otherwise, with an error message.
 
-[#_statusdisplay]
+[#_status-display]
 == status.display
 
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
@@ -133,7 +127,6 @@ The `status.display` fields are shared between GitRepos and GitOps. Both resourc
 
 Resources deployed to target clusters are categorized under `GitRepos` and `HelmOps`.
 
-[#_gitrepos]
 === GitRepos
 
 The `status.ResourceCounts` list for GitRepos is derived from `bundleDeployments`.
@@ -184,7 +177,6 @@ perClusterResourceCounts:
 
 This helps to identify which clusters have incomplete or inconsistent deployments at a glance.
 
-[#_bundledeployment]
 === BundleDeployment
 
 The `BundleDeployment` resource includes two additional fields for better visibility:
@@ -192,7 +184,6 @@ The `BundleDeployment` resource includes two additional fields for better visibi
 * `incompleteState`: which is set to true if non-ready or modified resources status has more than 10 items.
 * `resourceCounts`: which counts the number of resources by their state.
 
-[#_helmops]
 === HelmOps
 
 The `status.ResourceCounts` list for HelmOps is derived from `bundleDeployments`.
@@ -202,22 +193,18 @@ The `status.ResourceCounts` list for HelmOps is derived from `bundleDeployments`
 
 This shows how resource counts propagate between resources.
 
-[#_gitrepos-1]
 === GitRepos
 
 The deployed resources are listed under `GitRepos` in `status.Resources`, derived from `bundleDeployments`.
 
-[#_helmops-1]
 === HelmOps
 
 Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
 
-[#_clusters-1]
 === Clusters
 
 In Clusters, `status.ResourceCounts` is derived from GitRepos.
 
-[#_clustergroups]
 === ClusterGroups
 
 In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.

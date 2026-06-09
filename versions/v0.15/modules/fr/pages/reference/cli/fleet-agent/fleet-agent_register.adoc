@@ -8,6 +8,7 @@ Enregistrer l'agent avec un cluster en amont
 fleet-agent register [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -18,6 +19,7 @@ fleet-agent register [flags]
       --namespace string    system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
+[#_voir-galement]
 == VOIR ÉGALEMENT
 
 * xref:/reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]     - Gérer les opérations avec le Fleet agent qui communique avec le Fleet controller.

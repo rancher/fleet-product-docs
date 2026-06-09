@@ -20,6 +20,7 @@ Para instalações com muitos repositórios ou quando você deseja reduzir a lat
 * Bitbucket Server
 * Gogs
 
+[#_1-configure-o-servi-o-de-webhook]
 == 1. Configure o Serviço de Webhook
 
 {product_name} usa um serviço `gitjob` para lidar com solicitações de webhook.
@@ -126,6 +127,7 @@ Esta abordagem permite uma migração suave do Ingress Nginx para o Traefik, man
 Você pode configurar https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] no Ingress para comunicação segura.
 ====
 
+[#_2-configure-a-url-de-callback-do-webhook]
 == 2. Configure a URL de Callback do Webhook
 
 Vá para o seu provedor Git e configure a URL de Callback do webhook.
@@ -149,6 +151,7 @@ Apenas `application/json` é suportado devido a limitações na biblioteca de we
 Quando um webhook é configurado, o intervalo de polling se ajusta automaticamente para uma hora.
 ====
 
+[#_3-opcional-configure-um-segredo-de-webhook]
 == 3. (Opcional) Configure um Segredo de Webhook
 
 O segredo do webhook valida a carga útil enviada pelo seu provedor Git.
@@ -166,6 +169,7 @@ Cada provedor suportado usa um nome de chave específico no segredo do Kubernete
 | Azure DevOps | `azure-password`
 |===
 
+[#_op-o-1-configurar-um-segredo-de-cluster]
 === Opção 1: Configurar um segredo de cluster
 
 Nesta abordagem, o segredo se aplica a todo o cluster, e todos os GitRepos o utilizam automaticamente.
@@ -196,6 +200,7 @@ kubectl create secret generic gitjob-webhook \
 ----
 
 [[option-2-configure-secret]]
+[#_op-o-2-configure-um-segredo-por-gitrepo]
 === Opção 2: Configure um segredo por GitRepo
 
 Você pode definir um segredo de webhook único para cada GitRepo.
@@ -220,6 +225,7 @@ spec:
 
 Se existir um segredo de cluster e um segredo por GitRepo, {product_name} utiliza o segredo por GitRepo.
 
+[#_4-teste-o-webhook]
 == 4. Teste o Webhook
 
 Vá para o seu provedor de Git e teste a conexão do webhook. Você deve receber um código de resposta HTTP confirmando a entrega do webhook.

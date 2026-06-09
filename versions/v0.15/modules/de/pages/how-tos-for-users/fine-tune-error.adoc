@@ -14,6 +14,7 @@ image::fine-tune-error-flow.svg[Ein visueller Fluss der Feinabstimmung der Fehle
 HINWEIS:  +
 Sie sollten selten die Bereitschaftserkennung in {product_name} mit Umgebungsvariablen konfigurieren müssen. Wenn Sie dies tun, öffnen Sie ein Problem oder reichen Sie einen Pull-Request ein, um die standardmäßige Bereitschaftserkennung zu verbessern.
 
+[#_bedingungen-in-fleet-yaml-ignorieren]
 == Bedingungen in `fleet.yaml` ignorieren
 
 Verwenden Sie die `ignore.conditions`-Einstellung in der `fleet.yaml`-Datei, um {product_name} anzuweisen, bestimmte Bedingungen zu ignorieren.
@@ -40,6 +41,7 @@ Diese Methode ist nützlich, wenn eine benutzerdefinierte Ressource oder ein Con
 
 image::fine-tune-error-ingore.svg[Ein visueller Fluss der Ignorierung von Bedingungen während der Feinabstimmung der Fehlererkennung]
 
+[#_fehlerzuordnung-mit-umgebungsvariablen-konfigurieren]
 == Fehlerzuordnung mit Umgebungsvariablen konfigurieren
 
 In {product_name} **v0.13** wurde die Fehlererkennung verbessert, um Ihnen mehr Kontrolle zu geben. Sie können die Umgebungsvariable `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` verwenden, um anzupassen, wie Ressourcenzustände interpretiert werden.
@@ -59,6 +61,7 @@ Setzen Sie diese Variable in Ihrer Fleet-Helm-Chart-Implementierung (`values.yam
 HINWEIS:  +
 Diese Einstellung ist global für alle Fleet-Controller und gilt für jede `GitRepo`. Wenn Sie die Fehlerbehandlung nur für ein bestimmtes Bundle anpassen müssen, verwenden Sie stattdessen die `ignoreConditions`-Option in `fleet.yaml`.
 
+[#_zusammenf-hrungsverhalten]
 === Zusammenführungsverhalten
 
 Wenn Sie Zuordnungen mit `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` überschreiben:
@@ -83,6 +86,7 @@ Das führt zu:
 * `Ready=["False"]` wird hinzugefügt, sodass **`Ready=False`** ebenfalls als Fehler behandelt wird.
 * Andere Bedingungen bleiben unverändert.
 
+[#_beispiel-zur-deaktivierung-der-fehlerinterpretation]
 === Beispiel zur Deaktivierung der Fehlerinterpretation
 
 Angenommen, jeder Wert von `Failed` wurde zuvor als Fehler interpretiert, zum Beispiel:
@@ -120,6 +124,7 @@ Diese Konfiguration stellt sicher, dass **kein Wert von `Failed`** als Fehler be
 HINWEIS:  +
 Das Überschreiben von Bedingungen betrifft nur die Standardfehlerzuordnungen (siehe xref:default-error-mappings[Standardfehlerzuordnungen]). {product_name} kann weiterhin eine Ressource als Fehler markieren, da andere Überprüfungen, wie die aus der `kstatus` Bibliothek, nach Ihrer Anpassung weiterhin ausgeführt werden.
 
+[#_beispiel-zur-aktivierung-der-fehlerinterpretation]
 === Beispiel zur Aktivierung der Fehlerinterpretation
 
 [source,json]
@@ -137,6 +142,7 @@ Das Überschreiben von Bedingungen betrifft nur die Standardfehlerzuordnungen (s
 Hier wird `Failed=True` als Fehler behandelt.
 
 [[default-error-mappings]]
+[#_standardfehlerzuordnungen]
 == Standardfehlerzuordnungen 
 
 {product_name} fügt Standardfehlerzuordnungen hinzu, um bestimmte Ressourcenbedingungen im `status`-Feld als Fehler zu interpretieren. Diese Zuordnungen werden neben anderen Bereitschaftsprüfungen angewendet, wie sie von der Kubernetes `kstatus`-Bibliothek durchgeführt werden.
@@ -157,6 +163,7 @@ Die folgenden Standardzuordnungen gelten:
 * **ReplicaSet** (`apps/v1`)
   * `ReplicaFailure`: `True` wird als Fehler betrachtet.
 
+[#_fallback-zuordnung]
 === Fallback-Zuordnung
 
 Wenn eine Ressource nicht mit den aufgeführten GVKs übereinstimmt, wendet {product_name} eine Fallback-Zuordnung an:

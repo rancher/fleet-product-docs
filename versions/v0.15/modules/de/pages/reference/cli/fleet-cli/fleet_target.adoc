@@ -8,6 +8,7 @@ Verfügbare Ziele für ein Paket drucken
 fleet target [flags]
 ----
 
+[#_optionen]
 == Optionen
 
 ----
@@ -23,6 +24,7 @@ fleet target [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_siehe-auch]
 == SIEHE AUCH
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name} Operationen verwalten

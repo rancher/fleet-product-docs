@@ -8,6 +8,7 @@ Veraltete Controller-Ressourcen bereinigen
 fleet-controller cleanup [flags]
 ----
 
+[#_optionen]
 == Optionen
 
 [source,text]
@@ -17,6 +18,7 @@ fleet-controller cleanup [flags]
       --namespace string    namespace to watch
 ----
 
+[#_optionen-die-von-bergeordneten-befehlen-geerbt-werden]
 == Optionen, die von übergeordneten Befehlen geerbt werden
 
 [source,text]
@@ -25,6 +27,7 @@ fleet-controller cleanup [flags]
       --debug-level int   If debugging is enabled, set klog -v=X
 ----
 
+[#_siehe-auch]
 == SIEHE AUCH
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - Verwalten Sie den Fleet Controller, der mit dem Fleet agent kommuniziert

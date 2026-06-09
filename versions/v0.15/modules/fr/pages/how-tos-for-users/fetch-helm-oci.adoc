@@ -18,6 +18,7 @@ image::fetch-Helm-from-OCI.svg[Un actif visuel affichant le flux de récupérati
 Par exemple, si vous gérez plusieurs clusters avec {product_name}, les développeurs peuvent pousser des Helm charts vers un registre OCI interne. {product_name} tire ensuite les charts directement depuis le registre et les déploie sur les clusters en aval.
 Cette approche évite de maintenir un dépôt de charts séparé et réutilise votre infrastructure de registre existante.
 
+[#_helm-chart-dans-fleet-yaml]
 == Helm chart dans fleet.yaml
 
 Pour récupérer un Helm chart depuis un registre OCI, référencez le chart en utilisant le champ `repo` dans un fichier `fleet.yaml`{nbsp}:
@@ -44,6 +45,7 @@ helm:
 Le champ `repo` est la manière canonique de spécifier les URL de registre OCI dans un fichier `fleet.yaml`. Il est cohérent avec la manière dont les registres OCI sont référencés dans les ressources HelmOp.
 ====
 
+[#_cessation-de-la-prise-en-charge-url-oci-dans-helm-chart]
 === Cessation de la prise en charge : URL OCI dans `helm.chart`
 
 Avant ce changement, {product_name} s'attendait à ce que l'URL OCI soit placée dans le champ `chart` au lieu de `repo`{nbsp}:
@@ -58,8 +60,9 @@ helm:
 
 Ce formulaire fonctionne toujours pour la rétrocompatibilité, mais il est obsolète et produira un avertissement dans les journaux {product_name}. Migrer les fichiers `fleet.yaml` existants pour utiliser `helm.repo` pour les URL OCI.
 
+[#_utilisation-de-registres-authentifi-s]
 == Utilisation de registres authentifiés
 
 Si le registre OCI nécessite une authentification, référencez un secret Kubernetes dans la ressource GitRepo. {product_name} utilise ce secret pour tirer le chart et le déployer sur les clusters ciblés.
 
-Pour plus d'informations, référez-vous à xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml avec authentification].
+Pour plus d'informations, référez-vous à xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[fleet.yaml avec authentification].

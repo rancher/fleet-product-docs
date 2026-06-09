@@ -4,6 +4,7 @@
 
 HelmOps est une manière simplifiée de créer des bundles en pointant directement vers un dépôt Helm ou un registre OCI, sans avoir besoin de configurer un dépôt git.
 
+[#_r-sum]
 == Résumé
 
 Lorsqu'une ressource +GitRepo+ est créée, {product_name} surveille un dépôt git, créant un ou plusieurs bundles à partir des chemins spécifiés dans le +GitRepo+, suivant une approche GitOps, ou pilotée par git, pour le déploiement continu. Cela nécessite qu'un dépôt git soit disponible, contenant éventuellement +fleet.yaml+ ou d'autres fichiers de configuration.
@@ -21,6 +22,7 @@ Lorsque les contraintes sont invalides ou qu'aucune version correspondante ne pe
 
 Lors de l'utilisation de cette fonctionnalité, les charts Helm sont téléchargés depuis les clusters en aval, qui doivent donc avoir accès aux registres Helm.
 
+[#_cr-ation-d-une-ressource-helmop]
 == Création d'une ressource HelmOp
 
 Une ressource +HelmOp+ peut être créée comme suit pour commencer à déployer des charts Helm directement{nbsp}:
@@ -45,10 +47,12 @@ insecureSkipTLSVerify: false
 
 Pour les charts privés, cela nécessite qu'un secret d'accès Helm (référencé par le champ +helmSecretName+) soit créé dans le même espace de noms que la ressource +HelmOp+. Le contrôleur Fleet HelmOps s'occupe de copier ce secret vers les clusters en aval ciblés, permettant à l'agent Fleet d'accéder au registre.
 
+[#_cas-d-utilisation-pris-en-charge]
 == Cas d'utilisation pris en charge
 
 Avec 3 champs disponibles pour référencer un chart Helm, clarifions quelques règles. Selon la documentation d'installation de Helm https://helm.sh/docs/helm/helm_install/[documentation], il existe 6 façons d'exprimer un chart à installer. 3 d'entre elles utilisent soit des alias du dépôt, soit le système de fichiers local, qui ne sont pas disponibles dans le contexte HelmOps de Fleet. Cela nous laisse avec 3 options{nbsp}:
 
+[#_url-absolue]
 === URL absolue
 
 Référencer un chart Helm par URL absolue est aussi simple que de fournir une URL vers un fichier +.tgz+ dans le champ +chart+. Les options Helm ressembleraient à{nbsp}:
@@ -65,6 +69,7 @@ version: ''
 
 Si un dépôt non vide ou une version non vide est spécifiée dans ce cas, une erreur apparaîtra dans le statut HelmOp et aucun bundle ne sera créé, annulant le déploiement.
 
+[#_r-f-rence-de-chart-et-url-de-d-p-t]
 === Référence de chart et URL de dépôt
 
 Un chart Helm peut également être référencé par son nom de dépôt et de chart, avec une version optionnelle, qui peut être une version statique ou une contrainte de version.
@@ -84,6 +89,7 @@ version: '1.2.3'
 Dans ce cas, seul le champ +version+ peut être vide. Si l'un des champs +chart+ ou +repo+ est vide, {product_name} définit une erreur dans le statut HelmOp et aucun bundle ne sera créé.
 
 [[oci-registry]]
+[#_registre-oci]
 === Registre OCI
 
 Helm prend en charge les registres OCI, qui peuvent être référencés dans {product_name} en utilisant le champ +repo+.
@@ -110,10 +116,12 @@ Dans ce cas, {product_name} téléchargera des artefacts OCI. Cela signifie que{
 ====
 
 
+[#_interrogation]
 == Interrogation
 
 {product_name} peut interroger le registre Helm référencé, vérifiant périodiquement si de nouvelles versions sont disponibles. Bien sûr, cela n'a de sens que si le champ +version+ contient une contrainte de version, qui peut se résoudre à plusieurs versions.
 
+[#_comment-l-activer]
 === Comment l'activer
 
 Le sondage implique un champ +pollingInterval+, similaire à ce qui existe pour GitOps. Cependant, dans le cas de HelmOps, l'intervalle de sondage par défaut est de 0 secondes, ce qui signifie que le sondage sera désactivé.
@@ -123,6 +131,7 @@ Les conditions suivantes doivent être remplies sur une ressource HelmOp pour qu
 * Le champ +pollingInterval+ est défini sur une durée non nulle (par exemple +10s+, +1m+, etc.)
 * Le champ +version+ est défini sur une contrainte de version sémantique valide (par exemple +2.x.x+, ++< 1.0++), pas une version statique (par exemple 1.2.3)
 
+[#_fonction]
 === Fonction
 
 Lorsque le sondage est activé, {product_name} effectue les actions suivantes à l'intervalle configuré{nbsp}:
@@ -135,14 +144,16 @@ Lorsque le sondage est activé, {product_name} effectue les actions suivantes à
 *** avec +false+ avec une erreur si un échec s'est produit
 ** mettant à jour le champ ++Last Polling Time++ à l'heure de début de la dernière tentative de sondage, même si elle a échoué.
 
+[#_utilisation-de-d-p-ts-helm-priv-s]
 == Utilisation de dépôts Helm privés
 
 Cela fonctionne de la même manière que pour gitOps, en référencant un secret d'accès Helm à travers le champ `helmSecretName`.
 
-Pour plus d'informations, référez-vous à xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Private Helm repo].
+Pour plus d'informations, référez-vous à xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[Private Helm repo].
 
 La partie sur l'utilisation de credentials séparés pour chaque chemin n'est pas pertinente, car contrairement à un GitRepo, une ressource HelmOp ne fait référence qu'à un seul chart Helm.
 
+[#_mises-jour-de-statut]
 == Mises à jour de statut
 
 La création d'une ressource HelmOp entraîne la création d'un bundle, si les options Helm sont valides et qu'une version de chart peut être trouvée.

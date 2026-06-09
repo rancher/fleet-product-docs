@@ -8,12 +8,14 @@ Veraltete Ressourcen bereinigen
 fleet cleanup [flags]
 ----
 
+[#_optionen]
 == Optionen
 
 ----
   -h, --help   help for cleanup
 ----
 
+[#_siehe-auch]
 == SIEHE AUCH
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name} Operationen verwalten

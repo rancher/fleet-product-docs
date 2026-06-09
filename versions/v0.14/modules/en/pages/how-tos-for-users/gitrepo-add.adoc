@@ -4,6 +4,7 @@
 :doctype: book
 :page-aliases: /gitrepo-add
 
+[#_create-gitrepo-instance]
 == Create GitRepo Instance
 
 Git repositories are registered by creating a `GitRepo` resource in Kubernetes. Refer
@@ -15,11 +16,12 @@ The available fields of the GitRepo custom resource are documented in the xref:r
 Adding A Private Git Repository
 [NOTE]
 ====
-{product_name} does not support SSH proxy server authentication when cloning <<_adding_a_private_git_repository,adding-a-private-git-repository>>or <<_using_private_helm_repositories,Using Private Helm Repositories>>
+{product_name} does not support SSH proxy server authentication when cloning <<_adding-a-private-git-repository,adding-a-private-git-repository>>or <<_using-private-helm-repositories,Using Private Helm Repositories>>
 . Use HTTPS authentication with a username and password or a personal access token.
 ====
 
 
+[#_proper-namespace]
 === Proper Namespace
 
 Git repos are added to the {product_name} manager using the `GitRepo` custom resource type. The `GitRepo` type is namespaced. By default, Rancher will create two {product_name} workspaces: 
@@ -27,10 +29,11 @@ Git repos are added to the {product_name} manager using the `GitRepo` custom res
 * `fleet-default` contains all the downstream clusters that are already registered through Rancher.
 * `fleet-local` will contain the local cluster by default.
 
-If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[cluster registration] for more on the `fleet-local` namespace.
+If you are using {product_name} in a xref:explanations/concepts.adoc[single cluster] style, the namespace will always be *fleet-local*. Check xref:explanations/namespaces.adoc#_cluster-registration-namespace-fleet-local[cluster registration] for more on the `fleet-local` namespace.
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
+[#_override-workload-s-namespace]
 == Override Workload's Namespace
 
 The `targetNamespace` field will override any namespace in the bundle. If the deployment contains cluster scoped resources, it will fail.
@@ -41,6 +44,7 @@ It takes precendence over all other namespace definitions:
 
 Workload namespace definitions can be restricted with `allowedTargetNamespaces` in the `GitRepoRestriction` resource.
 
+[#_adding-a-private-git-repository]
 == Adding A Private Git Repository
 
 {product_name} supports the following authentication mechanisms for private repositories:
@@ -104,6 +108,7 @@ The key has to be in PEM format.
 ====
 
 
+[#_known-hosts]
 === Known hosts
 
 {product_name} supports putting `known_hosts` into ssh secret. Here is an example of how to add it:
@@ -130,6 +135,7 @@ stringData:
     |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 ----
 
+[#_strict-host-key-checks]
 ==== Strict host key checks
 
 Chart value `insecureSkipHostKeyChecks` defines how Fleet behaves with regards to `known_hosts` when establishing SSH
@@ -167,9 +173,10 @@ Fleet only uses a single_source of `known_hosts` entries at a time. This means t
 (or insufficient) entries, then Fleet will not look for valid entries in the config map. This applies to a secret
 referenced in a `GitRepo` as well as to a possible `gitcredential` secret, if no secret is referenced in the `GitRepo`.
 
+[#_using-http-auth]
 === Using HTTP Auth
 
-Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:troubleshooting.adoc#_http_secrets_in_github[HTTP secrets in Github].
+Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:troubleshooting.adoc#_http-secrets-in-github[HTTP secrets in Github].
 
 [source,bash]
 ----
@@ -193,6 +200,7 @@ Just like with SSH, reference the secret in your GitRepo resource via `clientSec
 When using BitBucket and access tokens, the username must be `x-token-auth`.
 ====
 
+[#_using-a-github-app]
 === Using a GitHub App
 
 The following fields are needed to enable {product_name} to authenticate to GitHub using a GitHub App:
@@ -233,6 +241,7 @@ Surrounding the value, or the environment variable name (e.g. `--from-literal=gi
 
 Ensure you reference that secret in your GitRepo resource via `clientSecretName`.
 
+[#_using-custom-ca-bundles]
 === Using Custom CA Bundles
 
 Validating a repository using a certificate signed by a custom Certificate Authority can be done by specifying a
@@ -257,6 +266,7 @@ https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installatio
 endif::[]
 ====
 
+[#_using-private-helm-repositories]
 == Using Private Helm Repositories
 
 [CAUTION]
@@ -298,6 +308,7 @@ For example, to add a secret in kubectl, run
 
 After secret is created, specify the secret to `gitRepo.spec.helmSecretName`. Make sure secret is created under the same namespace with gitrepo.
 
+[#_use-different-helm-credentials-for-each-path]
 === Use different helm credentials for each path
 
 {product_name} allows you to define unique credentials for each Helm chart path in a Git repository using the helmSecretNameForPaths field.
@@ -432,14 +443,14 @@ kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=
 Ensure the backup is encrypted to protect sensitive credentials.
 ====
 
-[[storing-credentials-in-git]]
+[#_storing-credentials-in-git]
 == Storing Credentials in Git
 
 It's recommended not to store credentials in Git. Even if the repository is properly protected, secrets are at risk during cloning, etc.  
 As a workaround, tools like SOPS can encrypt credentials.
 
 Instead, reference secrets in the downstream cluster. For manifest-style and kustomize-style bundles, do this in the manifests, e.g., by link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[mounting the secrets] or link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referencing them as environment variables].  
-Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
+Helm-style bundles can use xref:explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom] to read values from a secret in the downstream cluster.
 
 When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encryption at rest] and storing credentials in Git, configure the upstream cluster to include several {product_name} CRDs in the encryption resource list:
 
@@ -451,10 +462,12 @@ When using Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/e
 - contents.fleet.cattle.io
 ----
 
+[#_backing-up-and-restoring]
 == Backing up and restoring
 
 When backing up and restoring {product_name} with existing workloads, be they GitRepos or HelmOps, consider:
 
+[#_kubernetes-api-server-availability]
 === Kubernetes API server availability
 
 A {product_name} agent in a downstream cluster monitors a cluster-specific namespace on the upstream cluster.  
@@ -462,6 +475,7 @@ During a restore operation, changes made in the upstream cluster may affect depl
 
 To prevent this, make the Kubernetes API server inaccessible to downstream clusters while a restore is running. Agents should not access the upstream cluster until all resources are re-created.
 
+[#_pausing]
 === Pausing
 
 A xref:reference/ref-gitrepo.adoc[paused] GitRepo will pause bundles and bundle deployments. This means:
@@ -472,6 +486,7 @@ A xref:reference/ref-gitrepo.adoc[paused] GitRepo will pause bundles and bundle 
 Pausing a GitRepo only prevents bundles and bundle deployments from being created or updated. It only affects _controller_ operations, not {product_name} _agent_ operations.  
 To prevent user resources in a bundle from being deleted when deleting a bundle deployment, use xref:reference/ref-bundle.adoc[keepResources].
 
+[#_troubleshooting]
 == Troubleshooting
 
 See the {product_name} Troubleshooting section xref:troubleshooting.adoc[Troubleshooting docs].
