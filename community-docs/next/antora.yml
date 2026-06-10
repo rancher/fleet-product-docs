@@ -3,6 +3,7 @@ title: Fleet
 version: next
 display_version: Next
 start_page: index.adoc
+prerelease: true 
 asciidoc:
   attributes:
     product_name: Fleet

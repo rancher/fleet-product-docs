@@ -27,3 +27,14 @@
     theme: 'default'
   });
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Target a warning block if it is the very first element of the document
+  const topWarning = document.querySelector('article.doc > .admonitionblock.warning:first-child');
+  
+  if (topWarning && topWarning.textContent.includes("This is unreleased documentation")) {
+    topWarning.style.display = 'none';
+  }
+});
+</script>
