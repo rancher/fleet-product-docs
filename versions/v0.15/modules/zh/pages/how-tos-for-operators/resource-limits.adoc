@@ -17,7 +17,7 @@
 有关更多信息，请参阅 xref:reference/ref-configuration.adoc[配置]。
 ====
 
-[#_]
+[#_default-resources]
 == 默认资源
 
 使用顶级 `resources` 字段为所有控制器容器设置默认值：
@@ -44,7 +44,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   --set resources.requests.memory=768Mi
 ----
 
-[#_]
+[#_per-component-overrides]
 == 每组件覆盖
 
 单个控制器容器可以使用特定于组件的设置覆盖默认值。
@@ -96,7 +96,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   -f values.yaml
 ----
 
-[#_]
+[#_downstream-cluster-agent-resources]
 == 下游集群代理资源
 
 要为在特定下游集群上运行的 Fleet agent 配置资源限制和请求，请在相应的 `Cluster` 资源上设置 `agentResources`：

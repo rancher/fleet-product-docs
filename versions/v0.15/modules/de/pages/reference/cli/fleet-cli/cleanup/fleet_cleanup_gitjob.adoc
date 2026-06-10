@@ -8,7 +8,7 @@ Veraltete Git-Jobs bereinigen
 fleet cleanup gitjob [flags]
 ----
 
-[#_optionen]
+[#_options]
 == Optionen
 
 ----
@@ -21,7 +21,7 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_siehe-auch]
+[#_see-also]
 == SIEHE AUCH
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet-Bereinigung]     - Veraltete Ressourcen bereinigen

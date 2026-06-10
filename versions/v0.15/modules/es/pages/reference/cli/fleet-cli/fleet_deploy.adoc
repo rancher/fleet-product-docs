@@ -8,7 +8,7 @@ Desplegar un recurso de bundledeployment/content en un clúster, creando un rele
 fleet deploy [flags]
 ----
 
-[#_opciones]
+[#_options]
 == Opciones
 
 ----
@@ -26,7 +26,7 @@ fleet deploy [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_v-ase]
+[#_see-also]
 == VÉASE
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gestionar {product_name} operaciones

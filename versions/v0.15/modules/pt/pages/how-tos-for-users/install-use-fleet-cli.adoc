@@ -16,7 +16,7 @@ Você pode usar `fleet apply` sem instalar {product_name} em seus clusters. No e
 Para mais informações, veja xref:how-tos-for-operators/installation.adoc[Instalar o Fleet].
 ====
 
-[#_instale-o-fleet-cli]
+[#_install-fleet-cli]
 == Instale o Fleet CLI
 
 O Fleet CLI é um binário autônomo que você pode baixar da link:https://github.com/rancher/fleet/releases[Página de lançamentos do GitHub do Fleet].
@@ -41,7 +41,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
-[#_verifique-a-instala-o]
+[#_verify-installation]
 === Verifique a instalação
 
 [source,bash]
@@ -49,7 +49,7 @@ Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/downloa
 fleet --version
 ----
 
-[#_pr-requisitos]
+[#_prerequisites]
 == Pré-requisitos
 
 Certifique-se de que você tenha as seguintes ferramentas instaladas e configuradas:
@@ -59,7 +59,7 @@ Certifique-se de que você tenha as seguintes ferramentas instaladas e configura
 * O Helm está instalado.
 * O Fleet CLI está instalado e acessível no seu terminal.
 
-[#_verifique-os-pr-requisitos]
+[#_verify-prerequisites]
 === Verifique os pré-requisitos
 
 [source,bash]
@@ -69,7 +69,7 @@ helm version
 fleet --version
 ----
 
-[#_comandos-chave]
+[#_key-commands]
 == Comandos Chave
 
 {product_name} fornece vários comandos CLI para criar, visualizar e implantar pacotes. Esses comandos são úteis para depurar e compreender o ciclo de vida do bundle.
@@ -92,13 +92,13 @@ fleet target my-bundle ./manifests
 * `fleet deploy`: Recebe a saída de `fleet target`, ou um recurso `bundledeployment`/content despejado, e o implanta em um cluster—assim como `fleet-agent` faria.
 +
 Você pode usá-lo nestes cenários:
-** `fleet apply -o - name ./folder` para verificar o YAML do bundle antes de criá-lo. Para mais informações, veja xref:explanations/ref-bundle-stages.adoc#examining-the-bundle-lifecycle-with-the-cli[Examinando o Ciclo de Vida do Bundle com o CLI].
+** `fleet apply -o - name ./folder` para verificar o YAML do bundle antes de criá-lo. Para mais informações, veja xref:explanations/ref-bundle-stages.adoc#_examining-the-bundle-lifecycle-with-the-cli[Examinando o Ciclo de Vida do Bundle com o CLI].
 ** Use com um alvo para depurar seletores e verificar quais clusters downstream estão sendo direcionados.
 ** `fleet deploy --dry-run` para imprimir recursos que seriam implantados, sem aplicá-los.
 
 image::fleetCLI-key-components.svg[Um diagrama explicando como os comandos-chave do Fleet CLI funcionam]
 
-[#_implante-um-bundle-de-exemplo-usando-o-fleet-cli]
+[#_deploy-a-sample-bundle-using-fleet-cli]
 == Implante um Bundle de Exemplo Usando o Fleet CLI.
 
 Você pode implantar cargas de trabalho sem usar GitRepos aplicando-as localmente com o CLI. Por exemplo, use o link:https://github.com/rancher/fleet-examples[repositório de exemplos do Fleet]:
@@ -118,7 +118,7 @@ fleet apply -o my-cool-bundle manifests
 
 Este comando cria um recurso `Bundle` no namespace.
 
-[#_converta-um-helm-chart-em-um-bundle]
+[#_convert-a-helm-chart-into-a-bundle]
 == Converta um Helm Chart em um Bundle
 
 Você pode usar o Fleet CLI para converter um Helm chart em um bundle. Por exemplo, para converter o chart do operador *external-secrets*:
@@ -147,7 +147,7 @@ Certifique-se de usar um seletor de cluster em `targets.yaml` que corresponda a 
 
 Para mais informações, consulte link:https://www.suse.com/c/rancher_blog/fleet-multi-cluster-deployment-with-the-help-of-external-secrets/[Fleet: Implantação Multi-Cluster com a Ajuda de Segredos Externos].
 
-[#_solu-o-de-problemas]
+[#_troubleshooting]
 == Solução de problemas
 
 Se o bundle não estiver pronto:
@@ -162,11 +162,11 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Exclua e reaplique o bundle se você encontrar conflitos de propriedade do Helm.
 
-[#_verifique-o-status-do-agente-e-do-controlador]
+[#_verify-agent-and-controller-status]
 === Verifique o status do Agente e do Controlador
 
 Antes de solucionar problemas de bundle ou implantação, verifique se o Fleet agent está registrado e em execução no cluster downstream.
-Para mais informações, veja xref:reference/ref-registration.adoc#registered-watches-for-bundledeployments[O Fleet Agent está registrado e monitora as implantações de bundle].
+Para mais informações, veja xref:reference/ref-registration.adoc#_product-name-agent-is-registered-watches-for-bundledeployments[O Fleet Agent está registrado e monitora as implantações de bundle].
 
 Se um bundle não estiver pronto em um determinado cluster, verifique o seguinte:
 

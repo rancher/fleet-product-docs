@@ -60,7 +60,7 @@ spec:
   - clusterName: local
 ----
 
-[#_]
+[#_targets]
 == 目标
 
 该捆绑可以针对多个集群。它采用与xref:how-tos-for-users/gitrepo-targets.adoc#_target-matching[GitRepo]相同的目标配置方式。
@@ -78,7 +78,7 @@ targets:
       replicas: 1
 ----
 
-[#_]
+[#_limitations]
 == 局限性
 
 与下载helm图表相关的Helm选项将被忽略。helm图表由fleet-cli下载，后者创建捆绑。该捆绑必须包含图表中的所有资源。因此，该捆绑将忽略：

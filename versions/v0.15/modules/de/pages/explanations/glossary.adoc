@@ -13,7 +13,7 @@ Dies umfasst die Überwachung eines bestimmten Namespace im Upstream-Cluster und
 
 Ein Bundle ist eine {product_name}-spezifische Ressource (auch bekannt als https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[benutzerdefinierte Ressource] in Kubernetes), die einen Workload oder eine Menge von Benutzerressourcen darstellt, die implementiert werden sollen. Es wird typischerweise von {product_name} aus einem Pfad eines Git-Repositories generiert.
 
-[#_diagramm]
+[#_chart]
 == Diagramm
 
 Siehe (https://helm.sh/docs/topics/charts/)[Dokumentation zu Helm-Charts].
@@ -25,7 +25,7 @@ Ein Cluster bezieht sich auf:
 * ein https://kubernetes.io/docs/concepts/architecture/[Kubernetes-Cluster], das von {product_name} verwaltet wird
 * eine `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[Ressource] in der API von Fleet, die {product_name} verwendet, um dieses Kubernetes-Cluster zu verwalten.
 
-[#_continuous-delivery-continuous-deployment]
+[#_continuous-delivery-deployment]
 == Continuous Delivery/Continuous Deployment
 
 Die Definitionen und Unterscheidungen zwischen Continuous Delivery und Continuous Deployment variieren erheblich, zum Beispiel je nachdem: +
@@ -34,18 +34,18 @@ Die Definitionen und Unterscheidungen zwischen Continuous Delivery und Continuou
 
 So viel ist jedoch klar: Das Ziel von {product_name} ist es, die Automatisierung von Implementierungen zu erleichtern.
 
-[#_benutzerdefinierte-ressource]
+[#_custom-resource]
 == Benutzerdefinierte Ressource
 
 Siehe https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[offizielle Dokumentation zu Kubernetes-Benutzerressourcen].
 Kurz gesagt, eine benutzerdefinierte Ressource ist eine Ressource, die für die Zwecke einer Anwendung definiert ist (in unserem Fall {product_name}), um die Menge der von der Kubernetes-API unterstützten Ressourcen (Pods, Implementierungen, Services usw.) zu erweitern.
 
-[#_benutzerdefinierte-ressourcenbeschreibung]
+[#_custom-resource-definition]
 == Benutzerdefinierte Ressourcenbeschreibung
 
 Siehe https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[offizielle Dokumentation zu Kubernetes-benutzerdefinierten Ressourcenbeschreibungen] aus den Kubernetes-Dokumenten.
 
-[#_bereitstellung]
+[#_deployment]
 == Bereitstellung
 
 Eine Implementierung kann sich beziehen auf: +
@@ -73,7 +73,7 @@ GitOps bezieht sich auf git-triggerte Operationen, bei denen git die Quelle der 
 Ein `GitRepo` ist eine spezifische Ressource für Fleet, die als Einstiegspunkt zur Nutzung von {product_name} dient.
 Das Erstellen eines `GitRepo`, das auf eine Reihe von Pfaden in einem Git-Repository verweist, ermöglicht es {product_name}, diese Pfade zu überwachen und Ressourcen bereitzustellen, die dort gespeichert oder referenziert werden.
 
-[#_kennung]
+[#_label]
 == Kennung
 
 Bezieht sich auf ein https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[Kubernetes-Label].
@@ -88,7 +88,7 @@ Ein Multi-Cluster-Setup umfasst mehr als einen Cluster: den Upstream-Cluster, de
 
 Bezieht sich auf ein https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[Kubernetes-Namespace].
 
-[#_abgleichen]
+[#_reconcile]
 == Abgleichen
 
 Abgleichen wird im Kontext von Zuständen in Kubernetes-Clustern verwendet. Das Abgleichen einer Ressource bedeutet, sie so zu aktualisieren, dass ihr tatsächlicher Zustand mit ihrem erwarteten Zustand übereinstimmt, sei es aus der Konfiguration, z. B. aus einem Git-Repository, Chart usw.
@@ -96,7 +96,7 @@ Abgleichen wird im Kontext von Zuständen in Kubernetes-Clustern verwendet. Das 
 Bei der Verwendung von GitOps können Aktualisierungen eines Git-Repositorys in neue erwartete Zustände für Ressourcen übersetzt werden, die über dieses Git-Repository konfiguriert sind. Infolgedessen werden die betroffenen Ressourcen abgeglichen.
 Der Zustand einer Ressource kann auch von einer anderen Ressource abhängen, was zu zusätzlichem Abgleichen führt. Zum Beispiel hängt der Status einer Clustergruppe von den Status einzelner Cluster ab, die in dieser Clustergruppe enthalten sind. Daher wird eine Änderung im Zustand eines Clusters dazu führen, dass auch alle Clustergruppen, zu denen dieses Cluster gehört, abgeglichen werden.
 
-[#_registrierung]
+[#_registration]
 == Registrierung
 
 Die Clusterregistrierung ist der Prozess, bei dem ein Fleet-Agent, der in einem Downstream-Cluster lebt, von den Fleet-Controllern im Upstream-Cluster erkannt wird. Sobald die Registrierung für einen Downstream-Cluster abgeschlossen ist, kann {product_name} Workloads in diesem Cluster bereitstellen.
@@ -106,14 +106,14 @@ Die Clusterregistrierung ist der Prozess, bei dem ein Fleet-Agent, der in einem 
 
 Ein Repository kann sein: * ein git-Repository, das Code, Konfiguration oder beliebige Arten von Dateien speichert und Änderungen, die an diesen Dateien durch Commits vorgenommen wurden, verfolgt. {product_name} kann ein git-Repository auf neue Commits überwachen, die in einen bestimmten Branch oder eine Revision an einem oder mehreren Pfaden gepusht werden, über xref:how-tos-for-users/gitrepo-add.adoc[GitRepo-Ressourcen]. * ein Helm-Repository, das Helm-Charts und eine Indexdatei, die auf sie verweist, hostet. {product_name} kann Helm-Charts installieren und benutzerdefinierte Konfiguration auf sie anwenden.
 
-[#_ressourcen]
+[#_resources]
 == Ressourcen
 
 Dies bezieht sich normalerweise auf Kubernetes-Ressourcen, die sein können: +
 * Kernressourcen, die von Kubernetes selbst definiert sind, wie Config-Maps, Implementierungen, Pods, Services usw., +
 * benutzerdefinierte Ressourcen, die von einzelnen Anwendungen definiert sind, wie {product_name} selbst, das GitRepo, Bundle, Bundle-Implementierung und einige andere definiert.
 
-[#_ziel]
+[#_target]
 == Ziel
 
 {product_name} verwendet dieses Wort im Kontext der Bestimmung, wo ein Workload ausgeführt wird. Dies stellt einen Zielcluster für einen Workload dar.

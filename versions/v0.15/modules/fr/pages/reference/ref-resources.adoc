@@ -6,7 +6,7 @@ Après l'installation de {product_name} dans Rancher, ces ressources sont créé
 
 Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 
-[#_depuis-helm-configuration-initiale]
+[#_from-helm-initial-setup]
 == Depuis Helm, configuration initiale
 
 [cols="1,1,1",options="header"]
@@ -29,7 +29,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |ServiceAccount |gitjob |cattle-fleet-system
 |===
 
-[#_g-n-r-par-bootstrap]
+[#_generated-by-bootstrap]
 == Généré par Bootstrap
 
 [cols="1,1,1",options="header"]
@@ -43,7 +43,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |Ensemble |fleet-agent-local |fleet-local
 |===
 
-[#_pour-chaque-cluster-enregistr]
+[#_for-each-registered-cluster]
 == Pour chaque cluster enregistré
 
 [cols="1,1,1",options="header"]
@@ -69,7 +69,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |DéploiementBundle |fleet-agent-name |cluster-fleet-default
 |===
 
-[#_pour-chaque-bundle-par-cluster]
+[#_for-each-bundle-per-cluster]
 == Pour chaque bundle, par cluster
 
 [cols="1,1,1",options="header"]
@@ -84,7 +84,7 @@ Voir aussi xref:explanations/namespaces.adoc[Espaces de noms].
 |Contenu |- |-
 |===
 
-[#_pour-chaque-gitrepo]
+[#_for-each-gitrepo]
 == Pour chaque GitRepo
 
 [cols="1,1,1",options="header"]

@@ -14,7 +14,7 @@ image::fine-tune-error-flow.svg[Um fluxo visual de detecções de erro de ajuste
 NOTA:  +
 Você raramente deve precisar configurar a detecção de prontidão em {product_name} com variáveis de ambiente. Se precisar, abra uma issue ou envie um pull request para ajudar a melhorar a detecção de prontidão padrão.
 
-[#_ignorar-condi-es-em-fleet-yaml]
+[#_ignore-conditions-in-fleet-yaml]
 == Ignorar condições em `fleet.yaml`
 
 Use a configuração `ignore.conditions` no arquivo `fleet.yaml` para informar ao {product_name} para ignorar condições específicas.
@@ -41,7 +41,7 @@ Esse método é útil quando um recurso ou controlador personalizado define cond
 
 image::fine-tune-error-ingore.svg[Um fluxo visual de condições ignoradas durante a detecção de erro de ajuste fino]
 
-[#_configure-o-mapeamento-de-erro-com-vari-veis-de-ambiente]
+[#_configure-error-mapping-with-environment-variables]
 == Configure o mapeamento de erro com variáveis de ambiente
 
 Em {product_name} **v0.13**, a detecção de erro foi aprimorada para lhe dar mais controle. Você pode usar a variável de ambiente `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` para personalizar como as condições de recursos são interpretadas.
@@ -61,7 +61,7 @@ Defina essa variável na implantação do seu gráfico Helm do Fleet (`values.ya
 NOTA:  +
 Essa configuração é global para todos os controladores do Fleet e se aplica a cada `GitRepo`. Se você precisar ajustar o tratamento de erros apenas para um Bundle específico, use a opção `ignoreConditions` em `fleet.yaml` em vez disso.
 
-[#_comportamento-de-mesclagem]
+[#_merging-behavior]
 === Comportamento de mesclagem
 
 Quando você substitui mapeamentos com `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING`:
@@ -86,7 +86,7 @@ Isso resulta em:
 * `Ready=["False"]` é adicionado, então **`Ready=False`** também é tratado como um erro.
 * Outras condições inalteradas.
 
-[#_exemplo-de-desativa-o-da-interpreta-o-de-erros]
+[#_disable-error-interpretation-example]
 === Exemplo de desativação da interpretação de erros
 
 Suponha que cada valor de `Failed` foi anteriormente interpretado como um erro, por exemplo:
@@ -122,9 +122,9 @@ Você também pode desativar erros para qualquer valor de `Failed` fazendo:
 Essa configuração garante que **nenhum valor de `Failed`** é tratado como um erro.
 
 NOTA:  +
-Substituir condições afeta apenas os mapeamentos de erro padrão (consulte xref:default-error-mappings[Mapeamentos de erro padrão]). {product_name} ainda pode marcar um recurso como um erro porque outras verificações, como aquelas da biblioteca `kstatus`, continuam a ser executadas após sua personalização.
+Substituir condições afeta apenas os mapeamentos de erro padrão (consulte xref:#_default-error-mappings[Mapeamentos de erro padrão]). {product_name} ainda pode marcar um recurso como um erro porque outras verificações, como aquelas da biblioteca `kstatus`, continuam a ser executadas após sua personalização.
 
-[#_habilitar-exemplo-de-interpreta-o-de-erro]
+[#_enable-error-interpretation-example]
 === Habilitar exemplo de interpretação de erro
 
 [source,json]
@@ -141,8 +141,7 @@ Substituir condições afeta apenas os mapeamentos de erro padrão (consulte xre
 
 Aqui, `Failed=True` é tratado como um erro.
 
-[[default-error-mappings]]
-[#_mapeamentos-de-erro-padr-o]
+[#_default-error-mappings]
 == Mapeamentos de erro padrão 
 
 {product_name} adiciona mapeamentos de erro padrão para interpretar certas condições de recurso no campo `status` como erros. Esses mapeamentos são aplicados além de outras verificações de prontidão, como aquelas realizadas pela biblioteca `kstatus` do Kubernetes.
@@ -163,7 +162,7 @@ Os seguintes mapeamentos padrão se aplicam:
 * **ReplicaSet** (`apps/v1`)
   * `ReplicaFailure`: `True` é considerado um erro.
 
-[#_mapeamento-de-fallback]
+[#_fallback-mapping]
 === Mapeamento de fallback
 
 Se um recurso não corresponder aos GVKs listados, {product_name} aplica um mapeamento de fallback:

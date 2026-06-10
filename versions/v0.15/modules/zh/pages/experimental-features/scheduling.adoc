@@ -27,7 +27,7 @@
 
 如果`Cluster`未与任何`Schedule`关联，则更新将立即应用。
 
-[#_]
+[#_schedule-resource]
 == 计划资源
 
 现在让我们看看如何定义一个`Schedule`以及可用的字段。

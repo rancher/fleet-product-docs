@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_anzeigezust-nde]
+[#_display-states]
 == Anzeigezustände
 
 GitRepos, HelmOps, Cluster und Bundles haben in jeder Phase des Anwenden von Bundles unterschiedliche Zustände.
@@ -11,8 +11,7 @@ Da die Zustände der BundleDeployments auf das Bundle, GitRepo, Cluster und Clus
 
 Wenn man sich das GitRepo ansieht, werden die Zustände aller Ressourcen, die mit dem GitRepo verbunden sind, dort angezeigt. Wenn man sich den Cluster ansieht, werden die Zustände aller Bundles in diesem Cluster angezeigt, die sich über viele GitRepos erstrecken können. Wenn man sich das Bundle ansieht, werden die Zustände aller BundleDeployments in diesem Bundle angezeigt.
 
-[#_bereit-bedingung]
-=== Bereit-Bedingung
+[#_ready-condition]
 
 Die `Ready` Bedingung wird verwendet, um zu bestimmen, ob die BundleDeployments in einem `Ready` Zustand sind.
 Die `Ready` Bedingung wird auf `True` gesetzt, wenn alle BundleDeployments im `Ready` Zustand sind.
@@ -32,25 +31,20 @@ status:
     type: Ready
 ----
 
-[#_bestimmung-des-bereit-status]
-==== Bestimmung des Bereit-Status
+[#_ready-status-determination]
 
 {product_name} verwendet das `kstatus` Paket des `sigs.k8s.io/cli-utils` Moduls, um den Bereit-Status der BundleDeployments basierend auf dem Status ihrer Ressourcen zu bestimmen.
 Für Details siehe das link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` Paket-README].
 
-[#_propagation-des-bereit-status]
-==== Propagation des Bereit-Status
+[#_propagation-of-ready-status]
 
 image::PropogationReadyStatus.svg[Propagation des Bereit-Status]
 
-[#_anzeigestatus]
-=== Anzeigestatus
+[#_display-state]
 
 Das `status.display` Feld bietet eine Zusammenfassung des Status. Die Status werden eingestuft, und der schlechteste mögliche Status wird als `state` im `status.display` Feld verwendet.
 
-[[state-ranking]]
-[#_statusranking]
-==== Statusranking
+[#_state-ranking]
 
 Dies ist das Ranking, in dem die Status angezeigt werden. Wenn ein Bundle BundleDeployments in verschiedenen Status hat, wird der schlechteste Status im `status.display.state` Feld verwendet.
 Dieser Status wird auch von den Bundles auf andere {product_name} Ressourcen (GitRepos, Cluster, ClusterGroups) propagiert.
@@ -68,8 +62,7 @@ Von am besten bis am schlechtesten:
 [#_bundles]
 == Bundles
 
-[#_bundle-status]
-=== Bundle-Status
+[#_bundle-statuses]
 
 * *Bereit* : Bundles wurden bereitgestellt, und alle Ressourcen sind bereit. Wenn nicht, enthält das `message` Feld der `Ready` Bedingung eine Aggregation der BundleDeployment-Status.
 * *NichtBereit* : BundleDeployments wurden bereitgestellt, aber einige Ressourcen sind nicht bereit (zum Beispiel werden Container-Images heruntergeladen oder Dienste haben die Bereitschaft nicht gemeldet).
@@ -81,16 +74,14 @@ Von am besten bis am schlechtesten:
 * *WaitApplied* : Bundles sind synchronisiert, warten aber auf die Bereitstellung. Eine anhaltende Anzeige dieses Zustands kann auf einen unerreichbaren Ziel-Cluster hinweisen.
 * *FehlerAngewendet* : Bundles wurden erfolgreich synchronisiert, aber es traten Fehler während der Bereitstellung auf.
 
-[#_cluster]
+[#_clusters]
 == Cluster
 
-[#_cluster-spezifische-zust-nde]
-=== Cluster-spezifische Zustände
+[#_cluster-specific-states]
 
 * *WaitCheckIn* : Warten auf den Agenten, um Registrierungsinformationen und Clusterstatus zu melden.
 
-[#_zust-nde-von-bundles]
-=== Zustände von Bundles
+[#_states-from-bundles]
 
 * *Bereit* : Alle Bundles in diesem Cluster sind bereitgestellt, und Ressourcen sind bereit.
 * *NichtBereit* : Einige Bundles in diesem Cluster sind nicht bereit.
@@ -112,7 +103,7 @@ Von am besten bis am schlechtesten:
 * *Blockiert* : Der Controller stieß auf einen Fehler oder hat keinen Fortschritt erzielt.
 * *Akzeptiert* : GitRepo-Beschränkungen wurden angewendet und externe Helm-Geheimnisse existieren.
 
-[#_helmop-bedingungen]
+[#_helmop-conditions]
 == HelmOp-Bedingungen
 
 * *Bereit* : `True`, wenn alle BundleDeployments erfolgreich bereitgestellt wurden; `False`, wenn einige nicht bereit sind.
@@ -125,17 +116,16 @@ Von am besten bis am schlechtesten:
 Die `status.display` Felder werden zwischen GitRepos und GitOps geteilt. Beide Ressourcen enthalten ein `status.display` Feld, das den Zustand der Ressource zusammenfasst. Der Wert von `state` kann je nach Ressourcentyp variieren.
 
 * `readyBundleDeployments` : Ein String in der Form `%d/%d`, der die Anzahl der bereitgestellten versus der gesamten BundleDeployments zeigt.
-* `state` : Stellt den Zustand des GitRepo dar (zum Beispiel `GitUpdating`) oder den höchsten BundleState gemäß dem <<state-ranking,Statusranking>>. Wenn `Ready`, wird er auf einen leeren Wert gesetzt.
+* `state` : Stellt den Zustand des GitRepo dar (zum Beispiel `GitUpdating`) oder den höchsten BundleState gemäß dem <<_state-ranking,Statusranking>>. Wenn `Ready`, wird er auf einen leeren Wert gesetzt.
 * `message` : Enthält relevante Nachrichten zu Implementierungsbedingungen.
 * `error` : `true`, wenn eine Fehlermeldung vorhanden ist.
 
-[#_liste-der-ressourcen]
+[#_resources-list]
 == Liste der Ressourcen
 
 Ressourcen, die in Ziel-Cluster bereitgestellt werden, werden unter `GitRepos` und `HelmOps` kategorisiert.
 
 [#_gitrepos]
-=== GitRepos
 
 Die `status.ResourceCounts` Liste für GitRepos wird aus `bundleDeployments` abgeleitet.
 
@@ -186,7 +176,6 @@ perClusterResourceCounts:
 Dies hilft, auf einen Blick zu erkennen, welche Cluster unvollständige oder inkonsistente Implementierungen haben.
 
 [#_bundledeployment]
-=== BundleDeployment
 
 Die `BundleDeployment` Ressource umfasst zwei zusätzliche Felder für eine bessere Sichtbarkeit:
 
@@ -194,36 +183,31 @@ Die `BundleDeployment` Ressource umfasst zwei zusätzliche Felder für eine bess
 * `resourceCounts`: das die Anzahl der Ressourcen nach ihrem Status zählt.
 
 [#_helmops]
-=== HelmOps
 
 Die `status.ResourceCounts` Liste für HelmOps wird aus `bundleDeployments` abgeleitet.
 
-[#_ressourcenz-hlungen]
+[#_resource-counts]
 == Ressourcenzählungen
 
 Dies zeigt, wie sich die Ressourcenzählungen zwischen den Ressourcen verbreiten.
 
-[#_gitrepos]
-=== GitRepos
+[#_rc_gitrepos]
 
 Die bereitgestellten Ressourcen sind unter `GitRepos` in `status.Resources` aufgeführt, abgeleitet von `bundleDeployments`.
 
-[#_helmops]
-=== HelmOps
+[#_rc_helmops]
 
 Ähnlich werden die bereitgestellten Ressourcen für `HelmOps` in `status.Resources` aufgeführt, die aus `bundleDeployments` abgeleitet sind.
 
-[#_cluster]
-=== Cluster
+[#_rc_clusters]
 
 In Clustern wird `status.ResourceCounts` aus GitRepos abgeleitet.
 
 [#_clustergroups]
-=== ClusterGroups
 
 In Clustergruppen wird `status.ResourceCounts` aus GitRepos abgeleitet.
 
-[#_klassendiagramm]
+[#_class-diagram]
 == Klassendiagramm
 
 image::ClusterGroups_classDiagram.svg[Propagation des Bereit-Status]

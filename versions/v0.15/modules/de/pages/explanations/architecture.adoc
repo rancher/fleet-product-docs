@@ -9,7 +9,7 @@
 
 Der {product_name} Controller ist eine Gruppe von Kubernetes-Controllern, die in einem beliebigen Standard-Kubernetes-Cluster ausgeführt werden.  Die einzige API, die vom {product_name} Controller bereitgestellt wird, ist die Kubernetes-API; es gibt keine benutzerdefinierte API für den Fleet-Controller.
 
-[#_cluster-agenten]
+[#_cluster-agents]
 == Cluster-Agenten
 
 Ein Cluster-Agent läuft in jedem Cluster und ist dafür verantwortlich, mit dem {product_name} Controller zu kommunizieren.
@@ -17,7 +17,7 @@ Die einzige Kommunikation vom Cluster zum {product_name} Controller erfolgt übe
 
 Es wird nicht davon ausgegangen, dass die Cluster-Agenten eine "immer aktiviert" Verbindung haben. Sie werden den Betrieb wieder aufnehmen, sobald sie sich verbinden können. Zukünftige Verbesserungen werden wahrscheinlich die Möglichkeit hinzufügen, Zeiten zu planen, wann der Agent sich anmeldet; derzeit werden sie immer versuchen, sich zu verbinden.
 
-[#_sicherheit]
+[#_security]
 == Sicherheit
 
 Der {product_name} Controller erstellt dynamisch Dienstkonten, verwaltet deren RBAC und gibt dann die Token an die Downstream-Cluster weiter. Cluster werden durch optional ablaufende Cluster-Registrierungstoken registriert.
@@ -25,7 +25,7 @@ Das Cluster-Registrierungstoken wird nur während des Registrierungsprozesses ve
 
 Die Dienstkonten, die den Clustern zugewiesen sind, haben nur die Berechtigungen, `BundleDeployment` im speziell für dieses Cluster erstellten Namespace aufzulisten. Es kann auch die `status` Unterressource von `BundleDeployment` und die `status` Unterressource seiner `Cluster` Ressource aktualisieren.
 
-[#_berblick-ber-die-komponenten]
+[#_component-overview]
 == Überblick über die Komponenten
 
 Ein Überblick über die Komponenten und wie sie auf hoher Ebene interagieren.

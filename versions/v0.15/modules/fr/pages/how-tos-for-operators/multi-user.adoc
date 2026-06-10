@@ -24,7 +24,7 @@ Cependant, les restrictions {product_name} existantes permettent aux utilisateur
 ====
 
 
-[#_exemple-product-name-autonome]
+[#_example-product-name-standalone]
 == Exemple {product_name} autonome
 
 Cela créerait un utilisateur 'fleetuser', qui ne peut gérer que les ressources GitRepo dans l'espace de noms 'project1'.
@@ -48,7 +48,7 @@ Si nous voulons donner accès à plusieurs espaces de noms, nous pouvons utilise
 
 Cela garantit que les locataires ne peuvent pas interférer avec les ressources GitRepo d'autres locataires, puisqu'ils n'ont pas accès à leurs espaces de noms.
 
-[#_espaces-de-travail-isol-s-dans-rancher]
+[#_isolated-workspaces-in-rancher]
 == Espaces de travail isolés dans Rancher
 
 Les utilisateurs appartenant à un groupe ou une organisation spécifique au sein de l'entreprise peuvent souhaiter désactiver la visibilité de leurs clusters pour les utilisateurs d'autres groupes ou organisations de la même entreprise.
@@ -146,7 +146,7 @@ L'utilisateur a maintenant accès à l'onglet `Continuous Delivery` dans Rancher
 
 Pour avoir un environnement bien organisé, chaque espace de travail devrait avoir son propre `GlobalRole` associé pour aider à la séparation des tâches et à l'isolation requise par le client. De cette manière, chaque utilisateur peut être assigné à un ou plusieurs `GlobalRoles`, en fonction des besoins.
 
-[#_autoriser-l-acc-s-aux-clusters]
+[#_allow-access-to-clusters]
 == Autoriser l'accès aux clusters
 
 Cela suppose que tous les GitRepos créés par 'fleetuser' ont l'étiquette `team: one`. Différentes étiquettes pourraient être utilisées pour sélectionner différents espaces de noms de cluster.
@@ -180,7 +180,7 @@ namespaceSelector:
 
 La section xref:how-tos-for-users/gitrepo-targets.adoc[`target`] de la ressource GitRepo peut être utilisée pour déployer uniquement sur un sous-ensemble des clusters correspondants.
 
-[#_restriction-de-l-acc-s-aux-clusters-en-aval]
+[#_restricting-access-to-downstream-clusters]
 == Restriction de l'accès aux clusters en aval
 
 Les administrateurs peuvent restreindre davantage les locataires en créant un `GitRepoRestriction` dans chacun de leurs espaces de noms.
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 Cela empêchera la création de ressources à l'échelle du cluster, ce qui pourrait interférer avec d'autres locataires et limiter le déploiement dans l'espace de noms 'project1simpleapp'.
 
-[#_un-exemple-de-ressource-gitrepo]
+[#_an-example-gitrepo-resource]
 == Un exemple de ressource GitRepo
 
 Une ressource GitRepo créée par un locataire, sans accès administrateur, pourrait ressembler à ceci{nbsp}:

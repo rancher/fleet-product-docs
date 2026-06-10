@@ -6,9 +6,9 @@
 
 Habilitar o deshabilitar características experimentales se realiza utilizando variables de entorno adicionales que están disponibles al desplegar `rancher/fleet`.
 
-Para más información, consulta Configurar las opciones de instalación de xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} en Rancher]
+Para más información, consulta Configurar las opciones de instalación de xref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[{product_name} en Rancher]
 
-[#_caracter-sticas-experimentales-disponibles]
+[#_available-experimental-features]
 == Características experimentales disponibles
 
 {product_name} actualmente admite las siguientes características experimentales, activadas a través de sus respectivas variables de entorno:
@@ -16,10 +16,10 @@ Para más información, consulta Configurar las opciones de instalación de xref
 * xref:experimental-features/scheduling.adoc[Programación]
 * xref:experimental-features/experimental-downstream-resource.adoc[Propagación automatizada de recursos a clústeres en sentido descendente]
 
-[#_habilitando-una-caracter-stica-experimental]
+[#_enabling-an-experimental-feature]
 == Habilitando una característica experimental
 
-[#_habilitando-al-instalar-product-name-de-forma-independiente]
+[#_enabling-when-installing-product-name-stand-alone]
 === Habilitando al instalar {product_name} de forma independiente
 
 Todo lo que necesitas hacer es pasar algo como:
@@ -37,7 +37,7 @@ a tu comando `helm install` o `helm upgrade`.
 Tienes que usar `--set-string` porque de lo contrario el valor booleano no funcionará como se espera.
 ====
 
-[#_habilitando-al-instalar-product-name-con-rancher]
+[#_enabling-when-installing-product-name-with-rancher]
 === Habilitando al instalar {product_name} con Rancher
 
 También puedes activar las características experimentales en {product_name} al instalar Rancher.

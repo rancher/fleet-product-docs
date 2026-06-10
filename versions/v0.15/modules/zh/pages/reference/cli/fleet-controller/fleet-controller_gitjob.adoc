@@ -8,7 +8,7 @@
 fleet-controller gitjob [flags]
 ----
 
-[#_]
+[#_options]
 == 选项
 
 ----
@@ -26,7 +26,7 @@ fleet-controller gitjob [flags]
       --shard-node-selector string    node selector to apply to jobs based on the shard ID, if any
 ----
 
-[#_]
+[#_see-also]
 == 另请参阅
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[舰队控制器]     - 管理与Fleet agent通信的舰队控制器

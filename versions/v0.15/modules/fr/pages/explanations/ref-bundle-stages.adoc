@@ -22,8 +22,7 @@ Ce diagramme montre les différentes étapes de rendu qu'un bundle traverse jusq
 
 image::FleetBundleStages.svg[Étapes du Bundle]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
-[#_examen-du-cycle-de-vie-du-bundle-avec-la-cli]
+[#_examining-the-bundle-lifecycle-with-the-cli]
 == Examen du cycle de vie du bundle avec la CLI
 
 Plusieurs commandes CLI de Fleet aident à nettoyer les bundles.
@@ -43,7 +42,6 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 Plus d'informations sur la façon de créer des bundles avec `fleet apply` peuvent être trouvées dans la xref:how-tos-for-users/bundle-add.adoc[section sur les bundles].
 
-[[fleet-target]]
 [#_fleet-target]
 === fleet target
 
@@ -56,7 +54,7 @@ xref:reference/cli/fleet-cli/fleet_deploy.adoc[Déployer] prend la sortie de `fl
 
 La commande deploy peut être utilisée pour amener des bundles vers des clusters isolés physiquement.
 
-[#_cycle-de-vie-cli]
+[#_lifecycle-cli]
 === Cycle de vie CLI
 
 Les commandes CLI de Fleet vous aident à nettoyer et à comprendre le cycle de vie des bundles. L'exemple suivant utilise le cycle de vie complet des bundles avec la CLI{nbsp}:

@@ -20,7 +20,7 @@ Dieser Ansatz gilt nur, wenn Sie {product_name} im Multi-Cluster-Stil ausführen
 
 Beim Bereitstellen von `GitRepos` an Downstream-Clustern müssen die Cluster einem Ziel zugeordnet werden.
 
-[#_ziele-definieren]
+[#_defining-targets]
 == Ziele definieren
 
 Die Bereitstellungsziele von `GitRepo` werden mit dem `spec.targets`-Feld festgelegt, um Cluster oder Clustergruppen abzugleichen. Die YAML-Spezifikation ist wie folgt.
@@ -60,7 +60,7 @@ spec:
     clusterName: cluster1
 ----
 
-[#_zielabgleich]
+[#_target-matching]
 == Zielabgleich
 
 Alle Cluster und Clustergruppen im selben Namespace wie das `GitRepo` werden gegen alle Ziele bewertet.
@@ -88,7 +88,7 @@ targets:
 
 Wenn Sie {product_name} in Rancher verwenden, stellen Sie sicher, dass Sie den Namen der `clusters.fleet.cattle.io` Ressource angeben.
 
-[#_standardziel]
+[#_default-target]
 == Standardziel
 
 Wenn kein Ziel für das `GitRepo` festgelegt ist, wird der Standardwert für Ziele angewendet.  Der Standardwert für Ziele ist wie folgt.
@@ -102,7 +102,7 @@ targets:
 
 Das bedeutet, wenn Sie einen Standardstandort einrichten möchten, zu dem nicht konfigurierte GitRepos gehen, erstellen Sie einfach eine Clustergruppe namens default und fügen Sie Cluster hinzu.
 
-[#_anpassung-pro-cluster]
+[#_customization-per-cluster]
 == Anpassung pro Cluster
 
 [IMPORTANT]
@@ -169,7 +169,7 @@ targetCustomizations:
 Das Konfigurationsmanagement beschränkt sich nicht nur auf Implementierungen, sondern kann auf das allgemeine Konfigurationsmanagement ausgeweitet werden. {product_name} ist in der Lage, das Konfigurationsmanagement durch Anpassung automatisch auf beliebige Cluster anzuwenden.
 ====
 
-[#_einschr-nkungen-beim-berschreiben-von-helm-chart-einstellungen-mit-targetcustomizations]
+[#_limitations-when-overriding-helm-chart-settings-with-targetcustomizations]
 === Einschränkungen beim Überschreiben von Helm-Chart-Einstellungen mit `targetCustomizations`
 
 Obwohl `helm.chart`, `helm.repo` und `helm.version` in `targetCustomizations` angegeben werden können, gibt es wichtige Einschränkungen beim Überschreiben dieser Felder.
@@ -190,7 +190,7 @@ Wenn verschiedene Umgebungen unterschiedliche Charts oder Registries benötigen,
 * Erstellen Sie separate `GitRepo` Ressourcen für jede Umgebung.
 
 
-[#_zus-tzliche-beispiele]
+[#_additional-examples]
 == Zusätzliche Beispiele
 
 Beispiele mit rohem Kubernetes YAML, Helm-Charts, Kustomize und Kombinationen der drei befinden sich im https://github.com/rancher/fleet-examples/[{product_name} Examples-Repository].

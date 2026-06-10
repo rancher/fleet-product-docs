@@ -2,18 +2,18 @@
 :revdate: 2026-02-18
 :page-revdate: {revdate}
 
-[#_agente]
+[#_agent]
 == Agente
 
 No contexto de {product_name}, um agente é uma implantação do Kubernetes responsável por implantar cargas de trabalho em seu cluster.
 Isso envolve monitorar um namespace específico no cluster upstream e implantar quaisquer implantações de pacotes, que residem nesse namespace, no cluster downstream, onde o agente se encontra.
 
-[#_pacote]
+[#_bundle]
 == Pacote
 
 Um pacote é um recurso específico de {product_name} (também conhecido como um https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Recurso Personalizado] no Kubernetes) que representa uma carga de trabalho ou um conjunto de recursos de usuário a serem implantados. Ele é tipicamente gerado por {product_name} a partir de um caminho de um repositório git.
 
-[#_gr-fico]
+[#_chart]
 == Gráfico
 
 Veja (https://helm.sh/docs/topics/charts/)[documentação dos charts do Helm].
@@ -25,7 +25,7 @@ Um cluster refere-se a:
 * um https://kubernetes.io/docs/concepts/architecture/[cluster Kubernetes] gerenciado por {product_name}
 * um `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[recurso] na API do Fleet, que {product_name} usa para gerenciar esse cluster Kubernetes.
 
-[#_entrega-implanta-o-cont-nua]
+[#_continuous-delivery-deployment]
 == Entrega/Implantação Contínua
 
 As definições e distinções entre Entrega Contínua e Implantação Contínua variam bastante, por exemplo
@@ -35,25 +35,25 @@ dependendo de:
 
 Isso é claro, no entanto: o objetivo de {product_name} é facilitar a automação de implantações.
 
-[#_recurso-personalizado]
+[#_custom-resource]
 == Recurso Personalizado
 
 Veja https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[documentação oficial de recursos personalizados do Kubernetes].
 Em resumo, um recurso personalizado é um recurso definido para os propósitos de uma aplicação (no nosso caso {product_name}), para estender o conjunto de recursos suportados pela API do Kubernetes (pods, implantações, serviços etc.).
 
-[#_defini-o-de-recurso-personalizado]
+[#_custom-resource-definition]
 == Definição de Recurso Personalizado
 
 Veja https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[documentação oficial de definições de recursos personalizados do Kubernetes] da documentação do Kubernetes.
 
-[#_implanta-o]
+[#_deployment]
 == Implantação
 
 Uma implantação pode se referir a:
 * uma https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[implantação Kubernetes], seja parte de uma carga de trabalho do usuário ou parte de {product_name} em si, como uma implantação de agente ou implantações de controladores;
 * a ação de implantar uma carga de trabalho do usuário, o que significa {product_name} ler a configuração (`GitRepo`, `fleet.yaml`, etc) e, como resultado, criar recursos em clusters de destino.
 
-[#_cluster-downstream]
+[#_downstream-cluster]
 == Cluster downstream
 
 Um cluster downstream é um cluster Kubernetes onde as cargas de trabalho do usuário serão executadas, sem nenhum controlador do Fleet residindo lá. É um cluster de destino para o Fleet, onde apenas um agente do Fleet reside ao lado das cargas de trabalho do usuário.
@@ -74,7 +74,7 @@ GitOps refere-se a operações acionadas por git, onde o git é a fonte da verda
 Um `GitRepo` é um recurso específico do Fleet, a ser usado como um ponto de entrada para utilizar {product_name}.
 Criar um `GitRepo` apontando para um conjunto de caminhos em um repositório git permite que {product_name} monitore esses caminhos e implante recursos armazenados ou referenciados lá.
 
-[#_etiqueta]
+[#_label]
 == Etiqueta
 
 Refere-se a um https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[rótulo do Kubernetes].
@@ -89,7 +89,7 @@ Uma configuração multi-cluster envolve mais de um cluster: o cluster upstream,
 
 Refere-se a um https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[namespace do Kubernetes].
 
-[#_reconciliar]
+[#_reconcile]
 == Reconciliar
 
 Reconciliação é usada no contexto de estados em clusters Kubernetes. Reconcilhar um recurso significa atualizá-lo para que seu estado atual corresponda ao seu estado esperado, seja a partir de uma configuração, por exemplo, de um repositório git, de um chart, etc.
@@ -97,34 +97,34 @@ Reconciliação é usada no contexto de estados em clusters Kubernetes. Reconcil
 Ao usar GitOps, atualizações em um repositório git podem se traduzir em novos estados esperados para recursos configurados através desse repositório git. Como resultado, os recursos afetados serão reconciliados.
 O estado de um recurso também pode depender de outro recurso, levando a uma reconciliação adicional. Por exemplo, o status de um grupo de clusters depende dos status de clusters individuais contidos nesse grupo de clusters. Portanto, uma mudança no estado de um cluster resultará na reconciliação de qualquer grupo de clusters ao qual esse cluster pertença.
 
-[#_registro]
+[#_registration]
 == Registro
 
 O registro de cluster é o processo de fazer com que um agente Fleet, vivendo em um cluster downstream, seja reconhecido pelos controladores Fleet no cluster upstream. Uma vez que o registro esteja completo para um cluster downstream, {product_name} pode implantar cargas de trabalho nesse cluster.
 
-[#_reposit-rio]
+[#_repository]
 == Repositório
 
 Um repositório pode ser: * um repositório git, armazenando código, configuração ou qualquer tipo de arquivos e mantendo o controle das alterações feitas nesses arquivos através de commits. {product_name} pode monitorar um repositório git em busca de novos commits enviados para um branch ou revisão específica, em um ou mais caminhos, através de xref:how-tos-for-users/gitrepo-add.adoc[recursos GitRepo]. * um repositório Helm, hospedando gráficos Helm e um arquivo de índice referenciando-os. {product_name} é capaz de instalar gráficos Helm e aplicar configurações definidas pelo usuário a eles.
 
-[#_recursos]
+[#_resources]
 == Recursos
 
 Isso geralmente se refere a recursos do Kubernetes, que podem ser:
 * recursos principais definidos pelo próprio Kubernetes, como mapas de configuração, implantações, pods, serviços, etc;
 * recursos personalizados definidos por aplicações individuais, como o próprio {product_name}, que define GitRepo, Bundle, Bundledeployment e entre outros.
 
-[#_alvo]
+[#_target]
 == Alvo
 
 {product_name} usa esta palavra no contexto de determinar onde uma carga de trabalho será executada. Isso representa um cluster de destino para uma carga de trabalho.
 
-[#_cluster-upstream]
+[#_upstream-cluster]
 == Cluster Upstream
 
 Um cluster Kubernetes onde os controladores Fleet são executados. Este é o cluster onde `GitRepo`s, pacotes e implantações de pacotes são criados. Também chamado de cluster de gerenciamento.
 
-[#_carga-de-trabalho]
+[#_workload]
 == Carga de trabalho
 
 Uma carga de trabalho representa o que os usuários desejam implantar através de {product_name}. Pode ser um conjunto de gráficos Helm, manifestos do Kubernetes, Kustomize, etc., armazenados ou referenciados em um repositório git.

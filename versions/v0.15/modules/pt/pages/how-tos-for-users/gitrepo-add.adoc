@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :doctype: book
 
-[#_criar-inst-ncia-gitrepo]
+[#_create-gitrepo-instance]
 == Criar Instância GitRepo
 
 Os repositórios Git são registrados criando um recurso `GitRepo` no Kubernetes. Consulte o xref:tutorials/tut-deployment.adoc[tutorial de criação de uma implantação] para exemplos.
@@ -18,7 +18,7 @@ Os campos disponíveis do recurso personalizado GitRepo estão documentados na x
 ====
 
 
-[#_namespace-adequado]
+[#_proper-namespace]
 === Namespace adequado
 
 Os repositórios Git são adicionados ao gerenciador {product_name} usando o tipo de recurso personalizado `GitRepo`. O tipo `GitRepo` é associado a um namespace. Por padrão, o Rancher criará dois espaços de trabalho {product_name}: 
@@ -30,7 +30,7 @@ Se você estiver usando {product_name} em um estilo xref:explanations/concepts.a
 
 Para um estilo xref:explanations/concepts.adoc[multi-cluster], por favor, certifique-se de usar o repositório correto que será mapeado para os clusters de destino certos.
 
-[#_substituir-o-namespace-da-carga-de-trabalho]
+[#_override-workload-s-namespace]
 == Substituir o namespace da carga de trabalho
 
 O campo `targetNamespace` substituirá qualquer namespace no pacote. Se a implantação contiver recursos com escopo de cluster, ela falhará.
@@ -41,7 +41,7 @@ Isso tem precedência sobre todas as outras definições de namespace:
 
 As definições de namespace de carga de trabalho podem ser restritas com `allowedTargetNamespaces` no recurso `GitRepoRestriction`.
 
-[#_adicionando-um-reposit-rio-git-privado]
+[#_adding-a-private-git-repository]
 == Adicionando um Repositório Git Privado
 
 {product_name} suporta os seguintes mecanismos de autenticação para repositórios privados:
@@ -105,7 +105,7 @@ A chave deve estar no formato PEM.
 ====
 
 
-[#_hosts-conhecidos]
+[#_known-hosts]
 === Hosts conhecidos
 
 {product_name} suporta colocar `known_hosts` no segredo SSH. Aqui está um exemplo de como adicioná-lo:
@@ -132,8 +132,7 @@ stringData:
     |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 ----
 
-[[strict-host-key-checks]]
-[#_verifica-es-rigorosas-de-chave-de-host]
+[#_strict-host-key-checks]
 ==== Verificações rigorosas de chave de host
 
 O valor do chart `insecureSkipHostKeyChecks` define como o Fleet se comporta em relação a `known_hosts` ao estabelecer conexões SSH.
@@ -148,13 +147,13 @@ Observe que isso é compatível com o Fleet procurando um segredo `gitcredential
 
 Se nenhum desses segredos existir, ou se não houver entradas `known_hosts` disponíveis nesse segredo, o Fleet usará seu próprio mapa de configuração `known-hosts`, criado na instalação com entradas estáticas para os provedores de Git mais amplamente utilizados.
 
-Mais detalhes xref:how-tos-for-operators/installation.adoc#additional-ssh-known-hosts[aqui] sobre de onde vêm as entradas padrão e como preencher entradas adicionais na instalação.
+Mais detalhes xref:how-tos-for-operators/installation.adoc#_additional-ssh-known-hosts[aqui] sobre de onde vêm as entradas padrão e como preencher entradas adicionais na instalação.
 
 A ausência do mapa de configuração, caso nenhum segredo esteja disponível, é considerada um sintoma de uma implantação incompleta do Fleet e relatada como tal.
 
 O Fleet usa apenas uma única fonte de entradas `known_hosts` por vez. Isso significa que, mesmo que um segredo contenha entradas inválidas (ou insuficientes), o Fleet não procurará entradas válidas no mapa de configuração. Isso se aplica a um segredo referenciado em um `GitRepo`, assim como a um possível segredo `gitcredential`, se nenhum segredo for referenciado no `GitRepo`.
 
-[#_usando-autentica-o-http]
+[#_using-http-auth]
 === Usando Autenticação HTTP
 
 Crie um segredo contendo nome de usuário e senha. Você pode substituir a senha por um token de acesso pessoal, se necessário. Veja também xref:troubleshooting.adoc#_http-secrets-in-github[segredos HTTP no GitHub].
@@ -181,7 +180,7 @@ Assim como com SSH, referencie o segredo em seu recurso GitRepo via `clientSecre
 Ao usar o BitBucket e tokens de acesso, o nome de usuário deve ser `x-token-auth`.
 ====
 
-[#_usando-um-app-do-github]
+[#_using-a-github-app]
 === Usando um App do GitHub
 
 Os seguintes campos são necessários para permitir que {product_name} se autentique no GitHub usando um App do GitHub:
@@ -222,7 +221,7 @@ Colocar o valor ou o nome da variável de ambiente (por exemplo `--from-literal=
 
 Certifique-se de referenciar esse segredo em seu recurso GitRepo por meio de `clientSecretName`.
 
-[#_usando-pacotes-ca-personalizados]
+[#_using-custom-ca-bundles]
 === Usando Pacotes CA Personalizados
 
 Validar um repositório usando um certificado assinado por uma Autoridade Certificadora personalizada pode ser feito especificando um campo `cabundle` em um `GitRepo`.
@@ -238,13 +237,13 @@ Observe que se existirem segredos especificando pacotes CA, por exemplo, se {pro
 endif::[]
 ====
 
-[#_usando-reposit-rios-helm-privados]
+[#_using-private-helm-repositories]
 == Usando Repositórios Helm Privados
 
 [CAUTION]
 ====
 As credenciais serão usadas incondicionalmente para todos os repositórios Helm referenciados pelo recurso GitRepo.
-Certifique-se de não vazar credenciais misturando repositórios públicos e privados. Use <<Use different helm credentials for each path,credenciais Helm diferentes para cada caminho>>, ou divida-os em diferentes repositórios Git, ou use `helmRepoURLRegex` para limitar o escopo das credenciais a determinados servidores.
+Certifique-se de não vazar credenciais misturando repositórios públicos e privados. Use xref:#_use-different-helm-credentials-for-each-path[credenciais Helm diferentes para cada caminho], ou divida-os em diferentes repositórios Git, ou use `helmRepoURLRegex` para limitar o escopo das credenciais a determinados servidores.
 ====
 
 
@@ -272,7 +271,7 @@ Por exemplo, para adicionar um segredo no kubectl, execute
 
 Após o segredo ser criado, especifique o segredo no `gitRepo.spec.helmSecretName`. Certifique-se de que o segredo seja criado no mesmo namespace que o GitRepo.
 
-[#_use-credenciais-helm-diferentes-para-cada-caminho]
+[#_use-different-helm-credentials-for-each-path]
 === Use credenciais Helm diferentes para cada caminho.
 
 {product_name} permite que você defina credenciais exclusivas para cada caminho de chart Helm em um repositório Git usando o campo helmSecretNameForPaths.
@@ -406,8 +405,7 @@ kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=
 Certifique-se de que o backup esteja criptografado para proteger credenciais sensíveis.
 ====
 
-[[storing-credentials-in-git]]
-[#_armazenando-credenciais-no-git]
+[#_storing-credentials-in-git]
 == Armazenando Credenciais no Git
 
 É recomendável não armazenar credenciais no Git. Mesmo que o repositório esteja devidamente protegido, segredos estão em risco durante a clonagem, etc.
@@ -426,12 +424,12 @@ Ao usar Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encr
 - contents.fleet.cattle.io
 ----
 
-[#_backup-e-restaura-o]
+[#_backing-up-and-restoring]
 == Backup e restauração
 
 Ao fazer backup e restaurar {product_name} com cargas de trabalho existentes, sejam elas GitRepos ou HelmOps, considere:
 
-[#_disponibilidade-do-servidor-api-do-kubernetes]
+[#_kubernetes-api-server-availability]
 === Disponibilidade do servidor API do Kubernetes
 
 Um agente {product_name} em um cluster downstream monitora um namespace específico do cluster no cluster upstream.
@@ -439,7 +437,7 @@ Durante uma operação de restauração, as alterações feitas no cluster upstr
 
 Para evitar isso, torne o servidor API do Kubernetes inacessível para clusters downstream enquanto uma restauração estiver em execução. Os agentes não devem acessar o cluster upstream até que todos os recursos sejam recriados.
 
-[#_pausando]
+[#_pausing]
 === Pausando
 
 Um xref:reference/ref-gitrepo.adoc[pausado] GitRepo irá pausar bundles e implantações de bundles. Isso significa:
@@ -450,7 +448,7 @@ Um xref:reference/ref-gitrepo.adoc[pausado] GitRepo irá pausar bundles e implan
 Pausar um GitRepo apenas impede que bundles e implantações de bundles sejam criados ou atualizados. Isso afeta apenas operações de _controlador_, não operações de {product_name} _agente_.
 Para evitar que recursos de usuário em um bundle sejam excluídos ao excluir uma implantação de bundle, use xref:reference/ref-bundle.adoc[keepResources].
 
-[#_solu-o-de-problemas]
+[#_troubleshooting]
 == Solução de problemas
 
 Veja a seção {product_name} de Solução de Problemas xref:troubleshooting.adoc[documentos de Solução de Problemas].

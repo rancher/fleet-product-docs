@@ -60,7 +60,7 @@ spec:
   - clusterName: local
 ----
 
-[#_destinos]
+[#_targets]
 == Destinos
 
 O Bundle pode direcionar múltiplos clusters. Ele usa o mesmo xref:how-tos-for-users/gitrepo-targets.adoc#_target-matching[direcionamento que o GitRepo].
@@ -78,7 +78,7 @@ targets:
       replicas: 1
 ----
 
-[#_limita-es]
+[#_limitations]
 == Limitações
 
 As opções do Helm relacionadas ao download do Helm chart serão ignoradas. O Helm chart é baixado pelo fleet-cli, que cria os Bundles. O Bundle deve conter todos os recursos do Helm chart. Portanto, o Bundle irá ignorar:

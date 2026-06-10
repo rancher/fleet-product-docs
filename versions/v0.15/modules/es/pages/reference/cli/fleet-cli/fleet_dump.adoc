@@ -4,7 +4,7 @@
 
 Volcar datos de clúster en un archivo.
 
-[#_descripci-n-general]
+[#_overview]
 == Descripción general
 
 Volcar datos de un clúster en un archivo, incluyendo:
@@ -17,7 +17,7 @@ Volcar datos de un clúster en un archivo, incluyendo:
 fleet dump <flags>
 ----
 
-[#_indicadores]
+[#_flags]
 == Indicadores
 
 [source,text]
@@ -25,10 +25,10 @@ fleet dump <flags>
   -p <path>         Path to the archive file to generate
 ----
 
-[#_salida]
+[#_output]
 == Salida
 
-[#_contenido]
+[#_contents]
 === Contenido
 
 El comando `dump` produce un archivo `.tgz` que contiene los siguientes datos:
@@ -52,9 +52,9 @@ El comando `dump` produce un archivo `.tgz` que contiene los siguientes datos:
 
 * Métricas expuestas por los servicios `monitoring-*` que residen en el espacio de nombres `cattle-fleet-system`.
 Esto incluye típicamente servicios `monitoring-gitjob` y `monitoring-fleet-controller`, así como sus
-xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[segmentados] contrapartes, si las hay.
+xref:how-tos-for-operators/installation.adoc#_multi-controller-installation-sharding[segmentados] contrapartes, si las hay.
 
-[#_formato]
+[#_format]
 ==== Formato
 
 Los recursos {product_name} en bruto se almacenan cada uno en un archivo diferente, nombrado como `<kind>_<namespace>_<name>`, donde `<kind>` es
@@ -66,7 +66,7 @@ Contienen un evento por línea, cada evento codificado en JSON.
 Las métricas se almacenan en archivos por servicio, cada archivo nombrado `metrics_<service_name>`.
 Sus contenidos son `GET` cuerpos de respuesta recibidos del `/metrics` endpoint de cada servicio, textualmente.
 
-[#_v-ase]
+[#_see-also]
 == VÉASE
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]

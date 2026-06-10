@@ -20,7 +20,7 @@ endif::[]
 
 在将 `GitRepos` 部署到下游集群时，集群必须映射到目标。
 
-[#_]
+[#_defining-targets]
 == 定义目标
 
 使用 `spec.targets` 字段来匹配集群或集群组来完成 `GitRepo` 的部署目标。YAML 规范如下。
@@ -60,7 +60,7 @@ spec:
     clusterName: cluster1
 ----
 
-[#_]
+[#_target-matching]
 == 目标匹配
 
 与 `GitRepo` 在同一命名空间中的所有集群和集群组将与所有目标进行评估。
@@ -88,7 +88,7 @@ targets:
 
 在 Rancher 中使用 {product_name} 时，请确保输入 `clusters.fleet.cattle.io` 资源的名称。
 
-[#_]
+[#_default-target]
 == 默认目标
 
 如果未为 `GitRepo` 设置目标，则应用默认目标值。 默认目标值如下。
@@ -102,7 +102,7 @@ targets:
 
 这意味着如果您希望为未配置的 GitRepos 设置一个默认位置，只需创建一个名为 default 的集群组并将集群添加到其中。
 
-[#_]
+[#_customization-per-cluster]
 == 每个集群的自定义
 
 [IMPORTANT]
@@ -169,7 +169,7 @@ targetCustomizations:
 配置管理不仅限于部署，还可以扩展到一般的配置管理。{product_name} 能够通过在任意集群之间的自定义自动应用配置管理。
 ====
 
-[#_targetcustomizations-helm]
+[#_limitations-when-overriding-helm-chart-settings-with-targetcustomizations]
 === 使用`targetCustomizations`覆盖Helm图表设置时的限制。
 
 尽管可以在`targetCustomizations`中指定`helm.chart`、`helm.repo`和`helm.version`，但覆盖这些字段有重要的限制。
@@ -190,7 +190,7 @@ targetCustomizations:
 * 为每个环境创建单独的`GitRepo`资源。
 
 
-[#_]
+[#_additional-examples]
 == 附加示例
 
 使用原始Kubernetes YAML、Helm图表、Kustomize及三者组合的示例在 https://github.com/rancher/fleet-examples/[{product_name}示例储存库]中。

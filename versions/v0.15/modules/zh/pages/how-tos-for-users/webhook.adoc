@@ -20,7 +20,7 @@
 * Bitbucket Server
 * Gogs
 
-[#_1-webhook]
+[#_1-configure-the-webhook-service]
 == 1.配置 Webhook 服务
 
 {product_name} 使用 `gitjob` 服务来处理 Webhook 请求。
@@ -127,7 +127,7 @@ spec:
 您可以在 Ingress 上配置 https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] 以实现安全通信。
 ====
 
-[#_2-webhook-url]
+[#_2-configure-the-webhook-callback-url]
 == 2.配置 Webhook 回调 URL
 
 前往您的 Git 提供商并配置 Webhook 回调 URL。
@@ -151,7 +151,7 @@ image:: ../../images/webhook.png[]
 当配置 Webhook 时，轮询间隔会自动调整为一小时。
 ====
 
-[#_3-webhook]
+[#_3-optional-configure-a-webhook-secret]
 == 3.（可选）配置 Webhook 密钥
 
 Webhook 密钥验证从您的 Git 提供商发送的负载。
@@ -169,7 +169,7 @@ Webhook 密钥验证从您的 Git 提供商发送的负载。
 | Azure DevOps | `azure-password`
 |===
 
-[#_1]
+[#_option-1-configure-a-cluster-wide-secret]
 === 选项 1：配置集群范围的密钥
 
 在这种方法中，密钥适用于整个集群，所有 GitRepo 自动使用它。
@@ -199,8 +199,7 @@ kubectl create secret generic gitjob-webhook \
   --from-literal=azure-password=pass123
 ----
 
-[[option-2-configure-secret]]
-[#_2-gitrepo]
+[#_option-2-configure-a-secret-per-gitrepo]
 === 选项 2：为每个 GitRepo 配置一个密钥
 
 您可以为每个 GitRepo 定义一个唯一的 webhook 密钥。
@@ -225,7 +224,7 @@ spec:
 
 如果同时存在集群范围的密钥和每个 GitRepo 的密钥，{product_name} 将使用每个 GitRepo 的密钥。
 
-[#_4-webhook]
+[#_4-test-the-webhook]
 == 4.测试 Webhook
 
 前往您的 Git 提供商并测试 webhook 连接。您应该收到一个 HTTP 响应代码，确认 webhook 的交付。

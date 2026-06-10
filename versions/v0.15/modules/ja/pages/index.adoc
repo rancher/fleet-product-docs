@@ -5,7 +5,7 @@
 image::fleet-architecture.svg[スタティック, 600]
 
 [discrete]
-[#_product-name]
+[#_what-is-product-name]
 === {product_name}とは
 
 * *クラスタエンジン*: {product_name}は、ユーザーにローカルクラスタに対するより高い制御と、*GitOps*を通じた継続的な監視を提供するために設計されたコンテナ管理およびデプロイメントエンジンです。{product_name}は、スケーラビリティの能力だけでなく、ユーザーにクラスタにインストールされているものを正確に監視するための高い制御と可視性を提供します。

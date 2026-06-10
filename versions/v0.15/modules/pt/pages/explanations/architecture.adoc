@@ -4,12 +4,12 @@
 
 {product_name} tem dois componentes principais. O controlador {product_name} e os agentes de cluster. Esses componentes funcionam em um modelo de pull em duas etapas. O controlador {product_name} fará pull do git e os agentes de cluster farão pull do controlador {product_name}.
 
-[#_product-name-controlador]
+[#_product-name-controller]
 == {product_name} Controlador
 
 O {product_name} controlador é um conjunto de controladores Kubernetes executando em qualquer cluster Kubernetes padrão.  A única API exposta pelo {product_name} controlador é a API Kubernetes, não há API personalizada para o controlador Fleet.
 
-[#_agentes-de-cluster]
+[#_cluster-agents]
 == Agentes de Cluster
 
 Um agente de cluster é executado em cada cluster e é responsável por se comunicar com o {product_name} controlador.
@@ -17,7 +17,7 @@ A única comunicação do cluster para o {product_name} controlador é por meio 
 
 Os agentes de cluster não são considerados como tendo uma conexão "sempre ativada". Eles retomarão a operação assim que puderem se conectar. Melhorias futuras provavelmente adicionarão a capacidade de agendar horários em que o agente se conecta; no momento, ele sempre tentará se conectar.
 
-[#_seguran-a]
+[#_security]
 == Segurança
 
 O {product_name} controlador cria dinamicamente contas de serviço, gerencia seu RBAC e, em seguida, fornece os tokens para os clusters downstream. Os clusters são registrados por meio de tokens de registro de cluster que podem expirar opcionalmente.
@@ -25,7 +25,7 @@ O token de registro do cluster é usado apenas durante o processo de registro pa
 
 As contas de serviço atribuídas aos clusters têm privilégios apenas para listar `BundleDeployment` no namespace criado especificamente para aquele cluster. Ele também pode atualizar o `status` sub-recurso de `BundleDeployment` e o `status` sub-recurso de seu `Cluster` recurso.
 
-[#_vis-o-geral-dos-componentes]
+[#_component-overview]
 == Visão geral dos componentes
 
 Uma visão geral dos componentes e de como eles interagem em alto nível.

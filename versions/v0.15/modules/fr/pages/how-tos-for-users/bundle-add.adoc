@@ -60,7 +60,7 @@ spec:
   - clusterName: local
 ----
 
-[#_cibles]
+[#_targets]
 == Cibles
 
 Le Bundle peut cibler plusieurs clusters. Il utilise le même xref:how-tos-for-users/gitrepo-targets.adoc#_target-matching[ciblage que le GitRepo].
@@ -78,7 +78,7 @@ targets:
       replicas: 1
 ----
 
-[#_limites]
+[#_limitations]
 == limites
 
 Les options Helm liées au téléchargement du chart Helm seront ignorées. Le chart Helm est téléchargé par le fleet-cli, qui crée les Bundles. Le Bundle doit contenir toutes les ressources du chart Helm. Par conséquent, le Bundle ignorera{nbsp}:

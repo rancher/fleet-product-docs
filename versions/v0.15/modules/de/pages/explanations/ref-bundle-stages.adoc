@@ -22,15 +22,14 @@ Dieses Diagramm zeigt die verschiedenen Renderphasen, die ein Bundle bis zur Imp
 
 image::FleetBundleStages.svg[Bundle-Stufen]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
-[#_untersuchung-des-bundle-lebenszyklus-mit-der-kommandozeilenschnittstelle]
+[#_examining-the-bundle-lifecycle-with-the-cli]
 == Untersuchung des Bundle-Lebenszyklus mit der Kommandozeilenschnittstelle
 
 Mehrere Fleet-CLI-Befehle helfen beim Debuggen von Bundles.
 
 image::fleetCLI-key-components.svg[Ein Diagramm, das erklärt, wie die wichtigsten Befehle der Fleet-CLI funktionieren]
 
-[#_fleet-anwenden]
+[#_fleet-apply]
 === Fleet anwenden
 
 xref:reference/cli/fleet-cli/fleet_apply.adoc[Anwenden] rendert einen Ordner mit Kubernetes-Ressourcen, wie z.B. einem Helm-Chart, Manifeste oder Kustomize-Ordnern, in eine {product_name} Bundle-Ressource.
@@ -43,20 +42,19 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 Weitere Informationen zur Erstellung von Bundles mit `fleet apply` finden Sie im xref:how-tos-for-users/bundle-add.adoc[Abschnitt über Bundles].
 
-[[fleet-target]]
-[#_fleet-ziel]
+[#_fleet-target]
 === Fleet Ziel
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Ziel] liest ein Bundle aus einer Datei und arbeitet mit einem Live-Cluster, um die `bundledeployment` & `content` Ressource auszugeben, die der Fleetcontroller erstellen würde. Es nimmt einen Namespace als Argument, sodass es in diesem Namespace nach z.B. Cluster-Ressourcen suchen kann. Es kann auch die Datenstruktur ausgeben, die während des "Targetings" verwendet wird, sodass Entscheidungen bezüglich Labels und Clusternamen überprüft werden können.
 
-[#_fleet-bereitstellen]
+[#_fleet-deploy]
 === Fleet bereitstellen
 
 xref:reference/cli/fleet-cli/fleet_deploy.adoc[Bereitstellen] nimmt die Ausgabe von `fleet target` oder eine ausgegebene BundleDeployment-/Inhaltsressource und stellt sie in einem Cluster bereit, genau wie es der Fleet-Agent tun würde. Es unterstützt einen Trockenlaufmodus, um die Ressourcen auszugeben, die erstellt werden würden, anstatt sie mit Helm zu installieren. Da der Befehl die Eingabressourcen nicht erstellt, würde ein laufender Fleet-Agent wahrscheinlich die Implementierung aufräumen.
 
 Der Bereitstellungsbefehl kann verwendet werden, um Bundles in Air-Gapped-Clustern bereitzustellen.
 
-[#_lifecycle-kommandozeilenschnittstelle]
+[#_lifecycle-cli]
 === Lifecycle Kommandozeilenschnittstelle
 
 Fleet-CLI-Befehle helfen Ihnen, den Bundle-Lebenszyklus zu debuggen und zu verstehen. Das folgende Beispiel verwendet den vollständigen Bundle-Lebenszyklus mit der Kommandozeilenschnittstelle:

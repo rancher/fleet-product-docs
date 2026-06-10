@@ -12,7 +12,7 @@
 这简化了处理图表依赖关系的过程，例如来自外部资源的值。
 另请参见 xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom]。
 
-[#_]
+[#_how-it-works]
 == 工作方式
 
 HelmOps 支持一个新的 `downstreamResources` 字段，可以用来按种类和名称引用资源。
@@ -47,7 +47,7 @@ spec:
 如果通过 `downstreamResources` 引用的资源在不再作为目标后仍应保留在下游集群中，则应在 HelmOp 上将 xref:/reference/ref-bundle.adoc[keepResources] 设置为 `true`。
 ====
 
-[#_]
+[#_monitoring]
 == 监控
 
 从版本 v0.15.0 开始，{product_name} 监控在 `DownstreamResources` 中列出的机密和配置映射的更改。它还检查在 Bundle 创建后是否创建了机密或配置映射。

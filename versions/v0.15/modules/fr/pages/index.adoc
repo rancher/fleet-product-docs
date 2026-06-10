@@ -5,7 +5,7 @@
 image::fleet-architecture.svg[Statique, 600]
 
 [discrete]
-[#_qu-est-ce-que-product-name]
+[#_what-is-product-name]
 === Qu'est-ce que {product_name} ?
 
 * *Cluster engine* : {product_name} est un moteur de gestion et de déploiement de conteneurs conçu pour offrir aux utilisateurs un meilleur contrôle sur la grappe locale et un suivi constant via *GitOps*. {product_name} se concentre non seulement sur la capacité à évoluer, mais il donne également aux utilisateurs un haut degré de contrôle et de visibilité pour surveiller exactement ce qui est installé sur le cluster.

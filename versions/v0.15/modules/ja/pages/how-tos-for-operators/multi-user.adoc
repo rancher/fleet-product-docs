@@ -24,7 +24,7 @@ image::FleetSharedClusters.svg[共有クラスター]
 ====
 
 
-[#_product-name]
+[#_example-product-name-standalone]
 == 例{product_name}スタンドアロン
 
 これにより、'fleetuser'というユーザーが作成され、'project1'ネームスペース内のGitRepoリソースのみを管理できます。
@@ -48,7 +48,7 @@ image::FleetSharedClusters.svg[共有クラスター]
 
 これにより、テナントは他のテナントのネームスペースにアクセスできないため、GitRepoリソースに干渉できません。
 
-[#_rancher]
+[#_isolated-workspaces-in-rancher]
 == Rancherにおける隔離されたワークスペース
 
 会社内の特定のグループ/組織に属するユーザーは、同じ会社の他のグループ/組織のユーザーに対して自分のクラスターの可視性を無効にしたい場合があります。
@@ -146,7 +146,7 @@ endif::[]
 
 整理された環境を持つために、各ワークスペースには顧客が必要とする職務の分離と隔離を助けるための関連する`GlobalRole`が必要です。このようにして、各ユーザーはニーズに応じて1つ以上の`GlobalRoles`に割り当てることができます。
 
-[#_]
+[#_allow-access-to-clusters]
 == クラスターへのアクセスを許可する
 
 これは、'fleetuser'によって作成されたすべてのGitRepoが`team: one`ラベルを持っていると仮定します。異なるラベルを使用して、異なるクラスターのネームスペースを選択することができます。
@@ -180,7 +180,7 @@ namespaceSelector:
 
 GitRepoリソース内のxref:how-tos-for-users/gitrepo-targets.adoc[`target`セクション]は、一致したクラスターのサブセットにのみFleetリソースをデプロイするために使用できます。
 
-[#_]
+[#_restricting-access-to-downstream-clusters]
 == ダウンストリームクラスターへのアクセスを制限する
 
 管理者は、各ネームスペース内に`GitRepoRestriction`を作成することでテナントをさらに制限できます。
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 これにより、クラスター全体のリソースの作成が拒否され、他のテナントに干渉し、'project1simpleapp'ネームスペースへのデプロイが制限される可能性があります。
 
-[#_gitrepo]
+[#_an-example-gitrepo-resource]
 == GitRepoリソースの例
 
 テナントによって作成されたGitRepoリソースで、管理者アクセスがない場合は次のようになります：

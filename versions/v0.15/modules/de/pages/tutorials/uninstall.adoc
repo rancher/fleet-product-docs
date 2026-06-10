@@ -8,7 +8,7 @@ Das Entfernen der CRDs entfernt alle bereitgestellten Workloads.
 ====
 
 
-[#_product-name-einzelplatzbetrieb]
+[#_product-name-standalone]
 == {product_name} Einzelplatzbetrieb
 
 {product_name} ist als zwei Helm-Charts verpackt, sodass die Deinstallation durch das Deinstallieren der entsprechenden Helm-Charts erfolgt.

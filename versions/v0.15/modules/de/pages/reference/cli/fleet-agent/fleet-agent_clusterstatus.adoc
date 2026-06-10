@@ -8,7 +8,7 @@ Ressourcenstatus kontinuierlich an den Upstream-Cluster melden
 fleet-agent clusterstatus [flags]
 ----
 
-[#_optionen]
+[#_options]
 == Optionen
 
 ----
@@ -20,7 +20,7 @@ fleet-agent clusterstatus [flags]
       --namespace string          system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
-[#_siehe-auch]
+[#_see-also]
 == SIEHE AUCH
 
 * xref:/reference/cli/fleet-agent/fleet-agent.adoc[Fleet agent]     - Verwalten Sie die Operationen mit dem Fleet agent, der mit dem Fleet-Controller kommuniziert

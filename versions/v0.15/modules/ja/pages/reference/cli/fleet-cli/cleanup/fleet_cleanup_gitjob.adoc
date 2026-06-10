@@ -8,7 +8,7 @@
 fleet cleanup gitjob [flags]
 ----
 
-[#_]
+[#_options]
 == オプション
 
 ----
@@ -21,7 +21,7 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_]
+[#_see-also]
 == 関連項目
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - 古くなったリソースをクリーンアップします

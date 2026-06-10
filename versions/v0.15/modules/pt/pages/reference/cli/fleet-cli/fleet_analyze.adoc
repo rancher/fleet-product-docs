@@ -9,7 +9,7 @@ Analise as instantâneas criadas por `fleet monitor`
 fleet analyze [flags] MONITOR_FILE
 ----
 
-[#_op-es]
+[#_options]
 == Opções
 
 [source,text]
@@ -22,7 +22,7 @@ fleet analyze [flags] MONITOR_FILE
     --no-color     Disable color in output
 ----
 
-[#_uso]
+[#_usage]
 == Uso
 
 [source,bash]
@@ -54,7 +54,7 @@ fleet analyze --json monitor.json
 fleet analyze --no-color monitor.json
 ----
 
-[#_modos-de-sa-da]
+[#_output-modes]
 == Modos de Saída
 
 - **Resumo (padrão)**: Visão geral de alto nível dos recursos e diagnósticos
@@ -64,7 +64,7 @@ fleet analyze --no-color monitor.json
 - **Detalhado**: Análise completa incluindo informações do controlador, consistência da API e eventos
 - **JSON**: Saída legível por máquina para scripts e automação
 
-[#_an-lise-de-m-ltiplas-instant-neas]
+[#_multi-snapshot-analysis]
 == Análise de Múltiplas Instantâneas
 
 Quando seu arquivo monitor.json contém múltiplas instantâneas (um objeto JSON por linha):
@@ -84,7 +84,7 @@ fleet analyze --all monitor.json
 fleet analyze --compare snapshot2.json snapshot1.json
 ----
 
-[#_consulte-tamb-m]
+[#_see-also]
 == CONSULTE TAMBÉM
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

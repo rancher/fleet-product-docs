@@ -8,7 +8,7 @@
 fleet cleanup gitjob [flags]
 ----
 
-[#_]
+[#_options]
 == 选项
 
 ----
@@ -21,7 +21,7 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_]
+[#_see-also]
 == 另请参阅
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet 清理]     - 清理过时的资源

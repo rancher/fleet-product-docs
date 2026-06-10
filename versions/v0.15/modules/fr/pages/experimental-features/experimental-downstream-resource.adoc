@@ -12,7 +12,7 @@ Ceci est une fonctionnalité expérimentale.
 Cela simplifie la gestion des dépendances des charts, telles que les valeurs provenant de ressources externes.
 Voir aussi xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom].
 
-[#_fonctionnement]
+[#_how-it-works]
 == Fonctionnement
 
 HelmOps prend en charge un nouveau champ `downstreamResources`, qui peut être utilisé pour référencer des ressources par type et nom.
@@ -47,7 +47,7 @@ Lorsqu'un cluster n'est plus ciblé, l'agent Fleet supprimera également ces res
 Si les ressources référencées par `downstreamResources` doivent rester sur les clusters en aval même après qu'elles ne soient plus ciblées, xref:/reference/ref-bundle.adoc[keepResources] doit être défini sur `true` dans le HelmOp.
 ====
 
-[#_surveillance]
+[#_monitoring]
 == Surveillance
 
 À partir de la version v0.15.0, {product_name} surveille les modifications apportées aux secrets et aux config maps qui sont listés dans `DownstreamResources`. Il vérifie également si un secret ou un config map a été créé après la création du Bundle.

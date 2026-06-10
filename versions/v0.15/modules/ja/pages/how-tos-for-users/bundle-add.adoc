@@ -60,7 +60,7 @@ spec:
   - clusterName: local
 ----
 
-[#_]
+[#_targets]
 == ターゲット
 
 バンドルは複数のクラスターをターゲットにできます。それはxref:how-tos-for-users/gitrepo-targets.adoc#_target-matching[GitRepoと同じターゲティングを使用します]。
@@ -78,7 +78,7 @@ targets:
       replicas: 1
 ----
 
-[#_]
+[#_limitations]
 == 制限
 
 Helmチャートのダウンロードに関連するHelmオプションは無視されます。HelmチャートはFleet CLIによってダウンロードされ、バンドルが作成されます。バンドルには、チャートからのすべてのリソースが含まれている必要があります。したがって、バンドルは以下を無視します：

@@ -8,14 +8,14 @@ Eliminar recursos obsoletos
 fleet cleanup [flags]
 ----
 
-[#_opciones]
+[#_options]
 == Opciones
 
 ----
   -h, --help   help for cleanup
 ----
 
-[#_v-ase]
+[#_see-also]
 == VÉASE
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gestionar {product_name} operaciones

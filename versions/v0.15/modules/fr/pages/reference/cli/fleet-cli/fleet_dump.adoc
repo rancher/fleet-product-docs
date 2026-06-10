@@ -4,7 +4,7 @@
 
 Déposer les données du cluster dans une archive.
 
-[#_pr-sentation]
+[#_overview]
 == Présentation
 
 Déposer les données d'un cluster dans une archive, y compris{nbsp}: +
@@ -17,7 +17,7 @@ Déposer les données d'un cluster dans une archive, y compris{nbsp}: +
 fleet dump <flags>
 ----
 
-[#_drapeaux]
+[#_flags]
 == Drapeaux
 
 [source,text]
@@ -25,10 +25,10 @@ fleet dump <flags>
   -p <path>         Path to the archive file to generate
 ----
 
-[#_sortie]
+[#_output]
 == Sortie
 
-[#_table-des-mati-res]
+[#_contents]
 === Table des matières
 
 La commande `dump` produit une archive `.tgz` contenant les données suivantes{nbsp}:
@@ -52,7 +52,7 @@ La commande `dump` produit une archive `.tgz` contenant les données suivantes{n
 
 * Métriques exposées par les services `monitoring-*` vivant dans l'espace de noms `cattle-fleet-system`.
 Cela inclut généralement les services `monitoring-gitjob` et `monitoring-fleet-controller`, ainsi que leurs +
-xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[shardés] homologues, le cas échéant.
+xref:how-tos-for-operators/installation.adoc#_multi-controller-installation-sharding[shardés] homologues, le cas échéant.
 
 [#_format]
 ==== Format
@@ -65,7 +65,7 @@ Ils contiennent un événement par ligne, chaque événement étant encodé en J
 Les métriques sont stockées dans des fichiers par service, chaque fichier étant nommé `metrics_<service_name>`.
 Leurs contenus sont `GET` corps de réponse reçus du point de terminaison `/metrics` de chaque service, tels quels.
 
-[#_voir-galement]
+[#_see-also]
 == VOIR ÉGALEMENT
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]

@@ -4,7 +4,7 @@
 
 HelmOps é uma maneira simplificada de criar pacotes apontando diretamente para um repositório Helm ou para um registro OCI, sem a necessidade de configurar um repositório git.
 
-[#_resumo]
+[#_summary]
 == Resumo
 
 Quando um recurso +GitRepo+ é criado, {product_name} monitora um repositório git, criando um ou mais pacotes a partir de caminhos especificados no +GitRepo+, seguindo uma abordagem GitOps, ou orientada por git, para implantação contínua. Isso requer que um repositório git esteja disponível, possivelmente contendo +fleet.yaml+ ou outros arquivos de configuração.
@@ -22,7 +22,7 @@ Quando as restrições são inválidas ou nenhuma versão correspondente pode se
 
 Ao usar este recurso, gráficos Helm são baixados de clusters downstream, que, portanto, devem ter acesso a registros Helm.
 
-[#_criando-um-recurso-helmop]
+[#_creating-a-helmop-resource]
 == Criando um recurso HelmOp
 
 Um recurso +HelmOp+ pode ser criado da seguinte forma para começar a implantar charts Helm diretamente:
@@ -47,12 +47,12 @@ insecureSkipTLSVerify: false
 
 Para charts privados, isso requer que um segredo de acesso Helm (referenciado pelo campo +helmSecretName+) seja criado no mesmo namespace que o recurso +HelmOp+. O controlador Fleet HelmOps cuida de copiar esse segredo para os clusters downstream alvo, permitindo que o agente Fleet acesse o registro.
 
-[#_casos-de-uso-suportados]
+[#_supported-use-cases]
 == Casos de uso suportados
 
 Com 3 campos disponíveis para referenciar um chart Helm, vamos esclarecer algumas regras. De acordo com a instalação do Helm https://helm.sh/docs/helm/helm_install/[documentação], existem 6 maneiras de expressar um chart para instalar. 3 delas usam álias do repositório ou o sistema de arquivos local, que não estão disponíveis no contexto do HelmOps do Fleet. Isso nos deixa com 3 opções:
 
-[#_url-absoluta]
+[#_absolute-url]
 === URL absoluta
 
 Referenciar um chart Helm por URL absoluta é tão simples quanto fornecer uma URL para um arquivo +.tgz+ no campo +chart+. As opções do Helm seriam parecidas com:
@@ -69,7 +69,7 @@ version: ''
 
 Se um repositório não vazio ou uma versão não vazia for especificada neste caso, um erro aparecerá no status do HelmOp e nenhum pacote será criado, abortando a implantação.
 
-[#_refer-ncia-do-chart-e-url-do-reposit-rio]
+[#_chart-reference-and-repo-url]
 === Referência do chart e URL do repositório
 
 Um chart Helm também pode ser referenciado através de seu repositório e nome do chart, com uma versão opcional, que pode ser uma versão estática ou uma restrição de versão.
@@ -88,8 +88,7 @@ version: '1.2.3'
 
 Neste caso, apenas o campo ++versão++ pode estar vazio. Se qualquer um dos campos +chart+ ou +repo+ estiver vazio, {product_name} definirá um erro no status do HelmOp e nenhum bundle será criado.
 
-[[oci-registry]]
-[#_registro-oci]
+[#_oci-registry]
 === Registro OCI
 
 O Helm suporta registros OCI, que podem ser referenciados em {product_name} usando o campo +repo+.
@@ -121,7 +120,7 @@ Neste caso, {product_name} estará baixando artefatos OCI. Isso significa que:
 
 {product_name} pode consultar o registro Helm referenciado, verificando periodicamente se novas versões estão disponíveis. Claro, isso só faz sentido se o campo +version+ contiver uma restrição de versão, que pode resolver para múltiplas versões.
 
-[#_como-habilitar-isso]
+[#_how-to-enable-it]
 === Como habilitar isso
 
 O polling envolve um campo +pollingInterval+, semelhante ao que existe para GitOps. No entanto, no caso do HelmOps, o intervalo de polling padrão é de 0 segundos, o que significa que o polling será desativado.
@@ -131,7 +130,7 @@ As seguintes condições devem ser atendidas em um recurso HelmOp para que {prod
 * O campo +pollingInterval+ está definido para uma duração diferente de zero (por exemplo, +10s+, +1m+, etc)
 * O campo +version+ está definido para uma restrição de versão semântica válida (por exemplo, +2.x.x+, ++< 1.0++), não uma versão estática (por exemplo, 1.2.3)
 
-[#_o-que-ele-faz]
+[#_what-it-does]
 === O que ele faz
 
 Quando o polling é habilitado, {product_name} faz o seguinte no intervalo configurado:
@@ -144,7 +143,7 @@ Quando o polling é habilitado, {product_name} faz o seguinte no intervalo confi
 *** com +false+ com um erro se ocorreu uma falha
 ** atualizando o campo ++Last Polling Time++ para o horário de início da última tentativa de polling, mesmo que tenha falhado.
 
-[#_usando-reposit-rios-helm-privados]
+[#_using-private-helm-repositories]
 == Usando repositórios Helm privados
 
 Isso funciona da mesma forma que para gitOps, referenciando um segredo de acesso do Helm através do campo `helmSecretName`.
@@ -153,7 +152,7 @@ Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_using
 
 A parte sobre o uso de credenciais separadas para cada caminho não é relevante, uma vez que, ao contrário de um GitRepo, um recurso HelmOp referencia apenas um único chart Helm.
 
-[#_atualiza-es-de-status]
+[#_status-updates]
 == Atualizações de status
 
 Criar um recurso HelmOp leva à criação de um pacote, se as opções do Helm forem válidas e uma versão do chart puder ser encontrada.

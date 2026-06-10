@@ -24,7 +24,7 @@ No entanto, as restrições {product_name} existentes permitem que os usuários 
 ====
 
 
-[#_exemplo-product-name-aut-nomo]
+[#_example-product-name-standalone]
 == Exemplo {product_name} Autônomo
 
 Isso criaria um usuário 'fleetuser', que pode gerenciar apenas recursos GitRepo no namespace 'project1'.
@@ -48,7 +48,7 @@ Se quisermos dar acesso a múltiplos namespaces, podemos usar um único papel de
 
 Isso garante que os inquilinos não possam interferir nos recursos GitRepo de outros inquilinos, uma vez que não têm acesso aos seus namespaces.
 
-[#_espa-os-de-trabalho-isolados-no-rancher]
+[#_isolated-workspaces-in-rancher]
 == Espaços de Trabalho Isolados no Rancher
 
 Usuários pertencentes a um grupo/organização específica dentro da empresa podem querer desabilitar a visibilidade de seus clusters para usuários de outros grupos/organizações da mesma empresa.
@@ -146,7 +146,7 @@ O usuário agora tem acesso à aba `Continuous Delivery` no Rancher e pode impla
 
 Para ter um ambiente bem organizado, cada espaço de trabalho deve ter seu próprio `GlobalRole` relacionado para ajudar na separação de funções e no isolamento exigido pelo cliente. Dessa forma, cada usuário pode ser atribuído a um ou mais `GlobalRoles`, dependendo das necessidades.
 
-[#_permitir-acesso-aos-clusters]
+[#_allow-access-to-clusters]
 == Permitir Acesso aos Clusters
 
 Isso assume que todos os GitRepos criados por 'fleetuser' têm o rótulo `team: one`. Rótulos diferentes podem ser usados para selecionar diferentes namespaces de cluster.
@@ -180,7 +180,7 @@ namespaceSelector:
 
 A seção xref:how-tos-for-users/gitrepo-targets.adoc[`target` do recurso GitRepo] pode ser usada para implantar apenas em um subconjunto dos clusters correspondentes.
 
-[#_restringindo-o-acesso-aos-clusters-downstream]
+[#_restricting-access-to-downstream-clusters]
 == Restringindo o Acesso aos Clusters Downstream
 
 Os administradores podem restringir ainda mais os inquilinos criando um `GitRepoRestriction` em cada um de seus namespaces.
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 Isso negará a criação de recursos em todo o cluster, o que pode interferir em outros inquilinos e limitar a implantação ao namespace 'project1simpleapp'.
 
-[#_um-exemplo-de-recurso-gitrepo]
+[#_an-example-gitrepo-resource]
 == Um Exemplo de Recurso GitRepo
 
 Um recurso GitRepo criado por um inquilino, sem acesso de administrador, poderia ser assim:

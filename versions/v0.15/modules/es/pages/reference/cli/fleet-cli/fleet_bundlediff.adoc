@@ -18,7 +18,7 @@ Utiliza la bandera `-n` para restringir la búsqueda a un espacio de nombres esp
 fleet bundlediff [flags]
 ----
 
-[#_opciones]
+[#_options]
 == Opciones
 
 [source,text]
@@ -40,7 +40,7 @@ fleet bundlediff [flags]
                                  'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_ejemplos]
+[#_examples]
 == Ejemplos
 
 [source,bash]
@@ -65,7 +65,7 @@ fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluste
 fleet bundlediff -n cluster-fleet-local-local-abc123
 ----
 
-[#_consulte-tambi-n]
+[#_see-also]
 == Consulte también
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Gestionar operaciones de {product_name}

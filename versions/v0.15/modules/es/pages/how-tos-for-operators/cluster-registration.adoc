@@ -4,19 +4,19 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_descripci-n-general]
+[#_overview]
 == Descripción general
 
 Existen dos estilos específicos para registrar clústeres. Estos estilos se denominarán *iniciado por el agente* y *iniciado por el gerente* de registro. Típicamente, uno optaría por el registro iniciado por el agente, pero hay casos de uso específicos en los que el iniciado por el gerente es un mejor flujo de trabajo.
 
-[#_registro-iniciado-por-el-agente]
+[#_agent-initiated-registration]
 === Registro Iniciado por el Agente
 
 El registro iniciado por el agente se refiere a un patrón en el que el clúster en sentido descendente instala un agente con un <<_create-cluster-registration-tokens,token de registro de clúster>> y, opcionalmente, un ID de cliente. El agente del cluster realizará una solicitud API al {product_name} gerente e iniciará el proceso de registro. Usando este proceso, el gerente nunca realizará una solicitud API saliente a los clusters en sentido descendente y, por lo tanto, nunca necesitará tener acceso directo a la red. 
 
 No se utiliza comúnmente en Rancher. Rancher no necesita realizar una solicitud API saliente al cluster en sentido descendente, ya que utiliza un túnel para proporcionar esa conectividad.
 
-[#_registro-iniciado-por-el-gerente]
+[#_manager-initiated-registration]
 === Registro Iniciado por el Gerente
 
 El registro iniciado por el gerente es un proceso en el que registras un cluster de Kubernetes existente con el {product_name} gerente y el {product_name} gerente realizará una llamada API al cluster en sentido descendente para desplegar el agente. Este estilo puede imponer requisitos adicionales de acceso a la red porque el Fleet Manager debe poder comunicarse con el servidor API del clúster en sentido descendente para el proceso de registro.
@@ -78,7 +78,7 @@ Después de que el clúster esté registrado, no es necesario que el Fleet Manag
 |===
 
 
-[#_iniciado-por-el-agente]
+[#_agent-initiated]
 == Iniciado por el Agente
 
 Un clúster descendente se registra instalando un agente a través de helm y utilizando el *token de registro del clúster* y opcionalmente un *ID de cliente* o *etiquetas del clúster*.
@@ -93,7 +93,7 @@ El registro iniciado por el agente normalmente no se utiliza con Rancher.
 ====
 
 
-[#_token-de-registro-de-cl-ster-e-id-de-cliente]
+[#_cluster-registration-token-and-client-id]
 === Token de Registro de Clúster e ID de Cliente
 
 El *token de registro de clúster* es una credencial que autorizará al agente del clúster descendente a poder iniciar el proceso de registro. Esto es requerido.
@@ -102,7 +102,7 @@ Alternativamente, se puede pasar el token directamente al comando de instalació
 
 Hay dos estilos de registrar un agente. Puedes tener el clúster para este agente creado dinámicamente, en cuyo caso probablemente querrás especificar *etiquetas del clúster* al registrarte.  O puedes hacer que el agente se registre en un clúster predefinido en el {product_name} Fleet Manager, en cuyo caso necesitarás un *ID de cliente*.  El primer enfoque es típicamente el más fácil.
 
-[#_instalar-agente-para-un-nuevo-cl-ster]
+[#_install-agent-for-a-new-cluster]
 === Instalar Agente Para un Nuevo Clúster
 
 El {product_name} agente se instala como un gráfico de Helm. A continuación se explican cómo determinar y establecer sus parámetros.
@@ -142,7 +142,7 @@ Para el gráfico del agente, el espacio de nombres debe ser `cattle-fleet-system
 ====
 
 *Asegúrate de que estás instalando en el clúster correcto*:
-Helm utilizará el contexto predeterminado en `${HOME}/.kube/config` para desplegar el agente. Usa `--kubeconfig` y `--kube-context` para cambiar a qué clúster está instalando Helm.
+Helm utilizará el contexto predeterminado en ++`${HOME}/.kube/config`++ para desplegar el agente. Usa `--kubeconfig` y `--kube-context` para cambiar a qué clúster está instalando Helm.
 ====
 
 
@@ -187,7 +187,7 @@ Puedes comprobar el estado de los pods de la flota ejecutando los siguientes com
 
 El agente debería estar ahora desplegado.
 
-Además, deberías ver un nuevo clúster registrado en el {product_name} manager.  A continuación se muestra un ejemplo de cómo comprobar que un nuevo clúster fue registrado en el `clusters` xref:explanations/namespaces.adoc[espacio de nombres].  Por favor, asegúrate de que tu `${HOME}/.kube/config` esté apuntando al Fleet Manager para ejecutar este comando.
+Además, deberías ver un nuevo clúster registrado en el {product_name} manager.  A continuación se muestra un ejemplo de cómo comprobar que un nuevo clúster fue registrado en el `clusters` xref:explanations/namespaces.adoc[espacio de nombres].  Por favor, asegúrate de que tu ++`${HOME}/.kube/config`++ esté apuntando al Fleet Manager para ejecutar este comando.
 
 [,shell]
 ----
@@ -199,7 +199,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_instalar-agente-para-un-cl-ster-predefinido]
+[#_install-agent-for-a-predefined-cluster]
 === Instalar Agente para un Clúster Predefinido
 
 Los IDs de cliente son para el propósito de predefinir clústeres en el {product_name} manager con etiquetas y repositorios existentes dirigidos a ellos.
@@ -243,7 +243,7 @@ Para el gráfico del agente, el espacio de nombres debe ser `cattle-fleet-system
 ====
 
 *Asegúrate de que estás instalando en el clúster correcto*:
-Helm utilizará el contexto predeterminado en `${HOME}/.kube/config` para desplegar el agente. Usa `--kubeconfig` y `--kube-context` para cambiar a qué clúster está instalando Helm.
+Helm utilizará el contexto predeterminado en ++`${HOME}/.kube/config`++ para desplegar el agente. Usa `--kubeconfig` y `--kube-context` para cambiar a qué clúster está instalando Helm.
 ====
 
 
@@ -281,7 +281,7 @@ Puedes comprobar el estado de los pods de la flota ejecutando los siguientes com
 
 El agente debería estar ahora desplegado.
 
-Además, deberías ver un nuevo clúster registrado en el {product_name} manager.  A continuación se muestra un ejemplo de cómo comprobar que un nuevo clúster fue registrado en el `clusters` xref:explanations/namespaces.adoc[espacio de nombres].  Por favor, asegúrate de que tu `${HOME}/.kube/config` esté apuntando al Fleet Manager para ejecutar este comando.
+Además, deberías ver un nuevo clúster registrado en el {product_name} manager.  A continuación se muestra un ejemplo de cómo comprobar que un nuevo clúster fue registrado en el `clusters` xref:explanations/namespaces.adoc[espacio de nombres].  Por favor, asegúrate de que tu ++`${HOME}/.kube/config`++ esté apuntando al Fleet Manager para ejecutar este comando.
 
 [,shell]
 ----
@@ -293,7 +293,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_crear-tokens-de-registro-de-cl-ster]
+[#_create-cluster-registration-tokens]
 === Crear Tokens de Registro de Clúster
 
 [IMPORTANT]
@@ -309,12 +309,12 @@ Los tokens de registro de clúster se utilizan para establecer una nueva identid
 
 Dado que el token de registro del clúster se olvida, si necesita volver a registrar un clúster, debe darle al clúster un nuevo token de registro.
 
-[#_ttl-del-token]
+[#_token-ttl]
 ==== TTL del token
 
 Los tokens de registro de clúster pueden ser reutilizados por cualquier clúster en un espacio de nombres.  Los tokens pueden tener un TTL de modo que expiren después de un tiempo específico.
 
-[#_cree-un-nuevo-token]
+[#_create-a-new-token]
 ==== Cree un nuevo token
 
 El `ClusterRegistationToken` es un tipo de espacio de nombres y debe ser creado en el mismo espacio de nombres en el que creará los recursos `GitRepo` y `ClusterGroup`. Para obtener detalles en profundidad sobre cómo se utilizan los espacios de nombres en {product_name}, consulte la documentación sobre xref:explanations/namespaces.adoc[namespaces].  Cree un nuevo token con el siguiente YAML.
@@ -341,7 +341,7 @@ Una forma de hacerlo es a través de la siguiente línea de comando:
 while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
 ----
 
-[#_obtenci-n-del-valor-del-token-valores-yaml-del-agente]
+[#_obtaining-token-value-agent-values-yaml]
 ==== Obtención del valor del token (valores.yaml del agente)
 
 El valor del token contiene contenido YAML para un archivo `values.yaml` que se espera que se pase a `helm install` para instalar el agente {product_name} en un clúster en sentido descendente.
@@ -355,7 +355,7 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 
 Una vez que el `values.yaml` esté listo, puede ser utilizado repetidamente por los clústeres para registrarse hasta que expire el TTL.
 
-[#_iniciado-por-el-manager]
+[#_manager-initiated]
 == Iniciado por el Manager
 
 El flujo de registro iniciado por el Manager se lleva a cabo creando un recurso `Cluster` en el {product_name} Manager que hace referencia a un `Secret` de Kubernetes que contiene un archivo kubeconfig válido en el campo de datos llamado `value`.
@@ -368,7 +368,7 @@ El registro iniciado por el Manager se utiliza cuando añades un clúster desde 
 ====
 
 
-[#_crear-secreto-de-kubeconfig]
+[#_create-kubeconfig-secret]
 === Crear secreto de Kubeconfig
 
 El formato de este secreto está destinado a coincidir con el https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[formato] del secreto kubeconfig utilizado en https://github.com/kubernetes-sigs/cluster-api[cluster-api].
@@ -386,7 +386,7 @@ data:
   value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
 ----
 
-[#_crear-recurso-de-cl-ster]
+[#_create-cluster-resource]
 == Crear recurso de clúster
 
 El recurso del clúster necesita hacer referencia al secreto kubeconfig.

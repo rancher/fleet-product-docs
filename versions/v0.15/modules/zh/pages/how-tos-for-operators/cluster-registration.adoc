@@ -4,19 +4,19 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_]
+[#_overview]
 == 概述
 
 注册集群有两种特定的样式。这些样式将被称为*Fleet agent 发起*和*Fleet Manager 发起*注册。通常情况下，人们会选择 Fleet agent 发起注册，但在某些特定用例中，Fleet Manager 发起的工作流程更为合适。
 
-[#_fleet-agent]
+[#_agent-initiated-registration]
 === Fleet agent 发起注册
 
 Fleet agent 发起是指下游集群安装一个带有<<_create-cluster-registration-tokens,集群注册词元>>和可选客户端ID的 Fleet agent 的模式。然后，集群 Fleet agent 将向{product_name}Fleet Manager 发出 API 请求，并启动注册过程。通过这个过程，Fleet Manager 将不会向下游集群发出外部 API 请求，因此不需要直接的网络访问。
 
 在 Rancher 中不常用。Rancher 不需要向下游集群发出外部 API 请求，因为它使用隧道提供连接。
 
-[#_fleet-manager]
+[#_manager-initiated-registration]
 === Fleet Manager 发起注册
 
 Fleet Manager 发起注册是一个过程，在该过程中，您将现有的 Kubernetes 集群注册到{product_name}Fleet Manager，{product_name}Fleet Manager 将向下游集群发出 API 调用以部署 Fleet agent。这种样式可能会增加额外的网络访问要求，因为 Fleet Manager 必须能够与下游集群 API 服务器进行通信以完成注册过程。
@@ -78,7 +78,7 @@ Fleet Manager 发起注册是一个过程，在该过程中，您将现有的 Ku
 |===
 
 
-[#_fleet-agent]
+[#_agent-initiated]
 == Fleet agent 发起
 
 通过安装 Fleet agent 并使用 *集群注册词元* 和可选的 *client ID* 或 *集群标签* 来注册下游集群。
@@ -93,7 +93,7 @@ Fleet agent 发起的注册通常不与 Rancher 一起使用。
 ====
 
 
-[#_id]
+[#_cluster-registration-token-and-client-id]
 === 集群注册词元和客户端 ID
 
 *集群注册词元* 是一种凭证，将授权下游的 Fleet agent 启动注册过程。此项是必需的。
@@ -102,7 +102,7 @@ xref:explanations/architecture.adoc#_security[集群注册词元] 以 `values.ya
 
 注册 Fleet agent 有两种方式。您可以动态创建此 Fleet agent 的集群，在这种情况下，您可能希望在注册时指定 *集群标签*。 或者，您可以让 Fleet agent 注册到 {product_name} 中预定义的集群，在这种情况下，您需要一个 *客户端 ID*。 前一种方法通常是最简单的。
 
-[#_fleet-agent]
+[#_install-agent-for-a-new-cluster]
 === 为新集群安装 Fleet agent
 
 {product_name} Fleet agent 作为 Helm 图表安装。以下是如何确定和设置其参数的说明。
@@ -142,7 +142,7 @@ API_SERVER_CA_DATA=...
 ====
 
 *确保您正在安装到正确的集群*：
-Helm 将使用 `${HOME}/.kube/config` 中的默认上下文来部署 Fleet agent。使用`--kubeconfig`和`--kube-context`来更改Helm安装的集群。
+Helm 将使用 ++`${HOME}/.kube/config`++ 中的默认上下文来部署 Fleet agent。使用`--kubeconfig`和`--kube-context`来更改Helm安装的集群。
 ====
 
 
@@ -187,7 +187,7 @@ helm -n cattle-fleet-system install --create-namespace --wait \
 
 代理现在应该已部署。
 
-此外，您应该在{product_name}管理器中看到一个新注册的集群。 以下是检查新集群是否在`clusters` xref:explanations/namespaces.adoc[名称空间]中注册的示例。 请确保您的`${HOME}/.kube/config`指向Fleet Manager以运行此命令。
+此外，您应该在{product_name}管理器中看到一个新注册的集群。 以下是检查新集群是否在`clusters` xref:explanations/namespaces.adoc[名称空间]中注册的示例。 请确保您的++`${HOME}/.kube/config`++指向Fleet Manager以运行此命令。
 
 [,shell]
 ----
@@ -199,7 +199,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_]
+[#_install-agent-for-a-predefined-cluster]
 === 为预定义集群安装代理
 
 客户端 ID 用于在 {product_name} 管理器中预定义具有现有标签和目标存储库的集群。
@@ -243,7 +243,7 @@ CLUSTER_CLIENT_ID="really-random"
 ====
 
 *确保您正在安装到正确的集群*：
-Helm将使用`${HOME}/.kube/config`中的默认上下文来部署代理。使用`--kubeconfig`和`--kube-context`来更改Helm安装的集群。
+Helm将使用++`${HOME}/.kube/config`++中的默认上下文来部署代理。使用`--kubeconfig`和`--kube-context`来更改Helm安装的集群。
 ====
 
 
@@ -281,7 +281,7 @@ helm -n cattle-fleet-system install --create-namespace --wait \
 
 代理现在应该已部署。
 
-此外，您应该在{product_name}管理器中看到一个新注册的集群。 以下是检查新集群是否在`clusters` xref:explanations/namespaces.adoc[名称空间]中注册的示例。 请确保您的`${HOME}/.kube/config`指向Fleet Manager以运行此命令。
+此外，您应该在{product_name}管理器中看到一个新注册的集群。 以下是检查新集群是否在`clusters` xref:explanations/namespaces.adoc[名称空间]中注册的示例。 请确保您的++`${HOME}/.kube/config`++指向Fleet Manager以运行此命令。
 
 [,shell]
 ----
@@ -293,7 +293,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_]
+[#_create-cluster-registration-tokens]
 === 创建集群注册令牌
 
 [IMPORTANT]
@@ -309,12 +309,12 @@ my-cluster             1/1             1/1           k3d-cluster2-server-0   202
 
 由于集群注册令牌会被遗忘，如果需要重新注册集群，必须为集群提供一个新的注册令牌。
 
-[#_ttl]
+[#_token-ttl]
 ==== 令牌TTL
 
 集群注册令牌可以被名称空间中的任何集群重用。 令牌可以设置TTL，以便在特定时间后过期。
 
-[#_]
+[#_create-a-new-token]
 ==== 创建一个新令牌
 
 `ClusterRegistationToken`是一个名称空间类型，应在您将创建`GitRepo`和`ClusterGroup`资源的同一名称空间中创建。有关{product_name}中名称空间使用的详细信息，请参阅xref:explanations/namespaces.adoc[namespaces]的文档。 使用以下YAML创建一个新令牌。
@@ -341,7 +341,7 @@ spec:
 while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
 ----
 
-[#_values-yaml]
+[#_obtaining-token-value-agent-values-yaml]
 ==== 获取令牌值（代理values.yaml）
 
 令牌值包含一个`values.yaml`文件的YAML内容，预计将传递给`helm install`以在下游集群上安装{product_name}代理。
@@ -355,7 +355,7 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 
 一旦`values.yaml`准备就绪，集群可以重复使用它进行注册，直到TTL过期。
 
-[#_]
+[#_manager-initiated]
 == 管理器发起
 
 管理器发起的注册流程通过在{product_name} Manager 中创建一个`Cluster`资源来完成，该资源引用了一个包含有效 kubeconfig 文件的 Kubernetes `Secret`，该文件位于名为`value`的数据字段中。
@@ -368,7 +368,7 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 ====
 
 
-[#_kubeconfig]
+[#_create-kubeconfig-secret]
 === 创建 Kubeconfig 密钥
 
 此密钥的格式旨在与 https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[kubeconfig 密钥]在 https://github.com/kubernetes-sigs/cluster-api[cluster-api]中使用的格式相匹配。
@@ -386,7 +386,7 @@ data:
   value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
 ----
 
-[#_]
+[#_create-cluster-resource]
 == 创建集群资源
 
 集群资源需要引用 Kubeconfig 密钥。

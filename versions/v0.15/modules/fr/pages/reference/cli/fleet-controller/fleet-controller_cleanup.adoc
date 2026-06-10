@@ -18,7 +18,7 @@ fleet-controller cleanup [flags]
       --namespace string    namespace to watch
 ----
 
-[#_options-h-rit-es-des-commandes-parentes]
+[#_options-inherited-from-parent-commands]
 == Options héritées des commandes parentes
 
 [source,text]
@@ -27,7 +27,7 @@ fleet-controller cleanup [flags]
       --debug-level int   If debugging is enabled, set klog -v=X
 ----
 
-[#_voir-galement]
+[#_see-also]
 == VOIR ÉGALEMENT
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[contrôleur Fleet]     - Gérer le contrôleur Fleet qui communique avec le Fleet agent

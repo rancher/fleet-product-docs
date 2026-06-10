@@ -8,7 +8,7 @@
 fleet-agent [flags]
 ----
 
-[#_]
+[#_options]
 == 选项
 
 ----
@@ -25,7 +25,7 @@ fleet-agent [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_]
+[#_see-also]
 == 另请参阅
 * xref:/reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus] - 持续向上游集群报告资源状态
 * xref:/reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register] - 将 Fleet agent 注册到上游集群

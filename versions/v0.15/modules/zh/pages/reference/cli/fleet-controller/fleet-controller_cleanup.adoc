@@ -8,7 +8,7 @@
 fleet-controller cleanup [flags]
 ----
 
-[#_]
+[#_options]
 == 选项
 
 [source,text]
@@ -18,7 +18,7 @@ fleet-controller cleanup [flags]
       --namespace string    namespace to watch
 ----
 
-[#_]
+[#_options-inherited-from-parent-commands]
 == 从父命令继承的选项
 
 [source,text]
@@ -27,7 +27,7 @@ fleet-controller cleanup [flags]
       --debug-level int   If debugging is enabled, set klog -v=X
 ----
 
-[#_]
+[#_see-also]
 == 另请参阅
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - 管理与 Fleet agent 通信的 Fleet controller

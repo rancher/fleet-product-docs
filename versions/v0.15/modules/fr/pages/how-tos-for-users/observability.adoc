@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_champs-d-tat]
+[#_status-fields]
 == Champs d'état
 
 {product_name} rapporte la plupart des informations via des champs d'état sur ses ressources personnalisées.
@@ -10,7 +10,7 @@ Ces champs sont également utilisés par l'interface utilisateur de Rancher pour
 
 Voir xref:reference/ref-status-fields.adoc[référence des champs d'état] pour plus d'informations sur les champs d'état et les conditions.
 
-[#_v-nements-k8s]
+[#_k8s-events]
 == Événements K8s
 
 {product_name} générera des événements K8s auxquels un utilisateur peut s'abonner. Voici la liste des événements{nbsp}:
@@ -24,7 +24,7 @@ Voir xref:reference/ref-status-fields.adoc[référence des champs d'état] pour 
 * `FailedToGetGitJob`- impossible de récupérer des informations sur le travail de clonage git
 * `Failed`- le polling est désactivé, déclenché via webhook, mais impossible d'obtenir le dernier commit du serveur git
 
-[#_m-triques]
+[#_metrics]
 == Métriques
 
 {product_name} publie des métriques Prometheus. Elles peuvent être récupérées à partir de ces services{nbsp}:

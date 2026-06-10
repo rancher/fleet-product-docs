@@ -53,7 +53,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
-[#_bon-savoir]
+[#_good-to-know]
 === Bon à savoir
 
 `fleet apply` lit `known_hosts`` des données à partir d'une variable d'environnement (`FLEET_KNOWN_HOSTS`), de manière similaire à ce que fait le cloner git.
@@ -64,6 +64,6 @@ Le nombre de routines de création de paquets concurrentes peut être configuré
 
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
-[#_voir-galement]
+[#_see-also]
 == VOIR ÉGALEMENT
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Gérer les opérations {product_name}

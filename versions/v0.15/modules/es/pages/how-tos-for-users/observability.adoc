@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_campos-de-estado]
+[#_status-fields]
 == Campos de Estado
 
 {product_name} informa la mayor parte de la información a través de campos de estado en sus recursos personalizados.
@@ -10,7 +10,7 @@ Estos campos también son utilizados por la interfaz de usuario de Rancher para 
 
 Consulta xref:reference/ref-status-fields.adoc[referencia de campos de estado] para más información sobre los campos de estado y condiciones.
 
-[#_eventos-de-k8s]
+[#_k8s-events]
 == Eventos de K8s
 
 {product_name} generará eventos de K8s a los que un usuario puede suscribirse. Esta es la lista de eventos:
@@ -24,7 +24,7 @@ Consulta xref:reference/ref-status-fields.adoc[referencia de campos de estado] p
 * `FailedToGetGitJob`- no se puede recuperar información del trabajo de clonación de git
 * `Failed`- el sondeo está deshabilitado, se activa a través de webhook, pero no se puede obtener el último commit del servidor de git
 
-[#_m-tricas]
+[#_metrics]
 == Métricas
 
 {product_name} publica métricas de Prometheus. Se pueden recuperar de estos servicios:

@@ -22,8 +22,7 @@
 
 image::FleetBundleStages.svg[捆绑阶段]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
-[#_cli]
+[#_examining-the-bundle-lifecycle-with-the-cli]
 == 使用 CLI 检查捆绑生命周期
 
 几个 Fleet CLI 命令有助于调试捆绑。
@@ -43,13 +42,12 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 有关如何使用 `fleet apply` 创建捆绑的更多信息，请参见 xref:how-tos-for-users/bundle-add.adoc[捆绑部分]。
 
-[[fleet-target]]
 [#_fleet-target]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[目标] 从文件中读取捆绑，并与实时集群一起工作，以打印出 `bundledeployment` 和 `content` 资源，这些资源将由 fleetcontroller 创建。它以名称空间作为参数，因此可以在该名称空间中查找例如集群资源。它还可以转储在“目标”过程中使用的数据结构，以便检查关于标签和集群名称所做的决策。
 
-[#_]
+[#_fleet-deploy]
 === 舰队部署
 
 xref:reference/cli/fleet-cli/fleet_deploy.adoc[部署] 接收 `fleet target` 的输出，或转储的 bundledeployment/content 资源，并将其部署到集群，就像 Fleet agent 一样。它支持干运行模式，以打印出将要创建的资源，而不是使用 helm 安装它们。由于该命令不会创建输入资源，因此正在运行的 Fleet agent 可能会对该部署进行垃圾回收。

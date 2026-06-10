@@ -12,7 +12,7 @@ A partir da versão {product_name} v0.14.0, {product_name} suporta a propagaçã
 Isso simplifica o tratamento de dependências de charts, como valores provenientes de recursos externos.
 Veja também xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom].
 
-[#_como-ela-funciona]
+[#_how-it-works]
 == Como ela funciona
 
 HelmOps suporta um novo campo `downstreamResources`, que pode ser usado para referenciar recursos por tipo e nome.
@@ -47,7 +47,7 @@ Quando um cluster não é mais alvo, o agente Fleet também excluirá esses recu
 Se os recursos referenciados através de `downstreamResources` devem permanecer nos clusters downstream mesmo após não serem mais alvo, xref:/reference/ref-bundle.adoc[keepResources] deve ser definido como `true` no HelmOp.
 ====
 
-[#_monitoramento]
+[#_monitoring]
 == Monitoramento
 
 A partir da versão v0.15.0, {product_name} monitora as alterações feitas em segredos e configmaps que estão listados em `DownstreamResources`. Ele também verifica se um segredo ou configmap foi criado após o Bundle ter sido criado.

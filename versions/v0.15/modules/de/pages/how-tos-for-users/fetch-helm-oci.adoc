@@ -11,7 +11,7 @@ Die Verwendung von OCI-Registrierungen für Helm-Charts hilft Ihnen:
 * Charts mit Standard-OCI-Befehlen pushen und pullen, wodurch ihre Verteilung über verschiedene Umgebungen erleichtert wird.
 * Charts in OCI-Registrierungen verwalten, die für hohe Verfügbarkeit und globale Verteilung ausgelegt sind.
 
-Für weitere Informationen zu HelmOps mit OCI-Registrierungen, siehe xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOps].
+Für weitere Informationen zu HelmOps mit OCI-Registrierungen, siehe xref:how-tos-for-users/helm-ops.adoc#_oci-registry[HelmOps].
 
 image::fetch-Helm-from-OCI.svg[Ein visuelles Asset, das den Ablauf des Abrufens von Helm-Charts aus einer OCI-Registrierung darstellt]
 
@@ -45,7 +45,7 @@ helm:
 Das `repo` Feld ist die kanonische Methode, um OCI-Registrierungs-URLs in einer `fleet.yaml` Datei anzugeben. Es ist konsistent mit der Art und Weise, wie OCI-Registrierungen in HelmOp-Ressourcen referenziert werden.
 ====
 
-[#_veraltet-oci-url-in-helm-chart]
+[#_deprecated-oci-url-in-helm-chart]
 === Veraltet: OCI-URL in `helm.chart`
 
 Vor dieser Änderung erwartete {product_name}, dass die OCI-URL im `chart`-Feld anstelle von `repo` platziert wird:
@@ -60,7 +60,7 @@ helm:
 
 Dieses Formular funktioniert weiterhin aus Gründen der Rückwärtskompatibilität, ist jedoch veraltet und erzeugt eine Warnung in den {product_name}-Protokollen. Migrieren Sie vorhandene `fleet.yaml`-Dateien, um `helm.repo` für OCI-URLs zu verwenden.
 
-[#_verwendung-authentifizierter-oci-registrierungen]
+[#_using-authenticated-registries]
 == Verwendung authentifizierter OCI-Registrierungen
 
 Wenn die OCI-Registrierung eine Authentifizierung erfordert, verweisen Sie auf ein Kubernetes-Geheimnis in der GitRepo-Ressource. {product_name} verwendet dieses Geheimnis, um das Chart abzurufen und es in den Zielclustern bereitzustellen.

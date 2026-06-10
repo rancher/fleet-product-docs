@@ -24,7 +24,7 @@ Sin embargo, las restricciones {product_name} existentes permiten a los usuarios
 ====
 
 
-[#_ejemplo-product-name-aut-nomo]
+[#_example-product-name-standalone]
 == Ejemplo {product_name} Autónomo
 
 Esto crearía un usuario 'fleetuser', que solo puede gestionar recursos de GitRepo en el espacio de nombres 'project1'.
@@ -48,7 +48,7 @@ Si queremos dar acceso a múltiples espacios de nombres, podemos usar un único 
 
 Esto asegura que los inquilinos no pueden interferir con los recursos de GitRepo de otros inquilinos, ya que no tienen acceso a sus espacios de nombres.
 
-[#_espacios-de-trabajo-aislados-en-rancher]
+[#_isolated-workspaces-in-rancher]
 == Espacios de trabajo aislados en Rancher
 
 Los usuarios que pertenecen a un grupo/organización específica dentro de la empresa pueden querer desactivar la visibilidad de sus clústeres para los usuarios de otros grupos/organizaciones de la misma empresa.
@@ -146,7 +146,7 @@ El usuario ahora tiene acceso a la pestaña `Continuous Delivery` en Rancher y p
 
 Para tener un entorno bien organizado, cada espacio de trabajo debe tener su propio `GlobalRole` relacionado para ayudar con la separación de funciones y el aislamiento requerido por el cliente. De esta manera, cada usuario puede ser asignado a uno o más `GlobalRoles`, dependiendo de las necesidades.
 
-[#_permitir-acceso-a-cl-steres]
+[#_allow-access-to-clusters]
 == Permitir acceso a clústeres.
 
 Esto asume que todos los GitRepos creados por 'fleetuser' tienen la etiqueta `team: one`. Se podrían usar diferentes etiquetas para seleccionar diferentes espacios de nombres de clúster.
@@ -180,7 +180,7 @@ namespaceSelector:
 
 La xref:how-tos-for-users/gitrepo-targets.adoc[`target` sección] en el recurso GitRepo se puede usar para desplegar solo a un subconjunto de los clústeres coincidentes.
 
-[#_restringir-el-acceso-a-cl-steres-de-sentido-descendente]
+[#_restricting-access-to-downstream-clusters]
 == Restringir el acceso a clústeres de sentido descendente.
 
 Los administradores pueden restringir aún más a los inquilinos creando un `GitRepoRestriction` en cada uno de sus espacios de nombres.
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 Esto negará la creación de recursos a nivel de clúster, lo que puede interferir con otros inquilinos y limitar el despliegue al espacio de nombres 'project1simpleapp'.
 
-[#_un-recurso-gitrepo-de-ejemplo]
+[#_an-example-gitrepo-resource]
 == Un recurso GitRepo de ejemplo
 
 Un recurso GitRepo creado por un inquilino, sin acceso de administrador, podría verse así:

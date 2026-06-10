@@ -8,7 +8,7 @@
 fleet gitcloner [REPO] [PATH] [flags]
 ----
 
-[#_]
+[#_options]
 == 选项
 
 ----
@@ -23,7 +23,7 @@ fleet gitcloner [REPO] [PATH] [flags]
   -u, --username string               user name for basic auth
 ----
 
-[#_]
+[#_see-also]
 == 另请参阅
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - 管理 {product_name} 操作

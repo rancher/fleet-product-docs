@@ -18,7 +18,7 @@ Use a flag `-n` para restringir a busca a um namespace específico. A flag de na
 fleet bundlediff [flags]
 ----
 
-[#_op-es]
+[#_options]
 == Opções
 
 [source,text]
@@ -40,7 +40,7 @@ fleet bundlediff [flags]
                                  'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_exemplos]
+[#_examples]
 == Exemplos
 
 [source,bash]
@@ -65,7 +65,7 @@ fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluste
 fleet bundlediff -n cluster-fleet-local-local-abc123
 ----
 
-[#_consulte-tamb-m]
+[#_see-also]
 == Consulte também
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Gerenciar operações de {product_name}

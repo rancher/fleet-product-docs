@@ -8,24 +8,24 @@
 Dans le contexte de {product_name}, un agent est un déploiement Kubernetes responsable du déploiement des charges de travail dans son cluster.
 Cela implique de surveiller un espace de noms spécifique sur le cluster en amont et de déployer tout déploiement de bundle, vivant dans cet espace de noms, vers le cluster en aval où se trouve l'agent.
 
-[#_ensemble]
+[#_bundle]
 == Ensemble
 
 Un bundle est une ressource spécifique à {product_name} (également connue sous le nom de https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[Ressource personnalisée] dans Kubernetes) représentant une charge de travail ou un ensemble de ressources utilisateur à déployer. Il est généralement généré par {product_name} à partir d'un chemin d'un dépôt git.
 
-[#_diagramme]
+[#_chart]
 == Diagramme
 
 Voir (https://helm.sh/docs/topics/charts/)[la documentation des charts Helm].
 
-[#_grappe]
+[#_cluster]
 == Grappe
 
 Un cluster fait référence à{nbsp}:
 * un https://kubernetes.io/docs/concepts/architecture/[cluster Kubernetes] géré par {product_name}
 * une `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[ressource] dans l'API de Fleet, que {product_name} utilise pour gérer ce cluster Kubernetes.
 
-[#_livraison-continue-d-ploiement-continu]
+[#_continuous-delivery-deployment]
 == Livraison continue/déploiement continu
 
 Les définitions et distinctions entre la livraison continue et le déploiement continu varient considérablement, par exemple en fonction de{nbsp}: +
@@ -34,18 +34,18 @@ Les définitions et distinctions entre la livraison continue et le déploiement 
 
 Cela est clair, cependant{nbsp}: l'objectif de {product_name} est de faciliter l'automatisation des déploiements.
 
-[#_ressource-personnalis-e]
+[#_custom-resource]
 == Ressource personnalisée
 
 Voir https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[documentation officielle des ressources personnalisées Kubernetes].
 En résumé, une ressource personnalisée est une ressource définie aux fins d'une application (dans notre cas {product_name}), pour étendre l'ensemble des ressources prises en charge par l'API Kubernetes (pods, déploiements, services, etc.).
 
-[#_d-finition-de-ressource-personnalis-e]
+[#_custom-resource-definition]
 == Définition de ressource personnalisée
 
 Voir https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[documentation officielle des définitions de ressources personnalisées Kubernetes] dans la documentation Kubernetes.
 
-[#_d-ploiement]
+[#_deployment]
 == Déploiement
 
 Un déploiement peut faire référence à{nbsp}:
@@ -54,7 +54,7 @@ qu'il fasse partie d'une charge de travail utilisateur ou de {product_name} lui-
 * l'action de déployer une charge de travail utilisateur, ce qui signifie que {product_name} lit la configuration (`GitRepo`, `fleet.yaml`, etc.) et,
 en conséquence, crée des ressources sur les clusters cibles.
 
-[#_cluster-aval]
+[#_downstream-cluster]
 == Cluster aval
 
 Un cluster aval est un cluster Kubernetes où les charges de travail utilisateur s'exécuteront, sans aucun contrôleur Fleet y vivant. C'est un cluster cible pour Fleet, où seul un agent Fleet vit à côté des charges de travail utilisateur.
@@ -85,12 +85,12 @@ Fait référence à un https://kubernetes.io/docs/concepts/overview/working-with
 
 Une configuration multi-cluster implique plus d'un cluster{nbsp}: le cluster en amont, nécessaire pour gérer le déploiement des charges de travail, et au moins un cluster en aval.
 
-[#_espace-de-noms]
+[#_namespace]
 == Espace de noms
 
 Fait référence à un https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/[espace de noms Kubernetes].
 
-[#_rapprocher]
+[#_reconcile]
 == Rapprocher
 
 La réconciliation est utilisée dans le contexte des états dans les clusters Kubernetes. Réconcilier une ressource signifie la mettre à jour afin que son état réel corresponde à son état attendu, que ce soit à partir de la configuration, par exemple, d'un dépôt git, d'un chart, etc.
@@ -98,17 +98,17 @@ La réconciliation est utilisée dans le contexte des états dans les clusters K
 Lors de l'utilisation de GitOps, les mises à jour d'un dépôt git peuvent se traduire par de nouveaux états attendus pour les ressources configurées via ce dépôt git. En conséquence, les ressources concernées seront réconciliées.
 L'état d'une ressource peut également dépendre d'une autre ressource, entraînant une réconciliation supplémentaire. Par exemple, le statut d'un groupe de clusters dépend des statuts des clusters individuels contenus dans ce groupe de clusters. Par conséquent, un changement dans l'état d'un cluster entraînera la réconciliation de tout groupe de clusters auquel ce cluster appartient également.
 
-[#_enregistrement]
+[#_registration]
 == Enregistrement
 
 L'enregistrement d'un cluster est le processus permettant à un agent Fleet, vivant dans un cluster en aval, d'être reconnu par les contrôleurs Fleet dans le cluster en amont. Une fois l'enregistrement terminé pour un cluster en aval, {product_name} est capable de déployer des charges de travail sur ce cluster.
 
-[#_d-p-t]
+[#_repository]
 == Dépôt
 
 Un dépôt peut être{nbsp}: * un dépôt git, stockant du code, de la configuration ou tout type de fichiers et gardant une trace des modifications apportées à ces fichiers par le biais de commits. {product_name} peut surveiller un dépôt git pour de nouveaux commits poussés vers une branche ou une révision spécifique, à un ou plusieurs chemins, via xref:how-tos-for-users/gitrepo-add.adoc[ressources GitRepo]. * un dépôt Helm, hébergeant des charts Helm et un fichier d'index les référencant. {product_name} est capable d'installer des charts Helm et d'appliquer une configuration définie par l'utilisateur à ceux-ci.
 
-[#_ressources]
+[#_resources]
 == Ressources
 
 Cela fait généralement référence aux ressources Kubernetes, qui peuvent être{nbsp}: * des ressources de base définies par Kubernetes lui-même, telles que des config maps, des déploiements, des pods, des services, etc. * des ressources personnalisées définies par des applications individuelles, telles que {product_name} lui-même, qui définit GitRepo, Bundle, Bundledeployment et quelques autres.
@@ -118,7 +118,7 @@ Cela fait généralement référence aux ressources Kubernetes, qui peuvent êtr
 
 {product_name} utilise ce mot dans le contexte de la détermination de l'endroit où une charge de travail sera exécutée. Cela représente un cluster de destination pour une charge de travail.
 
-[#_cluster-en-amont]
+[#_upstream-cluster]
 == Cluster en amont
 
 Un cluster Kubernetes où les contrôleurs Fleet s'exécutent. C'est le cluster où les `GitRepo`, les bundles et les déploiements de bundles sont créés. Également appelé cluster de gestion.

@@ -22,7 +22,7 @@ Las opciones de configuración del despliegue están documentadas en el campo `r
 Si `rolloutStrategy` no está especificado en `fleet.yaml`, {product_name} utiliza los valores predeterminados.
 ====
 
-[#_c-mo-funciona-el-particionamiento]
+[#_how-does-partitioning-work]
 == ¿Cómo funciona el particionamiento?
 
 Las particiones se utilizan únicamente para agrupar y controlar el despliegue de `BundleDeployments` a través de los clústeres. No afectan las opciones de despliegue de ninguna manera.
@@ -162,7 +162,7 @@ image::partition-rollout-flow.png[Un activo visual que muestra el flujo de despl
 {product_name} procesa las particiones en el orden en que aparecen en el archivo `fleet.yaml`.
 ====
 
-[#_partici-n-nica]
+[#_single-partition]
 === Partición Única
 
 Si no defines `rolloutStrategy.partitions`, {product_name} crea particiones automáticamente en función del número de clústeres objetivo:
@@ -176,12 +176,12 @@ Por ejemplo, con 200 clústeres (cumpliendo el `autoPartitionThreshold` por defe
 2. Evalúa la preparación en función de `maxUnavailable`.
 . Si se cumple la condición, procede a los siguientes 50, y así sucesivamente.
 
-[#_m-ltiples-particiones]
+[#_multiple-partitions]
 === Múltiples Particiones
 
 Si defines múltiples particiones, {product_name} utiliza `maxUnavailablePartitions` para limitar cuántas particiones pueden ser `NotReady` a la vez. Si el número de particiones `NotReady` excede `maxUnavailablePartitions`, {product_name} pausa el despliegue.
 
-[#_prevenci-n-de-tormentas-de-extracci-n-de-im-genes]
+[#_preventing-image-pull-storms]
 == Prevención de tormentas de extracción de imágenes
 
 Durante el despliegue, cada clúster en sentido descendente extrae imágenes de contenedor. Si cientos de clústeres comienzan a extraer imágenes simultáneamente, esto puede abrumar el registro y comportarse como un ataque DDoS.
@@ -210,7 +210,7 @@ Cómo avanza el despliegue:
 
 Si deseas o necesitas procesar menos de 40 despliegues a la vez, puedes poner menos clústeres en cada partición.
 
-[#_casos-de-uso-y-comportamiento]
+[#_use-cases-and-behavior]
 == Casos de Uso y Comportamiento
 
 Si el número de clústeres no se divide de manera uniforme, {product_name} redondea hacia abajo los tamaños de las particiones. Por ejemplo, 230 clústeres con `autoPartitionSize: 25%` resulta en:
@@ -218,7 +218,7 @@ Si el número de clústeres no se divide de manera uniforme, {product_name} redo
 * Cuatro particiones de 57 clústeres
 * Una partición de 2 clústeres
 
-[#_escenario-50-cl-steres-partici-n-nica]
+[#_scenario-50-clusters-single-partition]
 === Escenario: 50 Clústeres (Partición Única)
 
 [source,yaml]
@@ -237,7 +237,7 @@ El siguiente diagrama ilustra cómo {product_name} maneja 50 clústeres en una s
 
 image::deploy-50Clusters.png[Escenario de 50 clústeres]
 
-[#_escenario-100-cl-steres-partici-n-nica]
+[#_scenario-100-clusters-single-partition]
 === Escenario: 100 Clústeres (Partición Única) 
 
 [source,yaml]
@@ -253,7 +253,7 @@ rolloutStrategy:
 
 Si 10 clústeres (10% de 100 clústeres) no están disponibles, el despliegue de los 50 clústeres restantes se pausa hasta que haya menos de 10 clústeres `NotReady`. 
 
-[#_escenario-200-cl-steres-m-ltiples-particiones]
+[#_scenario-200-clusters-multiple-partitions]
 === Escenario: 200 Clústeres (Múltiples Particiones)
 
 [source,yaml]
@@ -271,7 +271,7 @@ rolloutStrategy:
 
 {product_name} crea `BundleDeployments` para 20 clústeres, espera a que se conviertan en `Ready`, y luego procede al siguiente. Esto limita efectivamente la cantidad de descargas de imágenes desde clústeres en sentido descendente a un máximo de ~40 imágenes a la vez.
 
-[#_escenario-200-cl-steres-preparaci-n-estricta-particiones-manuales]
+[#_scenario-200-clusters-strict-readiness-manual-partitions]
 === Escenario: 200 Clústeres (Preparación estricta, particiones manuales)
 
 La partición manual te permite controlar la agrupación de clústeres con `maxUnavailablePartitions: 0`. 
@@ -304,7 +304,7 @@ image::partition-fleet-rollout.png[Escenario de particiones manuales]
 
 Esto asegura la preparación completa y el despliegue escalonado en los 200 clústeres. Usa este enfoque cuando necesites una secuenciación precisa del despliegue y la preparación completa del clúster antes de avanzar. 
 
-[#_valores-predeterminados-de-la-estrategia-de-despliegue]
+[#_rollout-strategy-defaults]
 == Valores predeterminados de la estrategia de despliegue
 
 Si los valores de despliegue a nivel de partición no están definidos, {product_name} aplica los valores globales de `rolloutStrategy` en `fleet.yaml`. Las configuraciones específicas de partición anulan los valores globales cuando se establecen explícitamente.

@@ -22,8 +22,7 @@ Este diagrama mostra os diferentes estágios de renderização que um pacote pas
 
 image::FleetBundleStages.svg[Estágios do Pacote]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
-[#_examinando-o-ciclo-de-vida-do-pacote-com-a-cli]
+[#_examining-the-bundle-lifecycle-with-the-cli]
 == Examinando o ciclo de vida do pacote com a CLI
 
 Vários comandos da CLI do Fleet ajudam na depuração de pacotes.
@@ -43,7 +42,6 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 Mais informações sobre como criar pacotes com `fleet apply` podem ser encontradas na xref:how-tos-for-users/bundle-add.adoc[seção sobre pacotes].
 
-[[fleet-target]]
 [#_fleet-target]
 === fleet target
 
@@ -56,7 +54,7 @@ xref:reference/cli/fleet-cli/fleet_deploy.adoc[Implantar] usa a saída de `fleet
 
 O comando deploy pode ser usado para levar pacotes a clusters air-gapped.
 
-[#_cli-de-ciclo-de-vida]
+[#_lifecycle-cli]
 === CLI de ciclo de vida
 
 Os comandos da CLI do Fleet ajudam você a depurar e entender o ciclo de vida do pacote. O seguinte exemplo usa o ciclo de vida completo do pacote usando CLI:

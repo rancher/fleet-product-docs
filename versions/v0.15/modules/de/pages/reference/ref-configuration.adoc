@@ -4,8 +4,7 @@
 
 Eine Referenzliste von überwiegend internen Konfigurationsoptionen.
 
-[[configure-install-options-in-rancher]]
-[#_konfigurieren-sie-product-name-installationsoptionen-in-rancher]
+[#_configure-product-install-options-in-rancher]
 == Konfigurieren Sie {product_name} Installationsoptionen in Rancher
 
 Rancher sucht nach Helm-Werten in einer ConfigMap namens `rancher-config` im Namespace `cattle-system`.
@@ -48,7 +47,7 @@ Die Helm-Charts akzeptieren mindestens die Optionen, wie sie mit ihren Standardw
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
-[#_umgebungsvariablen]
+[#_environment-variables]
 == Umgebungsvariablen
 
 Die Controller können mit diesen Umgebungsvariablen gestartet werden:
@@ -58,7 +57,7 @@ Die Controller können mit diesen Umgebungsvariablen gestartet werden:
 * `FLEET_CLUSTER_ENQUEUE_DELAY` - einstellen, wie oft nicht-bereite Cluster überprüft werden
 * `FLEET_CPU_PPROF_PERIOD` - wird verwendet, um https://github.com/rancher/fleet/blob/main/docs/performance.md[Leistungsprofilierung] zu aktivieren
 
-[#_konfiguration]
+[#_configuration]
 == Konfiguration
 
 In der Clusterkonfiguration für den Fleet agent und den Fleet Manager. Änderungen daran können zu vollständigen Neubereitstellungen führen.
@@ -86,7 +85,7 @@ Labels, die von der Fleet verwendet werden:
  ** Wenn dieses Label nicht bereitgestellt wird oder einen leeren Wert hat, wird der unsharded {product_name} Controller die Ressource verarbeiten.
  ** Wenn dieses Label einen Wert hat, der mit keiner Shard-ID übereinstimmt, für die ein {product_name} Controller bereitgestellt ist, wird die Ressource nicht verarbeitet.
 
-[#_annotationen]
+[#_annotations]
 == Annotationen
 
 Annotations, die von der Fleet verwendet werden:
@@ -101,7 +100,7 @@ Annotations, die von der Fleet verwendet werden:
 * `fleet.cattle.io/managed` - scheint nicht verwendet zu werden
 * `fleet.cattle.io/service-account`
 
-[#_product-name-agentenkonfiguration]
+[#_product-name-agent-configuration]
 == {product_name} Agentenkonfiguration
 
 Toleranzen, Affinität und Ressourcen können für den {product_name} Agenten angepasst werden. Diese Felder können beim Erstellen eines xref:reference/ref-crds.adoc#_clusterspec[Cluster] bereitgestellt werden, siehe xref:how-tos-for-operators/cluster-registration.adoc[Registrierung des Downstream-Clusters] für weitere Informationen zur Erstellung von Clustern. Die Standardkonfiguration wird verwendet, wenn diese Felder nicht bereitgestellt werden.

@@ -10,7 +10,7 @@ A varredura de imagem no Fleet permite que você escaneie seu repositório de im
 Esse recurso é considerado uma funcionalidade experimental.
 Esse recurso está desabilitado por padrão.
 
-Mais informações xref:how-tos-for-operators/installation.adoc#enabling-imagescan[aqui] sobre como habilitá-lo.
+Mais informações xref:how-tos-for-operators/installation.adoc#_enabling-imagescan[aqui] sobre como habilitá-lo.
 ====
 
 

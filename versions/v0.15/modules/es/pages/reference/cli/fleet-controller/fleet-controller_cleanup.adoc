@@ -8,7 +8,7 @@ Eliminar recursos de controlador obsoletos
 fleet-controller cleanup [flags]
 ----
 
-[#_opciones]
+[#_options]
 == Opciones
 
 [source,text]
@@ -18,7 +18,7 @@ fleet-controller cleanup [flags]
       --namespace string    namespace to watch
 ----
 
-[#_opciones-heredadas-de-comandos-padre]
+[#_options-inherited-from-parent-commands]
 == Opciones heredadas de comandos padre
 
 [source,text]
@@ -27,7 +27,7 @@ fleet-controller cleanup [flags]
       --debug-level int   If debugging is enabled, set klog -v=X
 ----
 
-[#_v-ase]
+[#_see-also]
 == VÉASE
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - Gestionar el controlador de Fleet que se comunica con el Fleet agent

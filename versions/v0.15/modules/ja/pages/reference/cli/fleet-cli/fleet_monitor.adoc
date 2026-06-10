@@ -2,7 +2,7 @@
 
 トラブルシューティングのための高度な診断ツール {product_name} デプロイメント用。
 
-[#_]
+[#_overview]
 == 概要
 
 すべての関連リソースのスナップショットをキャプチャし、自動診断を実行することで、{product_name} の GitOps ライフサイクルから洞察を抽出します。このコマンドは、バンドルがターゲティングおよびデプロイメントフェーズ中にスタックする理由を特定し、{product_name} インストールの健康状態に関する実用的な情報を提供します。
@@ -12,7 +12,7 @@
 fleet monitor [flags]
 ----
 
-[#_]
+[#_options]
 === オプション
 
 [source,text]
@@ -25,7 +25,7 @@ fleet monitor [flags]
   -h, --help                      help for monitor
 ----
 
-[#_]
+[#_quick-start]
 === クイックスタート
 
 モニターコマンドは **コンパクトな JSON** を出力します（1行につき1つのスナップショット）。`jq` を使用して可読性のためにフォーマットします。
@@ -42,19 +42,19 @@ fleet monitor | fleet analyze
 fleet monitor --watch --interval 60 >> monitor.json
 ----
 
-[#_]
+[#_what-it-detects]
 === 検出内容
 
 モニターコマンドは、次の内容を検出するために包括的な診断を実行します：
 
-[#_]
+[#_resource-lifecycle-issues]
 ==== リソースライフサイクルの問題
 *  **世代不一致のバンドル**：ライフサイクルを進行しないバンドル（世代 != 観測世代）
 *  **スタックしたバンドルデプロイメント**：エージェントが新しい deploymentIDs を適用していないバンドルデプロイメント
 *  **複数のファイナライザー**：ファイナライザーが複数あるリソース（バグを示す - コンテンツのみが参照カウントのために複数のファイナライザーを持つべきであり、{product_name} v0.11.1 から v0.14.x まで）
 *  **孤立したリソース**：ガーベジコレクションできない削除タイムスタンプを持つリソース
 
-[#_]
+[#_data-consistency-problems]
 ==== データ整合性の問題
 * **API タイムトラベル**：Kubernetes API サーバーが古いキャッシュデータを返す（リソースを複数回取得することで検出）
 * **コミットハッシュの不一致**:バンドル／バンドルデプロイメントがGitRepoの最新のコミットに更新されていません
@@ -62,42 +62,42 @@ fleet monitor --watch --interval 60 >> monitor.json
 * **UIDの不一致**:削除または再作成されたリソースへのオーナー参照を持つシークレット
 * **DeploymentIDの不一致**:BundleDeployments where spec.deploymentID != status.appliedDeploymentID
 
-[#_]
+[#_target-matching-issues]
 ==== ターゲットマッチングの問題
 * **デプロイメントのないバンドル**:作成されたバンドルですが、ターゲットセレクターに一致するクラスターがありません
 * **バンドルのないGitRepos**:バンドルを作成していないGitRepos（パス、ターゲット、または処理エラーが原因の可能性があります）
 * **クラスターのないClusterGroups**:クラスターに一致しないセレクターを持つClusterGroups
 * **孤立したバンドルデプロイメント**:親バンドルが削除されたバンドルデプロイメント
 
-[#_]
+[#_performance-issues]
 ==== パフォーマンスの問題
 * **大きなバンドル**:サイズが1MBを超えるバンドルはetcdのパフォーマンスに影響を与える可能性があります
 * **コンテンツリソースの欠落**:`resourcesSHA256Sum`を含むバンドルですが、対応するコンテンツリソースがありません
 * **高リソースカウント**:etcdの圧力を引き起こす可能性のある大量のバンドルリソース
 
-[#_]
+[#_agent-cluster-issues]
 ==== エージェントとクラスタの問題
 * **エージェントが準備完了ではない**:準備が整っていないエージェントステータスのクラスタ
 * **最終確認の欠落**:エージェントのハートビートタイムスタンプがないクラスタ
 * **古い最終確認**:最近エージェントがチェックインしていないクラスタ（デフォルト：24時間、`--agent-staleness`で設定可能）
 * **エージェントバンドルの欠落**:期待されるエージェントバンドルのデプロイメントがないクラスタのネームスペース
 
-[#_]
+[#_ownership-chain-issues]
 ==== 所有権チェーンの問題
 * **壊れた所有権**:GitRepoの所有者がないバンドル、バンドルの所有者がないバンドルデプロイメント
 * **無効なシークレット所有者**:不正または欠落した所有者参照を持つバンドルシークレット
 
-[#_]
+[#_generation-observation-mismatches]
 ==== 世代/観察の不一致
 * **GitRepo生成のドリフト**:GitRepo生成 != 観測された生成（コントローラーが更新を処理していない）
 * **バンドル生成のドリフト**:バンドル生成 != 観測された生成（コントローラーが更新を処理していない）
 * **バンドルデプロイメント同期生成のドリフト**:バンドルデプロイメント同期生成 != 強制同期生成（エージェントが強制同期を適用していない）
 * **コンテンツの古い生成**:古い生成値を持つコンテンツリソース
 
-[#_]
+[#_usage-examples]
 === 使用例
 
-[#_]
+[#_basic-monitoring]
 ==== 基本的な監視
 
 [source,bash]
@@ -112,7 +112,7 @@ fleet monitor -n fleet-local | jq
 fleet monitor -n fleet-default | jq
 ----
 
-[#_]
+[#_continuous-monitoring]
 ==== 継続的な監視
 
 [source,bash]
@@ -124,7 +124,7 @@ fleet monitor --watch --interval 60 >> monitor.json
 fleet monitor --watch --interval 30 >> monitor.json
 ----
 
-[#_]
+[#_targeted-diagnostics]
 ==== ターゲット診断
 
 [source,bash]
@@ -152,7 +152,7 @@ fleet monitor | jq '.diagnostics | {
 }'
 ----
 
-[#_]
+[#_comparing-states]
 ==== 状態の比較
 
 [source,bash]
@@ -167,10 +167,10 @@ kubectl edit gitrepo my-repo
 fleet monitor > after.json
 ----
 
-[#_]
+[#_common-troubleshooting-scenarios]
 === 一般的なトラブルシューティングシナリオ
 
-[#_1]
+[#_scenario-1-bundle-not-deploying]
 ==== シナリオ1:バンドルがデプロイされない
 
 [source,bash]
@@ -188,7 +188,7 @@ jq '.diagnostics.bundlesWithNoDeployments' bundle-status.json
 jq '.diagnostics.gitRepoBundleInconsistencies' bundle-status.json
 ----
 
-[#_2]
+[#_scenario-2-agent-not-reporting-status]
 ==== シナリオ2:エージェントがステータスを報告しない
 
 [source,bash]
@@ -203,7 +203,7 @@ fleet monitor | jq '.clusters[] | select(.agentStatus != "ready")'
 fleet monitor | jq '.clusters[] | {name, lastSeen, agentAge}'
 ----
 
-[#_3]
+[#_scenario-3-resources-stuck-with-deletion-timestamps]
 ==== シナリオ3:削除タイムスタンプでスタックしているリソース
 
 [source,bash]
@@ -218,7 +218,7 @@ fleet monitor | jq '{
 fleet monitor | jq '.bundles[] | select(.deletionTimestamp != null) | {name, finalizers}'
 ----
 
-[#_4]
+[#_scenario-4-commits-not-propagating]
 ==== シナリオ4:コミットが伝播しない
 
 [source,bash]
@@ -235,7 +235,7 @@ fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies[] |
   select(.commitMismatch == true)'
 ----
 
-[#_5]
+[#_scenario-5-performance-issues]
 ==== シナリオ5:パフォーマンスの問題
 
 [source,bash]
@@ -251,7 +251,7 @@ fleet monitor | jq '[.bundles[] | {name, size: .sizeBytes, sizeMB: (.sizeBytes /
 fleet monitor | jq '.diagnostics.bundlesWithMissingContent'
 ----
 
-[#_]
+[#_continuous-monitoring-workflow]
 === 継続的な監視ワークフロー
 
 長期的な監視とトレンド分析のために：
@@ -271,7 +271,7 @@ fleet analyze --diff /var/log/fleet-monitor.json > fleet-report-$(date +%Y%m%d).
 find /var/log -name "fleet-report-*.txt" -mtime +7 -delete
 ----
 
-[#_]
+[#_integration-with-alerting]
 === アラートとの統合
 
 モニターコマンドは監視システムと統合できます：
@@ -297,10 +297,10 @@ fleet monitor | jq -r '
 '
 ----
 
-[#_]
+[#_understanding-diagnostics]
 === 診断の理解
 
-[#_]
+[#_stuck-resources]
 ==== スタックリソース
 
 リソースは次の条件を満たすと「スタック」と見なされます：
@@ -321,12 +321,12 @@ fleet monitor | jq -r '
 
 * `syncGeneration` != `forceSyncGeneration` の場合 `forceSyncGeneration > 0`（スタックされたバンドルデプロイメントとは別に追跡されます）
 
-[#_api]
+[#_api-consistency-check]
 ==== APIの整合性チェック
 
 モニターは同じリソースの複数の取得を行い、「タイムトラベル」を検出します - Kubernetes APIサーバーが古いキャッシュのために異なるリソースバージョンを返す場合。これは重要です。なぜなら、古いデータがバンドルをスタックしているように見せることがあるからです。実際には進行中です。
 
-[#_]
+[#_commit-tracking]
 ==== コミット追跡
 
 モニターはライフサイクル全体を通じてGitコミットハッシュを追跡します：
@@ -334,7 +334,7 @@ fleet monitor | jq -r '
 
 不一致はsync処理が失敗している場所を示します。
 
-[#_]
+[#_performance-considerations]
 === パフォーマンスについて
 
 * モニターはクラスター内のすべての Fleet リソースを取得します。
@@ -343,7 +343,7 @@ fleet monitor | jq -r '
   * 頻度を下げて実行すること（例：60秒ではなく120秒ごとに）。
   * モニターコマンド自体のリソース使用状況を監視すること。
 
-[#_]
+[#_troubleshooting-the-monitor-command]
 === モニターコマンドのトラブルシューティング。
 
 モニターコマンドが失敗した場合：
@@ -364,7 +364,7 @@ kubectl get crds | grep fleet.cattle.io
 fleet monitor --verbose 2>&1 | tee monitor-debug.log
 ----
 
-[#_]
+[#_see-also]
 === 関連項目
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

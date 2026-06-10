@@ -22,7 +22,7 @@ As opções de configuração da implantação estão documentadas no campo `rol
 Se `rolloutStrategy` não for especificado em `fleet.yaml`, {product_name} utiliza os valores padrão.
 ====
 
-[#_como-funciona-o-particionamento]
+[#_how-does-partitioning-work]
 == Como Funciona o Particionamento?
 
 As partições são usadas exclusivamente para agrupar e controlar a implantação de `BundleDeployments` em clusters. Elas não afetam as opções de implantação de forma alguma.
@@ -162,7 +162,7 @@ image::partition-rollout-flow.png[Um ativo visual exibindo o fluxo de implantaç
 {product_name} processa partições na ordem em que aparecem no arquivo `fleet.yaml`.
 ====
 
-[#_parti-o-nica]
+[#_single-partition]
 === Partição Única
 
 Se você não definir `rolloutStrategy.partitions`, {product_name} cria partições automaticamente com base no número de clusters alvo:
@@ -176,12 +176,12 @@ Por exemplo, com 200 clusters (atendendo ao padrão `autoPartitionThreshold`), {
 2. Avalia a prontidão com base em `maxUnavailable`.
 . Se a condição for atendida, prossiga para os próximos 50, e assim por diante.
 
-[#_m-ltiplas-parti-es]
+[#_multiple-partitions]
 === Múltiplas Partições
 
 Se você definir várias partições, {product_name} usa `maxUnavailablePartitions` para limitar quantas partições podem ser `NotReady` de uma vez. Se o número de partições `NotReady` exceder `maxUnavailablePartitions`, {product_name} pausa a implantação.
 
-[#_prevenindo-tempestades-de-pull-de-imagem]
+[#_preventing-image-pull-storms]
 == Prevenindo tempestades de pull de imagem
 
 Durante a implantação, cada cluster downstream puxa imagens de contêineres. Se centenas de clusters começarem a puxar imagens simultaneamente, isso pode sobrecarregar o registro e se comportar como um ataque DDoS.
@@ -210,7 +210,7 @@ Como a implantação prossegue:
 
 Se você quiser ou precisar processar menos de 40 implantações de uma vez, pode colocar menos clusters em cada partição.
 
-[#_casos-de-uso-e-comportamento]
+[#_use-cases-and-behavior]
 == Casos de Uso e Comportamento
 
 Se o número de clusters não se dividir uniformemente, {product_name} arredonda para baixo os tamanhos das partições. Por exemplo, 230 clusters com `autoPartitionSize: 25%` resulta em:
@@ -218,7 +218,7 @@ Se o número de clusters não se dividir uniformemente, {product_name} arredonda
 * Quatro partições de 57 clusters
 * Uma partição de 2 clusters
 
-[#_cen-rio-50-clusters-parti-o-nica]
+[#_scenario-50-clusters-single-partition]
 === Cenário: 50 Clusters (Partição Única)
 
 [source,yaml]
@@ -237,7 +237,7 @@ O diagrama a seguir ilustra como {product_name} lida com 50 clusters em uma úni
 
 image::deploy-50Clusters.png[cenário de 50 clusters]
 
-[#_cen-rio-100-clusters-parti-o-nica]
+[#_scenario-100-clusters-single-partition]
 === Cenário: 100 Clusters (Partição Única) 
 
 [source,yaml]
@@ -253,7 +253,7 @@ rolloutStrategy:
 
 Se 10 clusters (10% de 100 clusters) estiverem indisponíveis, a implantação dos 50 clusters restantes é pausada até que menos de 10 clusters estejam `NotReady`. 
 
-[#_cen-rio-200-clusters-m-ltiplas-parti-es]
+[#_scenario-200-clusters-multiple-partitions]
 === Cenário: 200 Clusters (Múltiplas Partições)
 
 [source,yaml]
@@ -271,7 +271,7 @@ rolloutStrategy:
 
 {product_name} cria `BundleDeployments` para 20 clusters, aguarda que eles se tornem `Ready`, e então prossegue para o próximo. Isso efetivamente limita a quantidade de pulls de imagem dos clusters downstream para até ~40 imagens por vez.
 
-[#_cen-rio-200-clusters-prontid-o-estrita-parti-es-manuais]
+[#_scenario-200-clusters-strict-readiness-manual-partitions]
 === Cenário: 200 Clusters (Prontidão Estrita, Partições Manuais)
 
 A partição manual permite que você controle o agrupamento de clusters com `maxUnavailablePartitions: 0`. 
@@ -304,7 +304,7 @@ image::partition-fleet-rollout.png[Cenário de partições manuais]
 
 Isso garante total prontidão e implementação em etapas em todos os 200 clusters. Use essa abordagem quando você precisar de um sequenciamento preciso da implantação e total prontidão dos clusters antes de avançar. 
 
-[#_padr-es-de-estrat-gia-de-implementa-o]
+[#_rollout-strategy-defaults]
 == Padrões de Estratégia de Implementação
 
 Se os valores de implementação em nível de partição não estiverem definidos, {product_name} aplica os valores globais de `rolloutStrategy` em `fleet.yaml`. Configurações específicas de partição substituem valores globais quando definidas explicitamente.

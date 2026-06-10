@@ -20,7 +20,7 @@ Para instalaciones con muchos repositorios o cuando deseas reducir la latencia (
 * Bitbucket Server
 * Gogs
 
-[#_1-configura-el-servicio-de-webhook]
+[#_1-configure-the-webhook-service]
 == 1. Configura el Servicio de Webhook
 
 {product_name} utiliza un servicio de `gitjob` para manejar las solicitudes de webhook.
@@ -127,7 +127,7 @@ Este enfoque permite una migración fluida de Ingress Nginx a Traefik mientras s
 Puedes configurar https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] en Ingress para una comunicación segura.
 ====
 
-[#_2-configura-la-url-de-callback-del-webhook]
+[#_2-configure-the-webhook-callback-url]
 == 2. Configura la URL de Callback del Webhook
 
 Ve a tu proveedor de Git y configura la URL de callback del webhook.
@@ -151,7 +151,7 @@ Solo se admite `application/json` debido a limitaciones en la biblioteca de webh
 Cuando se configura un webhook, el intervalo de sondeo se ajusta automáticamente a una hora.
 ====
 
-[#_3-opcional-configura-un-secreto-de-webhook]
+[#_3-optional-configure-a-webhook-secret]
 == 3. (Opcional) Configura un Secreto de Webhook
 
 El secreto del webhook valida la carga útil enviada desde tu proveedor de Git.
@@ -169,7 +169,7 @@ Cada proveedor soportado utiliza un nombre de clave específico en el secreto de
 | Azure DevOps | `azure-password`
 |===
 
-[#_opci-n-1-configurar-un-secreto-a-nivel-de-cl-ster]
+[#_option-1-configure-a-cluster-wide-secret]
 === Opción 1: Configurar un secreto a nivel de clúster
 
 En este enfoque, el secreto se aplica a todo el clúster, y todos los GitRepos lo utilizan automáticamente.
@@ -199,8 +199,7 @@ kubectl create secret generic gitjob-webhook \
   --from-literal=azure-password=pass123
 ----
 
-[[option-2-configure-secret]]
-[#_opci-n-2-configurar-un-secreto-por-gitrepo]
+[#_option-2-configure-a-secret-per-gitrepo]
 === Opción 2: Configurar un secreto por GitRepo
 
 Puedes definir un secreto único de webhook para cada GitRepo.
@@ -225,7 +224,7 @@ spec:
 
 Si existen tanto un secreto a nivel de clúster como un secreto por GitRepo, {product_name} utiliza el secreto por GitRepo.
 
-[#_4-prueba-el-webhook]
+[#_4-test-the-webhook]
 == 4. Prueba el Webhook
 
 Ve a tu proveedor de Git y prueba la conexión del webhook. Deberías recibir un código de respuesta HTTP que confirme la entrega del webhook.

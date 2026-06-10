@@ -4,8 +4,7 @@
 
 主に内部の設定オプションの参照リストです。
 
-[[configure-install-options-in-rancher]]
-[#_rancher-product-name]
+[#_configure-product-install-options-in-rancher]
 == Rancherでの{product_name}インストールオプションの設定
 
 Rancherは、`rancher-config`ネームスペース内の`cattle-system`というConfigMapでHelmの値を探します。
@@ -39,7 +38,7 @@ kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
 ----
 
-[#_helm]
+[#_helm-charts]
 == Helmチャート
 
 Helmチャートは、少なくとも`values.yaml`のデフォルトで示されているオプションを受け入れます：
@@ -48,7 +47,7 @@ Helmチャートは、少なくとも`values.yaml`のデフォルトで示され
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
-[#_]
+[#_environment-variables]
 == 環境変数
 
 コントローラーは、これらの環境変数で起動できます：
@@ -58,7 +57,7 @@ Helmチャートは、少なくとも`values.yaml`のデフォルトで示され
 * `FLEET_CLUSTER_ENQUEUE_DELAY` - 準備が整っていないクラスターがどのくらいの頻度でチェックされるかを調整します
 * `FLEET_CPU_PPROF_PERIOD` - https://github.com/rancher/fleet/blob/main/docs/performance.md[パフォーマンスプロファイリング]をオンにするために使用されます
 
-[#_]
+[#_configuration]
 == 設定
 
 エージェントとFleet Managerのクラスター構成において。これらを変更すると、完全な再デプロイメントにつながる可能性があります。
@@ -68,7 +67,7 @@ Helmチャートは、少なくとも`values.yaml`のデフォルトで示され
 * cattle-fleet-system/fleet-agent
 * cattle-fleet-system/fleet-controller
 
-[#_]
+[#_labels]
 == ラベル
 
 Fleetによって使用されるラベル：
@@ -86,7 +85,7 @@ Fleetによって使用されるラベル：
  ** このラベルが提供されないか、空の値である場合、非シャードの{product_name}コントローラーがリソースを処理します。
  ** このラベルに値があり、{product_name}コントローラーがデプロイされているシャードIDと一致しない場合、リソースは処理されません。
 
-[#_]
+[#_annotations]
 == 注釈
 
 Fleetによって使用される注釈：
@@ -101,7 +100,7 @@ Fleetによって使用される注釈：
 * `fleet.cattle.io/managed` - 未使用のようです
 * `fleet.cattle.io/service-account`
 
-[#_product-name]
+[#_product-name-agent-configuration]
 == {product_name} エージェントの設定
 
 トレランス、アフィニティ、リソースは{product_name}エージェントのためにカスタマイズできます。これらのフィールドはxref:reference/ref-crds.adoc#_clusterspec[Cluster]を作成する際に提供できます。クラスターの作成方法についてはxref:how-tos-for-operators/cluster-registration.adoc[ダウンストリームクラスターの登録]を参照してください。これらのフィールドが提供されない場合、デフォルト設定が使用されます。

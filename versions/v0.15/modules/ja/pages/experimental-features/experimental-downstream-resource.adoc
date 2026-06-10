@@ -12,7 +12,7 @@
 これにより、外部リソース由来の値などを含むチャートの依存関係の処理が簡素化されます。
 xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom]も参照してください。
 
-[#_]
+[#_how-it-works]
 == 動作方法
 
 HelmOpsは、新しい`downstreamResources`フィールドをサポートしており、それを使用してリソースを種類と名前で参照できます。
@@ -47,7 +47,7 @@ spec:
 `downstreamResources`を通じて参照されるリソースが、もはやターゲットでなくなった後もダウンストリームのクラスターに残るべき場合、HelmOpのxref:/reference/ref-bundle.adoc[keepResources]を`true`に設定する必要があります。
 ====
 
-[#_]
+[#_monitoring]
 == 監視
 
 v0.15.0以降、{product_name}は`DownstreamResources`にリストされているシークレットとコンフィグマップに対する変更を監視します。また、バンドルが作成された後にシークレットまたはコンフィグマップが作成されたかどうかも確認します。

@@ -4,7 +4,7 @@
 
 本节包含命令和故障排除提示{product_name}。
 
-[#_]
+[#_where-to-look-for-root-causes-of-issues]
 == 查找问题根本原因的位置
 
 当{product_name}表现异常时，首先要检查的事项包括：
@@ -24,17 +24,17 @@
 
 其中一些可以通过xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]和xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]进行自动化。
 
-[#_]
+[#_how-do-i]
 == 我该如何...
 
-[#_fleet-controller]
+[#_fetch-the-log-from-fleet-controller]
 === 从`fleet-controller`获取日志？
 
 在部署`fleet-controller`的本地管理集群中，运行以下命令，并填写您的特定`fleet-controller` pod名称：
 
  $ kubectl logs -l app=fleet-controller -n cattle-fleet-system
 
-[#_fleet-agent]
+[#_fetch-the-log-from-the-fleet-agent]
 === 从`fleet-agent`获取日志？
 
 前往每个下游集群，并为本地集群运行以下命令，填入您的特定 `fleet-agent` pod 名称：
@@ -46,7 +46,7 @@ $ kubectl logs -l app=fleet-agent -n cattle-fleet-system
 $ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
 ----
 
-[#_gitrepos-bundles]
+[#_fetch-detailed-error-logs-from-gitrepos-and-bundles]
 === 从 `GitRepos` 和 `Bundles` 获取详细的错误日志？
 
 通常，错误应该会出现在 Rancher UI 中。然而，如果那里没有显示足够的错误信息，您可以根据需要进一步研究，尝试以下一种或多种方法：
@@ -56,7 +56,7 @@ $ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
 * 检查 `fleet-controller` 的同步错误。
 * 如果在部署包时遇到问题，请检查下游集群中的 `fleet-agent` 日志。
 
-[#_gitrepos-bundles]
+[#_fetch-detailed-status-from-gitrepos-and-bundles]
 === 从 `GitRepos` 和 `Bundles` 获取详细状态？
 
 对于调试和错误报告，资源状态字段的原始 JSON 最为有用。
@@ -77,12 +77,12 @@ kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}
 kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
 ----
 
-[#_kustomize]
+[#_check-a-chart-rendering-error-in-kustomize]
 === 检查 `Kustomize` 中的图表渲染错误？
 
 检查 xref:troubleshooting.adoc#_fetch-the-log-from-fleet-controller[`fleet-controller` 日志] 和 xref:troubleshooting.adoc#_fetch-the-log-from-the-fleet-agent[`fleet-agent` 日志]。
 
-[#_gitrepo-fleet-yaml-helm]
+[#_check-errors-about-watching-or-checking-out-the-gitrepo-or-about-the-downloaded-helm-repo-in-fleet-yaml]
 === 检查关于监视或检出 `GitRepo` 的错误，或关于在 `fleet.yaml` 中下载的 Helm 储存库的错误？
 
 使用以下命令检查 `gitjob-controller` 日志，填入您的特定 `gitjob` pod 名称：
@@ -95,7 +95,7 @@ kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"
 
  $ kubectl logs -f $gitRepoName-pod-name -n namespace
 
-[#_fleet-controller]
+[#_check-the-status-of-the-fleet-controller]
 === 检查 `fleet-controller` 的状态？
 
 您可以通过运行以下命令检查 `fleet-controller` pod 的状态：
@@ -112,7 +112,7 @@ NAME                                READY   STATUS    RESTARTS   AGE
 fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
-[#_fleet-controller-fleet-agent]
+[#_enable-debug-logging-for-fleet-controller-and-fleet-agent]
 === 是否启用 `fleet-controller` 和 `fleet-agent` 的调试日志？
 
 在 Rancher v2.6.3 ({product_name} v0.3.8) 中，已添加启用调试日志的功能。
@@ -121,10 +121,10 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 * 选择 *APP 与市场*，然后从下拉菜单中选择 *已安装的APP*
 * 从那里，您将升级 {product_name} 图表，使用值 `debug=true`。如果需要，您还可以设置 `debugLevel=5`。
 
-[#_fleet]
+[#_via-fleet-install-options]
 ==== 通过 Fleet 安装选项
 
-您可以在 `cattle-system` 名称空间中创建一个配置映射 `rancher-config`，并使用 xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Fleet 安装选项]。
+您可以在 `cattle-system` 名称空间中创建一个配置映射 `rancher-config`，并使用 xref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[Fleet 安装选项]。
 
 例如，要启用 `fleet-controller` 和 `fleet-agent` 的调试日志，您可以创建一个包含以下内容的配置映射：
 
@@ -144,7 +144,7 @@ data:
 
 修改配置将重新安装 Fleet 并重新部署代理。
 
-[#_]
+[#_record-resource-changes-over-time]
 === 记录资源随时间的变化
 
 有时记录资源随时间的变化是有用的。您可以通过监视资源并将输出保存到文件来做到这一点。
@@ -161,17 +161,17 @@ for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.f
 done ; wait
 ====
 
-[#_product-name]
+[#_additional-solutions-for-other-product-name-issues]
 == *其他 {product_name} 问题的附加解决方案*
 
-[#_crd]
+[#_naming-conventions-for-crds]
 === CRD 的命名约定
 
 . 对于像 `clusters` 和 `gitrepos` 这样的 CRD 术语，您必须引用完整的 CRD 名称。例如，集群 CRD 的完整名称是 `cluster.fleet.cattle.io`，而 gitrepo CRD 的完整名称是 `gitrepo.fleet.cattle.io`。
 . `Bundles`，它们是从 `GitRepo` 创建的，遵循在创建 `GitRepo` 的同一工作区/名称空间中的 `$gitrepoName-$path` 模式。请注意，`$path` 是 git 储存库中包含 `bundle` (`fleet.yaml`) 的路径。
 . `BundleDeployments` 是从 `bundle` 创建的，遵循名称空间 `clusters-$workspace-$cluster-$generateHash` 中的 `$bundleName-$clusterName` 模式。请注意，`$clusterName` 是将要部署包的群集。
 
-[#_github-http]
+[#_http-secrets-in-github]
 === Github 中的 HTTP 密钥
 
 在使用私有 git 储存库测试 {product_name} 时，您会注意到 Github 不再支持 HTTP 密钥。要解决此问题，请执行以下步骤：
@@ -188,7 +188,7 @@ endif::[]
 +
 . 将您的词元用作密钥。
 
-[#_product-name-403]
+[#_product-name-fails-with-bad-response-code-403]
 === {product_name} 失败，响应代码错误：403
 
 如果您的 GitJob 返回以下错误，问题可能是 {product_name} 无法访问您在 xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`] 中指定的 Helm 储存库：
@@ -202,7 +202,7 @@ time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
 * 检查您的储存库是否可以从开发机器访问，并且您可以成功下载 Helm 图表。
 * 检查您对 git 储存库的凭据是否有效。
 
-[#_helm]
+[#_helm-chart-repo-certificate-signed-by-unknown-authority]
 === Helm 图表储存库：证书由未知机构签署。
 
 如果您的 GitJob 返回以下错误，您可能添加了错误的证书链：
@@ -227,7 +227,7 @@ Certificate:
 ...
 ----
 
-[#_product-name]
+[#_product-name-deployment-stuck-in-modified-state]
 === {product_name} 部署停滞在修改状态。
 
 当您将包部署到 {product_name} 时，一些组件被修改，这导致 {product_name} 环境中的 "修改" 标志。
@@ -267,7 +267,7 @@ level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monito
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
-[#_gitrepo]
+[#_gitrepo-sync-fails-without-retry]
 ==== GitRepo同步失败，未重试
 
 一个`GitRepo`可能会停止同步并保持在**失败**状态。在这种情况下，GitJob控制器日志可能会显示网络超时或etcd请求超时。当{product_name}处于高负载时，这个问题更可能发生。
@@ -286,7 +286,7 @@ level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monito
 
 此配置将重试次数设置为`3`，而不是默认值`1`。
 
-[#_gitrepo-bundle]
+[#_gitrepo-or-bundle-stuck-in-modified-state]
 === `GitRepo`或`Bundle`停留在修改状态
 
 *修改*意味着实际状态与期望状态之间存在不匹配，真实来源存在于git储存库中。
@@ -301,7 +301,7 @@ level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monito
 在这种情况下，建议对受影响的 GitRepo 执行强制更新。
 ====
 
-[#_bundle-pod-hpa]
+[#_bundle-has-a-horizontal-pod-autoscaler-hpa-in-modified-state]
 === Bundle 拥有处于修改状态的水平 Pod 自动扩缩器（HPA）。
 
 对于具有 HPA 的 Bundles，预期状态是 `Modified`，因为该 Bundle 包含与部署时 Bundle 状态不同的字段——通常是 `ReplicaSet`。
@@ -322,7 +322,7 @@ diff:
     - {"op": "remove", "path": "/spec/replicas"}
 ----
 
-[#_waitcheckin]
+[#_what-if-the-cluster-is-unavailable-or-is-in-a-waitcheckin-state]
 === 如果集群不可用，或者处于 `WaitCheckIn` 状态怎么办？
 
 您需要重新导入并重新启动注册过程：在左侧导航栏中选择 *Cluster*，然后选择 *Force Update*。
@@ -343,7 +343,7 @@ endif::[]
 ====
 
 
-[#_gitrepo-gzip-invalid-header]
+[#_gitrepo-complains-with-gzip-invalid-header]
 === GitRepo 报告 `gzip: invalid header`。
 
 当您看到如下错误 ... 时，
@@ -355,7 +355,7 @@ Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid head
 
 ... helm chart 的内容不正确。手动将 chart 下载到本地计算机并检查内容。
 
-[#_]
+[#_agent-is-no-longer-registered]
 === 代理不再注册。
 
 您可以通过设置 `redeployAgentGeneration` 强制重新部署给定集群的代理。
@@ -365,13 +365,13 @@ Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid head
 kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
 ----
 
-[#_product-name]
+[#_migrate-the-local-cluster-to-the-product-name-default-cluster-workspace]
 === 将本地群集迁移到 {product_name} 默认集群工作区吗？
 
 用户可以创建新的工作区并在工作区之间移动集群。
 目前无法将本地群集从 `fleet-local` 移动到另一个工作区。
 
-[#_bundle]
+[#_bundle-failed-to-deploy-resource-already-exists-error]
 === Bundle 部署失败："资源已存在" 错误
 
 如果您的 Bundle 在部署过程中遇到以下错误信息：

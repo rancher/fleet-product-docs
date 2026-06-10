@@ -9,7 +9,7 @@
 fleet analyze [flags] MONITOR_FILE
 ----
 
-[#_]
+[#_options]
 == オプション
 
 [source,text]
@@ -22,7 +22,7 @@ fleet analyze [flags] MONITOR_FILE
     --no-color     Disable color in output
 ----
 
-[#_]
+[#_usage]
 == 使用方法
 
 [source,bash]
@@ -54,7 +54,7 @@ fleet analyze --json monitor.json
 fleet analyze --no-color monitor.json
 ----
 
-[#_]
+[#_output-modes]
 == 出力モード
 
 - **概要（デフォルト）**:リソースと診断の高レベルの概要
@@ -64,7 +64,7 @@ fleet analyze --no-color monitor.json
 - **詳細**:コントローラー情報、APIの整合性、イベントを含む完全な分析
 - **JSON**:スクリプトと自動化のための機械可読出力
 
-[#_]
+[#_multi-snapshot-analysis]
 == マルチスナップショット分析
 
 あなたのmonitor.jsonファイルに複数のスナップショットが含まれている場合（1行につき1つのJSONオブジェクト）：
@@ -84,7 +84,7 @@ fleet analyze --all monitor.json
 fleet analyze --compare snapshot2.json snapshot1.json
 ----
 
-[#_]
+[#_see-also]
 == 関連項目
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

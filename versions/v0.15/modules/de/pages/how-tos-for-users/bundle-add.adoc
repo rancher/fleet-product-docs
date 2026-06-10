@@ -60,7 +60,7 @@ spec:
   - clusterName: local
 ----
 
-[#_zielgruppen]
+[#_targets]
 == Zielgruppen
 
 Das Bundle kann mehrere Cluster ansprechen. Es verwendet dasselbe xref:how-tos-for-users/gitrepo-targets.adoc#_target-matching[Targeting wie das GitRepo].
@@ -78,7 +78,7 @@ targets:
       replicas: 1
 ----
 
-[#_nutzungsbeschr-nkungen]
+[#_limitations]
 == Nutzungsbeschränkungen
 
 Helm-Optionen, die mit dem Herunterladen des Helm-Charts zusammenhängen, werden ignoriert. Das Helm-Chart wird von der fleet-cli heruntergeladen, die die Bundles erstellt. Das Bundle muss alle Ressourcen aus dem Chart enthalten. Daher ignoriert das Bundle:

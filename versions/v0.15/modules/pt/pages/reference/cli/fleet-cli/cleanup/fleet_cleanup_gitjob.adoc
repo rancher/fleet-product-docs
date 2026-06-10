@@ -8,7 +8,7 @@ Limpar trabalhos git desatualizados
 fleet cleanup gitjob [flags]
 ----
 
-[#_op-es]
+[#_options]
 == Opções
 
 ----
@@ -21,7 +21,7 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_consulte-tamb-m]
+[#_see-also]
 == CONSULTE TAMBÉM
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]     - Limpar recursos desatualizados

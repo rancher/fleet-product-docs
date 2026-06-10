@@ -4,7 +4,7 @@
 
 Esta seção contém comandos e dicas para solucionar problemas{product_name}.
 
-[#_onde-procurar-as-causas-raiz-dos-problemas]
+[#_where-to-look-for-root-causes-of-issues]
 == Onde Procurar as Causas Raiz dos Problemas
 
 As primeiras coisas a verificar quando {product_name} se comporta de maneira inesperada seriam:
@@ -24,17 +24,17 @@ A próxima seção explica como executar todas essas verificações.
 
 Algumas delas podem ser automatizadas através de xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor] e xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze].
 
-[#_como]
+[#_how-do-i]
 == Como...
 
-[#_buscar-o-log-de-fleet-controller]
+[#_fetch-the-log-from-fleet-controller]
 === Buscar o log de `fleet-controller`?
 
 No cluster de gerenciamento local onde o `fleet-controller` está implantado, execute o seguinte comando com o nome do seu pod `fleet-controller` específico preenchido:
 
  $ kubectl logs -l app=fleet-controller -n cattle-fleet-system
 
-[#_busque-o-log-do-fleet-agent]
+[#_fetch-the-log-from-the-fleet-agent]
 === Busque o log do `fleet-agent`?
 
 Vá para cada cluster downstream e execute o seguinte comando para o cluster local com o nome do pod `fleet-agent` específico preenchido:
@@ -46,7 +46,7 @@ $ kubectl logs -l app=fleet-agent -n cattle-fleet-system
 $ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
 ----
 
-[#_busque-logs-de-erro-detalhados-de-gitrepos-e-bundles]
+[#_fetch-detailed-error-logs-from-gitrepos-and-bundles]
 === Busque logs de erro detalhados de `GitRepos` e `Bundles`?
 
 Normalmente, os erros devem aparecer na interface do Rancher. No entanto, se não houver informações suficientes exibidas sobre o erro lá, você pode pesquisar mais tentando um ou mais dos seguintes conforme necessário:
@@ -56,7 +56,7 @@ Normalmente, os erros devem aparecer na interface do Rancher. No entanto, se nã
 * Verifique o `fleet-controller` para erros de sincronização.
 * Verifique o log do `fleet-agent` no cluster downstream se você encontrar problemas ao implantar o bundle.
 
-[#_busque-status-detalhado-de-gitrepos-e-bundles]
+[#_fetch-detailed-status-from-gitrepos-and-bundles]
 === Busque status detalhado de `GitRepos` e `Bundles`?
 
 Para depuração e relatórios de bugs, o JSON bruto dos campos de status dos recursos é o mais útil.
@@ -77,12 +77,12 @@ kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}
 kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
 ----
 
-[#_verifique-um-erro-de-renderiza-o-de-gr-fico-em-kustomize]
+[#_check-a-chart-rendering-error-in-kustomize]
 === Verifique um erro de renderização de gráfico em `Kustomize`?
 
 Verifique os logs de xref:troubleshooting.adoc#_fetch-the-log-from-fleet-controller[`fleet-controller`] e os logs de xref:troubleshooting.adoc#_fetch-the-log-from-the-fleet-agent[`fleet-agent`].
 
-[#_verifique-erros-ao-monitorar-ou-verificar-o-gitrepo-ou-sobre-o-reposit-rio-helm-baixado-em-fleet-yaml]
+[#_check-errors-about-watching-or-checking-out-the-gitrepo-or-about-the-downloaded-helm-repo-in-fleet-yaml]
 === Verifique erros ao monitorar ou verificar o `GitRepo`, ou sobre o repositório Helm baixado em `fleet.yaml`?
 
 Verifique os logs do `gitjob-controller` usando o seguinte comando com o nome do pod `gitjob` específico preenchido:
@@ -95,7 +95,7 @@ Os pods geralmente terão imagens nomeadas `rancher/tekton-utils` com o nome `gi
 
  $ kubectl logs -f $gitRepoName-pod-name -n namespace
 
-[#_verifique-o-status-do-fleet-controller]
+[#_check-the-status-of-the-fleet-controller]
 === Verifique o status do `fleet-controller`?
 
 Você pode verificar o status dos pods `fleet-controller` executando os comandos abaixo:
@@ -112,7 +112,7 @@ NAME                                READY   STATUS    RESTARTS   AGE
 fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
-[#_ativar-o-registro-de-depura-o-para-fleet-controller-e-fleet-agent]
+[#_enable-debug-logging-for-fleet-controller-and-fleet-agent]
 === Ativar o registro de depuração para `fleet-controller` e `fleet-agent`?
 
 Disponível no Rancher v2.6.3 ({product_name} v0.3.8), a capacidade de ativar o registro de depuração foi adicionada.
@@ -121,10 +121,10 @@ Disponível no Rancher v2.6.3 ({product_name} v0.3.8), a capacidade de ativar o 
 * Selecione *Apps & Marketplace*, depois *Apps Instalados* no menu suspenso
 * A partir daí, você fará upgrade do gráfico {product_name} com o valor `debug=true`. Você também pode definir `debugLevel=5` se desejar.
 
-[#_via-op-es-de-instala-o-do-fleet]
+[#_via-fleet-install-options]
 ==== Via Opções de Instalação do Fleet
 
-Você pode criar um mapa de configuração `rancher-config` no namespace `cattle-system` com xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Opções de Instalação do Fleet].
+Você pode criar um mapa de configuração `rancher-config` no namespace `cattle-system` com xref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[Opções de Instalação do Fleet].
 
 Por exemplo, para ativar o registro de depuração para `fleet-controller` e `fleet-agent`, você pode criar um mapa de configuração com o seguinte conteúdo:
 
@@ -144,7 +144,7 @@ data:
 
 Modificar a configuração reinstalará o Fleet e reimplanta os agentes.
 
-[#_registrar-mudan-as-de-recursos-ao-longo-do-tempo]
+[#_record-resource-changes-over-time]
 === Registrar Mudanças de Recursos ao Longo do Tempo
 
 Às vezes, é útil registrar as mudanças de um recurso ao longo do tempo. Você pode fazer isso observando o recurso e salvando a saída em arquivos.
@@ -161,17 +161,17 @@ for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.f
 done ; wait
 ====
 
-[#_solu-es-adicionais-para-outros-problemas-de-product-name]
+[#_additional-solutions-for-other-product-name-issues]
 == *Soluções Adicionais para Outros Problemas de {product_name}*
 
-[#_conven-es-de-nomenclatura-para-crds]
+[#_naming-conventions-for-crds]
 === Convenções de nomenclatura para CRDs
 
 . Para termos de CRD como `clusters` e `gitrepos`, você deve referenciar o nome completo do CRD. Por exemplo, o nome completo do CRD do cluster é `cluster.fleet.cattle.io`, e o nome completo do CRD do gitrepo é `gitrepo.fleet.cattle.io`.
 . `Bundles`, que são criados a partir do `GitRepo`, seguem o padrão `$gitrepoName-$path` no mesmo espaço de trabalho/namespace onde o `GitRepo` foi criado. Observe que `$path` é o diretório de caminho no repositório git que contém o `bundle` (`fleet.yaml`).
 . `BundleDeployments`, que são criados a partir do `bundle`, seguem o padrão `$bundleName-$clusterName` no namespace `clusters-$workspace-$cluster-$generateHash`. Observe que `$clusterName` é o cluster ao qual o bundle será implantado.
 
-[#_segredos-http-no-github]
+[#_http-secrets-in-github]
 === Segredos HTTP no Github
 
 Ao testar {product_name} com repositórios git privados, você notará que segredos HTTP não são mais suportados no Github. Para contornar esse problema, siga estas etapas:
@@ -188,7 +188,7 @@ endif::[]
 +
 . Use seu token como o segredo.
 
-[#_product-name-falha-com-c-digo-de-resposta-ruim-403]
+[#_product-name-fails-with-bad-response-code-403]
 === {product_name} falha com código de resposta ruim: 403
 
 Se seu GitJob retornar o erro abaixo, o problema pode ser que {product_name} não consegue acessar o repositório Helm que você especificou em seu xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]:
@@ -202,7 +202,7 @@ Execute as seguintes etapas para avaliar:
 * Verifique se seu repositório é acessível a partir de sua máquina de desenvolvimento e se você pode baixar o chart Helm com sucesso.
 * Verifique se suas credenciais para o repositório git são válidas
 
-[#_reposit-rio-do-chart-helm-certificado-assinado-por-autoridade-desconhecida]
+[#_helm-chart-repo-certificate-signed-by-unknown-authority]
 === Repositório do chart Helm: certificado assinado por autoridade desconhecida.
 
 Se seu GitJob retornar o erro abaixo, você pode ter adicionado a cadeia de certificados errada:
@@ -227,7 +227,7 @@ Certificate:
 ...
 ----
 
-[#_product-name-implanta-o-presa-no-estado-modificado]
+[#_product-name-deployment-stuck-in-modified-state]
 === {product_name} implantação presa no estado modificado
 
 Quando você implanta pacotes em {product_name}, alguns dos componentes são modificados, e isso causa a bandeira "modificado" no ambiente {product_name}.
@@ -267,7 +267,7 @@ Com base no log acima, você pode adicionar a seguinte entrada para remover a op
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
-[#_a-sincroniza-o-do-gitrepo-falha-sem-nova-tentativa]
+[#_gitrepo-sync-fails-without-retry]
 ==== A sincronização do GitRepo falha sem nova tentativa
 
 Um `GitRepo` pode parar de sincronizar e permanecer em um estado **Falhou**. Neste caso, os logs do controlador GitJob podem mostrar timeouts de rede ou timeouts de requisições etcd. Esse problema é mais provável quando {product_name} está sob alta carga.
@@ -286,7 +286,7 @@ Por exemplo, ao instalar com Helm:
 
 Essa configuração define a contagem de tentativas para `3` em vez do valor padrão `1`.
 
-[#_gitrepo-ou-bundle-preso-em-estado-modificado]
+[#_gitrepo-or-bundle-stuck-in-modified-state]
 === `GitRepo` ou `Bundle` preso em estado modificado
 
 *Modificado* significa que há uma discrepância entre o estado atual e o estado desejado, a fonte da verdade, que reside no repositório git.
@@ -301,7 +301,7 @@ Quando uma propriedade que pode afetar os IDs dos Bundles criados é alterada (c
 Nesses casos, também é recomendado realizar uma atualização forçada do GitRepo afetado.
 ====
 
-[#_o-bundle-possui-um-horizontal-pod-autoscaler-hpa-em-estado-modificado]
+[#_bundle-has-a-horizontal-pod-autoscaler-hpa-in-modified-state]
 === O Bundle possui um Horizontal Pod Autoscaler (HPA) em estado modificado.
 
 Para bundles com um HPA, o estado esperado é `Modified`, pois o bundle contém campos que diferem do estado do Bundle na implantação - geralmente `ReplicaSet`.
@@ -322,7 +322,7 @@ diff:
     - {"op": "remove", "path": "/spec/replicas"}
 ----
 
-[#_e-se-o-cluster-estiver-indispon-vel-ou-estiver-em-um-estado-waitcheckin]
+[#_what-if-the-cluster-is-unavailable-or-is-in-a-waitcheckin-state]
 === E se o cluster estiver indisponível ou estiver em um estado `WaitCheckIn`?
 
 Você precisará reimportar e reiniciar o processo de registro: Selecione *Cluster* na barra de navegação à esquerda, em seguida, selecione *Atualização Forçada*.
@@ -343,7 +343,7 @@ endif::[]
 ====
 
 
-[#_gitrepo-reclama-com-gzip-invalid-header]
+[#_gitrepo-complains-with-gzip-invalid-header]
 === GitRepo reclama com `gzip: invalid header`.
 
 Quando você vê um erro como o abaixo ....
@@ -355,7 +355,7 @@ Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid head
 
 ... o conteúdo do helm chart está incorreto. Baixe manualmente o chart para sua máquina local e verifique o conteúdo.
 
-[#_o-agente-n-o-est-mais-registrado]
+[#_agent-is-no-longer-registered]
 === O agente não está mais registrado.
 
 Você pode forçar uma nova implantação de um agente para um cluster específico definindo `redeployAgentGeneration`.
@@ -365,13 +365,13 @@ Você pode forçar uma nova implantação de um agente para um cluster específi
 kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
 ----
 
-[#_migrar-o-cluster-local-para-o-workspace-do-cluster-padr-o-product-name]
+[#_migrate-the-local-cluster-to-the-product-name-default-cluster-workspace]
 === Migrar o cluster local para o workspace do cluster padrão {product_name}?
 
 Os usuários podem criar novos workspaces e mover clusters entre workspaces.
 Atualmente, não é possível mover o cluster local de `fleet-local` para outro workspace.
 
-[#_falha-ao-implantar-o-bundle-recurso-j-existe-erro]
+[#_bundle-failed-to-deploy-resource-already-exists-error]
 === Falha ao implantar o Bundle: "recurso já existe" Erro
 
 Se o seu Bundle encontrar a seguinte mensagem de erro durante a implantação:

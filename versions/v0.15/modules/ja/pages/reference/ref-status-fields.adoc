@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_]
+[#_display-states]
 == 状態の表示
 
 GitRepos、HelmOps、Clusters、および Bundles は、Bundles を適用する各フェーズで異なる状態を持っています。
@@ -11,8 +11,7 @@ BundleDeployments からの状態は、Bundle、GitRepo、Cluster、および Cl
 
 GitRepo を見ると、GitRepo に関連するすべてのリソースの状態が表示されます。Cluster を見ると、その Cluster 内のすべての Bundles の状態が表示され、これらは多くの GitRepos にまたがる場合があります。Bundle を見ると、その Bundle 内のすべての BundleDeployments の状態が表示されます。
 
-[#_]
-=== 準備完了条件
+[#_ready-condition]
 
 `Ready` 条件は、BundleDeployments が `Ready` 状態にあるかどうかを判断するために使用されます。
 すべての BundleDeployments が `Ready` 状態にある場合、`Ready` 条件は `True` に設定されます。
@@ -32,25 +31,20 @@ status:
     type: Ready
 ----
 
-[#_]
-==== 準備完了ステータスの決定
+[#_ready-status-determination]
 
 {product_name} は、リソースのステータスに基づいて BundleDeployments の準備完了ステータスを決定するために、`sigs.k8s.io/cli-utils` モジュールの `kstatus` パッケージを使用します。
 詳細については、link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` パッケージの README] を参照してください。
 
-[#_]
-==== 準備完了ステータスの伝播
+[#_propagation-of-ready-status]
 
 image::PropogationReadyStatus.svg[準備完了ステータスの伝播]
 
-[#_]
-=== 状態の表示
+[#_display-state]
 
 `status.display` フィールドは状態の概要を提供します。状態はランク付けされ、最悪の状態が`state`として`status.display`フィールドに使用されます。
 
-[[state-ranking]]
-[#_]
-==== 状態ランキング
+[#_state-ranking]
 
 これは状態が表示されるランクです。Bundle に異なる状態の BundleDeployment がある場合、最悪の状態が `status.display.state` フィールドに使用されます。
 この状態は、Bundle から他の{product_name}リソース（GitRepos、Clusters、ClusterGroups）に伝播されます。
@@ -65,11 +59,10 @@ image::PropogationReadyStatus.svg[準備完了ステータスの伝播]
 * WaitApplied
 * ErrApplied
 
-[#_]
+[#_bundles]
 == バンドル
 
 [#_bundle-statuses]
-=== Bundle Statuses
 
 * *Ready* :Bundles がデプロイされ、すべてのリソースが準備完了です。そうでない場合、`message` フィールドの `Ready` 条件には BundleDeployment の状態の集約が含まれます。
 * *NotReady* :BundleDeployments がデプロイされていますが、一部のリソースが準備完了ではありません（例えば、コンテナイメージがプルされているか、サービスが準備完了を報告していない）。
@@ -81,16 +74,14 @@ image::PropogationReadyStatus.svg[準備完了ステータスの伝播]
 * *WaitApplied* :Bundles は同期されていますが、デプロイを待っています。この状態が持続的に表示される場合、到達不可能なターゲットクラスターを示している可能性があります。
 * *ErrApplied* :Bundles は正常に同期されましたが、デプロイ中にエラーが発生しました。
 
-[#_]
+[#_clusters]
 == クラスタ
 
-[#_cluster]
-=== Cluster固有の状態
+[#_cluster-specific-states]
 
 * *待機中チェックイン* :エージェントが登録情報とクラスターの状態を報告するのを待っています。
 
-[#_bundles]
-=== Bundles からの状態
+[#_states-from-bundles]
 
 * *Ready* :この Cluster 内のすべての Bundles はデプロイされ、リソースは準備が整っています。
 * *NotReady* :この Cluster 内の一部の Bundles は準備が整っていません。
@@ -112,7 +103,7 @@ image::PropogationReadyStatus.svg[準備完了ステータスの伝播]
 * *停止中* :コントローラーはエラーに遭遇したか、進行できませんでした。
 * *承諾* :GitRepo 制限が適用され、外部 Helm シークレットが存在します。
 
-[#_helmop]
+[#_helmop-conditions]
 == HelmOp 条件
 
 * *Ready* : `True` すべての BundleDeployments が正常にデプロイされた場合、`False` いずれかが準備完了でない場合。
@@ -125,17 +116,16 @@ image::PropogationReadyStatus.svg[準備完了ステータスの伝播]
 `status.display` フィールドは GitRepos と GitOps の間で共有されています。両方のリソースには、リソースの状態を要約する `status.display` フィールドが含まれています。`state` の値は、リソースの種類によって異なる場合があります。
 
 * `readyBundleDeployments` :`%d/%d`の形式の文字列で、準備完了のバンドルデプロイ数と総バンドルデプロイ数を示します。
-* `state` :GitRepoの状態を表します（例えば、`GitUpdating`）または<<state-ranking,State Ranking>>に基づく最高のBundleStateです。`Ready`の場合、空の値に設定されます。
+* `state` :GitRepoの状態を表します（例えば、`GitUpdating`）または<<_state-ranking,State Ranking>>に基づく最高のBundleStateです。`Ready`の場合、空の値に設定されます。
 * `message` :関連するデプロイメント条件メッセージが含まれています。
 * エラーメッセージが存在する場合、`error` : `true`です。
 
-[#_]
+[#_resources-list]
 == リソースリスト
 
 ターゲットClustersにデプロイされたリソースは、`GitRepos`と`HelmOps`の下に分類されます。
 
 [#_gitrepos]
-=== GitRepos
 
 GitReposの`status.ResourceCounts`リストは`bundleDeployments`から派生しています。
 
@@ -186,7 +176,6 @@ perClusterResourceCounts:
 これにより、どのクラスターが不完全または不整合なデプロイメントを持っているかを一目で特定できます。
 
 [#_bundledeployment]
-=== BundleDeployment
 
 `BundleDeployment`リソースには、より良い可視性のために2つの追加フィールドが含まれています：
 
@@ -194,36 +183,31 @@ perClusterResourceCounts:
 * `resourceCounts`：状態ごとのリソースの数をカウントします。
 
 [#_helmops]
-=== HelmOps
 
 HelmOpsの`status.ResourceCounts`リストは`bundleDeployments`から派生しています。
 
-[#_]
+[#_resource-counts]
 == リソースカウント
 
 これは、リソース間でリソースカウントがどのように伝播するかを示します。
 
-[#_gitrepos]
-=== GitRepos
+[#_rc_gitrepos]
 
 デプロイされたリソースは、`bundleDeployments`から派生した`status.Resources`の`GitRepos`の下にリストされています。
 
-[#_helmops]
-=== HelmOps
+[#_rc_helmops]
 
 同様に、`HelmOps`のデプロイメントされたリソースは`status.Resources`にリストされており、`bundleDeployments`から派生しています。
 
-[#_]
-=== クラスタ
+[#_rc_clusters]
 
 Clustersでは、`status.ResourceCounts`はGitReposから派生しています。
 
 [#_clustergroups]
-=== ClusterGroups
 
 ClusterGroupsでは、`status.ResourceCounts`はGitReposから派生しています。
 
-[#_]
+[#_class-diagram]
 == クラス図
 
 image::ClusterGroups_classDiagram.svg[準備完了ステータスの伝播]

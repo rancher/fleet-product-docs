@@ -10,7 +10,7 @@ Fleetのイメージスキャンを使用すると、イメージリポジトリ
 この機能は実験的な機能と見なされます。
 デフォルトでは無効になっています。
 
-有効にする方法についての詳細はxref:how-tos-for-operators/installation.adoc#enabling-imagescan[こちら]をご覧ください。
+有効にする方法についての詳細はxref:how-tos-for-operators/installation.adoc#_enabling-imagescan[こちら]をご覧ください。
 ====
 
 

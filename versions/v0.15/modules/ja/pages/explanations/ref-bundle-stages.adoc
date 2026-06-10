@@ -22,8 +22,7 @@
 
 image::FleetBundleStages.svg[バンドルステージ]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
-[#_cli]
+[#_examining-the-bundle-lifecycle-with-the-cli]
 == CLIを使用したバンドルライフサイクルの検証
 
 いくつかのFleet CLIコマンドが、バンドルのデバッグに役立ちます。
@@ -43,20 +42,19 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 `fleet apply`を使用してバンドルを作成する方法に関する詳細情報は、xref:how-tos-for-users/bundle-add.adoc[バンドルに関するセクション]で見つけることができます。
 
-[[fleet-target]]
 [#_fleet-target]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Target]はファイルからバンドルを読み込み、ライブクラスターと連携して`bundledeployment`および`content`リソースを出力します。これはFleetコントローラーが作成するものです。ネームスペースを引数として受け取るため、例えばクラスターリソースをそのネームスペース内で探すことができます。"ターゲティング"中に使用されるデータ構造をダンプすることもできるため、ラベルやクラスター名に関して取られた決定を確認できます。
 
-[#_]
+[#_fleet-deploy]
 === フリートデプロイ
 
 xref:reference/cli/fleet-cli/fleet_deploy.adoc[デプロイ]は`fleet target`の出力、またはダンプされたバンドルデプロイメント/コンテンツリソースを受け取り、それをクラスターにデプロイします。これはFleet agentが行うことと同様です。ドライランモードでは、helmを使ってインストールするのではなく、生成されるリソースを出力します。コマンドは入力リソースを作成しないため、実行中のFleet agentがデプロイメントをガーベジコレクトする可能性があります。
 
 デプロイコマンドは、エアギャップ(された)クラスターにバンドルを持ち込むために使用できます。
 
-[#_cli]
+[#_lifecycle-cli]
 === ライフサイクルCLI
 
 Fleet CLIコマンドは、バンドルライフサイクルのデバッグと理解を助けます。以下の例は、CLIを使用した完全なバンドルライフサイクルを示しています：

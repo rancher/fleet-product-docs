@@ -8,7 +8,7 @@
 fleet-agent register [flags]
 ----
 
-[#_]
+[#_options]
 == 选项
 
 ----
@@ -19,7 +19,7 @@ fleet-agent register [flags]
       --namespace string    system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
-[#_]
+[#_see-also]
 == 另请参阅
 
 * xref:/reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]     - 管理与 Fleet 控制器通信的 Fleet agent 的操作。

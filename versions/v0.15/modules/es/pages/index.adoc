@@ -5,7 +5,7 @@
 image::fleet-architecture.svg[Estática, 600]
 
 [discrete]
-[#_qu-es-product-name]
+[#_what-is-product-name]
 === ¿Qué es {product_name}?
 
 * *Motor de clúster*: {product_name} es un motor de gestión y despliegue de contenedores diseñado para ofrecer a los usuarios más control sobre el clúster local y un monitoreo constante a través de *GitOps*. {product_name} se centra no solo en la capacidad de escalar, sino que también proporciona a los usuarios un alto grado de control y visibilidad para monitorear exactamente qué está instalado en el clúster.

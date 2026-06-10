@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_tats-d-affichage]
+[#_display-states]
 == États d’affichage
 
 Les GitRepos, HelmOps, Clusters et Bundles ont différents états à chaque phase d'application des Bundles.
@@ -11,8 +11,7 @@ Puisque les états des BundleDeployments sont propagés au Bundle, GitRepo, Clus
 
 En regardant le GitRepo, les états de toutes les ressources liées au GitRepo y sont affichés. En regardant le Cluster, les états de tous les Bundles dans ce Cluster sont affichés, ce qui peut s'étendre sur plusieurs GitRepos. En regardant le Bundle, les états de tous les BundleDeployments dans ce Bundle sont affichés.
 
-[#_condition-pr-te]
-=== Condition Prête
+[#_ready-condition]
 
 La condition `Ready` est utilisée pour déterminer si les BundleDeployments sont dans un état `Ready`.
 La condition `Ready` est définie sur `True` si tous les BundleDeployments sont dans l'état `Ready`.
@@ -32,25 +31,20 @@ status:
     type: Ready
 ----
 
-[#_d-termination-de-l-tat-pr-t]
-==== Détermination de l'état Prêt
+[#_ready-status-determination]
 
 {product_name} utilise le paquet `kstatus` du module `sigs.k8s.io/cli-utils` pour déterminer l'état Prêt des BundleDeployments en fonction de l'état de leurs ressources.
 Pour plus de détails, voir le README du paquet link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus`].
 
-[#_propagation-de-l-tat-pr-t]
-==== Propagation de l'état Prêt
+[#_propagation-of-ready-status]
 
 image::PropogationReadyStatus.svg[Propagation de l'état Prêt]
 
-[#_tat-d-affichage]
-=== État d'affichage
+[#_display-state]
 
 Le champ `status.display` fournit un résumé de l'état. Les états sont classés, et le pire état possible est utilisé comme `state` dans le champ `status.display`.
 
-[[state-ranking]]
-[#_rang-des-tats]
-==== Rang des états
+[#_state-ranking]
 
 C'est le rang selon lequel les états sont affichés. Si un Bundle a des BundleDeployments dans différents états, le pire état est utilisé dans le champ `status.display.state`.
 Cet état est également propagé des Bundles vers d'autres ressources {product_name} (GitRepos, Clusters, ClusterGroups).
@@ -65,11 +59,10 @@ Du meilleur au pire{nbsp}:
 * Attente appliquée
 * Erreur appliquée
 
-[#_ensembles]
+[#_bundles]
 == Ensembles
 
-[#_statuts-des-bundles]
-=== Statuts des Bundles
+[#_bundle-statuses]
 
 * *Prêt*  : Les Bundles ont été déployés, et toutes les ressources sont prêtes. Sinon, le champ `message` de la condition `Ready` contient une agrégation des états des BundleDeployments.
 * *Pas prêt*  : Les BundleDeployments ont été déployés, mais certaines ressources ne sont pas prêtes (par exemple, les images de conteneur sont en cours de téléchargement ou les services n'ont pas signalé leur disponibilité).
@@ -84,13 +77,11 @@ Du meilleur au pire{nbsp}:
 [#_clusters]
 == Clusters
 
-[#_tats-sp-cifiques-au-cluster]
-=== États spécifiques au cluster
+[#_cluster-specific-states]
 
 * *Attente d'enregistrement*{nbsp}: En attente que l'agent rapporte les informations d'enregistrement et l'état du cluster.
 
-[#_tats-des-bundles]
-=== États des Bundles
+[#_states-from-bundles]
 
 * *Prêt*{nbsp}: Tous les Bundles dans ce cluster sont déployés et les ressources sont prêtes.
 * *Pas prêt*{nbsp}: Certains Bundles dans ce cluster ne sont pas prêts.
@@ -112,7 +103,7 @@ Du meilleur au pire{nbsp}:
 * *Bloqué*{nbsp}: Le contrôleur a rencontré une erreur ou n'a pas réussi à progresser.
 * *Accepté*{nbsp}: Des restrictions GitRepo ont été appliquées et des secrets Helm externes existent.
 
-[#_conditions-helmop]
+[#_helmop-conditions]
 == Conditions HelmOp
 
 * *Prêt*{nbsp}: `True` si tous les BundleDeployments ont été déployés avec succès{nbsp}; `False` si certains ne sont pas prêts.
@@ -125,17 +116,16 @@ Du meilleur au pire{nbsp}:
 Les champs `status.display` sont partagés entre GitRepos et GitOps. Les deux ressources contiennent un champ `status.display` résumant l'état de la ressource. La valeur de `state` peut différer selon le type de ressource.
 
 * `readyBundleDeployments`{nbsp}: Une chaîne sous la forme `%d/%d` montrant le nombre de BundleDeployments prêts par rapport au total.
-* `state`{nbsp}: Représente l'état du GitRepo (par exemple, `GitUpdating`) ou le plus haut BundleState selon le <<state-ranking,Rang d'État>>. Si `Ready`, il est défini sur une valeur vide.
+* `state`{nbsp}: Représente l'état du GitRepo (par exemple, `GitUpdating`) ou le plus haut BundleState selon le <<_state-ranking,Rang d'État>>. Si `Ready`, il est défini sur une valeur vide.
 * `message`{nbsp}: Contient des messages de condition de déploiement pertinents.
 * `error`{nbsp}: `true` si un message d'erreur existe.
 
-[#_liste-des-ressources]
+[#_resources-list]
 == Liste des ressources
 
 Les ressources déployées sur les clusters cibles sont classées sous `GitRepos` et `HelmOps`.
 
 [#_gitrepos]
-=== GitRepos
 
 La liste `status.ResourceCounts` pour les GitRepos est dérivée de `bundleDeployments`.
 
@@ -186,7 +176,6 @@ perClusterResourceCounts:
 Cela aide à identifier rapidement quels clusters ont des déploiements incomplets ou incohérents.
 
 [#_bundledeployment]
-=== BundleDeployment
 
 La ressource `BundleDeployment` comprend deux champs supplémentaires pour une meilleure visibilité{nbsp}:
 
@@ -194,36 +183,31 @@ La ressource `BundleDeployment` comprend deux champs supplémentaires pour une m
 * `resourceCounts`{nbsp}: qui compte le nombre de ressources par leur état.
 
 [#_helmops]
-=== HelmOps
 
 La liste `status.ResourceCounts` pour HelmOps est dérivée de `bundleDeployments`.
 
-[#_comptes-de-ressources]
+[#_resource-counts]
 == Comptes de ressources
 
 Cela montre comment les comptes de ressources se propagent entre les ressources.
 
-[#_gitrepos]
-=== GitRepos
+[#_rc_gitrepos]
 
 Les ressources déployées sont listées sous `GitRepos` dans `status.Resources`, dérivées de `bundleDeployments`.
 
-[#_helmops]
-=== HelmOps
+[#_rc_helmops]
 
 De même, les ressources déployées pour `HelmOps` sont listées dans `status.Resources`, dérivées de `bundleDeployments`.
 
-[#_clusters]
-=== Clusters
+[#_rc_clusters]
 
 Dans les Clusters, `status.ResourceCounts` est dérivé de GitRepos.
 
 [#_clustergroups]
-=== ClusterGroups
 
 Dans les Groupes de Clusters, `status.ResourceCounts` est dérivé de GitRepos.
 
-[#_diagramme-de-classe]
+[#_class-diagram]
 == Diagramme de classe
 
 image::ClusterGroups_classDiagram.svg[Propagation de l'état Prêt]

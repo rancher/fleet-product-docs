@@ -4,7 +4,7 @@
 
 将集群数据转储到归档中。
 
-[#_]
+[#_overview]
 == 概述
 
 将集群中的数据转储到归档中，包括： +
@@ -17,7 +17,7 @@
 fleet dump <flags>
 ----
 
-[#_]
+[#_flags]
 == 标志
 
 [source,text]
@@ -25,10 +25,10 @@ fleet dump <flags>
   -p <path>         Path to the archive file to generate
 ----
 
-[#_]
+[#_output]
 == 输出
 
-[#_]
+[#_contents]
 === 目录
 
 `dump` 命令生成一个 `.tgz` 归档，包含以下数据：
@@ -51,9 +51,9 @@ fleet dump <flags>
 ** 每个命名空间包含一个 Fleet `Cluster` 资源
 
 * 在 `monitoring-*` 命名空间中，`cattle-fleet-system` 服务暴露的指标。
-这通常包括 `monitoring-gitjob` 和 `monitoring-fleet-controller` 服务，以及（如果有的话）它们的 xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[分片] 对应项。
+这通常包括 `monitoring-gitjob` 和 `monitoring-fleet-controller` 服务，以及（如果有的话）它们的 xref:how-tos-for-operators/installation.adoc#_multi-controller-installation-sharding[分片] 对应项。
 
-[#_]
+[#_format]
 ==== 格式
 
 原始 {product_name} 资源各自存储在不同的文件中，命名为 `<kind>_<namespace>_<name>`，其中 `<kind>` 是前一部分提到的原始资源名称之一，使用小写字母。
@@ -64,7 +64,7 @@ Kubernetes 事件按命名空间分割成文件，每个文件命名为 `events_
 指标按服务存储到文件中，每个文件命名为 `metrics_<service_name>`。
 它们的内容是来自每个服务的 `GET` 端点的 `/metrics` 响应体，逐字记录。
 
-[#_]
+[#_see-also]
 == 另请参阅
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]

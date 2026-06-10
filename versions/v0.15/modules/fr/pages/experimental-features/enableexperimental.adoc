@@ -6,9 +6,9 @@
 
 L'activation ou la désactivation des fonctionnalités expérimentales se fait à l'aide de variables d'environnement supplémentaires qui sont disponibles lors du déploiement de `rancher/fleet`.
 
-Pour plus d'informations, consultez Configurer les options d'installation de xref:reference/ref-configuration.adoc#configure-install-options-in-rancher[{product_name} dans Rancher]
+Pour plus d'informations, consultez Configurer les options d'installation de xref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[{product_name} dans Rancher]
 
-[#_fonctionnalit-s-exp-rimentales-disponibles]
+[#_available-experimental-features]
 == Fonctionnalités expérimentales disponibles
 
 {product_name} prend actuellement en charge les fonctionnalités expérimentales suivantes, activées via leurs variables d'environnement respectives{nbsp}:
@@ -16,10 +16,10 @@ Pour plus d'informations, consultez Configurer les options d'installation de xre
 * xref:experimental-features/scheduling.adoc[Planification]
 * xref:experimental-features/experimental-downstream-resource.adoc[Propagation automatisée des ressources vers les clusters en aval]
 
-[#_activation-d-une-fonctionnalit-exp-rimentale]
+[#_enabling-an-experimental-feature]
 == Activation d'une fonctionnalité expérimentale
 
-[#_activation-lors-de-l-installation-de-product-name-en-mode-autonome]
+[#_enabling-when-installing-product-name-stand-alone]
 === Activation lors de l'installation de {product_name} en mode autonome
 
 Tout ce que vous avez à faire est de passer quelque chose comme{nbsp}:
@@ -37,7 +37,7 @@ Tout ce que vous avez à faire est de passer quelque chose comme{nbsp}:
 Vous devez utiliser `--set-string` car sinon la valeur booléenne ne fonctionnera pas comme prévu.
 ====
 
-[#_activation-lors-de-l-installation-de-product-name-avec-rancher]
+[#_enabling-when-installing-product-name-with-rancher]
 === Activation lors de l'installation de {product_name} avec Rancher
 
 Vous pouvez également activer les fonctionnalités expérimentales dans {product_name} lors de l'installation de Rancher.

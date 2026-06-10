@@ -4,7 +4,7 @@
 
 このセクションには、トラブルシューティングのためのコマンドとヒントが含まれています{product_name}。
 
-[#_]
+[#_where-to-look-for-root-causes-of-issues]
 == 問題の根本原因を探す場所
 
 {product_name}が予期せず動作する場合に最初に確認すべきことは次のとおりです：
@@ -24,17 +24,17 @@
 
 そのうちのいくつかは、xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]とxref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]を通じて自動化できます。
 
-[#_]
+[#_how-do-i]
 == どうすれば...
 
-[#_fleet-controller]
+[#_fetch-the-log-from-fleet-controller]
 === `fleet-controller`からログを取得しますか？
 
 `fleet-controller`がデプロイされているローカル管理クラスターで、特定の`fleet-controller`ポッド名を入力して次のコマンドを実行します：
 
  $ kubectl logs -l app=fleet-controller -n cattle-fleet-system
 
-[#_fleet-agent]
+[#_fetch-the-log-from-the-fleet-agent]
 === `fleet-agent`からログを取得しますか？
 
 各ダウンストリームクラスターに移動し、特定の `fleet-agent` ポッド名を入力して、次のコマンドを実行してください。
@@ -46,7 +46,7 @@ $ kubectl logs -l app=fleet-agent -n cattle-fleet-system
 $ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
 ----
 
-[#_gitrepos-bundles]
+[#_fetch-detailed-error-logs-from-gitrepos-and-bundles]
 === `GitRepos` と `Bundles` から詳細なエラーログを取得しますか？
 
 通常、エラーは Rancher UI に表示されるべきです。ただし、そこにエラーに関する十分な情報が表示されない場合は、必要に応じて以下のいずれかを試してさらに調査できます。
@@ -56,7 +56,7 @@ $ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
 * syncエラーについて `fleet-controller` を確認してください。
 * バンドルをデプロイする際に問題が発生した場合は、ダウンストリームクラスターの `fleet-agent` ログを確認してください。
 
-[#_gitrepos-bundles]
+[#_fetch-detailed-status-from-gitrepos-and-bundles]
 === `GitRepos` と `Bundles` から詳細なステータスを取得しますか？
 
 デバッグやバグレポートには、リソースのステータスフィールドの生の JSON が最も役立ちます。
@@ -77,12 +77,12 @@ kubectl get bundles -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}
 kubectl get gitrepos -A -o=jsonpath='{range .items[*]}{.metadata.namespace}{"\t"}{.metadata.name}{"\t"}{.spec.targets}{"\t"}{.status}{"\n"}{end}'
 ----
 
-[#_kustomize]
+[#_check-a-chart-rendering-error-in-kustomize]
 === `Kustomize` でチャートレンダリングエラーを確認しますか？
 
 xref:troubleshooting.adoc#_fetch-the-log-from-fleet-controller[`fleet-controller` ログ] と xref:troubleshooting.adoc#_fetch-the-log-from-the-fleet-agent[`fleet-agent` ログ] を確認してください。
 
-[#_gitrepo-fleet-yaml-helm]
+[#_check-errors-about-watching-or-checking-out-the-gitrepo-or-about-the-downloaded-helm-repo-in-fleet-yaml]
 === `GitRepo` の監視やチェックアウト、または `fleet.yaml` のダウンロードされた Helm リポジトリに関するエラーを確認してください。
 
 特定の `gitjob` ポッド名を入力して、次のコマンドを使用して `gitjob-controller` ログを確認してください。
@@ -95,7 +95,7 @@ xref:troubleshooting.adoc#_fetch-the-log-from-fleet-controller[`fleet-controller
 
  $ kubectl logs -f $gitRepoName-pod-name -n namespace
 
-[#_fleet-controller]
+[#_check-the-status-of-the-fleet-controller]
 === `fleet-controller`のステータスを確認しますか？
 
 以下のコマンドを実行することで、`fleet-controller`ポッドのステータスを確認できます。
@@ -112,7 +112,7 @@ NAME                                READY   STATUS    RESTARTS   AGE
 fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
-[#_fleet-controller-fleet-agent]
+[#_enable-debug-logging-for-fleet-controller-and-fleet-agent]
 === `fleet-controller`と`fleet-agent`のデバッグログを有効にしますか？
 
 Rancher v2.6.3 ({product_name} v0.3.8)で、デバッグログを有効にする機能が追加されました。
@@ -121,10 +121,10 @@ Rancher v2.6.3 ({product_name} v0.3.8)で、デバッグログを有効にする
 * *アプリとマーケットプレイス*を選択し、ドロップダウンから*インストール済みアプリ*を選択します。
 * そこから、値`debug=true`で{product_name}チャートをアップグレードします。必要に応じて`debugLevel=5`を設定することもできます。
 
-[#_fleet]
+[#_via-fleet-install-options]
 ==== Fleetインストールオプションを介して
 
-`cattle-system`ネームスペースに`rancher-config`という設定マップをxref:reference/ref-configuration.adoc#configure-install-options-in-rancher[Fleetインストールオプション]で作成できます。
+`cattle-system`ネームスペースに`rancher-config`という設定マップをxref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[Fleetインストールオプション]で作成できます。
 
 例えば、`fleet-controller`と`fleet-agent`のデバッグログを有効にするには、以下の内容で設定マップを作成できます。
 
@@ -144,7 +144,7 @@ data:
 
 設定を変更すると、Fleetが再インストールされ、エージェントが再デプロイされます。
 
-[#_]
+[#_record-resource-changes-over-time]
 === 時間の経過に伴うリソースの変更を記録する
 
 時々、リソースの変更を時間の経過とともに記録することが有用です。リソースを監視し、出力をファイルに保存することでこれを行うことができます。
@@ -161,17 +161,17 @@ for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.f
 done ; wait
 ====
 
-[#_product-name]
+[#_additional-solutions-for-other-product-name-issues]
 == *他の{product_name}の問題に対する追加の解決策*
 
-[#_crd]
+[#_naming-conventions-for-crds]
 === CRDの命名規則
 
 . `clusters`や`gitrepos`のようなCRD用語については、完全なCRD名を参照する必要があります。例えば、クラスターCRDの完全な名前は`cluster.fleet.cattle.io`であり、gitrepo CRDの完全な名前は`gitrepo.fleet.cattle.io`です。
 . `Bundles`は`GitRepo`から作成され、`GitRepo`が作成された同じワークスペース/ネームスペース内でパターン`$gitrepoName-$path`に従います。`$path`は、`bundle`（`fleet.yaml`）を含むgitリポジトリ内のディレクトリであることに注意してください。
 . `BundleDeployments`は`bundle`から作成され、ネームスペース`clusters-$workspace-$cluster-$generateHash`内のパターン`$bundleName-$clusterName`に従います。`$clusterName`は、バンドルがデプロイされるクラスターであることに注意してください。
 
-[#_github-http]
+[#_http-secrets-in-github]
 === GithubのHTTPシークレット
 
 プライベートgitリポジトリで{product_name}をテストすると、GithubではHTTPシークレットがもはやサポートされていないことに気付くでしょう。この問題を回避するには、次の手順に従います：
@@ -188,7 +188,7 @@ endif::[]
 +
 . トークンをシークレットとして使用してください。
 
-[#_product-name-403]
+[#_product-name-fails-with-bad-response-code-403]
 === {product_name}は不正なレスポンスコードで失敗します：403
 
 GitJobが以下のエラーを返す場合、問題は{product_name}が指定したxref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]のHelmリポジトリにアクセスできないことかもしれません：
@@ -202,7 +202,7 @@ time="2021-11-04T09:21:24Z" level=fatal msg="bad response code: 403"
 * 開発マシンからリポジトリにアクセスでき、Helmチャートを正常にダウンロードできることを確認してください。
 * gitリポジトリの資格情報が有効であることを確認してください。
 
-[#_helm]
+[#_helm-chart-repo-certificate-signed-by-unknown-authority]
 === Helmチャートリポジトリ：不明な権限によって署名された証明書
 
 GitJobが以下のエラーを返す場合、間違った証明書チェーンを追加した可能性があります：
@@ -227,7 +227,7 @@ Certificate:
 ...
 ----
 
-[#_product-name]
+[#_product-name-deployment-stuck-in-modified-state]
 === {product_name}のデプロイメントが変更された状態で停止しています。
 
 {product_name}にバンドルをデプロイすると、一部のコンポーネントが変更され、これが{product_name}環境の「変更済み」フラグを引き起こします。
@@ -267,7 +267,7 @@ level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monito
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
-[#_gitrepo-sync]
+[#_gitrepo-sync-fails-without-retry]
 ==== GitRepoのsyncは、再試行なしでは失敗します。
 
 `GitRepo`はsyncを停止し、**失敗**状態のままになることがあります。この場合、GitJobコントローラーのログにはネットワークタイムアウトやetcdリクエストタイムアウトが表示されることがあります。{product_name}が高負荷のときにこの問題が発生しやすくなります。
@@ -286,7 +286,7 @@ level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monito
 
 この設定は、再試行回数をデフォルト値`1`の代わりに`3`に設定します。
 
-[#_gitrepo-bundle]
+[#_gitrepo-or-bundle-stuck-in-modified-state]
 === `GitRepo`または`Bundle`が修正状態で停止しています。
 
 *修正*は、実際の状態と望ましい状態、すなわち真実のソースであるgitリポジトリとの間に不一致があることを意味します。
@@ -301,7 +301,7 @@ level=error msg="bundle monitoring-monitoring: deployment.apps monitoring/monito
 そのような場合、影響を受けたGitRepoの強制更新を行うことも推奨されます。
 ====
 
-[#_hpa-modified]
+[#_bundle-has-a-horizontal-pod-autoscaler-hpa-in-modified-state]
 === バンドルの水平ポッドオートスケーラー（HPA）は、Modified状態にあります。
 
 HPAを持つバンドルの場合、期待される状態は`Modified`です。これは、バンドルがデプロイ時のバンドルの状態と異なるフィールドを含んでいるためで、通常は`ReplicaSet`です。
@@ -322,7 +322,7 @@ diff:
     - {"op": "remove", "path": "/spec/replicas"}
 ----
 
-[#_waitcheckin]
+[#_what-if-the-cluster-is-unavailable-or-is-in-a-waitcheckin-state]
 === クラスターが利用できない場合、または`WaitCheckIn`の状態にある場合はどうなりますか？
 
 再インポートして登録プロセスを再起動する必要があります。左側のナビゲーションバーで*クラスター*を選択し、次に*強制更新*を選択します。
@@ -343,7 +343,7 @@ endif::[]
 ====
 
 
-[#_gitrepo-gzip-invalid-header]
+[#_gitrepo-complains-with-gzip-invalid-header]
 === GitRepoが`gzip: invalid header`というエラーを出しています。
 
 以下のようなエラーが表示された場合、...
@@ -355,7 +355,7 @@ Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid head
 
 ... helmチャートの内容が正しくありません。チャートを手動でローカルマシンにダウンロードし、内容を確認してください。
 
-[#_]
+[#_agent-is-no-longer-registered]
 === エージェントはもはや登録されていません。
 
 指定されたクラスターのエージェントを再デプロイするには、`redeployAgentGeneration`を設定することで強制できます。
@@ -365,13 +365,13 @@ Error opening a gzip reader for /tmp/getter154967024/archive: gzip: invalid head
 kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
 ----
 
-[#_product-name]
+[#_migrate-the-local-cluster-to-the-product-name-default-cluster-workspace]
 === ローカルクラスターを{product_name}デフォルトクラスターのワークスペースに移行しますか？
 
 ユーザーは新しいワークスペースを作成し、クラスターをワークスペース間で移動できます。
 現在、ローカルクラスターを`fleet-local`から別のワークスペースに移動することはできません。
 
-[#_]
+[#_bundle-failed-to-deploy-resource-already-exists-error]
 === バンドルのデプロイに失敗しました："リソースはすでに存在します" エラー
 
 デプロイ中にバンドルが次のエラーメッセージに遭遇した場合：

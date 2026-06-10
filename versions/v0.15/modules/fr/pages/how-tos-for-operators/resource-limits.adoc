@@ -17,7 +17,7 @@ Les champs `resources` décrits sur cette page s'appliquent toujours. Spécifiez
 Pour plus d'informations, reportez-vous à xref:reference/ref-configuration.adoc[Configuration].
 ====
 
-[#_ressources-par-d-faut]
+[#_default-resources]
 == Ressources par défaut
 
 Définissez une valeur par défaut pour tous les conteneurs de contrôleur en utilisant le champ `resources` de premier niveau{nbsp}:
@@ -44,7 +44,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   --set resources.requests.memory=768Mi
 ----
 
-[#_remplacements-par-composant]
+[#_per-component-overrides]
 == Remplacements par composant
 
 Les conteneurs de contrôleur individuels peuvent remplacer la valeur par défaut avec des paramètres spécifiques au composant.
@@ -96,7 +96,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   -f values.yaml
 ----
 
-[#_ressources-de-l-agent-de-cluster-en-aval]
+[#_downstream-cluster-agent-resources]
 == Ressources de l'agent de cluster en aval
 
 Pour configurer les limites et demandes de ressources pour l'agent Fleet s'exécutant sur un cluster en aval spécifique, définissez `agentResources` sur la ressource `Cluster` correspondante{nbsp}:

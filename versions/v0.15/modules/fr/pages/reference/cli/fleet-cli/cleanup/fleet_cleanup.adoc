@@ -15,7 +15,7 @@ fleet cleanup [flags]
   -h, --help   help for cleanup
 ----
 
-[#_voir-galement]
+[#_see-also]
 == VOIR ÉGALEMENT
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]     - Gérer {product_name} les opérations

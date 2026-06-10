@@ -25,7 +25,7 @@ fleet-agent [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_voir-galement]
+[#_see-also]
 == VOIR ÉGALEMENT
 * xref:/reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]     - Rapporter en continu l'état des ressources au cluster en amont
 * xref:/reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register] - Enregistrer l'agent auprès d'un cluster en amont

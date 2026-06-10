@@ -27,7 +27,7 @@ Das bedeutet, dass, wenn eine Änderung im Repository erkannt wird, sie auf die 
 
 Wenn ein `Cluster` nicht mit einer `Schedule` verknüpft ist, werden Updates sofort angewendet.
 
-[#_planungsressource]
+[#_schedule-resource]
 == Planungsressource
 
 Schauen wir uns nun an, wie man eine `Schedule` definiert und welche Felder verfügbar sind.

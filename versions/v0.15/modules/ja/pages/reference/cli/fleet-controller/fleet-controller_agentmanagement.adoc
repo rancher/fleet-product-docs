@@ -8,7 +8,7 @@ Fleet agent 管理を設定する
 fleet-controller agentmanagement [flags]
 ----
 
-[#_]
+[#_options]
 == オプション
 
 [source,text]
@@ -21,7 +21,7 @@ fleet-controller agentmanagement [flags]
       --namespace string    namespace to watch
 ----
 
-[#_]
+[#_options-inherited-from-parent-commands]
 == 親コマンドから継承されたオプション
 
 [source,text]
@@ -30,7 +30,7 @@ fleet-controller agentmanagement [flags]
       --shard-id string   only manage resources labeled with a specific shard ID
 ----
 
-[#_]
+[#_see-also]
 == 関連項目
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - Fleet agent と通信する Fleet controller を管理する

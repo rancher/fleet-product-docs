@@ -20,7 +20,7 @@ Cette approche ne s'applique que si vous exécutez {product_name} dans un style 
 
 Lors du déploiement de `GitRepos` vers des clusters en aval, les clusters doivent être mappés à une cible.
 
-[#_d-finition-des-cibles]
+[#_defining-targets]
 == Définition des cibles
 
 Les cibles de déploiement de `GitRepo` se font en utilisant le champ `spec.targets` pour faire correspondre les clusters ou les groupes de clusters. La spécification YAML est comme ci-dessous.
@@ -60,7 +60,7 @@ spec:
     clusterName: cluster1
 ----
 
-[#_correspondance-des-cibles]
+[#_target-matching]
 == Correspondance des cibles
 
 Tous les clusters et groupes de clusters dans le même espace de noms que le `GitRepo` seront évalués par rapport à toutes les cibles.
@@ -88,7 +88,7 @@ targets:
 
 Lorsque vous utilisez {product_name} dans Rancher, assurez-vous de mettre le nom de la ressource `clusters.fleet.cattle.io`.
 
-[#_cible-par-d-faut]
+[#_default-target]
 == Cible par défaut
 
 Si aucune cible n'est définie pour le `GitRepo`, alors la valeur par défaut des cibles est appliquée.  La valeur par défaut des cibles est comme ci-dessous.
@@ -102,7 +102,7 @@ targets:
 
 Cela signifie que si vous souhaitez configurer un emplacement par défaut où les GitRepos non configurés iront, il suffit de créer un groupe de clusters appelé par défaut et d'y ajouter des clusters.
 
-[#_personnalisation-par-cluster]
+[#_customization-per-cluster]
 == Personnalisation par cluster
 
 [IMPORTANT]
@@ -169,7 +169,7 @@ targetCustomizations:
 La gestion de la configuration ne se limite pas aux déploiements, mais peut être étendue à la gestion générale de la configuration. {product_name} est capable d'appliquer la gestion de la configuration par le biais de la personnalisation parmi n'importe quel ensemble de clusters automatiquement.
 ====
 
-[#_limitations-lors-de-la-substitution-des-param-tres-du-graphique-helm-avec-targetcustomizations]
+[#_limitations-when-overriding-helm-chart-settings-with-targetcustomizations]
 === Limitations lors de la substitution des paramètres du graphique Helm avec `targetCustomizations`
 
 Bien que `helm.chart`, `helm.repo` et `helm.version` puissent être spécifiés dans `targetCustomizations`, la substitution de ces champs présente d'importantes limitations.
@@ -190,7 +190,7 @@ Si différents environnements nécessitent des graphiques ou des registres diff�
 * Créez des ressources `GitRepo` séparées pour chaque environnement.
 
 
-[#_exemples-suppl-mentaires]
+[#_additional-examples]
 == Exemples supplémentaires
 
 Des exemples utilisant des YAML Kubernetes bruts, des graphiques Helm, Kustomize et des combinaisons des trois se trouvent dans le dépôt https://github.com/rancher/fleet-examples/[{product_name} Examples repo].

@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :doctype: book
 
-[#_gitrepo-instanz-erstellen]
+[#_create-gitrepo-instance]
 == GitRepo-Instanz erstellen
 
 Git-Repositories werden registriert, indem eine `GitRepo` Ressource in Kubernetes erstellt wird. Verweisen Sie auf das xref:tutorials/tut-deployment.adoc[Tutorial zum Erstellen eines Deployments] für Beispiele.
@@ -18,7 +18,7 @@ Die verfügbaren Felder der benutzerdefinierten GitRepo-Ressource sind im xref:r
 ====
 
 
-[#_richtiger-namespace]
+[#_proper-namespace]
 === Richtiger Namespace
 
 Git-Repos werden dem {product_name} Manager mit dem `GitRepo` benutzerdefinierten Ressourcentyp hinzugefügt. Der `GitRepo` Typ ist namespaced. Standardmäßig erstellt Rancher zwei {product_name} Arbeitsbereiche: 
@@ -30,7 +30,7 @@ Wenn Sie {product_name} im Stil eines xref:explanations/concepts.adoc[einzelnen 
 
 Für einen xref:explanations/concepts.adoc[Multi-Cluster] Stil stellen Sie bitte sicher, dass Sie das richtige Repo verwenden, das den richtigen Ziel-Clustern zugeordnet wird.
 
-[#_namespace-der-arbeitslast-berschreiben]
+[#_override-workload-s-namespace]
 == Namespace der Arbeitslast überschreiben
 
 Das `targetNamespace` Feld wird jeden Namespace im Bundle überschreiben. Wenn das Deployment cluster-spezifische Ressourcen enthält, wird es fehlschlagen.
@@ -41,7 +41,7 @@ Es hat Vorrang vor allen anderen Namensraumdefinitionen:
 
 Die Namensraumdefinitionen für Workloads können mit `allowedTargetNamespaces` in der `GitRepoRestriction` Ressource eingeschränkt werden.
 
-[#_hinzuf-gen-eines-privaten-git-repositorys]
+[#_adding-a-private-git-repository]
 == Hinzufügen eines privaten Git-Repositorys
 
 {product_name} unterstützt die folgenden Authentifizierungsmechanismen für private Repositories:
@@ -105,7 +105,7 @@ Der Schlüssel muss im PEM-Format vorliegen.
 ====
 
 
-[#_bekannte-hosts]
+[#_known-hosts]
 === Bekannte Hosts
 
 {product_name} unterstützt das Einfügen von `known_hosts` in das SSH-Geheimnis. Hier ist ein Beispiel, wie man es hinzufügt:
@@ -132,8 +132,7 @@ stringData:
     |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 ----
 
-[[strict-host-key-checks]]
-[#_strikte-berpr-fung-der-hostschl-ssel]
+[#_strict-host-key-checks]
 ==== Strikte Überprüfung der Hostschlüssel
 
 Der Chart-Wert `insecureSkipHostKeyChecks` definiert, wie Fleet in Bezug auf `known_hosts` beim Herstellen von SSH-Verbindungen agiert.
@@ -148,13 +147,13 @@ Beachten Sie, dass dies mit Fleet kompatibel ist, das nach einem `gitcredential`
 
 Wenn ein solches Geheimnis nicht existiert oder keine `known_hosts` Einträge in diesem Geheimnis verfügbar sind, verwendet Fleet seine eigene `known-hosts` Konfigurationskarte, die bei der Installation mit statischen Einträgen für die am häufigsten verwendeten Git-Anbieter neu erstellt wird.
 
-Weitere Details xref:how-tos-for-operators/installation.adoc#additional-ssh-known-hosts[hier] dazu, woher die Standardeinträge stammen und wie man zusätzliche Einträge bei der Installation hinzufügen kann.
+Weitere Details xref:how-tos-for-operators/installation.adoc#_additional-ssh-known-hosts[hier] dazu, woher die Standardeinträge stammen und wie man zusätzliche Einträge bei der Installation hinzufügen kann.
 
 Das Fehlen der Konfigurationskarte, sollte kein Geheimnis verfügbar sein, wird als Symptom eines unvollständigen Fleet-Deployments betrachtet und entsprechend gemeldet.
 
 Fleet verwendet immer nur eine einzige Quelle von `known_hosts` Einträgen zur gleichen Zeit. Das bedeutet, dass Fleet, selbst wenn ein Geheimnis ungültige (oder unzureichende) Einträge enthält, nicht nach gültigen Einträgen in der Konfigurationskarte suchen wird. Dies gilt für ein Geheimnis, das in einem `GitRepo` referenziert wird, sowie für ein mögliches `gitcredential` Geheimnis, wenn im `GitRepo` kein Geheimnis referenziert wird.
 
-[#_verwendung-von-http-authentifizierung]
+[#_using-http-auth]
 === Verwendung von HTTP-Authentifizierung
 
 Erstellen Sie ein Geheimnis, das Benutzername und Passwort enthält. Sie können das Passwort bei Bedarf durch ein persönliches Zugriffstoken ersetzen. Siehe auch xref:troubleshooting.adoc#_http-secrets-in-github[HTTP-Geheimnisse in Github].
@@ -181,7 +180,7 @@ Genau wie bei SSH, referenzieren Sie das Geheimnis in Ihrer GitRepo-Ressource ü
 Bei der Verwendung von BitBucket und Zugriffstoken muss der Benutzername `x-token-auth` sein.
 ====
 
-[#_verwendung-einer-github-app]
+[#_using-a-github-app]
 === Verwendung einer GitHub-App
 
 Die folgenden Felder sind erforderlich, um {product_name} die Authentifizierung bei GitHub über eine GitHub-App zu ermöglichen:
@@ -222,7 +221,7 @@ Das Umgeben des Wertes oder des Namens der Umgebungsvariable (z. B. `--from-lite
 
 Stellen Sie sicher, dass Sie dieses Geheimnis in Ihrer GitRepo-Ressource über `clientSecretName` referenzieren.
 
-[#_verwendung-von-benutzerdefinierten-ca-b-ndeln]
+[#_using-custom-ca-bundles]
 === Verwendung von benutzerdefinierten CA-Bündeln
 
 Die Validierung eines Repositorys mit einem von einer benutzerdefinierten Zertifizierungsstelle signierten Zertifikat kann durch die Angabe eines `cabundle` Feldes in einem `GitRepo` erfolgen.
@@ -238,13 +237,13 @@ Beachten Sie, dass, wenn Geheimnisse, die CA-Bündel angeben, existieren, zum Be
 endif::[]
 ====
 
-[#_verwendung-von-privaten-helm-repositories]
+[#_using-private-helm-repositories]
 == Verwendung von privaten Helm-Repositories
 
 [CAUTION]
 ====
 Die Anmeldeinformationen werden bedingungslos für alle Helm-Repositories verwendet, die von der gitrepo-Ressource referenziert werden.
-Stellen Sie sicher, dass Sie keine Anmeldeinformationen durch das Mischen von öffentlichen und privaten Repositories preisgeben. Verwenden Sie <<Use different helm credentials for each path,unterschiedliche Helm-Anmeldeinformationen für jeden Pfad>>, oder teilen Sie sie in verschiedene GitRepos auf, oder verwenden Sie `helmRepoURLRegex`, um den Geltungsbereich der Anmeldeinformationen auf bestimmte Server zu beschränken.
+Stellen Sie sicher, dass Sie keine Anmeldeinformationen durch das Mischen von öffentlichen und privaten Repositories preisgeben. Verwenden Sie xref:#_use-different-helm-credentials-for-each-path[unterschiedliche Helm-Anmeldeinformationen für jeden Pfad], oder teilen Sie sie in verschiedene GitRepos auf, oder verwenden Sie `helmRepoURLRegex`, um den Geltungsbereich der Anmeldeinformationen auf bestimmte Server zu beschränken.
 ====
 
 
@@ -272,7 +271,7 @@ Um beispielsweise ein Geheimnis in kubectl hinzuzufügen, führen Sie aus
 
 Nachdem das Geheimnis erstellt wurde, geben Sie das Geheimnis an `gitRepo.spec.helmSecretName` an. Stellen Sie sicher, dass das Geheimnis im selben Namespace wie das Git-Repository erstellt wird.
 
-[#_verwenden-sie-unterschiedliche-helm-anmeldeinformationen-f-r-jeden-pfad]
+[#_use-different-helm-credentials-for-each-path]
 === Verwenden Sie unterschiedliche Helm-Anmeldeinformationen für jeden Pfad.
 
 {product_name} ermöglicht es Ihnen, eindeutige Anmeldeinformationen für jeden Helm-Chart-Pfad in einem Git-Repository unter Verwendung des helmSecretNameForPaths-Feldes zu definieren.
@@ -406,8 +405,7 @@ kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=
 Stellen Sie sicher, dass die Sicherung verschlüsselt ist, um sensible Anmeldeinformationen zu schützen.
 ====
 
-[[storing-credentials-in-git]]
-[#_anmeldeinformationen-in-git-speichern]
+[#_storing-credentials-in-git]
 == Anmeldeinformationen in Git speichern
 
 Es wird empfohlen, Anmeldeinformationen nicht in Git zu speichern. Selbst wenn das Repository ordnungsgemäß geschützt ist, sind Geheimnisse beim Klonen usw. gefährdet.
@@ -426,12 +424,12 @@ Beim Einsatz von Kubernetes link:https://kubernetes.io/docs/tasks/administer-clu
 - contents.fleet.cattle.io
 ----
 
-[#_sichern-und-wiederherstellen]
+[#_backing-up-and-restoring]
 == Sichern und Wiederherstellen
 
 Beim Sichern und Wiederherstellen von {product_name} mit bestehenden Workloads, seien es GitRepos oder HelmOps, beachten Sie:
 
-[#_verf-gbarkeit-des-kubernetes-api-servers]
+[#_kubernetes-api-server-availability]
 === Verfügbarkeit des Kubernetes API-Servers
 
 Ein {product_name} Agent im Downstream-Cluster überwacht einen clusterspezifischen Namespace im Upstream-Cluster.
@@ -439,7 +437,7 @@ Während eines Wiederherstellungsprozesses können Änderungen, die im Upstream-
 
 Um dies zu verhindern, machen Sie den Kubernetes API-Server für Downstream-Cluster unzugänglich, während eine Wiederherstellung läuft. Agenten sollten nicht auf den Upstream-Cluster zugreifen, bis alle Ressourcen neu erstellt sind.
 
-[#_anhalten]
+[#_pausing]
 === Anhalten
 
 Ein xref:reference/ref-gitrepo.adoc[pausierter] GitRepo wird Bundles und Bundle-Bereitstellungen pausieren. Das bedeutet:
@@ -450,7 +448,7 @@ Ein xref:reference/ref-gitrepo.adoc[pausierter] GitRepo wird Bundles und Bundle-
 Das Pausieren eines GitRepo verhindert lediglich, dass Bundles und Bundle-Bereitstellungen erstellt oder aktualisiert werden. Es betrifft nur _Controller_ Operationen, nicht {product_name} _Agent_ Operationen.
 Um zu verhindern, dass Benutzerressourcen in einem Bundle gelöscht werden, wenn eine Bundle-Bereitstellung gelöscht wird, verwenden Sie xref:reference/ref-bundle.adoc[keepResources].
 
-[#_fehlerbehebung]
+[#_troubleshooting]
 == Fehlerbehebung
 
 Siehe den {product_name} Abschnitt zur Fehlerbehebung xref:troubleshooting.adoc[Dokumentation zur Fehlerbehebung].
