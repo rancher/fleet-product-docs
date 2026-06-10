@@ -67,8 +67,8 @@ The agent starts watching its xref:explanations/namespaces.adoc#_cluster-namespa
 [#_diagram]
 == Diagram
 
-[mermaid, format=svg]
-....
+[source,mermaid,format=svg]
+----
 graph TD
     subgraph "Upstream (Management Cluster)"
         direction LR
@@ -123,7 +123,7 @@ graph TD
     B3 --> B4
     A3 --> C1
     B4 --> C1
-....
+----
 
 [#_registration-process-and-controllers]
 === Registration Process and Controllers

@@ -2,6 +2,7 @@
 :revdate: 2025-03-23
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC
+:page-aliases: changelogs/latest.adoc
 
 [#_breaking-changes]
 == Breaking Changes
@@ -12,7 +13,7 @@ This release introduces Helm v4 and, since this version also incorporates Server
 To resolve possible issues where drift correction does not work, use `force=true`.  
 This will be fixed in the next release.
 
-==- Future Deprecation Notice
+== Future Deprecation Notice
 
 Imagescan will be deprecated in a future release.
 
