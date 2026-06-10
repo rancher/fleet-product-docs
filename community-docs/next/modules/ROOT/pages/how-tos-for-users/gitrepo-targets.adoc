@@ -45,7 +45,7 @@ spec:
   # The name of target. This value is largely for display and logging.
   # If not specified a default name of the format "target000" will be used
   - name: prod
-    # A selector used to match clusters.  The structure is the standard
+    # A selector used to match clusters. The structure is the standard
     # metav1.LabelSelector format. If clusterGroupSelector or clusterGroup is specified,
     # clusterSelector will be used only to further refine the selection after
     # clusterGroupSelector and clusterGroup is evaluated.
@@ -68,11 +68,15 @@ All clusters and cluster groups in the same namespace as the `GitRepo` will be e
 If any of the targets match the cluster then the `GitRepo` will be deployed to the downstream cluster. If
 no match is made, then the `GitRepo` will not be deployed to that cluster.
 
-There are three approaches to matching clusters.
-One can use cluster selectors, cluster group selectors, or an explicit cluster group name.  All criteria is additive so
-the final match is evaluated as "clusterSelector && clusterGroupSelector && clusterGroup".  If any of the three have the
+There are four approaches to matching clusters.
+One can use cluster selectors, cluster group selectors, an explicit cluster group name, or a cluster name.  All criteria is additive so
+the final match is evaluated as "clusterName && clusterSelector && clusterGroupSelector && clusterGroup".  If any of the four have the
 default value it is dropped from the criteria.  The default value is either null or "".  It is important to realize
 that the value `{}` for a selector means "match everything."
+
+When multiple target entries are specified, they are evaluated in order and act as alternatives: if a cluster matches
+the first entry, subsequent entries are not evaluated. This means that entries behave like an OR list, while the
+fields within each entry are still AND'd together.
 
 [,yaml]
 ----
@@ -175,7 +179,7 @@ Configuration management is not limited to deployments but can be expanded to ge
 
 === Limitations when overriding Helm chart settings with `targetCustomizations`
 
-Although `helm.chart`, `helm.repo`, and `helm.version` can be specified in `targetCustomizations`, overriding these fields has important limitations.
+Although `helm.chart`, `helm.repo` and `helm.version` can be specified in `targetCustomizations`, overriding these fields has important limitations.
 
 {product_name} retrieves the Helm chart during the initial **Bundle creation** phase using the top-level `helm` configuration. This retrieval is performed by the Fleet toolchain (`GitJob`) before `targetCustomizations` are processed.
 

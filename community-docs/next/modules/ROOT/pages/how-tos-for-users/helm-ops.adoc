@@ -150,6 +150,42 @@ For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_pr
 
 The part on using separate credentials for each path is not relevant though, since unlike a GitRepo, a HelmOp resource only references a single Helm chart.
 
+== Propagating image pull secrets to downstream clusters
+
+`helmSecretName` only covers authentication for pulling the Helm chart itself. If the chart deploys workloads
+whose container images are hosted in a private registry, the downstream clusters also need a
+`kubernetes.io/dockerconfigjson` secret to pull those images at runtime.
+
+Create the image pull secret in the same namespace as the `HelmOp` on the upstream cluster:
+
+[source,bash]
+----
+kubectl create secret docker-registry application-collection-secret \
+  -n fleet-local \
+  --docker-server=<registry> \
+  --docker-username=<user> \
+  --docker-password=<password>
+----
+
+Then reference it via `downstreamResources` so {product_name} copies it to each targeted downstream cluster
+before deploying the workload:
+
+[source,yaml]
+----
+spec:
+  helm:
+    values:
+      global:
+        imagePullSecrets:
+          - application-collection-secret
+  downstreamResources:
+    - kind: Secret
+      name: application-collection-secret
+----
+
+For more details on `downstreamResources`, including lifecycle and monitoring behaviour, refer to
+xref:experimental-features/experimental-downstream-resource.adoc[Automatically copying resources to downstream clusters].
+
 == Status updates
 
 Creating a HelmOp resource leads to a bundle being created, if Helm options are valid and a chart version can be found.
