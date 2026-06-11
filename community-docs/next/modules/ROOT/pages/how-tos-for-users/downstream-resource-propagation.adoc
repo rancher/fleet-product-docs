@@ -1,14 +1,10 @@
 = Automatically copying resources to downstream clusters
-:revdate: 2025-11-04
+:revdate: 2026-06-11
 :page-revdate: {revdate}
-:page-aliases: /experimental-downstream-resource
-
-[WARNING]
-====
-This is an experimental feature.
-====
+:page-aliases: /downstream-resources
 
 From {product_name} v0.14.0 onwards, {product_name} supports propagating external resources to downstream clusters.
+Since v0.16.0, this feature is no longer experimental, and always enabled.
 
 This simplifies dealing with dependencies of charts, such as values coming from external resources.
 See also xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
