@@ -77,7 +77,7 @@ The ++import++ service account is created temporarily during downstream cluster 
 * create ++ClusterRegistration++ requests
 * read secrets within the ++cattle-fleet-clusters-system++ namespace
 
-After cluster registration completes, the downstream agent removes the account and no longer uses it.
+After cluster registration completes, the downstream agent removes the service account and no longer uses it.
 
 ==== ++request++ service account
 
