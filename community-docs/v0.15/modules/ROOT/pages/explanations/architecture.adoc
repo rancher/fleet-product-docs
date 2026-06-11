@@ -88,7 +88,7 @@ The ++request++ service account becomes the permanent identity of a registered d
 {product_name} restricts this account using least-privilege RBAC policies. The account can:
 
 * list ++BundleDeployment++ resources within its assigned cluster namespace
-* list ++Content++ resources within its assigned cluster namespace
+* list ++Content++ resources
 * update the status subresources of ++BundleDeployment++ and ++Cluster++ resources
 
 The account cannot:
