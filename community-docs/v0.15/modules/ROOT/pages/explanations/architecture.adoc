@@ -111,7 +111,7 @@ Downstream clusters run {product_name} agents that retrieve configuration from t
 
 Namespace: ++cattle-fleet-system++
 
-The ++fleet-agent++ service account is used by the Fleet agent running on downstream clusters. It communicates with the upstream management cluster, monitors for new ++BundleDeployment++ resources, and reports deployment status changes.
+The ++fleet-agent++ service account is used by the Fleet agent running on downstream clusters. It enables the agent to communicate with the upstream management cluster, to monitor its corresponding cluster namespace for new ++BundleDeployment++ resources in the upstream cluster, and to report deployment status changes.
 
 The agent authenticates using the credentials associated with the ++request++ service account.
 
