@@ -162,7 +162,7 @@ You can use the ++fleet monitor++ CLI tool to detect API Time Travel by fetching
 
 *The Implementation:* To copy credentials from the upstream cluster, use the ++downstreamResources++ field in the HelmOps CRD. This dynamically copies existing upstream secrets to downstream clusters before deployment.
 
-* Reference: xref:experimental-features/experimental-downstream-resource.adoc[Experimental Downstream Resources].
+* Reference: xref:how-tos-for-users/downstream-resource-propagation.adoc[Downstream Resources Propagation].
 
 == Drift Management and Edge Deployments
 

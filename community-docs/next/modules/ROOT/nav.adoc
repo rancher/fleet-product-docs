@@ -31,6 +31,7 @@
 ** xref:how-tos-for-users/rollout.adoc[Rollout Strategy]
 ** xref:how-tos-for-users/helm-ops.adoc[Helm Ops]
 ** xref:how-tos-for-users/fetch-helm-oci.adoc[Fetch Helm Ops]
+** xref:how-tos-for-users/downstream-resource-propagation.adoc[Automated propagation of resources to downstream clusters]
 ** xref:how-tos-for-users/fine-tune-error.adoc[Fine Tuning Error Detection]
 
 * Fleet CLI
@@ -80,7 +81,6 @@
 * Experimental Features
 ** xref:experimental-features/enableexperimental.adoc[Enable Experimental Features]
 ** xref:experimental-features/scheduling.adoc[Scheduling]
-** xref:experimental-features/experimental-downstream-resource.adoc[Automated propagation of resources to downstream clusters]
 ** xref:reference/ref-schedule.adoc[Schedule Resource reference]
 
 * Changelog

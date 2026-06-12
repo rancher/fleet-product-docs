@@ -184,7 +184,7 @@ spec:
 ----
 
 For more details on `downstreamResources`, including lifecycle and monitoring behaviour, refer to
-xref:experimental-features/experimental-downstream-resource.adoc[Automatically copying resources to downstream clusters].
+xref:how-tos-for-users/downstream-resource-propagation.adoc[Automatically copying resources to downstream clusters].
 
 == Status updates
 
