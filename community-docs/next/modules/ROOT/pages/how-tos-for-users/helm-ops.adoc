@@ -22,6 +22,10 @@ When constraints are invalid or no matching version can be found, {product_name}
 
 When using this feature, Helm charts are downloaded from downstream clusters, which must therefore have access to Helm registries.
 
+== Restrictions Your Operator May Apply
+
+Your operator may restrict which `serviceAccount`, `helmSecretName`, `helm.repo` URL, and `helm.chart` values your `HelmOp` may use via a `Policy` in your namespace. If a constraint is violated, the `HelmOp`'s status condition reports which field was rejected. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the model.
+
 == Creating a HelmOp resource
 
 A ++HelmOp++ resource can be created as follows to start deploying Helm charts directly:

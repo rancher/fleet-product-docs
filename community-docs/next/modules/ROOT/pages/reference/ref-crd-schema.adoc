@@ -52,10 +52,10 @@ This table summarizes the Custom Resource Definitions (CRDs) used in *{product_n
 | *GitRepo v1alpha1*
 | GitRepo describes a Git repository watched by {product_name}. The resource contains the necessary information to deploy the repository, or parts of it, to target clusters.
 | `apiVersion, kind, metadata, spec, status`
-| xref:attachment$crds/gitreporestriction_v1alpha1.json[GitRepo v1alpha1]
+| xref:attachment$crds/gitrepo_v1alpha1.json[GitRepo v1alpha1]
 
 | *GitRepoRestriction v1alpha1*
-| GitRepoRestriction optionally restricts GitRepo options within the same namespace.
+| *Deprecated.* Use xref:ref-policy.adoc[Policy] instead. GitRepoRestriction will be removed in a future release. It has known security limitations (unanchored regex patterns, no coverage of HelmOp or Bundle resources) and migration is strongly recommended. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy]. GitRepoRestriction optionally restricts GitRepo options within the same namespace.
 | `allowedClientSecretNames, allowedRepoPatterns, allowedServiceAccounts, allowedTargetNamespaces, apiVersion, defaultClientSecretName, defaultServiceAccount, kind, metadata`
 | xref:attachment$crds/gitreporestriction_v1alpha1.json[GitRepoRestriction v1alpha1]
 
@@ -68,6 +68,11 @@ This table summarizes the Custom Resource Definitions (CRDs) used in *{product_n
 | JSON schema for ImageScan (v1alpha1) in group `fleet.cattle.io`.
 | `apiVersion, kind, metadata, spec, status`
 | xref:attachment$crds/imagescan_v1alpha1.json[ImageScan v1alpha1]
+
+| *Policy v1alpha1*
+| Policy restricts what GitRepo, HelmOp, and Bundle resources in the same namespace may do. It is the multi-tenancy mechanism in {product_name}.
+| `allowedServiceAccounts, apiVersion, gitRepo, helmOp, kind, metadata, requireServiceAccount`
+| xref:attachment$crds/policy_v1alpha1.json[Policy v1alpha1]
 
 | *Schedule v1alpha1*
 | Schedule represents a deployment schedule that determines when deployments are allowed or restricted.

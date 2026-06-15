@@ -43,10 +43,10 @@ spec:
   # revision: v0.3.0
 
   # For a private git repository you must supply a clientSecretName. A default
-  # secret can be set at the namespace level using the GitRepoRestriction
-  # type. Secrets must be of the type "kubernetes.io/ssh-auth" or
-  # "kubernetes.io/basic-auth". The secret is assumed to be in the
-  # same namespace as the GitRepo
+  # secret can be set at the namespace level using the Policy type's
+  # gitRepo.defaultClientSecretName field. Secrets must be of the type
+  # "kubernetes.io/ssh-auth" or "kubernetes.io/basic-auth". The secret is
+  # assumed to be in the same namespace as the GitRepo.
   # If no clientSecretName is supplied, Fleet checks for a secret named
   # "gitcredential".
   #
