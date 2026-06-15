@@ -382,7 +382,7 @@ After applying the configuration, verify each layer:
 
 * *Granting tenants write access to `Policy`.* Allow-lists union across all `Policy` objects in a namespace, so a tenant who can write `Policy` can widen their own restrictions. Tenants must have at most `get`/`list`/`watch` on `policies.fleet.cattle.io`.
 * *Forgetting `requireServiceAccount: true`.* Without this field, a tenant who omits `serviceAccount` from their `GitRepo` or `HelmOp` leaves it empty, which the downstream agent may resolve to a privileged identity. Set it explicitly.
-* *Setting a `defaultServiceAccount` that is not in `allowedServiceAccounts`.* The default is applied to empty fields without re-validation. If your default is not in your allow-list, you may silently allow a `ServiceAccount` you did not intend to allow. Keep defaults inside the allow-list.
+* *Setting a `defaultServiceAccount` that is not in `allowedServiceAccounts`.* Defaults are applied before validation, so a default outside the allow-list is rejected, not silently accepted. Every `GitRepo` or `HelmOp` that omits the field and falls back to the default then fails validation. Keep defaults inside the allow-list.
 * *Forgetting to bootstrap the downstream `ServiceAccount` on every cluster the tenant targets.* Deployments to clusters without the `ServiceAccount` fail at the agent. Use the bootstrap pattern in Step 2 to keep coverage in sync with the cluster inventory.
 * *Configuring `Policy` for `GitRepo` only, ignoring `HelmOp`.* The `helmOp.*` block must be set if tenants have RBAC to create `HelmOp` resources. Without it, only the top-level `requireServiceAccount` / `allowedServiceAccounts` constrain HelmOps; source repositories, charts, and Helm credential secrets remain unrestricted.
 
