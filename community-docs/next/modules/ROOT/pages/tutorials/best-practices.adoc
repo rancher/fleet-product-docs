@@ -319,4 +319,13 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 *The Implementation:* Deploy a ++GitRepoRestriction++ CRD. This allows administrators to define whitelists for ++allowedTargetNamespaces++, ++allowedServiceAccounts++, and ++allowedRepoPatterns++.
 
+[NOTE]
+====
+``allowedRepoPatterns`` supports regular expressions which will be matched on a _substring_ basis. This means that an
+expression such as ``\https://example.site/org`` may have more matches than intended, not limited to ``example.site`` hosts.
+
+To mitigate that, you should anchor regular expressions used in ``allowedRepoPatterns``. The above example could become
+``^https://example.site/org``.
+====
+
 * Reference: xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].
