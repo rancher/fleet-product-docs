@@ -146,4 +146,4 @@ Because allow-lists union across all Policy objects in the namespace, write acce
 | —
 |===
 
-A Policy violation surfaces as a status condition on the offending GitRepo, HelmOp, or Bundle. The Bundle reconciler validates only and does not apply defaults; defaults are written back to the resource by the upstream GitRepo or HelmOp reconciler.
+A Policy violation surfaces as a status condition on the offending GitRepo, HelmOp, or Bundle. The Bundle reconciler validates only and does not apply defaults. The GitRepo reconciler writes resolved defaults back to the GitRepo resource. The HelmOp reconciler applies defaults in memory and carries them into the generated Bundle; the HelmOp resource itself is left unchanged.
