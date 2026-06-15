@@ -175,6 +175,7 @@ For list/array fields, all values are accumulated:
 ----
 targetCustomizations:
   - name: base
+    clusterSelector: {}
     helm:
       valuesFrom:
         - configMapKeyRef:
@@ -182,6 +183,7 @@ targetCustomizations:
             key: values.yaml
 
   - name: extra
+    clusterSelector: {}
     helm:
       valuesFrom:
         - secretKeyRef:
@@ -196,11 +198,13 @@ Both matching customizations result in values from both the ConfigMap AND the Se
 ----
 targetCustomizations:
   - name: base-overlay
+    clusterSelector: {}
     yaml:
       overlays:
         - common
 
   - name: env-overlay
+    clusterSelector: {}
     yaml:
       overlays:
         - production
@@ -218,6 +222,7 @@ targetCustomizationMode: AllMatches
 
 targetCustomizations:
   - name: base
+    clusterSelector: {}
     helm:
       values:
         app:
@@ -227,6 +232,7 @@ targetCustomizations:
           enabled: true
 
   - name: scale
+    clusterSelector: {}
     helm:
       values:
         app:
@@ -255,10 +261,12 @@ Some boolean fields like `force`, `atomic`, `takeOwnership` are OR'd together an
 ----
 targetCustomizations:
   - name: force-on
+    clusterSelector: {}
     helm:
       force: true
 
   - name: force-off
+    clusterSelector: {}
     helm:
       force: false      # Has no effect if force-on also matches
 ----
