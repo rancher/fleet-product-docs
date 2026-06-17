@@ -18,7 +18,7 @@
 * <<_gitreporestriction,GitRepoRestriction>>
 * <<_imagescan,ImageScan>>
 
-[#_sub-resources]
+[#_sub_resources]
 == サブリソース
 
 * <<_bundledisplay,バンドル表示>>

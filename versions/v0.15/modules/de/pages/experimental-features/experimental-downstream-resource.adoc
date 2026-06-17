@@ -10,9 +10,9 @@ Dies ist eine experimentelle Funktion.
 Ab {product_name} v0.14.0 unterstützt {product_name} die Weitergabe externer Ressourcen an Downstream-Cluster.
 
 Dies vereinfacht den Umgang mit Abhängigkeiten von Charts, wie z.B. Werten, die aus externen Ressourcen stammen.
-Siehe auch xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom].
+Siehe auch xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
 
-[#_how-it-works]
+[#_how_it_works]
 == Funktionsweise
 
 HelmOps unterstützen ein neues `downstreamResources` Feld, das verwendet werden kann, um Ressourcen nach Art und Name zu referenzieren.

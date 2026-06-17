@@ -6,7 +6,7 @@ Para más información sobre cómo personalizar paquetes utilizando `fleet.yaml`
 
 El contenido de `fleet.yaml` corresponde a la estructura `FleetYAML` en https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`], que contiene el xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
-[#_full-example]
+[#_full_example]
 == Ejemplo completo
 
 [%collapsible]
@@ -341,7 +341,7 @@ overrideTargets:
 ----
 ====
 
-[#_general-bundle-configuration]
+[#_general_bundle_configuration]
 == Configuración general del paquete
 
 Estas opciones definen las propiedades fundamentales y el comportamiento del paquete en sí, y se aplican a todos los tipos de paquetes.
@@ -351,12 +351,12 @@ Estas opciones definen las propiedades fundamentales y el comportamiento del paq
 
 | `paused` | Si es verdadero, el paquete no se actualizará en los clústeres en sentido descendente. En su lugar, se marcará como *OutOfSync*. Puedes entonces aprobar manualmente el despliegue. | Todas
 | `labels` | Un mapa de pares clave-valor establecidos a nivel de paquete. Estos pueden ser utilizados en un `dependsOn.selector` para definir dependencias. | Todas
-| `dependsOn` | Una lista de paquetes de los que depende este paquete. El paquete actual se despliega solo después de que todas las dependencias estén en un estado aceptado. Los estados aceptados corresponden a cualquier estado de xref:reference/ref-status-fields.adoc#_bundle-statuses[paquete] válido. | Todas
+| `dependsOn` | Una lista de paquetes de los que depende este paquete. El paquete actual se despliega solo después de que todas las dependencias estén en un estado aceptado. Los estados aceptados corresponden a cualquier estado de xref:reference/ref-status-fields.adoc#_bundle_statuses[paquete] válido. | Todas
 | `ignore` | Especifica los campos a ignorar al monitorear el estado del paquete. Útil para prevenir estados de error falsos de recursos personalizados. | Todas
 | `overrideTargets` | Una lista de personalizaciones de destino que anulan cualquier objetivo definido en el GitRepo. | Todas
 |===
 
-[#_namespace-configuration]
+[#_namespace_configuration]
 === Configuración del espacio de nombres
 
 Estas opciones controlan el espacio de nombres de Kubernetes donde se desplegarán los recursos.
@@ -370,7 +370,7 @@ Estas opciones controlan el espacio de nombres de Kubernetes donde se desplegar�
 | `namespaceAnnotations` | Anotaciones que se añadirán al espacio de nombres creado por {product_name}. | Todas
 |===
 
-[#_helm-bundle-configuration]
+[#_helm_bundle_configuration]
 == Configuración del paquete de Helm
 
 Todos los paquetes se despliegan utilizando Helm, pero estas opciones son específicas para *paquetes al estilo de Helm* (aquellos con un archivo `Chart.yaml`).
@@ -388,7 +388,7 @@ Fleet descarga el chart durante la fase inicial de **creación del paquete**. Es
 Si un clúster específico debe utilizar un registro o fuente de chart diferente (por ejemplo, debido a restricciones de red o firewall), configúralo utilizando un recurso `GitRepo` separado o una vía de paquete diferente.
 ====
 
-[#_chart-source]
+[#_chart_source]
 === Fuente del chart
 
 Estas opciones especifican cómo descargar el chart. La referencia puede ser una ruta local, una URL de go-getter, un repositorio de Helm o un repositorio de Helm OCI.
@@ -410,7 +410,7 @@ La referencia del chart puede ser una de las siguientes:
 * Repositorio de Helm (`repo` + `chart` + `version` opcional)
 * Repositorio OCI de Helm (`repo: oci://...` + `version` opcional)
 
-[#_helm-repo]
+[#_helm_repo]
 ==== `helm.repo`
 
 Para registros OCI, `helm.repo` es el campo canónico para la URL OCI. Úsalo así:
@@ -422,9 +422,9 @@ helm:
   version: "0.1.0"  # optional
 ----
 
-Esto es consistente con cómo se referencian los registros OCI en xref:how-tos-for-users/helm-ops.adoc#_oci-registry[recursos de HelmOp].
+Esto es consistente con cómo se referencian los registros OCI en xref:how-tos-for-users/helm-ops.adoc#_oci_registry[recursos de HelmOp].
 
-[#_helm-chart]
+[#_helm_chart]
 ==== `helm.chart`
 
 Especifica una ruta local o URL de go-getter para el chart de Helm. Cuando `helm.repo` se establece en una URL de repositorio de Helm estándar (no OCI), `helm.chart` contiene el nombre del chart dentro de ese repositorio.
@@ -461,7 +461,7 @@ helm:
 ----
 ====
 
-[#_helm-version]
+[#_helm_version]
 ==== `helm.version`
 
 Determina qué chart descargar de los registros OCI.
@@ -487,11 +487,11 @@ Opciones para personalizar los valores del chart de Helm.
 
 No es necesario especificar el propio `values.yaml` de un chart. Siempre se utiliza por defecto.
 
-Consulta xref:/explanations/gitrepo-content.adoc#_using-helm-values[Usando Valores de Helm] para más información.
+Consulta xref:/explanations/gitrepo-content.adoc#_using_helm_values[Usando Valores de Helm] para más información.
 
 Para las etapas de procesamiento de valores, consulta xref:explanations/ref-bundle-stages.adoc[Ciclo de vida del paquete].
 
-[#_values-templating]
+[#_values_templating]
 === Plantillado de Valores
 
 {product_name} soporta expresiones de plantilla Go para necesidades avanzadas de plantillado.
@@ -502,7 +502,7 @@ Consulta las https://masterminds.github.io/sprig/[funciones de plantilla de Spri
 Evita funciones que produzcan resultados aleatorios (por ejemplo, `uuidv4`), ya que provocan re-despliegues.
 ====
 
-Puedes probar la plantilla de valores con la CLI, consulta xref:explanations/ref-bundle-stages.adoc#_fleet-target[fleet-target].
+Puedes probar la plantilla de valores con la CLI, consulta xref:explanations/ref-bundle-stages.adoc#_fleet_target[fleet-target].
 
 
 Claves del contexto de la plantilla:
@@ -545,7 +545,7 @@ ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }m
 ----
 ====
 
-[#_helm-deployment]
+[#_helm_deployment]
 == Despliegue de Helm
 
 Estas opciones controlan cómo el agente de Fleet despliega recursos.
@@ -564,7 +564,7 @@ También se aplican a *kustomize-* y *paquetes de estilo manifest*.
 | `helm.skipSchemaValidation` | Omitir la validación de `values.schema.json`. | Todas
 |===
 
-[#_kustomize-configuration]
+[#_kustomize_configuration]
 == Configuración de Kustomize
 
 Se utiliza al desplegar desde un directorio que contiene un archivo `kustomization.yaml`.
@@ -574,7 +574,7 @@ Se utiliza al desplegar desde un directorio que contiene un archivo `kustomizati
 | `kustomize.dir` | Carpeta personalizada para recursos de Kustomize. Debe contener un archivo `kustomization.yaml`. | Kustomize
 |===
 
-[#_deployment-strategy-rollout]
+[#_deployment_strategy_rollout]
 == Estrategia de Despliegue (Despliegue gradual)
 
 Estas opciones controlan cómo se despliegan las actualizaciones en los clústeres.
@@ -592,7 +592,7 @@ Estas opciones controlan cómo se despliegan las actualizaciones en los clúster
 
 Para más información, consulta xref:how-tos-for-users/rollout.adoc[Estrategia de Despliegue].
 
-[#_targeting-and-customization]
+[#_targeting_and_customization]
 == Objetivos y Personalización
 
 Estas opciones te permiten personalizar los despliegues para clústeres específicos o grupos de clústeres.
@@ -615,7 +615,7 @@ Estas opciones te permiten personalizar los despliegues para clústeres específ
 | `targetCustomizations.correctDrift` | Habilita la corrección de deriva para recursos gestionados. | Todas
 |===
 
-[#_supported-customizations]
+[#_supported_customizations]
 === Personalizaciones soportadas
 
 * xref:/reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]

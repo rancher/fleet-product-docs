@@ -17,7 +17,7 @@ Los campos `resources` descritos en esta página siguen aplicándose. Especifica
 Para más información, consulta xref:reference/ref-configuration.adoc[Configuración].
 ====
 
-[#_default-resources]
+[#_default_resources]
 == Recursos predeterminados
 
 Establece un valor predeterminado para todos los contenedores de controladores utilizando el campo `resources` de nivel superior:
@@ -44,7 +44,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   --set resources.requests.memory=768Mi
 ----
 
-[#_per-component-overrides]
+[#_per_component_overrides]
 == Sobrescrituras por componente
 
 Los contenedores de controladores individuales pueden sobrescribir el valor predeterminado con configuraciones específicas del componente.
@@ -96,7 +96,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   -f values.yaml
 ----
 
-[#_downstream-cluster-agent-resources]
+[#_downstream_cluster_agent_resources]
 == Recursos del Agente del Clúster Descendente
 
 Para configurar límites y solicitudes de recursos para el agente de Fleet que se ejecuta en un clúster descendente específico, establece `agentResources` en el recurso correspondiente `Cluster`:

@@ -10,7 +10,7 @@ Der Image-Scan in Fleet ermöglicht es Ihnen, Ihr Image-Repository zu scannen, d
 Dieses Feature gilt als experimentell.
 Standardmäßig ist die Option deaktiviert.
 
-Weitere Informationen xref:how-tos-for-operators/installation.adoc#_enabling-imagescan[hier] zur Aktivierung.
+Weitere Informationen xref:how-tos-for-operators/installation.adoc#_enabling_imagescan[hier] zur Aktivierung.
 ====
 
 

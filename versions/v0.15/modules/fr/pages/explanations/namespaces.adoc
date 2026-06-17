@@ -2,22 +2,22 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_workload-namespaces]
+[#_workload_namespaces]
 == Espaces de noms de charge de travail
 
-[#_namespace-creation-behavior-in-bundles]
+[#_namespace_creation_behavior_in_bundles]
 === Comportement de création d'espace de noms dans les bundles
 
 Lors du déploiement d'un bundle {product_name}, l'espace de noms spécifié sera automatiquement créé s'il n'existe pas déjà.
 
-[#_configuring-workload-namespaces]
+[#_configuring_workload_namespaces]
 === Configuration des espaces de noms de charge de travail
 
 Lors de la configuration des espaces de noms de charge de travail, il est important d'être conscient que certaines options sont conçues pour remplacer les valeurs d'autres options ou définitions d'espace de noms dans les ressources de charge de travail. Dans certains cas, définir des espaces de noms à l'aide de certaines options peut entraîner des erreurs si les ressources à déployer contiennent des ressources non associées à un espace de noms. Pour mieux comprendre comment ces options interagissent, consultez le diagramme ci-dessous. Pour plus de détails sur une option spécifique, veuillez vous référer au xref:reference/ref-gitrepo.adoc[GitRepo] ou à la référence xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
 
 image::FleetWorkloadNamespaces.png[Configuration des espaces de noms de charge de travail]
 
-[#_cross-namespace-deployments]
+[#_cross_namespace_deployments]
 === Déploiements inter-espaces de noms
 
 Il est possible de créer un GitRepo qui déploiera à travers les espaces de noms. Le but principal de cela est qu'une équipe centrale privilégiée puisse gérer une configuration commune pour de nombreux clusters gérés par différentes équipes. La façon dont cela est accompli est en créant une ressource `BundleNamespaceMapping` dans un cluster.
@@ -48,7 +48,7 @@ namespaceSelector:
 
 Si le champ `BundleNamespaceMappings` `bundleSelector` correspond à des étiquettes `Bundles`, alors ce critère cible `Bundle` sera évalué par rapport à tous les clusters dans tous les espaces de noms qui correspondent à `namespaceSelector`. On peut spécifier des étiquettes pour les paquets créés à partir de git en mettant des étiquettes dans le fichier `fleet.yaml` ou sur le champ `metadata.labels` dans le `GitRepo`.
 
-[#_restricting-gitrepos]
+[#_restricting_gitrepos]
 === Restriction des GitRepos
 
 Un espace de noms peut contenir plusieurs ressources `GitRepoRestriction`. Toutes les `GitRepos` créées dans cet espace de noms seront vérifiées par rapport à la liste des restrictions. Si un `GitRepo` viole l'une des contraintes, son `BundleDeployment` sera dans un état d'erreur et ne sera pas déployé.
@@ -70,12 +70,12 @@ defaultClientSecretName: ""
 defaultServiceAccount: ""
 ----
 
-[#_allowed-target-namespaces]
+[#_allowed_target_namespaces]
 ==== Espaces de noms cibles autorisés
 
 Cela peut être utilisé pour limiter un déploiement à un ensemble d'espaces de noms sur un cluster en aval. Si une restriction allowedTargetNamespaces est présente, tous les `GitRepos` doivent spécifier un `targetNamespace` et l'espace de noms spécifié doit être dans la liste autorisée. Cela empêche également la création de ressources à l'échelle du cluster.
 
-[#_allowed-target-namespace-selector]
+[#_allowed_target_namespace_selector]
 ==== Sélecteur d'espace de noms cible autorisé
 
 `allowedTargetNamespaceSelector` restreint les déploiements aux espaces de noms sur les clusters en aval dont les étiquettes correspondent au sélecteur donné. Lorsque ce champ est défini dans un `GitRepoRestriction`, tous les `GitRepos` doivent spécifier un `targetNamespace`.
@@ -100,7 +100,7 @@ allowedTargetNamespaceSelector:
     team: frontend
 ----
 
-[#_product-name-namespaces]
+[#_product_name_namespaces]
 == {product_name} Espaces de noms
 
 Tous les types dans le gestionnaire {product_name} sont nommés par espace de noms. Les espaces de noms d'une ressource personnalisée, par exemple GitRepo, n'influencent pas l'espace de noms des ressources déployées.
@@ -109,7 +109,7 @@ Comprendre comment les espaces de noms sont utilisés dans le gestionnaire {prod
 
 image::FleetNamespaces.svg[Namespace]
 
-[#_gitrepos-bundles-clusters-clustergroups]
+[#_gitrepos_bundles_clusters_clustergroups]
 === GitRepos, Bundles, Clusters, ClusterGroups
 
 Tous les sélecteurs pour les cibles `GitRepo` seront évalués par rapport aux `Clusters` et `ClusterGroups` dans les mêmes espaces de noms. Cela signifie que si vous donnez des privilèges `create` ou `update` à un type `GitRepo` dans un espace de noms, cet utilisateur final peut modifier le sélecteur pour correspondre à n'importe quel cluster dans cet espace de noms. Cela signifie en pratique que si vous souhaitez que deux équipes gèrent elles-mêmes leurs propres enregistrements `GitRepo` mais qu'elles ne devraient pas pouvoir cibler les clusters des autres, elles devraient être dans des espaces de noms différents.
@@ -128,14 +128,14 @@ La suppression de l'espace de travail, l'espace de noms d'enregistrement de clus
 Cela désinstallera tous les bundles déployés, sauf pour le Fleet agent, des clusters supprimés.
 ====
 
-Si vous utilisez {product_name} dans un style xref:explanations/concepts.adoc[cluster unique], l'espace de noms sera toujours *fleet-local*.  Référez-vous à la section <<_cluster-registration-namespace-fleet-local,`fleet-local` espaces de noms>> pour plus d'informations.
+Si vous utilisez {product_name} dans un style xref:explanations/concepts.adoc[cluster unique], l'espace de noms sera toujours *fleet-local*.  Référez-vous à la section <<_cluster_registration_namespace_fleet_local,`fleet-local` espaces de noms>> pour plus d'informations.
 
 Pour un style xref:explanations/concepts.adoc[multi-cluster], veuillez vous assurer d'utiliser le bon dépôt qui sera mappé aux bons clusters cibles.
 
-[#_internal-namespaces]
+[#_internal_namespaces]
 === Espaces de noms internes
 
-[#_cluster-registration-namespace-fleet-local]
+[#_cluster_registration_namespace_fleet_local]
 ==== Espace de noms d'enregistrement de cluster{nbsp}: fleet-local
 
 L'espace de noms *fleet-local* est un espace de noms spécial utilisé pour le cas d'utilisation d'un seul cluster ou pour démarrer la configuration du gestionnaire {product_name}.
@@ -143,17 +143,17 @@ L'accès au cluster local doit être limité aux opérateurs.
 
 Lorsque {product_name} est installé, l'espace de noms `fleet-local` est créé avec un `Cluster` appelé `local` et un `ClusterGroup` appelé `default`. Si aucun objectif n'est spécifié sur un `GitRepo`, il est par défaut ciblé sur le `ClusterGroup` nommé `default`. Cela signifie que tous les `GitRepos` créés dans `fleet-local` cibleront automatiquement le `local` `Cluster`. Le `local` `Cluster` fait référence au cluster sur lequel le gestionnaire {product_name} s'exécute.
 
-[#_system-namespace-cattle-fleet-system]
+[#_system_namespace_cattle_fleet_system]
 ==== Espace de noms système{nbsp}: cattle-fleet-system
 
 Le contrôleur {product_name} et l'agent {product_name} s'exécutent dans cet espace de noms. Tous les comptes de service référencés par `GitRepos` sont censés vivre dans cet espace de noms dans le cluster en aval.
 
-[#_system-registration-namespace-cattle-fleet-clusters-system]
+[#_system_registration_namespace_cattle_fleet_clusters_system]
 ==== Espace de noms d'enregistrement système{nbsp}: cattle-fleet-clusters-system
 
 Cet espace de noms contient des secrets pour le processus d'enregistrement du cluster. Il ne devrait contenir aucune autre ressource, en particulier des secrets.
 
-[#_cluster-namespaces]
+[#_cluster_namespaces]
 ==== Espaces de noms de cluster
 
 Pour chaque cluster enregistré, un espace de noms est créé par le gestionnaire {product_name} pour ce cluster. Ces espaces de noms sont nommés sous la forme `cluster-$\{namespace}-$\{cluster}-$\{random}`. Le but de cet espace de noms est que tous les `BundleDeployments` pour ce cluster soient placés dans cet espace de noms, puis le cluster en aval se voit accorder l'accès pour surveiller et mettre à jour `BundleDeployments` uniquement dans cet espace de noms.

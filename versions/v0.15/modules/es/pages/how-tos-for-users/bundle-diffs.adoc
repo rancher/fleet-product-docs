@@ -20,13 +20,13 @@ Los paquetes {product_name} soportan la capacidad de especificar un http://jsonp
 
 Con el parche, los usuarios pueden instruir a {product_name} para ignorar modificaciones de objetos y objetos enteros.
 
-[#_generating-comparepatches-with-fleet-bundlediff]
+[#_generating_comparepatches_with_fleet_bundlediff]
 == Generando comparePatches con `fleet bundlediff`
 
 El comando CLI `fleet bundlediff` lee la información de diferencia ya presente en `Bundle` y `BundleDeployment` campos de estado y la muestra en una forma legible para humanos.
 También puede generar un fragmento `diff:` listo para usar en formato `fleet.yaml` para que puedas aceptar la desviación observada sin construir manualmente las rutas de JSON Patch.
 
-[#_viewing-diffs]
+[#_viewing_diffs]
 === Viendo diffs
 
 [source,bash]
@@ -66,7 +66,7 @@ BundleDeployments with diffs: 1
     }
 ----
 
-[#_generating-a-fleet-yaml-comparepatches-snippet]
+[#_generating_a_fleet_yaml_comparepatches_snippet]
 === Generando un fragmento `fleet.yaml` `comparePatches`
 
 Usa `--fleet-yaml` junto con `--bundle-deployment` para producir un bloque `diff:` que puedes pegar directamente en tu `fleet.yaml`. El comando convierte el JSON Merge Patch observado en operaciones `remove` y las fusiona con cualquier `comparePatches` ya configurada en el `Bundle`, de modo que los ignores existentes permanecen intactos.
@@ -114,17 +114,17 @@ La bandera `--fleet-yaml` requiere `--bundle-deployment`, porque la salida gener
 
 Consulta xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff] [{product_name} bundlediff] para la referencia completa de la bandera.
 
-[#_ignoring-object-modifications]
+[#_ignoring_object_modifications]
 == Ignorando modificaciones de objetos
 
-[#_simple-example]
+[#_simple_example]
 === Ejemplo Simple
 
 En este ejemplo simple, creamos un Servicio y un ConfigMap sobre los que aplicamos un diff de paquete.
 
 https://github.com/rancher/fleet-test-data/tree/master/bundle-diffs
 
-[#_gatekeeper-example]
+[#_gatekeeper_example]
 === Ejemplo de Gatekeeper
 
 En este ejemplo, estamos intentando desplegar opa-gatekeeper utilizando entrega continua en nuestros clústeres.
@@ -163,7 +163,7 @@ Basado en este resumen, hay tres objetos que necesitan un parche.
 
 Los veremos uno a la vez.
 
-[#_1-validatingwebhookconfiguration]
+[#_1_validatingwebhookconfiguration]
 ==== 1. ValidatingWebhookConfiguration:
 
 La configuración del webhook de validación gatekeeper-validating-webhook-configuration tiene dos ValidatingWebhooks en su especificación.
@@ -261,7 +261,7 @@ Basado en esta información, nuestro parche de diferencia se vería como sigue:
     - {"op": "remove", "path":"/webhooks/1/rules"}
 ----
 
-[#_2-deployment-gatekeeper-controller-manager]
+[#_2_deployment_gatekeeper_controller_manager]
 ==== 2. Despliegue gatekeeper-controller-manager:
 
 El despliegue gatekeeper-controller-manager se modifica ya que hay límites de CPU y tolerancias aplicadas (que no están en el paquete actual).
@@ -309,7 +309,7 @@ Basado en esta información, nuestro parche de diferencia se vería como sigue:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
-[#_3-deployment-gatekeeper-audit]
+[#_3_deployment_gatekeeper_audit]
 ==== 3. Despliegue gatekeeper-audit:
 
 El despliegue gatekeeper-audit se modifica de manera similar al gatekeeper-controller-manager, con límites de CPU y tolerancias adicionales aplicadas.
@@ -357,7 +357,7 @@ Basado en esta información, nuestro parche de diferencia se vería como sigue:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
-[#_combining-it-all-together]
+[#_combining_it_all_together]
 ==== Sintetizando todo
 
 Ahora podemos combinar todos estos parches de la siguiente manera:
@@ -394,7 +394,7 @@ Podemos añadir estos ahora al paquete directamente para probar y también confi
 
 Una vez que se añadan, el GitRepo debería desplegarse y estar en estado "Activo".
 
-[#_ignoring-entire-objects]
+[#_ignoring_entire_objects]
 == Ignorando objetos enteros
 
 Al instalar un chart como link:https://developer.hashicorp.com/consul/docs/k8s/helm[Consul], se crea un trabajo llamado `consul-server-acl-init`, que luego se elimina una vez que se ha completado con éxito.
@@ -453,7 +453,7 @@ diff:
 
 Más información sobre la sintaxis regex soportada link:https://pkg.go.dev/regexp/syntax[aquí].
 
-[#_horizontal-pod-autoscaling]
+[#_horizontal_pod_autoscaling]
 == Escalado automático de pods horizontal
 
 Al tratar con Deployments o StatefulSets referenciados por un Escalador Automático de Pods Horizontal, ya no son necesarios los diffs de paquetes para abordar las actualizaciones en los recuentos de réplicas dentro del intervalo configurado del HPA.

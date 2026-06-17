@@ -21,7 +21,7 @@ fleet-controller agentmanagement [flags]
       --namespace string    namespace to watch
 ----
 
-[#_options-inherited-from-parent-commands]
+[#_options_inherited_from_parent_commands]
 == Options héritées des commandes parentes
 
 [source,text]
@@ -30,7 +30,7 @@ fleet-controller agentmanagement [flags]
       --shard-id string   only manage resources labeled with a specific shard ID
 ----
 
-[#_see-also]
+[#_see_also]
 == VOIR ÉGALEMENT
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[contrôleur de flotte]     - Gérer le contrôleur de flotte qui communique avec le Fleet agent

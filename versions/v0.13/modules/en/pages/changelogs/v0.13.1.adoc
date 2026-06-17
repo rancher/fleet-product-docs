@@ -9,10 +9,10 @@ _ github-actions[bot]) released this 2025-08-22 14:40:53 +0000 UTC_
 
 This is a bugfix release.
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 
-[#_auth-fixes]
+[#_auth_fixes]
 === Auth fixes
 * Add InsecureTLS and BasicHTTP options to Helm secret (#3872) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3948
 * Fix auth issues when downloading Helm charts from OCI registries by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3947
@@ -23,7 +23,7 @@ This is a bugfix release.
 * Support semver constraints with OCI polling by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3964
 * Fix support for Helm repositories using `v` prefix in chart versions by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3959
 
-[#_resources-and-statuses]
+[#_resources_and_statuses]
 === Resources and statuses
 * Prevent deployment errors caused by Content resource hash mismatches (#3917) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3922
 * Fix resources readiness detection in GitRepo status by @p-se in https://github.com/rancher/fleet/pull/3952

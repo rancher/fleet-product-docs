@@ -53,7 +53,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
-[#_good-to-know]
+[#_good_to_know]
 === 注意事项
 
 `fleet apply` 从环境变量中读取 `known_hosts`` 数据 (`FLEET_KNOWN_HOSTS`)，类似于 git 克隆器的操作。
@@ -64,6 +64,6 @@ fleet apply [flags] BUNDLE_NAME PATH...
 
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
-[#_see-also]
+[#_see_also]
 == 另请参阅
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - 管理 {product_name} 操作

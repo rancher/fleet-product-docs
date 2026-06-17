@@ -21,7 +21,7 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_see-also]
+[#_see_also]
 == VOIR ÉGALEMENT
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]     - Nettoyer les ressources obsolètes

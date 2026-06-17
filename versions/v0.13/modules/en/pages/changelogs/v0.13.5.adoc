@@ -4,7 +4,7 @@
 :page-date: 2025-11-18 14:58:17 +0000 UTC
 
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * Update Kubernetes libraries to v0.33.5 by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4230
 * Update Go to v1.24.9 by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4229

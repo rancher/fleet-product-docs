@@ -8,14 +8,14 @@ The folder could contain a Helm chart, or reference one. It could be a plain Kub
 
 The `fleet.yaml` file contains all the options for the deployment.
 
-[#_bundle-names]
+[#_bundle_names]
 == Bundle Names
 
 By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
 
 Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
 
-[#_how-repos-are-scanned]
+[#_how_repos_are_scanned]
 == How repos are scanned
 
 *The git repository has no explicitly required structure.* It is important
@@ -39,7 +39,7 @@ The following files are looked for to determine the how the resources will be de
 | *overlays/+{name}+* | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
-[#_alternative-scan-explicitly-defined-by-the-user]
+[#_alternative_scan_explicitly_defined_by_the_user]
 === Alternative scan, explicitly defined by the user
 
 In addition to the previously described method, {product_name} also supports a more direct, user-driven approach for defining Bundles.
@@ -47,7 +47,7 @@ In addition to the previously described method, {product_name} also supports a m
 In this mode, {product_name} will load all resources found within the specified base directory. It will only attempt to locate a `fleet.yaml` file at the root of that directory if an options file is not explicitly provided.
 Unlike the traditional scanning method, this one is not recursive and does not attempt to find Bundle definitions other than those explicitly specified by the user.
 
-[#_example-file-structure]
+[#_example_file_structure]
 ==== Example File Structure
 
 [source,bash]
@@ -80,7 +80,7 @@ driven
             |__ test.yaml
 ----
 
-[#_corresponding-gitrepo-definition]
+[#_corresponding_gitrepo_definition]
 ==== Corresponding GitRepo Definition
 
 [source,yaml]
@@ -172,7 +172,7 @@ This can be mitigated by using a `.fleetignore` file next to `{dev,test,prod}.ya
 See the next section for more details on `.fleetignore` files.
 ====
 
-[#_excluding-files-and-directories-from-bundles]
+[#_excluding_files_and_directories_from_bundles]
 === Excluding files and directories from bundles
 
 {product_name} supports file and directory exclusion by means of `.fleetignore` files, in a similar fashion to how `.gitignore`
@@ -207,7 +207,7 @@ Unsupported:
 * Double asterisks (`**`)
 * Explicit inclusions with `!`
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == `fleet.yaml`
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
@@ -230,9 +230,9 @@ Refer to Rancher's {product_name} docs for more information.
 
 The available fields are documented in the xref::/reference/ref-fleet-yaml.adoc[fleet.yaml reference].
 For a private Helm repo, users can reference a secret from the git repo resource.
-See xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[Using Private Helm Repositories].
+See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
-[#_using-helm-values]
+[#_using_helm_values]
 == Using Helm Values
 
 __How changes are applied to `values.yaml`__:
@@ -242,7 +242,7 @@ __How changes are applied to `values.yaml`__:
 
 image::FleetValuesStages.svg[flow of fleet values stages]
 
-The targeting step can treat values as templates using cluster info. More info: xref:/reference/ref-fleet-yaml.adoc#_values-templating[templates in fleet.yaml].
+The targeting step can treat values as templates using cluster info. More info: xref:/reference/ref-fleet-yaml.adoc#_values_templating[templates in fleet.yaml].
 
 You can disable this using `disablePreProcess`.
 
@@ -256,7 +256,7 @@ If the chart generates credentials, override them or the chart may redeploy cont
 Credentials loaded via `valuesFrom` are encrypted at rest if Kubernetes encryption at rest is enabled.
 ====
 
-[#_using-valuesfrom]
+[#_using_valuesfrom]
 === Using ValuesFrom
 
 These examples showcase the style and format for using `valuesFrom`.
@@ -322,7 +322,7 @@ helm:
     replicas: "4"
 ----
 
-[#_per-cluster-customization]
+[#_per_cluster_customization]
 == Per Cluster Customization
 
 The `GitRepo` defines which clusters a repo deploys to. The `fleet.yaml` defines customizations per target.
@@ -346,9 +346,9 @@ targetCustomizations:
 - name: prod
   clusterName: fleetname
 ----
-See xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[customization per cluster].
+See xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[customization per cluster].
 
-[#_raw-yaml-resource-customization]
+[#_raw_yaml_resource_customization]
 == Raw YAML Resource Customization
 
 [source,shell]
@@ -368,12 +368,12 @@ Rules:
 * Matching names replace base files.
 * `_patch.` files apply patches (JSON/strategic/JSONPatch).
 
-[#_cluster-and-bundle-state]
+[#_cluster_and_bundle_state]
 == Cluster and Bundle State
 
 See xref:/reference/ref-status-fields.adoc[status fields].
 
-[#_nested-gitrepo-crs]
+[#_nested_gitrepo_crs]
 == Nested GitRepo CRs
 
 Nested GitRepo CRs are supported.

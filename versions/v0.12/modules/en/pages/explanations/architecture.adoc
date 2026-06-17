@@ -6,14 +6,14 @@
 components work in a two-stage pull model. The {product_name} controller will pull from git and the
 cluster agents will pull from the {product_name} controller.
 
-[#_product-name-controller]
+[#_product_name_controller]
 == {product_name} Controller
 
 The {product_name} controller is a set of Kubernetes controllers running in any standard Kubernetes
 cluster.  The only API exposed by the {product_name} controller is the Kubernetes API, there is no
 custom API for the fleet controller.
 
-[#_cluster-agents]
+[#_cluster_agents]
 == Cluster Agents
 
 One cluster agent runs in each cluster and is responsible for talking to the {product_name} controller.
@@ -22,7 +22,7 @@ goes from the managed cluster to the {product_name} controller. The fleet contro
 connections to downstream clusters. This means managed clusters can run in private networks and behind
 NATs. The only requirement is the cluster agent needs to be able to communicate with the
 Kubernetes API of the cluster running the {product_name} controller. The one exception to this is if you use
-the xref:how-tos-for-operators/cluster-registration.adoc#_manager-initiated[manager initiated] cluster registration flow. This is not required, but
+the xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager initiated] cluster registration flow. This is not required, but
 an optional pattern.
 
 The cluster agents are not assumed to have an "always on" connection. They will resume operation as
@@ -42,7 +42,7 @@ The service accounts given to the clusters only have privileges to list `BundleD
 specifically for that cluster. It can also update the `status` subresource of `BundleDeployment` and the `status`
 subresource of it's `Cluster` resource.
 
-[#_component-overview]
+[#_component_overview]
 == Component Overview
 
 An overview of the components and how they interact on a high level.

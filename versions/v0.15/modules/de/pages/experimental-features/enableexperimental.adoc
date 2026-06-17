@@ -6,9 +6,9 @@
 
 Das Aktivieren oder Deaktivieren experimenteller Funktionen erfolgt über zusätzliche Umgebungsvariablen, die beim Bereitstellen von `rancher/fleet` verfügbar sind.
 
-Für weitere Informationen siehe Konfigurieren der xref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[{product_name} Installationsoptionen in Rancher]
+Für weitere Informationen siehe Konfigurieren der xref:reference/ref-configuration.adoc#_configure_product_install_options_in_rancher[{product_name} Installationsoptionen in Rancher]
 
-[#_available-experimental-features]
+[#_available_experimental_features]
 == Verfügbare experimentelle Funktionen
 
 {product_name} unterstützt derzeit die folgenden experimentellen Funktionen, die über ihre jeweiligen Umgebungsvariablen umgeschaltet werden können:
@@ -16,10 +16,10 @@ Für weitere Informationen siehe Konfigurieren der xref:reference/ref-configurat
 * xref:experimental-features/scheduling.adoc[Planung]
 * xref:experimental-features/experimental-downstream-resource.adoc[Automatisierte Verbreitung von Ressourcen an Downstream-Cluster]
 
-[#_enabling-an-experimental-feature]
+[#_enabling_an_experimental_feature]
 == Aktivieren einer experimentellen Funktion
 
-[#_enabling-when-installing-product-name-stand-alone]
+[#_enabling_when_installing_product_name_stand_alone]
 === Aktivieren bei der Installation von {product_name} als Stand‐alone
 
 Alles, was Sie tun müssen, ist, etwas wie folgt zu übergeben:
@@ -37,7 +37,7 @@ an Ihren `helm install` oder `helm upgrade` Befehl.
 Sie müssen `--set-string` verwenden, da der boolesche Datentyp sonst nicht wie erwartet funktioniert.
 ====
 
-[#_enabling-when-installing-product-name-with-rancher]
+[#_enabling_when_installing_product_name_with_rancher]
 === Aktivieren bei der Installation von {product_name} mit Rancher
 
 Sie können die experimentellen Funktionen in {product_name} auch aktivieren, wenn Sie Rancher installieren.

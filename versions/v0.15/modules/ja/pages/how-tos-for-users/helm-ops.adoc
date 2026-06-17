@@ -22,7 +22,7 @@ Fleet HelmOpsコントローラーは、参照されたHelmチャートを指し
 
 この機能を使用する際、Helmチャートは下流クラスターからダウンロードされるため、それらはHelmレジストリにアクセスできる必要があります。
 
-[#_creating-a-helmop-resource]
+[#_creating_a_helmop_resource]
 == HelmOpリソースの作成
 
 Helmチャートを直接デプロイし始めるために、次のように+HelmOp+リソースを作成できます：
@@ -47,12 +47,12 @@ insecureSkipTLSVerify: false
 
 プライベートチャートの場合、+HelmOp+リソースと同じネームスペースに、フィールド+helmSecretName+で参照されるHelmアクセスシークレットを作成する必要があります。Fleet HelmOpsコントローラーは、そのシークレットをターゲットとなるダウンストリームクラスターにコピーすることを担当し、Fleet agentがレジストリにアクセスできるようにします。
 
-[#_supported-use-cases]
+[#_supported_use_cases]
 == サポートされているユースケース
 
 Helmチャートを参照するための3つのフィールドが利用可能な場合、いくつかのルールを明確にしましょう。Helmインストール https://helm.sh/docs/helm/helm_install/[ドキュメント]によれば、インストールするチャートを表現する方法は6つあります。そのうちの3つは、リポジトリエイリアスまたはローカルファイルシステムを使用しており、FleetのHelmOpsコンテキストでは利用できません。これにより、3つのオプションが残ります：
 
-[#_absolute-url]
+[#_absolute_url]
 === 絶対URL
 
 絶対URLでHelmチャートを参照するのは、+.tgz+ファイルへのURLを++チャート++フィールドに提供するだけで簡単です。Helmオプションは次のようになります：
@@ -69,7 +69,7 @@ version: ''
 
 この場合、空でないリポジトリまたは空でないバージョンが指定されていると、HelmOpのステータスにエラーが表示され、バンドルは作成されず、デプロイメントが中止されます。
 
-[#_chart-reference-and-repo-url]
+[#_chart_reference_and_repo_url]
 === チャート参照とリポジトリURL
 
 Helmチャートは、オプションのバージョンを持つリポジトリとチャート名を通じて参照することもでき、これは静的バージョンまたはバージョン制約である可能性があります。
@@ -88,7 +88,7 @@ version: '1.2.3'
 
 この場合、++バージョン++フィールドのみが空である可能性があります。++チャート++または++リポジトリ++フィールドのいずれかが空である場合、{product_name}はHelmOpのステータスにエラーを設定し、バンドルは作成されません。
 
-[#_oci-registry]
+[#_oci_registry]
 === OCIレジストリ
 
 HelmはOCIレジストリをサポートしており、{product_name}で++リポジトリ++フィールドを使用して参照できます。
@@ -120,7 +120,7 @@ version: '1.2.3' # optional
 
 {product_name}は、参照されたHelmレジストリをポーリングし、新しいバージョンが利用可能かどうかを定期的に確認できます。もちろん、これは+version+フィールドにバージョン制約が含まれている場合にのみ意味があります。これは複数のバージョンに解決される可能性があります。
 
-[#_how-to-enable-it]
+[#_how_to_enable_it]
 === 有効にするハウツー
 
 ポーリングには、GitOpsに存在するものと類似の+pollingInterval+フィールドが含まれます。ただし、HelmOpsの場合、デフォルトのポーリング間隔は0秒であり、ポーリングは無効になります。
@@ -130,7 +130,7 @@ version: '1.2.3' # optional
 * +pollingInterval+フィールドは、ゼロ以外の期間（例：+10s+、+1m+など）に設定されている必要があります。
 * +version+フィールドは、有効なセマンティックバージョニング制約（例：+2.x.x+、++< 1.0++）に設定されている必要があります。静的バージョン（例：1.2.3）ではありません。
 
-[#_what-it-does]
+[#_what_it_does]
 === 説明
 
 ポーリングが有効になっている場合、{product_name}は設定された間隔で次のことを行います：
@@ -143,16 +143,16 @@ version: '1.2.3' # optional
 *** 失敗が発生した場合は、エラーを伴って+false+となります。
 ** 最後のポーリング試行の開始時刻に++Last Polling Time++フィールドを更新します。たとえそれが失敗した場合でも。
 
-[#_using-private-helm-repositories]
+[#_using_private_helm_repositories]
 == プライベートHelmリポジトリを使用する
 
 これは、フィールド `helmSecretName` を通じて Helm アクセスシークレットを参照することにより、gitOps と同じように機能します。
 
-詳細については、xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[プライベート Helm リポジトリ] を参照してください。
+詳細については、xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[プライベート Helm リポジトリ] を参照してください。
 
 各パスに対して別々の認証情報を使用する部分は、GitRepo とは異なり、HelmOp リソースは単一の Helm チャートのみを参照するため、関連性がありません。
 
-[#_status-updates]
+[#_status_updates]
 == ステータス更新
 
 HelmOp リソースを作成すると、Helm オプションが有効であり、チャートバージョンが見つかる場合にバンドルが作成されます。

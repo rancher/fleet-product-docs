@@ -4,7 +4,7 @@
 
 主要是内部配置项的参考列表。
 
-[#_configure-product-install-options-in-rancher]
+[#_configure_product_install_options_in_rancher]
 == 在 Rancher 中配置 {product_name} 安装选项
 
 Rancher 在 `rancher-config` 名称空间中的一个名为 `cattle-system` 的 ConfigMap 中查找 Helm 值。
@@ -38,7 +38,7 @@ kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
 ----
 
-[#_helm-charts]
+[#_helm_charts]
 == Helm 图表
 
 Helm charts 至少接受在 `values.yaml` 中所示的选项及其默认值：
@@ -47,7 +47,7 @@ Helm charts 至少接受在 `values.yaml` 中所示的选项及其默认值：
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
-[#_environment-variables]
+[#_environment_variables]
 == 环境变量
 
 控制器可以使用这些环境变量启动：
@@ -100,7 +100,7 @@ Fleet 使用的注释：
 * `fleet.cattle.io/managed` - 看起来未使用
 * `fleet.cattle.io/service-account`
 
-[#_product-name-agent-configuration]
+[#_product_name_agent_configuration]
 == {product_name} 代理配置
 
 容忍、亲和性和资源可以为 {product_name} 代理自定义。在创建 xref:reference/ref-crds.adoc#_clusterspec[Cluster] 时可以提供这些字段，更多关于如何创建集群的信息请参见 xref:how-tos-for-operators/cluster-registration.adoc[注册下游集群]。如果未提供这些字段，将使用默认配置。

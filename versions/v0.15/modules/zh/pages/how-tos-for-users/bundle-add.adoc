@@ -8,7 +8,7 @@
 
 [NOTE]
 ====
-如果您想在不运行Fleet控制器的情况下部署资源。请参考xref:how-tos-for-users/install-use-fleet-cli.adoc#_convert-a-helm-chart-into-a-bundle[使用CLI将Helm图表转换为捆绑。]
+如果您想在不运行Fleet控制器的情况下部署资源。请参考xref:how-tos-for-users/install-use-fleet-cli.adoc#_convert_a_helm_chart_into_a_bundle[使用CLI将Helm图表转换为捆绑。]
 ====
 
 在创建`GitRepo`时，{product_name}将从git储存库获取资源，并将其添加到捆绑中。
@@ -16,7 +16,7 @@
 资源可以使用gz进行压缩。请参见 https://github.com/rancher/rancher/blob/v2.7.3/pkg/controllers/provisioningv2/managedchart/managedchart.go#L149-L153[managedchart.go]，了解Rancher如何在go代码中使用压缩的示例。
 
 如果您想在下游集群中部署，您需要定义目标。目标的工作方式类似于`GitRepo`中的目标。
-请参见xref:how-tos-for-users/gitrepo-targets.adoc#_defining-targets[映射到下游集群]。
+请参见xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[映射到下游集群]。
 
 以下示例在本地群集中创建一个nginx `Deployment`：
 
@@ -63,8 +63,8 @@ spec:
 [#_targets]
 == 目标
 
-该捆绑可以针对多个集群。它采用与xref:how-tos-for-users/gitrepo-targets.adoc#_target-matching[GitRepo]相同的目标配置方式。
-每个目标可以指定额外的xref:reference/ref-fleet-yaml.adoc#_supported-customizations[自定义选项]：
+该捆绑可以针对多个集群。它采用与xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[GitRepo]相同的目标配置方式。
+每个目标可以指定额外的xref:reference/ref-fleet-yaml.adoc#_supported_customizations[自定义选项]：
 
 [,yaml]
 ----

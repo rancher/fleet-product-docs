@@ -17,7 +17,7 @@ Once the OCI registry is enabled, {product_name} will use it as the source for s
  
 When {product_name} can't access the OCI registry, it won't fall back to default `etcd` storage. Instead, it will log errors so they can be fixed.
 
-[#_configuring-the-oci-registry]
+[#_configuring_the_oci_registry]
 == Configuring the OCI registry
 
 OCI registry values should be configured as an extra section in the `GitRepo` yaml.

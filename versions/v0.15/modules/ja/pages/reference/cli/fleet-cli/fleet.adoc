@@ -15,9 +15,9 @@ fleet [flags]
   -h, --help   help for fleet
 ----
 
-[#_see-also]
+[#_see_also]
 == 関連項目
-[#_main-commands]
+[#_main_commands]
 === 主なコマンド
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]     - ディレクトリからバンドルを作成し、それを出力するか、クラスターに適用します
@@ -26,7 +26,7 @@ fleet [flags]
 * xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]     - gitリポジトリをクローンします
 * xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]     - バンドルの利用可能なターゲットを表示します
 
-[#_troubleshooting-and-diagnostics]
+[#_troubleshooting_and_diagnostics]
 === トラブルシューティングと診断
 
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]     - Fleetのセットアップを監視して問題を確認します

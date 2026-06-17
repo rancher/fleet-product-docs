@@ -15,9 +15,9 @@ fleet [flags]
   -h, --help   help for fleet
 ----
 
-[#_see-also]
+[#_see_also]
 == CONSULTE TAMBÉM
-[#_main-commands]
+[#_main_commands]
 === Comandos principais
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]     - Criar pacotes a partir de diretórios e exportá-los ou aplicá-los em um cluster
@@ -26,7 +26,7 @@ fleet [flags]
 * xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]     - Clona um repositório git
 * xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]     - Imprimir alvos disponíveis para um pacote
 
-[#_troubleshooting-and-diagnostics]
+[#_troubleshooting_and_diagnostics]
 === Solução de problemas e diagnósticos
 
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]     - Monitorar configurações do Fleet em busca de problemas

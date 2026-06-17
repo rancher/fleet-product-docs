@@ -4,7 +4,7 @@
 
 {product_name}は可能な限りKubernetes RBACを使用します。
 
-RBACに追加されるのは、xref:explanations/namespaces.adoc#_restricting-gitrepos[`GitRepoRestriction`]リソースで、これはネームスペース内のGitRepoリソースを制御するために使用できます。
+RBACに追加されるのは、xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`]リソースで、これはネームスペース内のGitRepoリソースを制御するために使用できます。
 
 マルチユーザーFleetセットアップは次のようになります：
 
@@ -24,7 +24,7 @@ image::FleetSharedClusters.svg[共有クラスター]
 ====
 
 
-[#_example-product-name-standalone]
+[#_example_product_name_standalone]
 == 例{product_name}スタンドアロン
 
 これにより、'fleetuser'というユーザーが作成され、'project1'ネームスペース内のGitRepoリソースのみを管理できます。
@@ -48,7 +48,7 @@ image::FleetSharedClusters.svg[共有クラスター]
 
 これにより、テナントは他のテナントのネームスペースにアクセスできないため、GitRepoリソースに干渉できません。
 
-[#_isolated-workspaces-in-rancher]
+[#_isolated_workspaces_in_rancher]
 == Rancherにおける隔離されたワークスペース
 
 会社内の特定のグループ/組織に属するユーザーは、同じ会社の他のグループ/組織のユーザーに対して自分のクラスターの可視性を無効にしたい場合があります。
@@ -146,12 +146,12 @@ endif::[]
 
 整理された環境を持つために、各ワークスペースには顧客が必要とする職務の分離と隔離を助けるための関連する`GlobalRole`が必要です。このようにして、各ユーザーはニーズに応じて1つ以上の`GlobalRoles`に割り当てることができます。
 
-[#_allow-access-to-clusters]
+[#_allow_access_to_clusters]
 == クラスターへのアクセスを許可する
 
 これは、'fleetuser'によって作成されたすべてのGitRepoが`team: one`ラベルを持っていると仮定します。異なるラベルを使用して、異なるクラスターのネームスペースを選択することができます。
 
-各ユーザーのネームスペース内で、管理者としてxref:explanations/namespaces.adoc#_cross-namespace-deployments[`BundleNamespaceMapping`]を作成します。
+各ユーザーのネームスペース内で、管理者としてxref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`]を作成します。
 
 [,yaml]
 ....
@@ -180,7 +180,7 @@ namespaceSelector:
 
 GitRepoリソース内のxref:how-tos-for-users/gitrepo-targets.adoc[`target`セクション]は、一致したクラスターのサブセットにのみFleetリソースをデプロイするために使用できます。
 
-[#_restricting-access-to-downstream-clusters]
+[#_restricting_access_to_downstream_clusters]
 == ダウンストリームクラスターへのアクセスを制限する
 
 管理者は、各ネームスペース内に`GitRepoRestriction`を作成することでテナントをさらに制限できます。
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 これにより、クラスター全体のリソースの作成が拒否され、他のテナントに干渉し、'project1simpleapp'ネームスペースへのデプロイが制限される可能性があります。
 
-[#_an-example-gitrepo-resource]
+[#_an_example_gitrepo_resource]
 == GitRepoリソースの例
 
 テナントによって作成されたGitRepoリソースで、管理者アクセスがない場合は次のようになります：

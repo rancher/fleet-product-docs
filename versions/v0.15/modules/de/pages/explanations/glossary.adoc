@@ -25,7 +25,7 @@ Ein Cluster bezieht sich auf:
 * ein https://kubernetes.io/docs/concepts/architecture/[Kubernetes-Cluster], das von {product_name} verwaltet wird
 * eine `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[Ressource] in der API von Fleet, die {product_name} verwendet, um dieses Kubernetes-Cluster zu verwalten.
 
-[#_continuous-delivery-deployment]
+[#_continuous_delivery_deployment]
 == Continuous Delivery/Continuous Deployment
 
 Die Definitionen und Unterscheidungen zwischen Continuous Delivery und Continuous Deployment variieren erheblich, zum Beispiel je nachdem: +
@@ -34,13 +34,13 @@ Die Definitionen und Unterscheidungen zwischen Continuous Delivery und Continuou
 
 So viel ist jedoch klar: Das Ziel von {product_name} ist es, die Automatisierung von Implementierungen zu erleichtern.
 
-[#_custom-resource]
+[#_custom_resource]
 == Benutzerdefinierte Ressource
 
 Siehe https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[offizielle Dokumentation zu Kubernetes-Benutzerressourcen].
 Kurz gesagt, eine benutzerdefinierte Ressource ist eine Ressource, die für die Zwecke einer Anwendung definiert ist (in unserem Fall {product_name}), um die Menge der von der Kubernetes-API unterstützten Ressourcen (Pods, Implementierungen, Services usw.) zu erweitern.
 
-[#_custom-resource-definition]
+[#_custom_resource_definition]
 == Benutzerdefinierte Ressourcenbeschreibung
 
 Siehe https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[offizielle Dokumentation zu Kubernetes-benutzerdefinierten Ressourcenbeschreibungen] aus den Kubernetes-Dokumenten.
@@ -52,12 +52,12 @@ Eine Implementierung kann sich beziehen auf: +
 * eine https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[Kubernetes-Implementierung], ob Teil eines Benutzer-Workloads oder Teil von {product_name} selbst, zum Beispiel eine Agenten-Implementierung oder Controller-Implementierungen, +
 * die Aktion, einen Benutzer-Workload zu implementieren, was bedeutet, dass {product_name} die Konfiguration (`GitRepo`, `fleet.yaml` usw.) liest und als Ergebnis Ressourcen in Ziel-Clustern erstellt.
 
-[#_downstream-cluster]
+[#_downstream_cluster]
 == Downstream-Cluster
 
 Ein Downstream-Cluster ist ein Kubernetes-Cluster, in dem Benutzer-Workloads ausgeführt werden, ohne dass dort Fleet-Controller leben. Es ist ein Ziel-Cluster für Fleet, in dem nur ein Fleet-Agent neben Benutzer-Workloads lebt.
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == fleet.yaml
 
 Eine `fleet.yaml`-Datei lebt in einem Git-Repository und speichert Optionen für ein Bundle und Bundle-Implementierungen, die aus diesem Bundle generiert werden sollen. Weitere Informationen sind verfügbar xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
@@ -78,7 +78,7 @@ Das Erstellen eines `GitRepo`, das auf eine Reihe von Pfaden in einem Git-Reposi
 
 Bezieht sich auf ein https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[Kubernetes-Label].
 
-[#_multi-cluster]
+[#_multi_cluster]
 == Multi-Cluster
 
 Ein Multi-Cluster-Setup umfasst mehr als einen Cluster: den Upstream-Cluster, der benötigt wird, um die Bereitstellung von Workloads zu verwalten, und mindestens einen Downstream-Cluster.
@@ -118,7 +118,7 @@ Dies bezieht sich normalerweise auf Kubernetes-Ressourcen, die sein können: +
 
 {product_name} verwendet dieses Wort im Kontext der Bestimmung, wo ein Workload ausgeführt wird. Dies stellt einen Zielcluster für einen Workload dar.
 
-[#_upstream-cluster]
+[#_upstream_cluster]
 == Upstream-Cluster
 
 Ein Kubernetes-Cluster, in dem Fleet-Controller ausgeführt werden. Dies ist der Cluster, in dem `GitRepo`s, Bundles und Bundle-Implementierungen erstellt werden. Auch als Management-Cluster bezeichnet.

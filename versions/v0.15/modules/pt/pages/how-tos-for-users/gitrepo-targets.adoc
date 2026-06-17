@@ -20,7 +20,7 @@ Essa abordagem só se aplica se você estiver executando {product_name} em um es
 
 Ao implantar `GitRepos` em clusters downstream, os clusters devem ser mapeados para um alvo.
 
-[#_defining-targets]
+[#_defining_targets]
 == Definindo Alvos
 
 Os alvos de implantação de `GitRepo` são definidos usando o campo `spec.targets` para combinar clusters ou grupos de clusters. A especificação YAML é a seguinte.
@@ -60,7 +60,7 @@ spec:
     clusterName: cluster1
 ----
 
-[#_target-matching]
+[#_target_matching]
 == Correspondência de Alvos
 
 Todos os clusters e grupos de clusters no mesmo namespace que o `GitRepo` serão avaliados em relação a todos os alvos.
@@ -88,7 +88,7 @@ targets:
 
 Ao usar {product_name} no Rancher, certifique-se de colocar o nome do recurso `clusters.fleet.cattle.io`.
 
-[#_default-target]
+[#_default_target]
 == Alvo Padrão
 
 Se nenhum alvo for definido para o `GitRepo`, então o valor padrão dos alvos é aplicado.  O valor padrão dos alvos é o seguinte.
@@ -102,7 +102,7 @@ targets:
 
 Isso significa que, se você deseja configurar um local padrão para onde os GitRepos não configurados irão, basta criar um grupo de clusters chamado default e adicionar clusters a ele.
 
-[#_customization-per-cluster]
+[#_customization_per_cluster]
 == Personalização por Cluster
 
 [IMPORTANT]
@@ -169,7 +169,7 @@ targetCustomizations:
 A gestão de configuração não se limita a implantações, mas pode ser expandida para a gestão de configuração geral. {product_name} é capaz de aplicar a gestão de configuração por meio de personalização entre qualquer conjunto de clusters automaticamente.
 ====
 
-[#_limitations-when-overriding-helm-chart-settings-with-targetcustomizations]
+[#_limitations_when_overriding_helm_chart_settings_with_targetcustomizations]
 === Limitações ao substituir configurações do gráfico Helm com `targetCustomizations`
 
 Embora `helm.chart`, `helm.repo` e `helm.version` possam ser especificados em `targetCustomizations`, substituir esses campos tem limitações importantes.
@@ -190,7 +190,7 @@ Se diferentes ambientes exigirem gráficos ou registros diferentes, use uma das 
 * Crie recursos `GitRepo` separados para cada ambiente.
 
 
-[#_additional-examples]
+[#_additional_examples]
 == Exemplos adicionais
 
 Exemplos usando YAML Kubernetes bruto, gráficos Helm, Kustomize e combinações dos três estão no repositório de https://github.com/rancher/fleet-examples/[{product_name} Exemplos].

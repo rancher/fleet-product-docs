@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-12-12 15:16:49 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Deduplicate status messages (https://github.com/rancher/fleet/pull/3042[#3042]) by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3119[#3119]

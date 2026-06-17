@@ -148,5 +148,5 @@ spec:
 
 Para obter maiores informações, consulte:
 
-* xref:how-tos-for-users/gitrepo-add.adoc#_use-different-helm-credentials-for-each-path[Criar um Recurso GitRepo].
+* xref:how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Criar um Recurso GitRepo].
 * xref:how-tos-for-users/webhook.adoc[Usando Webhooks em vez de Polling].

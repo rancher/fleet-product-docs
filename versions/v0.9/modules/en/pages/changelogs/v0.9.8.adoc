@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-08-13 14:30:43 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Update Gitjob version to 0.9.13 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2740[#2740]

@@ -10,9 +10,9 @@
 从 {product_name} v0.14.0 开始，{product_name} 支持将外部资源传播到下游集群。
 
 这简化了处理图表依赖关系的过程，例如来自外部资源的值。
-另请参见 xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom]。
+另请参见 xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom]。
 
-[#_how-it-works]
+[#_how_it_works]
 == 工作方式
 
 HelmOps 支持一个新的 `downstreamResources` 字段，可以用来按种类和名称引用资源。

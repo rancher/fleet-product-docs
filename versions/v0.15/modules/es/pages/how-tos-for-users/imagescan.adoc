@@ -10,7 +10,7 @@ El escaneo de imágenes en Fleet te permite escanear tu repositorio de imágenes
 Esta función se considera experimental.
 Está inhabilitada por defecto.
 
-Más información xref:how-tos-for-operators/installation.adoc#_enabling-imagescan[aquí] sobre cómo habilitarla.
+Más información xref:how-tos-for-operators/installation.adoc#_enabling_imagescan[aquí] sobre cómo habilitarla.
 ====
 
 

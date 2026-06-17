@@ -4,7 +4,7 @@
 
 {product_name} verwendet Kubernetes RBAC, wo immer möglich.
 
-Eine Ergänzung zu RBAC ist die xref:explanations/namespaces.adoc#_restricting-gitrepos[`GitRepoRestriction`] Ressource, die verwendet werden kann, um GitRepo-Ressourcen in einem Namespace zu steuern.
+Eine Ergänzung zu RBAC ist die xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] Ressource, die verwendet werden kann, um GitRepo-Ressourcen in einem Namespace zu steuern.
 
 Ein Multi-User-Fleet-Setup sieht so aus:
 
@@ -24,7 +24,7 @@ Die bestehenden {product_name} Einschränkungen ermöglichen es Benutzern jedoch
 ====
 
 
-[#_example-product-name-standalone]
+[#_example_product_name_standalone]
 == Beispiel {product_name} Standalone
 
 Dies würde einen Benutzer 'fleetuser' erstellen, der nur GitRepo-Ressourcen im Namespace 'project1' verwalten kann.
@@ -48,7 +48,7 @@ Wenn wir den Zugriff auf mehrere Namespaces gewähren möchten, können wir eine
 
 Dies stellt sicher, dass Mandanten nicht mit GitRepo-Ressourcen anderer Mandanten interferieren können, da sie keinen Zugriff auf deren Namespaces haben.
 
-[#_isolated-workspaces-in-rancher]
+[#_isolated_workspaces_in_rancher]
 == Isolierte Arbeitsbereiche in Rancher
 
 Benutzer, die zu einer bestimmten Gruppe/Organisation innerhalb des Unternehmens gehören, möchten möglicherweise die Sichtbarkeit ihrer Cluster für Benutzer anderer Gruppen/Organisationen desselben Unternehmens deaktivieren.
@@ -146,12 +146,12 @@ Der Benutzer hat jetzt Zugriff auf die `Continuous Delivery`-Registerkarte in Ra
 
 Um eine gut organisierte Umgebung zu gewährleisten, sollte jeder Fleet-Arbeitsbereich über ein zugehöriges `GlobalRole` verfügen, das zur Unterstützung der für den Kunden erforderlichen Trennung der Aufgaben und Isolation dient. Auf diese Weise kann jeder Benutzer einem oder mehreren `GlobalRoles` zugewiesen werden, je nach Bedarf.
 
-[#_allow-access-to-clusters]
+[#_allow_access_to_clusters]
 == Zugriff auf Cluster erlauben
 
 Dies setzt voraus, dass alle von 'fleetuser' erstellten GitRepos das `team: one` Label haben. Verschiedene Labels könnten verwendet werden, um verschiedene Cluster-Namespaces auszuwählen.
 
-Erstellen Sie in jedem Namespace des Benutzers als Administrator ein xref:explanations/namespaces.adoc#_cross-namespace-deployments[`BundleNamespaceMapping`].
+Erstellen Sie in jedem Namespace des Benutzers als Administrator ein xref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`].
 
 [,yaml]
 ....
@@ -180,7 +180,7 @@ namespaceSelector:
 
 Der xref:how-tos-for-users/gitrepo-targets.adoc[`target` Abschnitt] in der GitRepo-Ressource kann verwendet werden, um nur auf eine Teilmenge der übereinstimmenden Cluster bereitzustellen.
 
-[#_restricting-access-to-downstream-clusters]
+[#_restricting_access_to_downstream_clusters]
 == Zugriff auf Downstream-Cluster einschränken
 
 Administratoren können die Mandanten weiter einschränken, indem sie in jedem ihrer Namespaces ein `GitRepoRestriction` erstellen.
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 Dies wird die Erstellung von clusterweiten Ressourcen verweigern, die andere Mandanten stören und die Bereitstellung auf den Namespace 'project1simpleapp' beschränken könnte.
 
-[#_an-example-gitrepo-resource]
+[#_an_example_gitrepo_resource]
 == Ein Beispiel für eine GitRepo-Ressource
 
 Eine von einem Mandanten erstellte GitRepo-Ressource ohne Administratorzugang könnte so aussehen:

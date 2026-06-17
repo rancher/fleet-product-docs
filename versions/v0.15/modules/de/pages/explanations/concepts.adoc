@@ -7,7 +7,7 @@
 [IMPORTANT]
 ====
 
-Für weitere Informationen zu den Namenskonventionen von CRDs klicken Sie auf xref:troubleshooting.adoc#_naming-conventions-for-crds[Namenskonventionen für CRDs].
+Für weitere Informationen zu den Namenskonventionen von CRDs klicken Sie auf xref:troubleshooting.adoc#_naming_conventions_for_crds[Namenskonventionen für CRDs].
 ====
 
 Im Folgenden sind einige der Konzepte von {product_name} aufgeführt, die in dieser Dokumentation nützlich sein werden:
@@ -35,6 +35,6 @@ ____
  ** Um den *Lebenszyklus eines Bundles* zu sehen, klicken Sie auf xref:explanations/ref-bundle-stages.adoc[Lebenszyklus des Bundles].
 * *BundleDeployment*: Wenn ein `Bundle` in einem Cluster bereitgestellt wird, wird eine Instanz eines `Bundle` als `BundleDeployment` bezeichnet.
   Ein `BundleDeployment` repräsentiert den Zustand dieses `Bundle` in einem bestimmten Cluster mit seinen clusterspezifischen Anpassungen. Der {product_name} Agent ist nur über `BundleDeployment` Ressourcen informiert, die für den Cluster erstellt werden, den der Agent verwaltet.
- ** Für ein Beispiel, wie man Kubernetes-Manifeste über Cluster hinweg mit {product_name} Anpassungen bereitstellt, klicken Sie auf xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[Anpassung pro Cluster].
+ ** Für ein Beispiel, wie man Kubernetes-Manifeste über Cluster hinweg mit {product_name} Anpassungen bereitstellt, klicken Sie auf xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[Anpassung pro Cluster].
 * *Downstream-Cluster*: Cluster, in die {product_name} Manifeste bereitstellt, werden als Downstream-Cluster bezeichnet. Im Fall eines einzelnen Cluster-Anwendungsfalls ist der {product_name} Manager-Kubernetes-Cluster sowohl der Manager als auch der Downstream-Cluster zur gleichen Zeit.
 * *Cluster-Registrierungstoken*: Tokens, die von Agenten verwendet werden, um einen neuen Cluster zu registrieren.

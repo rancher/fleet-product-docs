@@ -6,7 +6,7 @@
 
 *Released on 2025-08-22 10:28:32 +0000 UTC by `github-actions[bot]`.*
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * Update gomod-k8s-dependencies to v0.30.14 (release/v0.10) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3823
 * Update dependency go to v1.23.12 (release/v0.10) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3970

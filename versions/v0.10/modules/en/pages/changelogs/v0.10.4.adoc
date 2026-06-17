@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-10-17 15:02:32 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Skip checks on logs in sharding end-to-end tests by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2838[#2838]

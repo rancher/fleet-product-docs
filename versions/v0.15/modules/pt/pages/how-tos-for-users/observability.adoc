@@ -2,7 +2,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_status-fields]
+[#_status_fields]
 == Campos de Status
 
 {product_name} relata a maior parte das informações por meio de campos de status em seus recursos personalizados.
@@ -10,7 +10,7 @@ Esses campos também são usados pela interface do Rancher para exibir informaç
 
 Veja xref:reference/ref-status-fields.adoc[referência de campos de status] para mais informações sobre campos de status e condições.
 
-[#_k8s-events]
+[#_k8s_events]
 == Eventos do K8s
 
 {product_name} irá gerar eventos do K8s aos quais um usuário pode se inscrever. Esta é a lista de eventos:

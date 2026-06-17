@@ -16,7 +16,7 @@ This is a bugfix release with a few dependency updates.
 === Bugfixes
 * Fix edge case issue with SSH Helm chart downloads with keys by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3882[#3882]
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 * Update gomod-k8s-dependencies to v0.32.6 (release/v0.12) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3820[#3820]
 * Update dependency Go to v1.23.11 (release/v0.12) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3869[#3869]

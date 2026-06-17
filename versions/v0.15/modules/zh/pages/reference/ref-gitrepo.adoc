@@ -148,5 +148,5 @@ spec:
 
 有关详细信息，请参见：
 
-* xref:how-tos-for-users/gitrepo-add.adoc#_use-different-helm-credentials-for-each-path[Create a GitRepo Resource]。
+* xref:how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Create a GitRepo Resource]。
 * xref:how-tos-for-users/webhook.adoc[使用 Webhooks 而不是轮询]。

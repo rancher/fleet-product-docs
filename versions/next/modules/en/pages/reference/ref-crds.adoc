@@ -18,7 +18,7 @@
 * <<GitRepoRestriction,GitRepoRestriction>>
 * <<ImageScan,ImageScan>>
 
-[#_sub-resources]
+[#_sub_resources]
 == Sub Resources
 
 * <<BundleDisplay,BundleDisplay>>

@@ -7,7 +7,7 @@
 [IMPORTANT]
 ====
 
-Para más información sobre las convenciones de nomenclatura de CRD, haz clic en xref:troubleshooting.adoc#_naming-conventions-for-crds[Convenciones de nomenclatura para CRD].
+Para más información sobre las convenciones de nomenclatura de CRD, haz clic en xref:troubleshooting.adoc#_naming_conventions_for_crds[Convenciones de nomenclatura para CRD].
 ====
 
 A continuación se presentan algunos de los conceptos de {product_name} que serán útiles a lo largo de esta documentación:
@@ -35,6 +35,6 @@ ____
  ** Para ver el *ciclo de vida de un paquete*, haz clic en xref:explanations/ref-bundle-stages.adoc[ciclo de vida del paquete].
 * *Despliegue de Paquete*: Cuando un `Bundle` se despliega en un clúster, una instancia de un `Bundle` se llama `BundleDeployment`.
   Un `BundleDeployment` representa el estado de ese `Bundle` en un clúster específico con sus personalizaciones específicas del clúster. El agente {product_name} solo es consciente de los recursos `BundleDeployment` que se crean para el clúster que el agente está gestionando.
- ** Para un ejemplo de cómo desplegar manifiestos de Kubernetes a través de clústeres utilizando la personalización de {product_name}, haz clic en xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[personalización por clúster].
+ ** Para un ejemplo de cómo desplegar manifiestos de Kubernetes a través de clústeres utilizando la personalización de {product_name}, haz clic en xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[personalización por clúster].
 * *Clúster Descendente*: Los clústeres a los que {product_name} despliega manifiestos se denominan clústeres descendentes. En el caso de uso de un solo clúster, el clúster de Kubernetes {product_name} es tanto el clúster gestor como el clúster descendente al mismo tiempo.
 * *Token de Registro de Clúster*: Tokens utilizados por los agentes para registrar un nuevo clúster.

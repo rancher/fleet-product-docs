@@ -15,7 +15,7 @@ fleet cleanup [flags]
   -h, --help   help for cleanup
 ----
 
-[#_see-also]
+[#_see_also]
 == 関連項目
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - {product_name}の運用を管理する

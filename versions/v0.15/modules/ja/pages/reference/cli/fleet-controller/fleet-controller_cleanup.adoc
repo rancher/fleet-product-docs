@@ -18,7 +18,7 @@ fleet-controller cleanup [flags]
       --namespace string    namespace to watch
 ----
 
-[#_options-inherited-from-parent-commands]
+[#_options_inherited_from_parent_commands]
 == 親コマンドから継承されたオプション
 
 [source,text]
@@ -27,7 +27,7 @@ fleet-controller cleanup [flags]
       --debug-level int   If debugging is enabled, set klog -v=X
 ----
 
-[#_see-also]
+[#_see_also]
 == 関連項目
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[フリートコントローラー]     - Fleet agentと通信するフリートコントローラーを管理する

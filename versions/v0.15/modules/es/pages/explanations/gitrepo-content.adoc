@@ -8,14 +8,14 @@ La carpeta podría contener un gráfico de Helm, o hacer referencia a uno. Podr�
 
 El archivo `fleet.yaml` contiene todas las opciones para la ampliación.
 
-[#_bundle-names]
+[#_bundle_names]
 == Nombres de paquetes
 
 Por defecto, los nombres de los paquetes también se generarán a partir del nombre del GitRepo y la vía desde la que se crea el paquete. Sin embargo, el nombre de un paquete puede ser sobrescrito utilizando el campo `name` en un archivo `fleet.yaml`.
 
 Los ciclos de vida de los paquetes se rastrean entre versiones mediante el campo Helm `releaseName` añadido a cada paquete. Si el releaseName no se especifica dentro de `fleet.yaml`, se genera a partir de `GitRepo.name + path`. Los nombres largos se truncarán y se añadirá un prefijo `-<hash>` (Los nombres de los paquetes están limitados a 53 caracteres de longitud).
 
-[#_how-repos-are-scanned]
+[#_how_repos_are_scanned]
 == Cómo se escanean los repos
 
 **El repositorio git no tiene una estructura explícitamente requerida**. Es importante darse cuenta de que los recursos escaneados se guardarán como un recurso en Kubernetes, por lo que quieres asegurarte de que los directorios que estás escaneando en git no contengan recursos arbitrariamente grandes. En este momento hay una limitación de que los recursos desplegados deben **gzip a menos de 1MB**.
@@ -33,7 +33,7 @@ Internamente, cada vía escaneada se convertirá en un xref:/explanations/concep
 | overlays/+{name}+ | / relativo a `path` | Al desplegar utilizando YAML en bruto (no Kustomize o Helm), `overlays` es un directorio especial para personalizaciones.
 |===
 
-[#_alternative-scan-explicitly-defined-by-the-user]
+[#_alternative_scan_explicitly_defined_by_the_user]
 === Escaneo alternativo, definido explícitamente por el usuario
 
 Además del método descrito anteriormente, {product_name} también admite un enfoque más directo, impulsado por el usuario, para definir paquetes.
@@ -41,7 +41,7 @@ Además del método descrito anteriormente, {product_name} también admite un en
 En este modo, {product_name} cargará todos los recursos encontrados dentro del directorio base especificado. Solo intentará localizar un archivo `fleet.yaml` en la raíz de ese directorio si no se proporciona explícitamente un archivo de opciones.
 A diferencia del método de escaneo tradicional, este no es recursivo y no intenta encontrar definiciones de paquetes que no sean las especificadas explícitamente por el usuario.
 
-[#_example-directory-structure]
+[#_example_directory_structure]
 ==== Ejemplo de estructura de directorios
 
 [source,bash]
@@ -74,7 +74,7 @@ driven
             |__ test.yaml
 ----
 
-[#_corresponding-gitrepo-definition]
+[#_corresponding_gitrepo_definition]
 ==== Definición correspondiente de GitRepo
 
 [source,yaml]
@@ -165,7 +165,7 @@ Esto se puede mitigar utilizando un archivo `.fleetignore` junto a `{dev,test,pr
 Consulta la siguiente sección para más detalles sobre los archivos `.fleetignore`.
 ====
 
-[#_excluding-files-and-directories-from-bundles]
+[#_excluding_files_and_directories_from_bundles]
 === Excluyendo archivos y directorios de los paquetes
 
 {product_name} soporta la exclusión de archivos y directorios mediante archivos `.fleetignore`, de manera similar a cómo se comportan los archivos `.gitignore` en los repositorios de git:
@@ -199,7 +199,7 @@ No admitido:
 * Dobles asteriscos (`**`)
 * Inclusiones explícitas con `!`
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == fleet.yaml
 
 El `fleet.yaml` es un archivo opcional que se puede incluir en el repositorio git para cambiar el comportamiento de cómo se despliegan y personalizan los recursos. El `fleet.yaml` siempre está en la raíz en relación con el `path` del `GitRepo` y si se encuentra un subdirectorio con un `fleet.yaml`, se define un nuevo xref::/explanations/concepts.adoc[paquete] que se configurará de manera diferente al paquete padre.
@@ -219,9 +219,9 @@ Consulta la documentación de {product_name} de Rancher para más información.
 
 Los campos disponibles están documentados en la xref::/reference/ref-fleet-yaml.adoc[referencia fleet.yaml].
 Para un repositorio Helm privado, los usuarios pueden hacer referencia a un secreto del recurso del repositorio git.
-Consulta xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[Uso de Repositorios Helm Privados].
+Consulta xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Uso de Repositorios Helm Privados].
 
-[#_using-helm-values]
+[#_using_helm_values]
 == Uso de Valores de Helm
 
 __Cómo se aplican los cambios a `values.yaml`__:
@@ -231,7 +231,7 @@ __Cómo se aplican los cambios a `values.yaml`__:
 
 image::FleetValuesStages.svg[flujo de etapas de valores de Fleet]
 
-El paso de targeting puede tratar los valores como plantillas utilizando la información del clúster. Más información: xref:/reference/ref-fleet-yaml.adoc#_values-templating[plantillas en fleet.yaml].
+El paso de targeting puede tratar los valores como plantillas utilizando la información del clúster. Más información: xref:/reference/ref-fleet-yaml.adoc#_values_templating[plantillas en fleet.yaml].
 
 Puedes desactivar esto usando `disablePreProcess`.
 
@@ -248,7 +248,7 @@ Las credenciales cargadas a través de `valuesFrom` están encriptadas en reposo
 [#_templating]
 === Plantillado
 
-El paso de segmentación puede tratar los valores como una plantilla y completar la información del recurso `clusters.fleet.cattle.io`. Para más información, consulta xref:reference/ref-fleet-yaml.adoc#_values-templating[Plantillado de valores de Helm].
+El paso de segmentación puede tratar los valores como una plantilla y completar la información del recurso `clusters.fleet.cattle.io`. Para más información, consulta xref:reference/ref-fleet-yaml.adoc#_values_templating[Plantillado de valores de Helm].
 
 Puedes desactivar esto en `fleet.yaml`, configurando `disablePreProcess`. Esto es útil para evitar conflictos con otros lenguajes de plantillado.
 
@@ -261,11 +261,11 @@ Si el gráfico genera certificados o contraseñas en sus plantillas, estos valor
 
 Las credenciales cargadas desde el clúster de sentido descendente con `valuesFrom` están, por defecto, encriptadas en reposo, cuando link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[la encriptación de datos] está habilitada en Kubernetes. Las credenciales contenidas en el archivo `values.yaml` predeterminado, o definidas a través de `values:` o `valuesFiles`, no lo están, ya que se cargan desde el repositorio cuando se crea el paquete.
 
-Los clústeres endurecidos deben añadir los CRDs de Fleet a la xref:how-tos-for-users/gitrepo-add.adoc#_storing-credentials-in-git[lista de recursos encriptados en reposo], en el clúster de sentido ascendente, al almacenar credenciales en los paquetes.
+Los clústeres endurecidos deben añadir los CRDs de Fleet a la xref:how-tos-for-users/gitrepo-add.adoc#_storing_credentials_in_git[lista de recursos encriptados en reposo], en el clúster de sentido ascendente, al almacenar credenciales en los paquetes.
 
 ====
 
-[#_understanding-helm-values-yaml-vs-fleet-valuesfiles]
+[#_understanding_helm_values_yaml_vs_fleet_valuesfiles]
 === Entendiendo Helm `values.yaml` vs Fleet `valuesFiles`
 
 Instalar gráficos de Helm con Fleet ofrece múltiples formas de configurar y hacer referencia a valores, utilizando el `values.yaml` integrado del gráfico y archivos de valores adicionales referenciados en `fleet.yaml`. Estos archivos sirven para diferentes propósitos, y es importante entender cómo interactúan.
@@ -300,7 +300,7 @@ El `values.yaml` de un gráfico de Helm no admite plantillado. Cualquier sustitu
 * Si aparece pass:[`${var}`], Helm lo trata como texto plano; no necesitas escaparlo.
 ====
 
-[#_fleet-valuesfiles-referenced-from-fleet-yaml]
+[#_fleet_valuesfiles_referenced_from_fleet_yaml]
 === Archivos values de Fleet referenciados desde fleet.yaml
 
 Fleet te permite referenciar archivos de valores adicionales a través de `fleet.yaml`. Estos archivos anulan o extienden las configuraciones predeterminadas del gráfico.
@@ -328,7 +328,7 @@ Puedes utilizar `valuesFiles` de fleet referenciado desde `fleet.yaml` para:
 **Mejor práctica**:  Ya sea que utilices helm `values.yaml`, `fleet.yaml` valores:, o `valuesFiles`, nunca almacenes credenciales en estos archivos. El enfoque recomendado y más seguro es utilizar `valuesFrom`, que hace referencia a los Secrets o ConfigMaps de Kubernetes. Aunque esto requiere crear los Secrets en los clústeres en sentido descendente, asegura que los datos sensibles se almacenen de forma segura.
 ====
 
-[#_using-valuesfrom]
+[#_using_valuesfrom]
 === Usando ValuesFrom
 
 Estos ejemplos muestran el estilo y formato para usar `valuesFrom`.
@@ -393,7 +393,7 @@ helm:
     replicas: "4"
 ----
 
-[#_per-cluster-customization]
+[#_per_cluster_customization]
 == Personalización por Clúster
 
 El `GitRepo` define a qué clústeres se despliega un repositorio. El `fleet.yaml` define personalizaciones por objetivo.
@@ -417,9 +417,9 @@ targetCustomizations:
 - name: prod
   clusterName: fleetname
 ----
-Consulta xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[personalización por clúster].
+Consulta xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[personalización por clúster].
 
-[#_raw-yaml-resource-customization]
+[#_raw_yaml_resource_customization]
 == Personalización de Recursos YAML en Crudo
 
 [source,shell]
@@ -439,12 +439,12 @@ Reglas:
 * Los nombres coincidentes reemplazan los archivos base.
 * `_patch.` los archivos aplican parches (JSON/estratégico/JSONPatch).
 
-[#_cluster-and-bundle-state]
+[#_cluster_and_bundle_state]
 == Estado del Clúster y del Paquete
 
 Vea xref:/reference/ref-status-fields.adoc[campos de estado].
 
-[#_nested-gitrepo-crs]
+[#_nested_gitrepo_crs]
 == CRs de GitRepo Anidados
 
 Los CRs de GitRepo Anidados son compatibles.

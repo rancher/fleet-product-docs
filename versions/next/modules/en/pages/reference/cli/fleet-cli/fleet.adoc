@@ -15,9 +15,9 @@ fleet [flags]
   -h, --help   help for fleet
 ----
 
-[#_see-also]
+[#_see_also]
 == SEE ALSO
-[#_main-commands]
+[#_main_commands]
 === Main commands
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]	 - Create bundles from directories, and output them or apply them on a cluster
@@ -26,7 +26,7 @@ fleet [flags]
 * xref:/reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]	 - Clones a git repository
 * xref:/reference/cli/fleet-cli/fleet_target.adoc[fleet target]	 - Print available targets for a bundle
 
-[#_troubleshooting-and-diagnostics]
+[#_troubleshooting_and_diagnostics]
 === Troubleshooting and diagnostics
 
 * xref:/reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]	 - Monitor Fleet setups for issues

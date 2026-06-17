@@ -28,7 +28,7 @@ image::fleet-ociStorage-flow.png[Ein visuelles Asset, das den Fluss von {product
 * Ein Kubernetes-Geheimnis mit gültigen Anmeldeinformationen.
 * Eine {product_name}-Installation (v2.12.0 oder später).
 
-[#_how-to-enable-oci-storage]
+[#_how_to_enable_oci_storage]
 == Wie man OCI-Speicher aktiviert
 
 Um OCI-Speicher zu aktivieren, erstellen Sie ein Geheimnis, das die erforderlichen Informationen und Zugriffsoptionen für die OCI-Registry enthält. Es gibt zwei Möglichkeiten, Geheimnisse zu definieren:
@@ -71,7 +71,7 @@ Das Geheimnis muss den Typ: `fleet.cattle.io/bundle-oci-storage/v1alpha1` haben.
 
 Die Änderung des Geheimnisses löst keine erneute Bereitstellung aus. {product_name} verwendet das neue Registry nur nach einem Git-Update oder einem manuellen Zwangsupdate.
 
-[#_secret-field-reference]
+[#_secret_field_reference]
 === Geheimnisfeldreferenz
 
 Die Felder, die Sie konfigurieren können, sind:
@@ -89,7 +89,7 @@ Die Felder, die Sie konfigurieren können, sind:
 | `basicHTTP`       | Aktiviert HTTP anstelle von HTTPS.              | Base64-kodiert `true/false` | Nicht empfohlen. Erlaubt unsicheren Datenverkehr. Standardmäßig ist `basicHTTP` auf `false` eingestellt.
 |===
 
-[#_product-name-example]
+[#_product_name_example]
 == {product_name} Beispiel
 
 Betrachten Sie die folgende `GitRepo` Datei:

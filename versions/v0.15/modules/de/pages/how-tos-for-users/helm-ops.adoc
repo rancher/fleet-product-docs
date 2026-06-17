@@ -22,7 +22,7 @@ Wenn die Einschränkungen ungültig sind oder keine passende Version gefunden we
 
 Bei der Verwendung dieser Funktion werden Helm-Charts von Downstream-Clustern heruntergeladen, die daher Zugriff auf Helm-Registries haben müssen.
 
-[#_creating-a-helmop-resource]
+[#_creating_a_helmop_resource]
 == Erstellung einer HelmOp-Ressource
 
 Eine +HelmOp+ Ressource kann wie folgt erstellt werden, um Helm-Charts direkt bereitzustellen:
@@ -47,12 +47,12 @@ insecureSkipTLSVerify: false
 
 Für private Charts ist es erforderlich, dass ein Helm-Zugriffsgeheimnis (verweist auf das Feld +helmSecretName+) im selben Namespace wie die +HelmOp+ Ressource erstellt wird. Der Fleet HelmOps-Controller kümmert sich um das Kopieren dieses Geheimnisses in die angestrebten Downstream-Cluster, sodass der Fleet agent auf das Registry zugreifen kann.
 
-[#_supported-use-cases]
+[#_supported_use_cases]
 == Unterstützte Anwendungsfälle
 
 Mit 3 Feldern, die zur Referenzierung eines Helm-Charts zur Verfügung stehen, lassen Sie uns einige Regeln klären. Laut der Helm-Installationsdokumentation https://helm.sh/docs/helm/helm_install/[documentation] gibt es 6 Möglichkeiten, ein Chart zu installieren. 3 davon verwenden entweder Repository-Aliase oder das lokale Dateisystem, die im Kontext von Fleet's HelmOps nicht verfügbar sind. Es bleiben 3 Optionen:
 
-[#_absolute-url]
+[#_absolute_url]
 === Absolute URL
 
 Ein Helm-Chart über eine absolute URL zu referenzieren, ist so einfach wie die Angabe einer URL zu einer +.tgz+-Datei im +chart+-Feld. Die Helm-Optionen würden folgendermaßen aussehen:
@@ -69,7 +69,7 @@ version: ''
 
 Wenn in diesem Fall ein nicht leeres Repository oder eine nicht leere Version angegeben wird, erscheint ein Fehler im HelmOp-Status und es wird kein Bundle erstellt, was die Bereitstellung abbricht.
 
-[#_chart-reference-and-repo-url]
+[#_chart_reference_and_repo_url]
 === Chart-Referenz und Repo-URL
 
 Ein Helm-Chart kann auch über seinen Repository- und Chartnamen referenziert werden, mit einer optionalen Version, die eine statische Version oder eine Versionsbeschränkung sein kann.
@@ -88,7 +88,7 @@ version: '1.2.3'
 
 In diesem Fall darf nur das +version+-Feld leer sein. Wenn eines der Felder +chart+ oder +repo+ leer ist, wird {product_name} einen Fehler im HelmOp-Status setzen und es wird kein Bundle erstellt.
 
-[#_oci-registry]
+[#_oci_registry]
 === OCI-Registry
 
 Helm unterstützt OCI-Registries, die in {product_name} über das +repo+-Feld referenziert werden können.
@@ -120,7 +120,7 @@ In diesem Fall wird {product_name} OCI-Artefakte herunterladen. Das bedeutet, da
 
 {product_name} kann das referenzierte Helm-Registry abfragen und regelmäßig überprüfen, ob neue Versionen verfügbar sind. Natürlich macht dies nur Sinn, wenn das +version+ Feld eine Versionsbeschränkung enthält, die auf mehrere Versionen aufgelöst werden kann.
 
-[#_how-to-enable-it]
+[#_how_to_enable_it]
 === Wie man es aktiviert
 
 Das Abfragen umfasst ein +pollingInterval+ Feld, ähnlich dem, was für GitOps existiert. Im Fall von HelmOps beträgt das Standardabfrageintervall jedoch 0 Sekunden, was bedeutet, dass das Abfragen deaktiviert ist.
@@ -130,7 +130,7 @@ Die folgenden Bedingungen müssen für eine HelmOp-Ressource erfüllt sein, dami
 * Das +pollingInterval+ Feld ist auf eine nicht-null-Dauer (z. B. +10s+, +1m+ usw.) eingestellt.
 * Das +version+ Feld ist auf eine gültige semantische Versionsbeschränkung (z.B. +2.x.x+, ++< 1.0++) eingestellt, nicht auf eine statische Version (z.B. 1.2.3).
 
-[#_what-it-does]
+[#_what_it_does]
 === Funktion
 
 Wenn das Abfragen aktiviert ist, führt {product_name} in dem konfigurierten Intervall Folgendes aus:
@@ -143,16 +143,16 @@ Wenn das Abfragen aktiviert ist, führt {product_name} in dem konfigurierten Int
 *** mit +false+, falls ein Fehler aufgetreten ist
 ** Aktualisieren des ++Last Polling Time++ Feldes auf die Startzeit des letzten Abfrageversuchs, auch wenn dieser fehlgeschlagen ist.
 
-[#_using-private-helm-repositories]
+[#_using_private_helm_repositories]
 == Verwendung privater Helm-Repositories
 
 Dies funktioniert auf die gleiche Weise wie bei gitOps, indem ein Helm-Zugriffs-Secret über das Feld `helmSecretName` referenziert wird.
 
-Für weitere Informationen siehe xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[Privates Helm-Repository].
+Für weitere Informationen siehe xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Privates Helm-Repository].
 
 Der Teil über die Verwendung separater Anmeldeinformationen für jeden Pfad ist jedoch nicht relevant, da eine HelmOp-Ressource im Gegensatz zu einem GitRepo nur auf ein einzelnes Helm-Chart verweist.
 
-[#_status-updates]
+[#_status_updates]
 == Statusaktualisierungen
 
 Die Erstellung einer HelmOp-Ressource führt dazu, dass ein Bundle erstellt wird, wenn die Helm-Optionen gültig sind und eine Chart-Version gefunden werden kann.

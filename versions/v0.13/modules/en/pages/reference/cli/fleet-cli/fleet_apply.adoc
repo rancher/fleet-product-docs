@@ -47,7 +47,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --username string                        Basic auth username for helm repo
 ----
 
-[#_see-also]
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

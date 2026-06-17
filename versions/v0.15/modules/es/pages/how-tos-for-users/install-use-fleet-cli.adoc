@@ -16,12 +16,12 @@ Puedes usar `fleet apply` sin instalar {product_name} en tus clústeres. Sin emb
 Para más información, consulta xref:how-tos-for-operators/installation.adoc[Instalar Fleet].
 ====
 
-[#_install-fleet-cli]
+[#_install_fleet_cli]
 == Instalar Fleet CLI
 
 Fleet CLI es un binario independiente que puedes descargar desde la link:https://github.com/rancher/fleet/releases[Página de lanzamientos de Fleet en GitHub].
 
-[#_linux-macos]
+[#_linux_macos]
 === Linux/macOS
 
 [source,bash]
@@ -33,7 +33,7 @@ chmod +x fleet
 sudo mv fleet /usr/local/bin/
 ----
 
-[#_windows-powershell]
+[#_windows_powershell]
 === Windows (PowerShell)
 
 [source,powershell]
@@ -41,7 +41,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
-[#_verify-installation]
+[#_verify_installation]
 === Verificar la instalación
 
 [source,bash]
@@ -59,7 +59,7 @@ Asegúrate de tener las siguientes herramientas instaladas y configuradas:
 * Helm está instalado.
 * Fleet CLI está instalado y accesible en tu terminal.
 
-[#_verify-prerequisites]
+[#_verify_prerequisites]
 === Verifica los requisitos previos
 
 [source,bash]
@@ -69,7 +69,7 @@ helm version
 fleet --version
 ----
 
-[#_key-commands]
+[#_key_commands]
 == Comandos Clave
 
 {product_name} proporciona varios comandos de CLI para crear, previsualizar y desplegar paquetes. Estos comandos son útiles para depurar y entender el ciclo de vida del paquete.
@@ -92,13 +92,13 @@ fleet target my-bundle ./manifests
 * `fleet deploy`: Toma la salida de `fleet target`, o un recurso `bundledeployment`/content volcado, y lo despliega en un clúster, tal como lo haría `fleet-agent`.
 +
 Puedes usarlo en estos escenarios:
-** `fleet apply -o - name ./folder` para comprobar el YAML del paquete antes de crearlo. Para más información, consulta xref:explanations/ref-bundle-stages.adoc#_examining-the-bundle-lifecycle-with-the-cli[Examinando el Ciclo de Vida del Paquete con la CLI].
+** `fleet apply -o - name ./folder` para comprobar el YAML del paquete antes de crearlo. Para más información, consulta xref:explanations/ref-bundle-stages.adoc#_examining_the_bundle_lifecycle_with_the_cli[Examinando el Ciclo de Vida del Paquete con la CLI].
 ** Usa con un objetivo para depurar selectores y verificar a qué clústeres en sentido descendente se dirigen.
 ** `fleet deploy --dry-run` para imprimir recursos que serían desplegados, sin aplicarlos.
 
 image::fleetCLI-key-components.svg[Un diagrama que explica cómo funcionan los comandos clave de Fleet CLI]
 
-[#_deploy-a-sample-bundle-using-fleet-cli]
+[#_deploy_a_sample_bundle_using_fleet_cli]
 == Desplegar un Paquete de Muestra Usando Fleet CLI
 
 Puedes desplegar cargas de trabajo sin usar GitRepos aplicándolas localmente con la CLI. Por ejemplo, usa el link:https://github.com/rancher/fleet-examples[repositorio de ejemplos de Fleet]:
@@ -118,7 +118,7 @@ fleet apply -o my-cool-bundle manifests
 
 Este comando crea un recurso `Bundle` en el espacio de nombres.
 
-[#_convert-a-helm-chart-into-a-bundle]
+[#_convert_a_helm_chart_into_a_bundle]
 == Convierte un Helm Chart en un Paquete
 
 Puedes usar Fleet CLI para convertir un Helm chart en un paquete. Por ejemplo, para convertir el chart del operador *external-secrets*:
@@ -162,11 +162,11 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Elimina y reaplica el paquete si encuentras conflictos de propiedad de Helm.
 
-[#_verify-agent-and-controller-status]
+[#_verify_agent_and_controller_status]
 === Verifica el Estado del Agente y del Controlador
 
 Antes de solucionar problemas de paquetes o ampliaciones, verifica que el Fleet agent esté registrado y en ejecución en el clúster descendente.
-Para más información, consulta xref:reference/ref-registration.adoc#_product-name-agent-is-registered-watches-for-bundledeployments[El Agente de Fleet está registrado, observa las ampliaciones de paquetes].
+Para más información, consulta xref:reference/ref-registration.adoc#_product_name_agent_is_registered_watches_for_bundledeployments[El Agente de Fleet está registrado, observa las ampliaciones de paquetes].
 
 Si un paquete no está listo en un clúster dado, verifica lo siguiente:
 

@@ -18,7 +18,7 @@
 * <<_gitreporestriction,GitRepoRestriction>>
 * <<_imagescan,ImageScan>>
 
-[#_sub-resources]
+[#_sub_resources]
 == 子资源
 
 * <<_bundledisplay,BundleDisplay>>

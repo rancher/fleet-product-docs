@@ -52,7 +52,7 @@ El comando `dump` produce un archivo `.tgz` que contiene los siguientes datos:
 
 * Métricas expuestas por los servicios `monitoring-*` que residen en el espacio de nombres `cattle-fleet-system`.
 Esto incluye típicamente servicios `monitoring-gitjob` y `monitoring-fleet-controller`, así como sus
-xref:how-tos-for-operators/installation.adoc#_multi-controller-installation-sharding[segmentados] contrapartes, si las hay.
+xref:how-tos-for-operators/installation.adoc#_multi_controller_installation_sharding[segmentados] contrapartes, si las hay.
 
 [#_format]
 ==== Formato
@@ -66,7 +66,7 @@ Contienen un evento por línea, cada evento codificado en JSON.
 Las métricas se almacenan en archivos por servicio, cada archivo nombrado `metrics_<service_name>`.
 Sus contenidos son `GET` cuerpos de respuesta recibidos del `/metrics` endpoint de cada servicio, textualmente.
 
-[#_see-also]
+[#_see_also]
 == VÉASE
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[{product_name}]

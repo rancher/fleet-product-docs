@@ -28,7 +28,7 @@ image::fleet-ociStorage-flow.png[OCIストレージを使用した{product_name}
 * 有効な資格情報を持つKubernetesシークレット。
 * {product_name}のインストール（v2.12.0以降）。
 
-[#_how-to-enable-oci-storage]
+[#_how_to_enable_oci_storage]
 == OCIストレージを有効にする方法
 
 OCIストレージを有効にするには、OCIレジストリのための必要な情報とアクセスオプションを含むシークレットを作成します。シークレットを定義する方法は2つあります：
@@ -71,7 +71,7 @@ data:
 
 シークレットを変更しても再デプロイメントはトリガーされません。{product_name}はGitの更新または手動の強制更新後に新しいレジストリを使用します。
 
-[#_secret-field-reference]
+[#_secret_field_reference]
 === シークレットフィールドの参照
 
 設定できるフィールドは次のとおりです：
@@ -89,7 +89,7 @@ data:
 | `basicHTTP`       | HTTPSの代わりにHTTPを有効にします。              | Base64エンコードされた`true/false`| お勧めしません。安全でないトラフィックを許可します。デフォルトでは、`basicHTTP`は`false`に設定されています。
 |===
 
-[#_product-name-example]
+[#_product_name_example]
 == {product_name} 例
 
 次の`GitRepo`ファイルを考慮してください：

@@ -5,10 +5,10 @@
 
 *(rancherio-gh-m) released this 2024-03-21 16:35:26 +0000 UTC*
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Bump to https://github.com/rancher/gitjob/releases/tag/v0.9.1[gitjob chart v0.9.1] by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2079[#2079]

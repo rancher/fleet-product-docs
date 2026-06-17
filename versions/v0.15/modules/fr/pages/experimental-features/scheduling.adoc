@@ -27,7 +27,7 @@ Cela signifie que lorsqu'un changement est détecté dans le dépôt, il sera ap
 
 Si un `Cluster` n'est associé à aucun `Schedule`, les mises à jour seront appliquées immédiatement.
 
-[#_schedule-resource]
+[#_schedule_resource]
 == Ressource de planification
 
 Voyons maintenant comment définir un `Schedule` et quels champs sont disponibles.

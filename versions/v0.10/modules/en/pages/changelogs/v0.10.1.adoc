@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-08-15 04:25:51 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Use RequeueAfter for Gitpolling job https://github.com/rancher/fleet/pull/2643[#2643]

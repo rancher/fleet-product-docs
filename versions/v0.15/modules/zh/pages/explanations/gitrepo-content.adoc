@@ -8,14 +8,14 @@
 
 `fleet.yaml` 文件包含所有部署选项。
 
-[#_bundle-names]
+[#_bundle_names]
 == 捆绑包名称
 
 默认情况下，捆绑包名称也将从 GitRepo 的名称和创建捆绑包的路径生成。但是，可以通过在 `fleet.yaml` 文件中使用 `name` 字段来覆盖捆绑包的名称。
 
 捆绑包的生命周期在发布之间通过添加到每个捆绑包的 Helm `releaseName` 字段进行跟踪。如果在 `fleet.yaml` 中未指定 releaseName，则从 `GitRepo.name + path` 生成。长名称会被截断，并添加 `-<hash>` 前缀（捆绑包名称限制为 53 个字符）。
 
-[#_how-repos-are-scanned]
+[#_how_repos_are_scanned]
 == 如何扫描储存库
 
 **git 储存库没有明确要求的结构**。重要的是要意识到扫描的资源将作为资源保存在 Kubernetes 中，因此您要确保在 git 中扫描的目录不包含任意大的资源。目前有一个限制，部署的资源必须 **gzip 小于 1MB**。
@@ -33,7 +33,7 @@
 | overlays/+{name}+| / 相对于 `path`| 使用原始 YAML 部署时（不是 Kustomize 或 Helm），`overlays` 是一个用于自定义的特殊目录。
 |===
 
-[#_alternative-scan-explicitly-defined-by-the-user]
+[#_alternative_scan_explicitly_defined_by_the_user]
 === 用户明确定义的替代扫描
 
 除了之前描述的方法，{product_name} 还支持一种更直接的用户驱动的方法来定义捆绑包。
@@ -41,7 +41,7 @@
 在此模式下，{product_name} 将加载指定基础目录中找到的所有资源。仅在未明确提供选项文件的情况下，才会尝试在该目录的root查找 `fleet.yaml` 文件。
 与传统扫描方法不同，这种方法不是递归的，并且不尝试查找用户明确指定的捆绑包定义以外的内容。
 
-[#_example-directory-structure]
+[#_example_directory_structure]
 ==== 示例目录结构
 
 [source,bash]
@@ -74,7 +74,7 @@ driven
             |__ test.yaml
 ----
 
-[#_corresponding-gitrepo-definition]
+[#_corresponding_gitrepo_definition]
 ==== 相应的 GitRepo 定义
 
 [source,yaml]
@@ -165,7 +165,7 @@ kustomize:
 有关 `.fleetignore` 文件的更多详细信息，请参见下一节。
 ====
 
-[#_excluding-files-and-directories-from-bundles]
+[#_excluding_files_and_directories_from_bundles]
 === 从捆绑包中排除文件和目录
 
 {product_name} 通过 `.fleetignore` 文件支持文件和目录的排除，类似于 `.gitignore` 文件在 git 仓库中的行为：
@@ -199,7 +199,7 @@ root/
 * 双星号（`**`）
 * 显式包含 `!`
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == fleet.yaml
 
 `fleet.yaml` 是一个可选文件，可以包含在 git 仓库中，以更改资源的部署和自定义行为。`fleet.yaml` 始终位于 `GitRepo` 的 `path` 的根目录，如果在子目录中找到 `fleet.yaml`，则将定义一个新的 xref::/explanations/concepts.adoc[捆绑包]，该捆绑包将与父捆绑包的配置不同。
@@ -219,9 +219,9 @@ __Helm 图表依赖项__：
 
 可用字段在 xref::/reference/ref-fleet-yaml.adoc[fleet.yaml 参考] 中有文档说明。
 对于私有 Helm 储存库，用户可以引用 git 储存库资源中的一个秘密。
-请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[使用私有 Helm 储存库]。
+请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[使用私有 Helm 储存库]。
 
-[#_using-helm-values]
+[#_using_helm_values]
 == 使用 Helm 值
 
 __如何将更改应用于 `values.yaml`__：
@@ -231,7 +231,7 @@ __如何将更改应用于 `values.yaml`__：
 
 image::FleetValuesStages.svg[Fleet 值阶段的流程]
 
-目标步骤可以使用集群信息将值视为模板。更多信息：xref:/reference/ref-fleet-yaml.adoc#_values-templating[fleet.yaml 中的模板]。
+目标步骤可以使用集群信息将值视为模板。更多信息：xref:/reference/ref-fleet-yaml.adoc#_values_templating[fleet.yaml 中的模板]。
 
 您可以使用 `disablePreProcess` 禁用此功能。
 
@@ -248,7 +248,7 @@ image::FleetValuesStages.svg[Fleet 值阶段的流程]
 [#_templating]
 === 模板化
 
-目标步骤可以将值视为模板，并从 `clusters.fleet.cattle.io` 资源中填充信息。有关更多信息，请参阅 xref:reference/ref-fleet-yaml.adoc#_values-templating[Helm 值模板化]。
+目标步骤可以将值视为模板，并从 `clusters.fleet.cattle.io` 资源中填充信息。有关更多信息，请参阅 xref:reference/ref-fleet-yaml.adoc#_values_templating[Helm 值模板化]。
 
 您可以在 `fleet.yaml` 中通过设置 `disablePreProcess` 来关闭此功能。这对于避免与其他模板语言的冲突非常有用。
 
@@ -261,11 +261,11 @@ image::FleetValuesStages.svg[Fleet 值阶段的流程]
 
 通过 `valuesFrom` 从下游集群加载的凭据，在 Kubernetes 启用 link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[数据加密]时，默认会被加密。默认 `values.yaml` 文件中包含的凭据，或通过 `values:` 或 `valuesFiles` 定义的凭据不会被加密，因为它们在创建包时是从储存库加载的。
 
-强化的集群在存储凭据时，应在上游集群的 xref:how-tos-for-users/gitrepo-add.adoc#_storing-credentials-in-git[静态加密资源列表] 中添加 Fleet CRD。
+强化的集群在存储凭据时，应在上游集群的 xref:how-tos-for-users/gitrepo-add.adoc#_storing_credentials_in_git[静态加密资源列表] 中添加 Fleet CRD。
 
 ====
 
-[#_understanding-helm-values-yaml-vs-fleet-valuesfiles]
+[#_understanding_helm_values_yaml_vs_fleet_valuesfiles]
 === 理解 Helm `values.yaml` 与 Fleet `valuesFiles` 的区别
 
 使用 Fleet 安装 Helm 图表提供了多种配置和引用值的方法，使用图表内置的 `values.yaml` 和在 `fleet.yaml` 中引用的附加值文件。这些文件有不同的用途，理解它们如何相互作用非常重要。
@@ -300,7 +300,7 @@ Helm 图表的 `values.yaml` 不支持模板化。任何替换发生在图表渲
 * 如果出现pass:[`${var}`]，Helm将其视为纯文本——您无需转义。
 ====
 
-[#_fleet-valuesfiles-referenced-from-fleet-yaml]
+[#_fleet_valuesfiles_referenced_from_fleet_yaml]
 === 从fleet.yaml引用的Fleet valuesFiles。
 
 Fleet允许您通过`fleet.yaml`引用额外的值文件。这些文件覆盖或扩展图表的基线默认值。
@@ -328,7 +328,7 @@ helm:
 **最佳实践**： 无论您使用 Helm `values.yaml`、`fleet.yaml` 值，还是 `valuesFiles`，都不要在这些文件中存储凭据。推荐且更安全的方法是使用`valuesFrom`，它引用Kubernetes Secrets或ConfigMaps。尽管这需要在下游集群上创建Secrets，但它确保敏感数据安全存储。
 ====
 
-[#_using-valuesfrom]
+[#_using_valuesfrom]
 === 使用 ValuesFrom
 
 这些示例展示了使用 `valuesFrom` 的风格和格式。
@@ -393,7 +393,7 @@ helm:
     replicas: "4"
 ----
 
-[#_per-cluster-customization]
+[#_per_cluster_customization]
 == 每个集群的自定义
 
 `GitRepo` 定义了一个储存库部署到哪些集群。`fleet.yaml` 定义了每个目标的自定义。
@@ -417,9 +417,9 @@ targetCustomizations:
 - name: prod
   clusterName: fleetname
 ----
-请参见 xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[每个集群的自定义]。
+请参见 xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[每个集群的自定义]。
 
-[#_raw-yaml-resource-customization]
+[#_raw_yaml_resource_customization]
 == 原始 YAML 资源自定义
 
 [source,shell]
@@ -439,12 +439,12 @@ overlays/custom/deployment_patch.yaml
 * 匹配名称替换基础文件。
 * `_patch.` 文件应用补丁 (JSON/strategic/JSONPatch).
 
-[#_cluster-and-bundle-state]
+[#_cluster_and_bundle_state]
 == 集群和包状态
 
 请查看xref:/reference/ref-status-fields.adoc[状态字段]。
 
-[#_nested-gitrepo-crs]
+[#_nested_gitrepo_crs]
 == 嵌套的GitRepo CRs
 
 支持嵌套的GitRepo CRs。

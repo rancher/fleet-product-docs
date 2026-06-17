@@ -22,7 +22,7 @@ Cuando las restricciones son inválidas o no se puede encontrar una versión coi
 
 Al utilizar esta función, los gráficos de Helm se descargan de los clústeres en sentido descendente, que por lo tanto deben tener acceso a los registros de Helm.
 
-[#_creating-a-helmop-resource]
+[#_creating_a_helmop_resource]
 == Creando un recurso HelmOp
 
 Un recurso +HelmOp+ se puede crear de la siguiente manera para comenzar a desplegar gráficos de Helm directamente:
@@ -47,12 +47,12 @@ insecureSkipTLSVerify: false
 
 Para gráficos privados, esto requiere que se cree un secreto de acceso a Helm (referenciado por el campo +helmSecretName+) en el mismo espacio de nombres que el recurso +HelmOp+. El controlador de Fleet HelmOps se encarga de copiar ese secreto a los clústeres en sentido descendente objetivo, permitiendo que el agente de Fleet acceda al registro.
 
-[#_supported-use-cases]
+[#_supported_use_cases]
 == Casos de uso soportados
 
 Con 3 campos disponibles para referenciar un gráfico de Helm, aclaremos algunas reglas. Según la instalación de Helm https://helm.sh/docs/helm/helm_install/[documentación], hay 6 formas de expresar un gráfico para instalar. 3 de ellas utilizan alias de repositorio o el sistema de archivos local, que no están disponibles en el contexto de HelmOps de Fleet. Esto nos deja con 3 opciones:
 
-[#_absolute-url]
+[#_absolute_url]
 === URL absoluta
 
 Referenciar un chart de Helm por URL absoluta es tan simple como proporcionar una URL a un archivo +.tgz+ en el campo +chart+. Las opciones de Helm se verían así:
@@ -69,7 +69,7 @@ version: ''
 
 Si se especifica un repositorio no vacío o una versión no vacía en este caso, aparecerá un error en el estado de HelmOp y no se creará ningún paquete, abortando el despliegue.
 
-[#_chart-reference-and-repo-url]
+[#_chart_reference_and_repo_url]
 === Referencia de gráfico y URL del repositorio
 
 Un chart de Helm también puede ser referenciado a través de su repositorio y nombre, con una versión opcional, que puede ser una versión estática o una restricción de versión.
@@ -88,7 +88,7 @@ version: '1.2.3'
 
 En este caso, solo el campo ++versión++ puede estar vacío. Si alguno de los campos +chart+ o +repositorio+ está vacío, {product_name} establece un error en el estado de HelmOp y no se creará ningún paquete.
 
-[#_oci-registry]
+[#_oci_registry]
 === Registro OCI
 
 Helm soporta registros OCI, que pueden ser referenciados en {product_name} utilizando el campo +repositorio+.
@@ -120,7 +120,7 @@ En este caso, {product_name} estará descargando artefactos OCI. Esto significa 
 
 {product_name} puede sondear el registro de Helm referenciado, comprobando periódicamente si hay nuevas versiones disponibles. Por supuesto, esto solo tiene sentido si el campo +version+ contiene una restricción de versión, que puede resolverse en múltiples versiones.
 
-[#_how-to-enable-it]
+[#_how_to_enable_it]
 === Cómo habilitarlo
 
 El sondeo implica un campo +pollingInterval+, similar a lo que existe para GitOps. Sin embargo, en el caso de HelmOps, el intervalo de sondeo predeterminado es de 0 segundos, lo que significa que el sondeo estará deshabilitado.
@@ -130,7 +130,7 @@ Las siguientes condiciones deben cumplirse en un recurso HelmOp para que {produc
 * El campo +pollingInterval+ está configurado a una duración distinta de cero (por ejemplo, +10s+, +1m+, etc.)
 * El campo +version+ está configurado a una restricción de versión semántica válida (por ejemplo, +2.x.x+, ++< 1.0++), no a una versión estática (por ejemplo, 1.2.3)
 
-[#_what-it-does]
+[#_what_it_does]
 === ¿Para qué sirve?
 
 Cuando el sondeo está habilitado, {product_name} realiza lo siguiente en el intervalo configurado:
@@ -143,16 +143,16 @@ Cuando el sondeo está habilitado, {product_name} realiza lo siguiente en el int
 *** con +false+ con un error si ocurrió un fallo
 ** actualizando el campo ++Last Polling Time++ al tiempo de inicio del último intento de sondeo, incluso si falló.
 
-[#_using-private-helm-repositories]
+[#_using_private_helm_repositories]
 == Usando repositorios privados de Helm
 
 Esto funciona de la misma manera que lo hace para gitOps, haciendo referencia a un secreto de acceso de Helm a través del campo `helmSecretName`.
 
-Para más información, consulta xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[Repositorio privado de Helm].
+Para más información, consulta xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Repositorio privado de Helm].
 
 La parte sobre el uso de credenciales separadas para cada ruta no es relevante, ya que, a diferencia de un GitRepo, un recurso HelmOp solo hace referencia a un único chart de Helm.
 
-[#_status-updates]
+[#_status_updates]
 == Actualizaciones de estado
 
 Crear un recurso HelmOp lleva a la creación de un paquete, si las opciones de Helm son válidas y se puede encontrar una versión del gráfico.

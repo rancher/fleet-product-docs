@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :date: 2024-11-15 15:30:49 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
 {product_name} v0.11.1 improves several log and status messages. It reduces the amount of reconciles done by the controllers for resource changes.
@@ -24,7 +24,7 @@ There are a few known issues with this 0.11.1 release:
 * Target customization for namespace labels and annotations cannot modify/remove labels when updating.
 * In version 0.10, GitRepo resources provided a comprehensive list of all deployed resources across all clusters in their status. However, in version 0.11, this list has been modified to report resources only once until the feature is integrated into the Rancher UI. While this change addresses a UI freeze issue, it may result in potential inaccuracies in the list of resources and resource counts under some conditions.
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Add dev docs for logging by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2812[#2812]
@@ -104,7 +104,7 @@ There are a few known issues with this 0.11.1 release:
 * Fix namespace target customization support with no defaults (https://github.com/rancher/fleet/pull/3052[#3052]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3057[#3057]
 * Fix defaults from gitrepo restriction by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3080[#3080]
 
-[#_new-contributors]
+[#_new_contributors]
 === New Contributors
 
 * https://github.com/ampie[@ampie] made their first contribution in https://github.com/rancher/fleet/pull/2686[#2686]

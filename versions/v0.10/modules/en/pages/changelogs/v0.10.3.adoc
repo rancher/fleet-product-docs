@@ -3,13 +3,13 @@
 :page-revdate: {revdate}
 :date: 2024-09-30 10:56:25 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
 The cronjob to clean up outdated git cloning jobs, is using the wrong service account. `serviceAccountName` in the job template needs to be switched to the "gitjob" service account. Doing this edit in the Rancher UI didn't work while testing.
 Upgrading to the chart via the Rancher UI will not set new  Helm values, so `migrations.gitrepoJobsCleanup` will not be enabled. Customizing the {product_name} installation options via the `rancher-config` configmap will work.
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Increase worker count for reconcilers by https://github.com/manno[@manno] https://github.com/rancher/fleet/commit/4b147db2ef644b012325dadd3c456cc781678374[(4b147db)]

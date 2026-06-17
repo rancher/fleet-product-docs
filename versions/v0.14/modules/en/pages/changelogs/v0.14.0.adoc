@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC
 
-[#_notable-changes]
+[#_notable_changes]
 == Notable changes
 
-* Auth through Github Apps is now supported xref:how-tos-for-users/gitrepo-add.adoc#_using-a-github-app[Add a GitRepo], courtesy of https://github.com/hmrks[@hmrks] in #3809
+* Auth through Github Apps is now supported xref:how-tos-for-users/gitrepo-add.adoc#_using_a_github_app[Add a GitRepo], courtesy of https://github.com/hmrks[@hmrks] in #3809
 * The agent supports Priority Classes and Pod Disruption Budgets (support for this in Rancher is underway),  by https://github.com/p-se[@p-se] in #4057
 * Experimental features:
     * GitOps deployments can be scheduled, through a new `Schedule` CRD xref:experimental-features/scheduling.adoc[Scheduling] by https://github.com/0xavi0[@0xavi0] in #4184
@@ -18,9 +18,9 @@
 - Use a scheduler for gitops polling, making it more robust, no longer relying on an implementation detail of the `controller-runtime` queue, by https://github.com/0xavi0[@0xavi0] in #4257
 - Support graceful agent shutdown by https://github.com/weyfonk[@weyfonk] in #3918
 
-[#_helm-and-git-authentication]
+[#_helm_and_git_authentication]
 === Helm and Git Authentication
-- Support globbing in HelmSecretForPaths by https://github.com/weyfonk[@weyfonk] xref:how-tos-for-users/gitrepo-add.adoc#_use-different-helm-credentials-for-each-path[Add a GitRepo] in #3815 and #4158
+- Support globbing in HelmSecretForPaths by https://github.com/weyfonk[@weyfonk] xref:how-tos-for-users/gitrepo-add.adoc#_use_different_helm_credentials_for_each_path[Add a GitRepo] in #3815 and #4158
 - Adds InsecureTLS and BasicHTTP to helm secret by https://github.com/0xavi0[@0xavi0] in #3872
 - Support git auth with access token (username is now optional) by https://github.com/weyfonk[@weyfonk] in #4139
 
@@ -30,7 +30,7 @@
 - Add affinity arg to helm chart values by https://github.com/manno[@manno] in #4145
 - Add resources constraints section to helm chart values by https://github.com/manno[@manno] in #4170
 
-[#_traceability-of-created-resources]
+[#_traceability_of_created_resources]
 === Traceability of created resources
 - Add userID to log messages by https://github.com/thardeck[@thardeck] in #4202
 
@@ -47,12 +47,12 @@
 - Support semver constraints with OCI polling in HelmOps by https://github.com/weyfonk[@weyfonk] in #3963
 - Adds basicHTTP to HelmOps when using OCI registries by https://github.com/0xavi0[@0xavi0] in #3990
 
-[#_optimising-bundle-contents]
+[#_optimising_bundle_contents]
 === Optimising bundle contents
-- {product_name} config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning. See xref:explanations/gitrepo-content.adoc#_alternative-scan-explicitly-defined-by-the-user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
+- {product_name} config files are now excluded from bundles even if they are not named `fleet.yaml`, as could happen when relying on user-driven bundle scanning. See xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alternate scan for GitRepo content] by https://github.com/weyfonk[@weyfonk] in #4207
 - Harden values files exclusion from bundle resources by https://github.com/weyfonk[@weyfonk] in #3960
 
-[#_errors-and-reporting]
+[#_errors_and_reporting]
 === Errors and reporting
 - Improve bundle and GitRepo status error reporting by https://github.com/weyfonk[@weyfonk] in #4167
 - Bundle controller continues when one bundledeployment cannot be created by https://github.com/manno[@manno] in #4074
@@ -61,7 +61,7 @@
 - Improve Bundle Value Secret Logging by https://github.com/manno[@manno] in #4026
 - Don't add same field multiple times to logger by https://github.com/manno[@manno] in #4156
 
-[#_better-management-of-product-name-resources]
+[#_better_management_of_product_name_resources]
 === Better management of {product_name} resources
 - Deletes the cluster's namespace on Cluster deletion by https://github.com/0xavi0[@0xavi0] in #4224
 - Track UID of existing bundle deployment to prevent orphaning on failure by https://github.com/thardeck[@thardeck] in #4276
@@ -75,12 +75,12 @@
 - Fix copying of helm secrets to downstream clusters by https://github.com/0xavi0[@0xavi0] in #3983
 - Fix hash mismatch error in bundles by https://github.com/0xavi0[@0xavi0] in #3917
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.13.0...v0.14.0[v0.13.0...v0.14.0]
 
-[#_new-contributors]
+[#_new_contributors]
 == New Contributors
 
 - https://github.com/matteotumiati[@matteotumiati] made their first contribution in #4060

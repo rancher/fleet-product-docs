@@ -4,7 +4,7 @@
 
 主に内部の設定オプションの参照リストです。
 
-[#_configure-product-install-options-in-rancher]
+[#_configure_product_install_options_in_rancher]
 == Rancherでの{product_name}インストールオプションの設定
 
 Rancherは、`rancher-config`ネームスペース内の`cattle-system`というConfigMapでHelmの値を探します。
@@ -38,7 +38,7 @@ kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
 ----
 
-[#_helm-charts]
+[#_helm_charts]
 == Helmチャート
 
 Helmチャートは、少なくとも`values.yaml`のデフォルトで示されているオプションを受け入れます：
@@ -47,7 +47,7 @@ Helmチャートは、少なくとも`values.yaml`のデフォルトで示され
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
-[#_environment-variables]
+[#_environment_variables]
 == 環境変数
 
 コントローラーは、これらの環境変数で起動できます：
@@ -100,7 +100,7 @@ Fleetによって使用される注釈：
 * `fleet.cattle.io/managed` - 未使用のようです
 * `fleet.cattle.io/service-account`
 
-[#_product-name-agent-configuration]
+[#_product_name_agent_configuration]
 == {product_name} エージェントの設定
 
 トレランス、アフィニティ、リソースは{product_name}エージェントのためにカスタマイズできます。これらのフィールドはxref:reference/ref-crds.adoc#_clusterspec[Cluster]を作成する際に提供できます。クラスターの作成方法についてはxref:how-tos-for-operators/cluster-registration.adoc[ダウンストリームクラスターの登録]を参照してください。これらのフィールドが提供されない場合、デフォルト設定が使用されます。

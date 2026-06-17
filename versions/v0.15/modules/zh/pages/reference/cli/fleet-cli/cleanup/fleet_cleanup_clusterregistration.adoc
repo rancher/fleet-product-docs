@@ -23,7 +23,7 @@ fleet cleanup clusterregistration [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_see-also]
+[#_see_also]
 == 另请参阅
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet清理]     - 清理过时的资源

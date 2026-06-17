@@ -8,14 +8,14 @@ The folder could contain a Helm chart, or reference one. It could be a plain Kub
 
 The `fleet.yaml` file contains all the options for the deployment.
 
-[#_bundle-names]
+[#_bundle_names]
 == Bundle Names
 
 By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
 
 Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
 
-[#_how-repositories-are-scanned]
+[#_how_repositories_are_scanned]
 == How Repositories Are Scanned
 
 **The Git repository has no required structure.** All scanned resources are stored as Kubernetes resources, so ensure scanned directories do not contain large files. Currently, resources must **gzip to less than 1 MB**.
@@ -51,7 +51,7 @@ Multiple paths can be defined for a `GitRepo`. Each path is scanned independentl
 | When deploying using raw YAML (not Kustomize or Helm), `overlays` is a special directory for customizations.
 |===
 
-[#_alternative-scan-explicitly-defined-by-the-user]
+[#_alternative_scan_explicitly_defined_by_the_user]
 === Alternative Scan: Explicitly Defined by the User
 
 {product_name} also supports a user-driven method for defining Bundles directly.
@@ -60,7 +60,7 @@ In this mode, {product_name} loads resources from a specified base directory.
 It looks for a `fleet.yaml` at the root only if an options file isn’t provided.  
 This method is **non-recursive** and loads only explicitly defined Bundles.
 
-[#_example-file-structure]
+[#_example_file_structure]
 ==== Example File Structure
 
 [source,console]
@@ -90,7 +90,7 @@ driven/
     └── test.yaml
 ----
 
-[#_corresponding-gitrepo-definition]
+[#_corresponding_gitrepo_definition]
 ==== Corresponding GitRepo Definition
 
 [source,yaml]
@@ -148,7 +148,7 @@ kustomize:
 
 This approach simplifies working with Kustomize and provides finer control compared to recursive scanning.
 
-[#_excluding-files-and-directories]
+[#_excluding_files_and_directories]
 == Excluding Files and Directories
 
 {product_name} supports `.fleetignore` files, similar to `.gitignore`, to exclude files and directories.
@@ -178,7 +178,7 @@ Unsupported:
 * `**` wildcards
 * Explicit inclusions (`!`)
 
-[#_the-fleet-yaml-file]
+[#_the_fleet_yaml_file]
 == The `fleet.yaml` File
 
 `fleet.yaml` modifies how resources are deployed and customized.  
@@ -196,9 +196,9 @@ If disabled, manually update dependencies using:
 ====
 
 For field details, see xref:reference/ref-fleet-yaml.adoc[{product_name} YAML Reference].   
-For private Helm repositories, see xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[Using Private Helm Repositories].
+For private Helm repositories, see xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
-[#_using-helm-values]
+[#_using_helm_values]
 == Using Helm Values
 
 When applying changes to `values.yaml`:
@@ -219,7 +219,7 @@ Secrets loaded from downstream clusters using `valuesFrom` are encrypted if [dat
 However, credentials stored in Git (`values:` or `valuesFiles:`) are not.
 ====
 
-[#_using-valuesfrom]
+[#_using_valuesfrom]
 == Using `valuesFrom`
 
 Example ConfigMap:
@@ -277,7 +277,7 @@ helm:
     replicas: "4"
 ----
 
-[#_per-cluster-customization]
+[#_per_cluster_customization]
 == Per-Cluster Customization
 
 {product_name} customizes resources per cluster using `targetCustomizations` in `fleet.yaml`.
@@ -308,9 +308,9 @@ targetCustomizations:
     clusterName: fleetname
 ----
 
-See xref:how-tos-for-users/gitrepo-targets.adoc#_customization-per-cluster[Customization per Cluster] for details.
+See xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[Customization per Cluster] for details.
 
-[#_raw-yaml-customization]
+[#_raw_yaml_customization]
 == Raw YAML Customization
 
 When using raw YAML instead of Helm or Kustomize, you can apply overlays via the `overlays/` directory.
@@ -327,12 +327,12 @@ overlays/custom/deployment_patch.yaml  # patches deployment.yaml
 Files ending in `_patch.` (for example, `deployment_patch.yaml`) patch matching base files.  
 Patching uses JSON Merge, Strategic Merge, or JSON Patch, depending on content.
 
-[#_cluster-and-bundle-state]
+[#_cluster_and_bundle_state]
 == Cluster and Bundle State
 
 See xref:reference/ref-status-fields.adoc[Cluster and Bundle State].
 
-[#_nested-gitrepo-crs]
+[#_nested_gitrepo_crs]
 == Nested GitRepo CRs
 
 {product_name} supports nested `GitRepo` resources repositories containing other `GitRepo` definitions.  

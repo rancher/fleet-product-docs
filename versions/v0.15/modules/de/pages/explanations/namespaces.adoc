@@ -2,22 +2,22 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_workload-namespaces]
+[#_workload_namespaces]
 == Workload-Namespaces
 
-[#_namespace-creation-behavior-in-bundles]
+[#_namespace_creation_behavior_in_bundles]
 === Namespace-Erstellungsverhalten in Bundles
 
 Beim Bereitstellen eines {product_name} Bundles wird der angegebene Namespace automatisch erstellt, wenn er noch nicht existiert.
 
-[#_configuring-workload-namespaces]
+[#_configuring_workload_namespaces]
 === Konfiguration von Workload-Namespaces
 
 Bei der Konfiguration von Workload-Namespaces ist es wichtig zu beachten, dass bestimmte Optionen dazu gedacht sind, die Werte anderer Optionen oder Namespace-Definitionen in Workload-Ressourcen zu überschreiben. In einigen Fällen kann das Setzen von Namespaces mit bestimmten Optionen zu Fehlern führen, wenn die bereitzustellenden Ressourcen nicht-namespacegebundene Ressourcen enthalten. Um ein besseres Verständnis dafür zu bekommen, wie diese Optionen interagieren, siehe das Diagramm unten. Für weitere Details zu einer bestimmten Option, siehe bitte das xref:reference/ref-gitrepo.adoc[GitRepo] oder xref:reference/ref-fleet-yaml.adoc[fleet.yaml] Referenz.
 
 image::FleetWorkloadNamespaces.png[Konfiguration von Workload-Namespaces]
 
-[#_cross-namespace-deployments]
+[#_cross_namespace_deployments]
 === Bereitstellungen über Namespaces hinweg
 
 Es ist möglich, ein GitRepo zu erstellen, das über Namespaces hinweg bereitstellt. Der Hauptzweck davon ist, dass ein zentrales privilegiertes Team die gemeinsame Konfiguration für viele Cluster verwalten kann, die von verschiedenen Teams verwaltet werden. Dies wird erreicht, indem eine `BundleNamespaceMapping` Ressource in einem Cluster erstellt wird.
@@ -48,7 +48,7 @@ namespaceSelector:
 
 Wenn das `BundleNamespaceMappings` `bundleSelector` Feld mit einem `Bundles` Label übereinstimmt, wird das `Bundle` Zielkriterium gegen alle Cluster in allen Namensräumen ausgewertet, die `namespaceSelector` entsprechen. Man kann Labels für die erstellten Bundles von Git angeben, indem man Labels in die `fleet.yaml` Datei oder in das `metadata.labels` Feld auf der `GitRepo` setzt.
 
-[#_restricting-gitrepos]
+[#_restricting_gitrepos]
 === Einschränkung von GitRepos
 
 Ein Namespace kann mehrere `GitRepoRestriction` Ressourcen enthalten. Alle `GitRepos`, die in diesem Namespace erstellt werden, werden mit der Liste der Einschränkungen überprüft. Wenn ein `GitRepo` gegen eine der Einschränkungen verstößt, befindet sich sein `BundleDeployment` in einem Fehlerzustand und wird nicht bereitgestellt.
@@ -70,12 +70,12 @@ defaultClientSecretName: ""
 defaultServiceAccount: ""
 ----
 
-[#_allowed-target-namespaces]
+[#_allowed_target_namespaces]
 ==== Erlaubte Ziel-Namensräume
 
 Dies kann verwendet werden, um eine Bereitstellung auf eine Menge von Namespaces in einem Downstream-Cluster zu beschränken. Wenn eine Einschränkung für erlaubte Ziel-Namespaces vorhanden ist, müssen alle `GitRepos` ein `targetNamespace` angeben, und der angegebene Namespace muss in der Zulassungsliste sein. Dies verhindert auch die Erstellung von clusterweiten Ressourcen.
 
-[#_allowed-target-namespace-selector]
+[#_allowed_target_namespace_selector]
 ==== Erlaubter Ziel-Namensraum-Selektor
 
 `allowedTargetNamespaceSelector` beschränkt Bereitstellungen auf Namensräume in Downstream-Clustern, deren Labels mit dem angegebenen Selektor übereinstimmen. Wenn dieses Feld in einem `GitRepoRestriction` gesetzt ist, müssen alle `GitRepos` ein `targetNamespace` angeben.
@@ -100,7 +100,7 @@ allowedTargetNamespaceSelector:
     team: frontend
 ----
 
-[#_product-name-namespaces]
+[#_product_name_namespaces]
 == {product_name} Namespaces
 
 Alle Typen im {product_name} Manager sind namespaced. Die Namespaces einer benutzerdefinierten Ressource, z. B. GitRepo, beeinflussen nicht den Namespace der bereitgestellten Ressourcen.
@@ -109,7 +109,7 @@ Zu verstehen, wie Namespaces im {product_name} Manager verwendet werden, ist wic
 
 image::FleetNamespaces.svg[Namespace]
 
-[#_gitrepos-bundles-clusters-clustergroups]
+[#_gitrepos_bundles_clusters_clustergroups]
 === GitRepos, Bundles, Clusters, ClusterGroups
 
 Alle Selektoren für `GitRepo` Ziele werden gegen die `Clusters` und `ClusterGroups` in denselben Namespaces ausgewertet. Das bedeutet, dass, wenn Sie `create` oder `update` Berechtigungen für einen `GitRepo` Typ in einem Namespace gewähren, dieser Endbenutzer den Selektor ändern kann, um mit jedem Cluster in diesem Namespace übereinzustimmen. Das bedeutet in der Praxis, dass, wenn Sie zwei Teams haben, die ihre eigenen `GitRepo` Registrierungen selbst verwalten sollen, sie jedoch nicht die Cluster des jeweils anderen anvisieren dürfen, sie in unterschiedlichen Namespaces sein sollten.
@@ -128,14 +128,14 @@ Das Löschen des Workspaces, des Namespace für die Clusterregistrierung, wird a
 Dies wird alle bereitgestellten Bundles, mit Ausnahme des Fleet-Agenten, von den gelöschten Clustern deinstallieren.
 ====
 
-Wenn Sie {product_name} im Stil eines xref:explanations/concepts.adoc[einzelnen Clusters] verwenden, wird der Namespace immer *fleet-local* sein.  Siehe den Abschnitt <<_cluster-registration-namespace-fleet-local,`fleet-local` Namensräume>> für weitere Informationen.
+Wenn Sie {product_name} im Stil eines xref:explanations/concepts.adoc[einzelnen Clusters] verwenden, wird der Namespace immer *fleet-local* sein.  Siehe den Abschnitt <<_cluster_registration_namespace_fleet_local,`fleet-local` Namensräume>> für weitere Informationen.
 
 Für einen xref:explanations/concepts.adoc[Multi-Cluster] Stil stellen Sie bitte sicher, dass Sie das richtige Repo verwenden, das den richtigen Zielclustern zugeordnet wird.
 
-[#_internal-namespaces]
+[#_internal_namespaces]
 === Interne Namensräume
 
-[#_cluster-registration-namespace-fleet-local]
+[#_cluster_registration_namespace_fleet_local]
 ==== Cluster-Registrierungs-Namespace: fleet-local
 
 Der *fleet-local* Namespace ist ein spezieller Namespace, der für den einzelnen Cluster-Anwendungsfall oder zum Neustarten der Konfiguration des {product_name} Managers verwendet wird.
@@ -143,17 +143,17 @@ Der Zugang zum lokalen Cluster sollte auf Betreiber beschränkt sein.
 
 Wenn {product_name} installiert ist, wird der `fleet-local` Namespace zusammen mit einem `Cluster` namens `local` und einem `ClusterGroup` namens `default` erstellt. Wenn keine Ziele auf einem `GitRepo` angegeben sind, wird standardmäßig das `ClusterGroup` mit dem Namen `default` angesteuert. Das bedeutet, dass alle `GitRepos`, die in `fleet-local` erstellt werden, automatisch das `local` `Cluster` ansteuern. Der `local` `Cluster` bezieht sich auf den Cluster, auf dem der {product_name} Manager läuft.
 
-[#_system-namespace-cattle-fleet-system]
+[#_system_namespace_cattle_fleet_system]
 ==== System-Namespace: cattle-fleet-system
 
 Der {product_name} Controller und der {product_name} Agent laufen in diesem Namespace. Alle Dienstkonten, die von `GitRepos` referenziert werden, sollten in diesem Namespace im Downstream-Cluster existieren.
 
-[#_system-registration-namespace-cattle-fleet-clusters-system]
+[#_system_registration_namespace_cattle_fleet_clusters_system]
 ==== System-Registrierungs-Namespace: cattle-fleet-clusters-system
 
 Dieser Namespace enthält Geheimnisse für den Cluster-Registrierungsprozess. Er sollte keine anderen Ressourcen enthalten, insbesondere keine Geheimnisse.
 
-[#_cluster-namespaces]
+[#_cluster_namespaces]
 ==== Cluster-Namespaces
 
 Für jeden registrierten Cluster wird ein Namespace vom {product_name} Manager für diesen Cluster erstellt. Diese Namespaces sind in der Form `cluster-$\{namespace}-$\{cluster}-$\{random}` benannt. Der Zweck dieses Namespace ist, dass alle `BundleDeployments` für diesen Cluster in diesen Namespace gelegt werden und der Downstream-Cluster dann Zugriff erhält, um `BundleDeployments` in diesem Namespace nur zu beobachten und zu aktualisieren.

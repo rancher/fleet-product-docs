@@ -12,7 +12,7 @@ When creating a `Bundle` resources need to be explicitly specified in the `Bundl
 Resources can be compressed with gz. See https://github.com/rancher/rancher/blob/v2.7.3/pkg/controllers/provisioningv2/managedchart/managedchart.go#L149-L153[managedchart.go]
 an example of how Rancher uses compression in go code.
 
-If you would like to deploy in downstream clusters, you need to define targets. Targets work similarly to targets in `GitRepo`. Refer to xref:how-tos-for-users/gitrepo-targets.adoc#_defining-targets[Mapping to Downstream Clusters].
+If you would like to deploy in downstream clusters, you need to define targets. Targets work similarly to targets in `GitRepo`. Refer to xref:how-tos-for-users/gitrepo-targets.adoc#_defining_targets[Mapping to Downstream Clusters].
 
 The following example creates a nginx `Deployment` in the local cluster:
 
@@ -68,7 +68,7 @@ You can't use a `fleet.yaml` in resources, it is only used by the fleet-cli to c
 
 The `spec.targetRestrictions` field is not useful, as it is an allow list for targets specified in `spec.targets`. It is not needed, since `targets` are explicitly given in a bundle and an empty `targetRestrictions` defaults to allow.
 
-[#_convert-a-helm-chart-into-a-bundle]
+[#_convert_a_helm_chart_into_a_bundle]
 == Convert a Helm Chart into a Bundle
 
 You can use the {product_name} CLI to convert a Helm chart into a bundle.

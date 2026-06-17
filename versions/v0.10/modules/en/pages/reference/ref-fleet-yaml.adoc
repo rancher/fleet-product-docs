@@ -344,11 +344,11 @@ overrideTargets:
         env: dev
 ----
 
-[#_helm-options]
+[#_helm_options]
 == Helm Options
 
 [discrete]
-[#_how-fleet-agent-deploys-the-bundle]
+[#_how_fleet_agent_deploys_the_bundle]
 === How fleet-agent deploys the bundle
 
 These options also apply to kustomize- and manifest-style bundles.  They control
@@ -366,7 +366,7 @@ Helm CLI options for install and update.
 * waitForJobs
 
 [discrete]
-[#_helm-chart-download-options]
+[#_helm_chart_download_options]
 === Helm Chart Download Options
 
 These options are for Helm-style bundles, they specify how to download the
@@ -386,7 +386,7 @@ of the chart. go-getter also allows to download a chart from a Git repo.
 * an OCI Helm repository, specified by `repo` and optionally `version`.
 
 [discrete]
-[#_helm-chart-value-options]
+[#_helm_chart_value_options]
 === Helm Chart Value Options
 
 Options for the downloaded Helm chart.

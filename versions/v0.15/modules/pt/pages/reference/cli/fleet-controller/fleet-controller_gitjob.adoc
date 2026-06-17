@@ -26,7 +26,7 @@ fleet-controller gitjob [flags]
       --shard-node-selector string    node selector to apply to jobs based on the shard ID, if any
 ----
 
-[#_see-also]
+[#_see_also]
 == CONSULTE TAMBÉM
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]     - Gerenciar o fleet-controller que se comunica com o Fleet agent

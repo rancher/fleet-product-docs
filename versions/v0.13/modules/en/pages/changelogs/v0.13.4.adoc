@@ -5,7 +5,7 @@
 
 
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * Don't requeue for missing resources by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4175
 * Support git auth with access token by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4190

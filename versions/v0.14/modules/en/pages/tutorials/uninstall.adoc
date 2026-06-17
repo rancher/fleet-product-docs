@@ -9,7 +9,7 @@ Removing the CRDs will remove all deployed workloads.
 ====
 
 
-[#_product-name-standalone]
+[#_product_name_standalone]
 == {product_name} Standalone
 
 {product_name} is packaged as two Helm charts so uninstallation is accomplished by uninstalling the appropriate Helm charts.
@@ -65,7 +65,7 @@ kubectl delete ns cattle-fleet-clusters-system
 kubectl delete ns -l "fleet.cattle.io/managed=true"
 ----
 
-[#_product-name-in-rancher]
+[#_product_name_in_rancher]
 == {product_name} in Rancher
 
 {product_name} in Rancher cannot be uninstalled, without uninstalling Rancher. However, the GitOps feature can be disabled.

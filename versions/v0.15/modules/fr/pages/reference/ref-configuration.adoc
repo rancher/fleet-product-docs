@@ -4,7 +4,7 @@
 
 Une liste de références des options de configuration, principalement internes.
 
-[#_configure-product-install-options-in-rancher]
+[#_configure_product_install_options_in_rancher]
 == Configurer {product_name} Options d'installation dans Rancher
 
 Rancher recherche les valeurs Helm dans un ConfigMap appelé `rancher-config` dans l'espace de noms `cattle-system`.
@@ -38,7 +38,7 @@ kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
 ----
 
-[#_helm-charts]
+[#_helm_charts]
 == Les Helm charts
 
 Les charts Helm acceptent, au moins, les options telles qu'indiquées avec leur valeur par défaut dans `values.yaml`{nbsp}:
@@ -47,7 +47,7 @@ Les charts Helm acceptent, au moins, les options telles qu'indiquées avec leur 
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
-[#_environment-variables]
+[#_environment_variables]
 == Variables d'environnement
 
 Les contrôleurs peuvent être démarrés avec ces variables d'environnement{nbsp}:
@@ -100,7 +100,7 @@ Annotations utilisées par Fleet :
 * `fleet.cattle.io/managed` - apparaît non utilisé
 * `fleet.cattle.io/service-account`
 
-[#_product-name-agent-configuration]
+[#_product_name_agent_configuration]
 == {product_name} Configuration de l'agent Fleet
 
 Les tolérances, l'affinité et les ressources peuvent être personnalisées pour {product_name} l'agent. Ces champs peuvent être fournis lors de la création d'un xref:reference/ref-crds.adoc#_clusterspec[Cluster], voir xref:how-tos-for-operators/cluster-registration.adoc[Enregistrement du Cluster en aval] pour plus d’informations sur la création de clusters. La configuration par défaut sera utilisée si ces champs ne sont pas fournis.

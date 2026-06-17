@@ -9,14 +9,14 @@
 
 Existem dois estilos específicos para registrar clusters. Esses estilos serão referidos como *iniciado pelo agente* e *iniciado pelo gerente* de registro. Normalmente, opta-se pelo registro iniciado pelo agente, mas existem casos específicos em que o iniciado pelo gerente é um fluxo de trabalho melhor.
 
-[#_agent-initiated-registration]
+[#_agent_initiated_registration]
 === Registro Iniciado pelo Agente
 
-Iniciado pelo agente refere-se a um padrão em que o cluster downstream instala um agente com um <<_create-cluster-registration-tokens,token de registro do cluster>> e opcionalmente um ID de cliente. O agente do cluster fará então uma solicitação de API ao {product_name} manager e iniciará o processo de registro. Usando esse processo, o Gerente nunca fará uma solicitação de API externa aos clusters downstream e, portanto, nunca precisará ter acesso direto à rede. 
+Iniciado pelo agente refere-se a um padrão em que o cluster downstream instala um agente com um <<_create_cluster_registration_tokens,token de registro do cluster>> e opcionalmente um ID de cliente. O agente do cluster fará então uma solicitação de API ao {product_name} manager e iniciará o processo de registro. Usando esse processo, o Gerente nunca fará uma solicitação de API externa aos clusters downstream e, portanto, nunca precisará ter acesso direto à rede. 
 
 Não é comumente usado no Rancher. O Rancher não precisa fazer uma solicitação de API externa ao cluster downstream, pois usa um túnel para fornecer essa conectividade.
 
-[#_manager-initiated-registration]
+[#_manager_initiated_registration]
 === Registro Iniciado pelo Gerente
 
 O registro iniciado pelo gerente é um processo em que você registra um cluster Kubernetes existente com o {product_name} gerente e o {product_name} gerente fará uma chamada de API ao cluster downstream para implantar o agente. Esse estilo pode impor requisitos adicionais de acesso à rede, pois o Fleet Manager deve ser capaz de se comunicar com o servidor API do cluster downstream para o processo de registro.
@@ -78,7 +78,7 @@ Após o cluster ser registrado, não há mais necessidade de o gerente contatar 
 |===
 
 
-[#_agent-initiated]
+[#_agent_initiated]
 == Iniciado pelo Agente
 
 Um cluster downstream é registrado instalando um agente via helm e usando o *token de registro do cluster* e opcionalmente um *ID do cliente* ou *rótulos do cluster*.
@@ -87,13 +87,13 @@ O recurso do cluster no upstream não possui um campo +kubecConfigSecret+, pois 
 
 [IMPORTANT]
 ====
-Não é necessário configurar o Fleet Manager para xref:how-tos-for-operators/installation.adoc#_configuration-for-multi-cluster[multi cluster], pois o agente downstream que instalamos via Helm se conectará diretamente à API do Kubernetes do cluster upstream.
+Não é necessário configurar o Fleet Manager para xref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[multi cluster], pois o agente downstream que instalamos via Helm se conectará diretamente à API do Kubernetes do cluster upstream.
 
 O registro iniciado pelo agente normalmente não é utilizado com o Rancher.
 ====
 
 
-[#_cluster-registration-token-and-client-id]
+[#_cluster_registration_token_and_client_id]
 === Token de Registro do Cluster e ID do Cliente
 
 O *token de registro do cluster* é uma credencial que autorizará o agente do cluster downstream a iniciar o processo de registro. Isto é necessário.
@@ -102,12 +102,12 @@ Alternativamente, pode-se passar o token diretamente para o comando Helm via `--
 
 Existem dois estilos de registro de um agente. Você pode ter o cluster para este agente criado dinamicamente, caso em que provavelmente desejará especificar *rótulos do cluster* durante o registro.  Ou você pode fazer o agente se registrar em um cluster predefinido no {product_name} gerente, caso em que precisará de um *ID do cliente*.  A primeira abordagem é tipicamente a mais fácil.
 
-[#_install-agent-for-a-new-cluster]
+[#_install_agent_for_a_new_cluster]
 === Instalar Agente para um Novo Cluster
 
 O agente {product_name} é instalado como um chart do Helm. A seguir estão explicações sobre como determinar e definir seus parâmetros.
 
-Primeiro, siga as instruções do <<_create-cluster-registration-tokens,token de registro do cluster>> para obter o `values.yaml` que contém o token de registro para autenticar contra o cluster {product_name}.
+Primeiro, siga as instruções do <<_create_cluster_registration_tokens,token de registro do cluster>> para obter o `values.yaml` que contém o token de registro para autenticar contra o cluster {product_name}.
 
 Em segundo lugar, opcionalmente você pode definir rótulos que serão atribuídos ao cluster recém-criado durante o registro. Após a conclusão do registro, um agente não pode alterar os rótulos do cluster. Para adicionar rótulos ao cluster, adicione `--set-string labels.KEY=VALUE` ao comando Helm abaixo. Para adicionar os rótulos `foo=bar` e `bar=baz`, você deve adicionar `--set-string labels.foo=bar --set-string labels.bar=baz` à linha de comando.
 
@@ -199,7 +199,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_install-agent-for-a-predefined-cluster]
+[#_install_agent_for_a_predefined_cluster]
 === Instalar Agente para um Cluster Predefinido
 
 Os IDs de cliente servem para predefinir clusters no {product_name} manager com rótulos e repositórios existentes direcionados a eles.
@@ -293,7 +293,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_create-cluster-registration-tokens]
+[#_create_cluster_registration_tokens]
 === Criar Tokens de Registro de Cluster
 
 [IMPORTANT]
@@ -309,12 +309,12 @@ Tokens de registro de cluster são usados para estabelecer uma nova identidade p
 
 Como o token de registro do cluster é esquecido, se você precisar re-registrar um cluster, deve fornecer ao cluster um novo token de registro.
 
-[#_token-ttl]
+[#_token_ttl]
 ==== Token TTL
 
 Tokens de registro de cluster podem ser reutilizados por qualquer cluster em um namespace.  Os tokens podem ter um TTL definido para que expirem após um tempo específico.
 
-[#_create-a-new-token]
+[#_create_a_new_token]
 ==== Criar um novo Token
 
 O `ClusterRegistationToken` é um tipo namespaced e deve ser criado no mesmo namespace em que você criará os recursos `GitRepo` e `ClusterGroup`. Para detalhes aprofundados sobre como os namespaces são usados em {product_name}, consulte a documentação sobre xref:explanations/namespaces.adoc[namespaces].  Criar um novo token com o YAML abaixo.
@@ -341,7 +341,7 @@ Uma maneira de fazer isso é através da seguinte linha de comando:
 while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
 ----
 
-[#_obtaining-token-value-agent-values-yaml]
+[#_obtaining_token_value_agent_values_yaml]
 ==== Obtendo o Valor do Token (valores.yaml do Agente)
 
 O valor do token contém conteúdo YAML para um arquivo `values.yaml` que deve ser passado para `helm install` para instalar o agente {product_name} em um cluster downstream.
@@ -355,20 +355,20 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 
 Uma vez que o `values.yaml` esteja pronto, ele pode ser usado repetidamente por clusters para registrar até que o TTL expire.
 
-[#_manager-initiated]
+[#_manager_initiated]
 == Iniciado pelo Gerente
 
 O fluxo de registro iniciado pelo gerente é realizado criando um recurso `Cluster` no {product_name} Manager que se refere a um `Secret` do Kubernetes contendo um arquivo kubeconfig válido no campo de dados chamado `value`.
 
 [IMPORTANT]
 ====
-Se você estiver usando {product_name} de forma independente _sem o Rancher_, ele deve ser instalado conforme descrito em xref:how-tos-for-operators/installation.adoc#_configuration-for-multi-cluster[detalhes de instalação].
+Se você estiver usando {product_name} de forma independente _sem o Rancher_, ele deve ser instalado conforme descrito em xref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[detalhes de instalação].
 
 O registro iniciado pelo gerenciador é utilizado quando você adiciona um cluster no painel do Rancher.
 ====
 
 
-[#_create-kubeconfig-secret]
+[#_create_kubeconfig_secret]
 === Criar Segredo Kubeconfig
 
 O formato deste segredo é destinado a corresponder ao https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[formato] do segredo kubeconfig usado em https://github.com/kubernetes-sigs/cluster-api[cluster-api].
@@ -386,7 +386,7 @@ data:
   value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
 ----
 
-[#_create-cluster-resource]
+[#_create_cluster_resource]
 == Criar Recurso de Cluster
 
 O recurso de cluster precisa referenciar o segredo kubeconfig.

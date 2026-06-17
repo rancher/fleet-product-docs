@@ -6,9 +6,9 @@
 
 Habilitar ou desabilitar recursos experimentais é feito usando variáveis de ambiente extras que estão disponíveis ao implantar `rancher/fleet`.
 
-Para mais informações, consulte Configurar opções de instalação xref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[{product_name} no Rancher]
+Para mais informações, consulte Configurar opções de instalação xref:reference/ref-configuration.adoc#_configure_product_install_options_in_rancher[{product_name} no Rancher]
 
-[#_available-experimental-features]
+[#_available_experimental_features]
 == Recursos experimentais disponíveis
 
 {product_name} atualmente suporta os seguintes recursos experimentais, que podem ser alternados por meio de suas respectivas variáveis de ambiente:
@@ -16,10 +16,10 @@ Para mais informações, consulte Configurar opções de instalação xref:refer
 * xref:experimental-features/scheduling.adoc[Programação]
 * xref:experimental-features/experimental-downstream-resource.adoc[Propagação automatizada de recursos para clusters downstream]
 
-[#_enabling-an-experimental-feature]
+[#_enabling_an_experimental_feature]
 == Habilitando um recurso experimental
 
-[#_enabling-when-installing-product-name-stand-alone]
+[#_enabling_when_installing_product_name_stand_alone]
 === Habilitando ao instalar {product_name} de forma independente
 
 Tudo o que você precisa fazer é passar algo como:
@@ -37,7 +37,7 @@ para o seu comando `helm install` ou `helm upgrade`.
 Você tem que usar `--set-string` porque caso contrário o valor booleano não funcionará como esperado.
 ====
 
-[#_enabling-when-installing-product-name-with-rancher]
+[#_enabling_when_installing_product_name_with_rancher]
 === Habilitando ao instalar {product_name} com o Rancher
 
 Você também pode ativar os recursos experimentais no {product_name} ao instalar o Rancher.

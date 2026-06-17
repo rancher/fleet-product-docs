@@ -6,9 +6,9 @@
 
 実験的機能の有効化または無効化は、`rancher/fleet`をデプロイする際に利用可能な追加の環境変数を使用して行います。
 
-詳細については、Rancherのxref:reference/ref-configuration.adoc#_configure-product-install-options-in-rancher[{product_name}インストールオプション設定]を参照してください。
+詳細については、Rancherのxref:reference/ref-configuration.adoc#_configure_product_install_options_in_rancher[{product_name}インストールオプション設定]を参照してください。
 
-[#_available-experimental-features]
+[#_available_experimental_features]
 == 利用可能な実験的機能
 
 {product_name}は現在、各環境変数を通じて切り替え可能な以下の実験的機能をサポートしています：
@@ -16,10 +16,10 @@
 * xref:experimental-features/scheduling.adoc[スケジューリング]
 * xref:experimental-features/experimental-downstream-resource.adoc[ダウンストリームクラスターへのリソースの自動伝播]
 
-[#_enabling-an-experimental-feature]
+[#_enabling_an_experimental_feature]
 == 実験的機能を有効にする
 
-[#_enabling-when-installing-product-name-stand-alone]
+[#_enabling_when_installing_product_name_stand_alone]
 === {product_name}をスタンドアロンでインストールする際の有効化
 
 必要なのは、次のようなものを渡すことだけです：
@@ -37,7 +37,7 @@
 `--set-string`を使用する必要があります。そうしないと、ブール値が期待通りに機能しません。
 ====
 
-[#_enabling-when-installing-product-name-with-rancher]
+[#_enabling_when_installing_product_name_with_rancher]
 === Rancherで{product_name}をインストールする際の有効化
 
 Rancherをインストールする際に、{product_name}で実験的機能を有効にすることもできます。

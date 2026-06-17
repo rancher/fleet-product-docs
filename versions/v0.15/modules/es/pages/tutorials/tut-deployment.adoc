@@ -15,7 +15,7 @@ Para más detalles sobre las opciones disponibles por repositorio de Git, consul
 ====
 
 
-[#_single-cluster-examples]
+[#_single_cluster_examples]
 == Ejemplos de un solo clúster
 
 Todos los ejemplos desplegarán contenido en clústeres sin personalizaciones por clúster. Este es un buen punto de partida para entender los conceptos básicos de estructurar repositorios de Git para{product_name}.
@@ -144,7 +144,7 @@ EOF
 ----
 ====
 
-[#_multi-cluster-examples]
+[#_multi_cluster_examples]
 == Ejemplos de múltiples clústeres
 
 Los ejemplos a continuación desplegarán un repositorio git múltiple en varios clústeres a la vez y configurarán la aplicación de manera diferente para cada objetivo.

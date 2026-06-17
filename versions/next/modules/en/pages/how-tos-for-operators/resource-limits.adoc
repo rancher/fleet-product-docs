@@ -17,7 +17,7 @@ The `resources` fields described on this page still apply. Specify the fields ne
 For more information, refer to xref:reference/ref-configuration.adoc[Configuration].
 ====
 
-[#_default-resources]
+[#_default_resources]
 == Default Resources
 
 Set a default for all controller containers using the top-level `resources` field:
@@ -44,7 +44,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   --set resources.requests.memory=768Mi
 ----
 
-[#_per-component-overrides]
+[#_per_component_overrides]
 == Per-Component Overrides
 
 Individual controller containers can override the default with component-specific settings.
@@ -96,7 +96,7 @@ helm -n cattle-fleet-system upgrade --install fleet fleet/fleet \
   -f values.yaml
 ----
 
-[#_downstream-cluster-agent-resources]
+[#_downstream_cluster_agent_resources]
 == Downstream Cluster Agent Resources
 
 To configure resource limits and requests for the Fleet agent running on a specific downstream cluster, set `agentResources` on the corresponding `Cluster` resource:

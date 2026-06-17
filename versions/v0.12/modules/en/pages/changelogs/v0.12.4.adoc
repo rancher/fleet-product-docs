@@ -8,7 +8,7 @@
 [#_description]
 == Description
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Fix panic found in OCI test by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3790[#3790]

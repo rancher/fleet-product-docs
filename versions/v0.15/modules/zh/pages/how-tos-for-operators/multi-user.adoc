@@ -4,7 +4,7 @@
 
 {product_name} 在可能的情况下使用 Kubernetes RBAC。
 
-RBAC 的一个附加功能是 xref:explanations/namespaces.adoc#_restricting-gitrepos[`GitRepoRestriction`] 资源，可以用于控制名称空间中的 GitRepo 资源。
+RBAC 的一个附加功能是 xref:explanations/namespaces.adoc#_restricting_gitrepos[`GitRepoRestriction`] 资源，可以用于控制名称空间中的 GitRepo 资源。
 
 多用户 Fleet 设置如下：
 
@@ -24,7 +24,7 @@ image::FleetSharedClusters.svg[共享集群]
 ====
 
 
-[#_example-product-name-standalone]
+[#_example_product_name_standalone]
 == 示例 {product_name} 独立
 
 这将创建一个用户 'fleetuser'，他只能管理 'project1' 名称空间中的 GitRepo 资源。
@@ -48,7 +48,7 @@ image::FleetSharedClusters.svg[共享集群]
 
 这确保了租户无法干扰其他租户的 GitRepo 资源，因为他们无法访问其他租户的名称空间。
 
-[#_isolated-workspaces-in-rancher]
+[#_isolated_workspaces_in_rancher]
 == Rancher 中的隔离工作区
 
 属于公司特定组/组织的用户，可能希望禁用对同一公司其他组/组织用户的集群可见性。
@@ -146,12 +146,12 @@ endif::[]
 
 为了拥有一个组织良好的环境，每个工作区应有其相关的 `GlobalRole`，以帮助分离职责和满足客户所需的隔离。这样，每个用户可以根据需要被分配到一个或多个 `GlobalRoles`。
 
-[#_allow-access-to-clusters]
+[#_allow_access_to_clusters]
 == 允许访问集群
 
 这假设所有由 'fleetuser' 创建的 GitRepos 都具有 `team: one` 标签。可以使用不同的标签，以选择集群中的不同名称空间。
 
-在每个用户的名称空间中，作为管理员创建一个 xref:explanations/namespaces.adoc#_cross-namespace-deployments[`BundleNamespaceMapping`]。
+在每个用户的名称空间中，作为管理员创建一个 xref:explanations/namespaces.adoc#_cross_namespace_deployments[`BundleNamespaceMapping`]。
 
 [,yaml]
 ....
@@ -180,7 +180,7 @@ namespaceSelector:
 
 GitRepo 资源中的 xref:how-tos-for-users/gitrepo-targets.adoc[`target` 部分] 可用于仅向匹配集群的子集进行部署。
 
-[#_restricting-access-to-downstream-clusters]
+[#_restricting_access_to_downstream_clusters]
 == 限制对下游集群的访问
 
 管理员可以通过在每个名称空间中创建一个 `GitRepoRestriction` 进一步限制租户。
@@ -199,7 +199,7 @@ allowedTargetNamespaces:
 
 这将拒绝创建集群范围的资源，这可能会干扰其他租户并限制部署到 'project1simpleapp' 名称空间。
 
-[#_an-example-gitrepo-resource]
+[#_an_example_gitrepo_resource]
 == 一个示例 GitRepo 资源
 
 一个由租户创建的 GitRepo 资源，没有管理员访问权限，可能看起来像这样：

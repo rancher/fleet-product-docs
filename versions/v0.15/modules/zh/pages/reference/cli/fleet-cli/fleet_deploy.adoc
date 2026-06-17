@@ -26,7 +26,7 @@ fleet deploy [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_see-also]
+[#_see_also]
 == 另请参阅
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - 管理 {product_name} 操作

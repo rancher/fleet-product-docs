@@ -8,7 +8,7 @@ For installations with multiple tens up to hundreds of Git repos, and in general
 
 {product_name} currently supports Github, GitLab, Bitbucket, Bitbucket Server and Gogs.
 
-[#_1-configure-the-webhook-service-product-name-uses-a-gitjob-service-to-handle-webhook-requests-create-an-ingress-that-points-to-the-gitjob-service]
+[#_1_configure_the_webhook_service_product_name_uses_a_gitjob_service_to_handle_webhook_requests_create_an_ingress_that_points_to_the_gitjob_service]
 == 1. Configure the webhook service. {product_name} uses a gitjob service to handle webhook requests. Create an ingress that points to the gitjob service.
 
 [,yaml]
@@ -39,7 +39,7 @@ You can configure https://kubernetes.io/docs/concepts/services-networking/ingres
 ====
 
 
-[#_2-go-to-your-webhook-provider-and-configure-the-webhook-callback-url-here-is-a-github-example]
+[#_2_go_to_your_webhook_provider_and_configure_the_webhook_callback_url_here_is_a_github_example]
 == 2. Go to your webhook provider and configure the webhook callback url. Here is a Github example.
 
 image::webhook.png[]
@@ -62,7 +62,7 @@ If you configured the webhook the polling interval will be automatically adjuste
 ====
 
 
-[#_3-optional-configure-webhook-secret-the-secret-is-for-validating-webhook-payload-make-sure-to-put-it-in-a-k8s-secret-called-gitjob-webhook-in-cattle-fleet-system]
+[#_3_optional_configure_webhook_secret_the_secret_is_for_validating_webhook_payload_make_sure_to_put_it_in_a_k8s_secret_called_gitjob_webhook_in_cattle_fleet_system]
 == 3. (Optional) Configure webhook secret. The secret is for validating webhook payload. Make sure to put it in a k8s secret called `gitjob-webhook` in `cattle-fleet-system`.
 
 |===
@@ -91,5 +91,5 @@ For example, to create a secret containing a GitHub secret to validate the webho
 kubectl create secret generic gitjob-webhook -n cattle-fleet-system --from-literal=github=webhooksecretvalue
 ----
 
-[#_4-go-to-your-git-provider-and-test-the-connection-you-should-get-a-http-response-code]
+[#_4_go_to_your_git_provider_and_test_the_connection_you_should_get_a_http_response_code]
 == 4. Go to your git provider and test the connection. You should get a HTTP response code.

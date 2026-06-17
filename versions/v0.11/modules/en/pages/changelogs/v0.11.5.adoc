@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2025-03-04 15:28:53 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Update Kubernetes dependency to v1.31.6 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3415[#3415]

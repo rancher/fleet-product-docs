@@ -28,7 +28,7 @@ image::fleet-ociStorage-flow.png[Um ativo visual exibindo o fluxo de {product_na
 * Um segredo Kubernetes com credenciais válidas.
 * Uma instalação {product_name} (v2.12.0 ou posterior).
 
-[#_how-to-enable-oci-storage]
+[#_how_to_enable_oci_storage]
 == Como habilitar o armazenamento OCI
 
 Para habilitar o armazenamento OCI, crie um segredo que inclua as informações necessárias e opções de acesso para o registro OCI. Existem duas maneiras de definir segredos:
@@ -71,7 +71,7 @@ O segredo deve ter o tipo: `fleet.cattle.io/bundle-oci-storage/v1alpha1`. {produ
 
 Alterar o segredo não aciona uma nova implantação. {product_name} usa o novo registro apenas após uma atualização do Git ou uma atualização forçada manualmente.
 
-[#_secret-field-reference]
+[#_secret_field_reference]
 === Referência do Campo do Segredo
 
 Os campos que você pode configurar são:
@@ -89,7 +89,7 @@ Os campos que você pode configurar são:
 | `basicHTTP`       | Habilita HTTP em vez de HTTPS.              | Codificado em Base64: `true/false` | Não recomendado. Permite tráfego inseguro. Por padrão, `basicHTTP` está definido como `false`.
 |===
 
-[#_product-name-example]
+[#_product_name_example]
 == {product_name} Exemplo
 
 Considere o seguinte arquivo `GitRepo`:

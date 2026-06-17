@@ -21,7 +21,7 @@ fleet [flags]
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
-[#_see-also]
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]	 - Render a bundle into a Kubernetes resource and apply it in the {product_name} Manager

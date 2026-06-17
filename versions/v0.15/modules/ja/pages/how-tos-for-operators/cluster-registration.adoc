@@ -9,14 +9,14 @@
 
 クラスターを登録するための特定の方法が2つあります。これらのスタイルは、*agent-initiated*および*manager-initiated*の登録と呼ばれます。通常はエージェント主導の登録を選択しますが、マネージャー主導の方が適している特定のユースケースもあります。
 
-[#_agent-initiated-registration]
+[#_agent_initiated_registration]
 === エージェント主導の登録
 
-エージェント主導とは、ダウンストリームクラスターが<<_create-cluster-registration-tokens,クラスター登録トークン>>とオプションでクライアントIDを使用してエージェントをインストールするパターンを指します。その後、クラスターエージェントは{product_name}マネージャーにAPIリクエストを行い、登録プロセスを開始します。このプロセスを使用すると、マネージャーはダウンストリームクラスターに対して外部APIリクエストを行うことはなく、したがって直接ネットワークアクセスを持つ必要はありません。
+エージェント主導とは、ダウンストリームクラスターが<<_create_cluster_registration_tokens,クラスター登録トークン>>とオプションでクライアントIDを使用してエージェントをインストールするパターンを指します。その後、クラスターエージェントは{product_name}マネージャーにAPIリクエストを行い、登録プロセスを開始します。このプロセスを使用すると、マネージャーはダウンストリームクラスターに対して外部APIリクエストを行うことはなく、したがって直接ネットワークアクセスを持つ必要はありません。
 
 これはRancherでは一般的に使用されていません。Rancherはダウンストリームクラスターに対して外部APIリクエストを行う必要がなく、トンネルを使用して接続を提供します。
 
-[#_manager-initiated-registration]
+[#_manager_initiated_registration]
 === マネージャー主導の登録
 
 マネージャー主導の登録は、既存のKubernetesクラスターを{product_name}マネージャーに登録し、{product_name}マネージャーがダウンストリームクラスターにAPIコールを行ってエージェントをデプロイするプロセスです。このスタイルは、Fleetマネージャーが登録プロセスのためにダウンストリームクラスターAPIサーバーと通信できる必要があるため、追加のネットワークアクセス要件を生じる可能性があります。
@@ -78,7 +78,7 @@
 |===
 
 
-[#_agent-initiated]
+[#_agent_initiated]
 == エージェント主導
 
 ダウンストリームクラスターは、ヘルムを介してエージェントをインストールし、*クラスター登録トークン*とオプションで*クライアントID*または*クラスターラベル*を使用して登録されます。
@@ -87,13 +87,13 @@
 
 [IMPORTANT]
 ====
-Fleet Managerをxref:how-tos-for-operators/installation.adoc#_configuration-for-multi-cluster[マルチクラスター]のために設定する必要はありません。Helmを介してインストールするダウンストリームエージェントは、アップストリームクラスターのKubernetes APIに直接接続します。
+Fleet Managerをxref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[マルチクラスター]のために設定する必要はありません。Helmを介してインストールするダウンストリームエージェントは、アップストリームクラスターのKubernetes APIに直接接続します。
 
 エージェント主導の登録は、通常Rancherでは使用されません。
 ====
 
 
-[#_cluster-registration-token-and-client-id]
+[#_cluster_registration_token_and_client_id]
 === クラスター登録トークンとクライアントID
 
 *クラスター登録トークン*は、ダウンストリームクラスターエージェントが登録プロセスを開始することを許可する資格情報です。これは必須です。
@@ -102,12 +102,12 @@ xref:explanations/architecture.adoc#_security[クラスター登録トークン]
 
 エージェントを登録するスタイルは2つあります。このエージェントのためにクラスターを動的に作成することができ、その場合、登録時に*クラスターラベル*を指定したいと思うでしょう。 または、エージェントを{product_name}マネージャーの事前定義されたクラスターに登録させることができ、その場合は*クライアントID*が必要です。 前者のアプローチは通常最も簡単です。
 
-[#_install-agent-for-a-new-cluster]
+[#_install_agent_for_a_new_cluster]
 === 新しいクラスター用にエージェントをインストールする
 
 {product_name}エージェントはHelmチャートとしてインストールされます。以下は、そのパラメータを決定し設定する方法の説明です。
 
-まず、<<_create-cluster-registration-tokens,クラスター登録トークンの指示>>に従って、`values.yaml`を取得します。これには、{product_name}クラスターに対して認証するための登録トークンが含まれています。
+まず、<<_create_cluster_registration_tokens,クラスター登録トークンの指示>>に従って、`values.yaml`を取得します。これには、{product_name}クラスターに対して認証するための登録トークンが含まれています。
 
 次に、オプションとして、登録時に新しく作成されたクラスターに割り当てられるラベルを定義できます。登録が完了した後、エージェントはクラスターのラベルを変更することはできません。クラスターラベルを追加するには、以下のHelmコマンドに`--set-string labels.KEY=VALUE`を追加します。ラベル`foo=bar`と`bar=baz`を追加するには、コマンドラインに`--set-string labels.foo=bar --set-string labels.bar=baz`を追加します。
 
@@ -199,7 +199,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_install-agent-for-a-predefined-cluster]
+[#_install_agent_for_a_predefined_cluster]
 === 事前定義されたクラスターのためのエージェントをインストール
 
 クライアントIDは、既存のラベルとそれにターゲットを絞ったリポジトリを持つ{product_name}マネージャーでクラスターを事前定義する目的で使用されます。
@@ -293,7 +293,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
-[#_create-cluster-registration-tokens]
+[#_create_cluster_registration_tokens]
 === クラスター登録トークンを作成します。
 
 [IMPORTANT]
@@ -309,12 +309,12 @@ my-cluster             1/1             1/1           k3d-cluster2-server-0   202
 
 クラスター登録トークンが忘れられるため、クラスターを再登録する必要がある場合は、新しい登録トークンをクラスターに与える必要があります。
 
-[#_token-ttl]
+[#_token_ttl]
 ==== トークンのTTL
 
 クラスター登録トークンは、ネームスペース内の任意のクラスターによって再利用できます。 トークンにはTTLを設定でき、特定の時間が経過した後に期限切れになります。
 
-[#_create-a-new-token]
+[#_create_a_new_token]
 ==== 新しいトークンを作成します。
 
 `ClusterRegistationToken`はネームスペース型であり、`GitRepo`および`ClusterGroup`リソースを作成するのと同じネームスペースで作成する必要があります。{product_name}でネームスペースがどのように使用されるかの詳細については、xref:explanations/namespaces.adoc[ネームスペース]に関するドキュメントを参照してください。 以下のYAMLで新しいトークンを作成します。
@@ -341,7 +341,7 @@ spec:
 while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
 ----
 
-[#_obtaining-token-value-agent-values-yaml]
+[#_obtaining_token_value_agent_values_yaml]
 ==== トークン値の取得（エージェントのvalues.yaml）
 
 トークン値には、ダウンストリームクラスターに{product_name}エージェントをインストールするために`helm install`に渡されることが期待される`values.yaml`ファイルのYAMLコンテンツが含まれています。
@@ -355,20 +355,20 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 
 `values.yaml`が準備できると、TTLの期限が切れるまで、各クラスターがそのを用いて登録を繰り返すことができます。
 
-[#_manager-initiated]
+[#_manager_initiated]
 == マネージャーによる開始
 
 マネージャーが開始する登録フローは、{product_name}マネージャー内に、データフィールドに`value`と呼ばれる有効なkubeconfigファイルを含むKubernetesの`Secret`を参照する`Cluster`リソースを作成することによって実現されます。
 
 [IMPORTANT]
 ====
-{product_name}スタンドアロン_Rancherなし_を使用している場合は、xref:how-tos-for-operators/installation.adoc#_configuration-for-multi-cluster[インストールの詳細]に記載されているようにインストールする必要があります。
+{product_name}スタンドアロン_Rancherなし_を使用している場合は、xref:how-tos-for-operators/installation.adoc#_configuration_for_multi_cluster[インストールの詳細]に記載されているようにインストールする必要があります。
 
 マネージャーが開始した登録は、Rancherダッシュボードからクラスタを追加する際に使用されます。
 ====
 
 
-[#_create-kubeconfig-secret]
+[#_create_kubeconfig_secret]
 === Kubeconfigシークレットを作成する
 
 このシークレットの形式は、 https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[形式]が https://github.com/kubernetes-sigs/cluster-api[cluster-api]で使用されるkubeconfigシークレットと一致することを意図しています。
@@ -386,7 +386,7 @@ data:
   value: YXBpVmVyc2lvbjogdjEKY2x1c3RlcnM6Ci0gY2x1c3RlcjoKICAgIHNlcnZlcjogaHR0cHM6Ly9leGFtcGxlLmNvbTo2NDQzCiAgbmFtZTogY2x1c3Rlcgpjb250ZXh0czoKLSBjb250ZXh0OgogICAgY2x1c3RlcjogY2x1c3RlcgogICAgdXNlcjogdXNlcgogIG5hbWU6IGRlZmF1bHQKY3VycmVudC1jb250ZXh0OiBkZWZhdWx0CmtpbmQ6IENvbmZpZwpwcmVmZXJlbmNlczoge30KdXNlcnM6Ci0gbmFtZTogdXNlcgogIHVzZXI6CiAgICB0b2tlbjogc29tZXRoaW5nCg==
 ----
 
-[#_create-cluster-resource]
+[#_create_cluster_resource]
 == クラスタリソースを作成する
 
 クラスタリソースはkubeconfigシークレットを参照する必要があります。

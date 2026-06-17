@@ -54,7 +54,7 @@ fleet analyze --json monitor.json
 fleet analyze --no-color monitor.json
 ----
 
-[#_output-modes]
+[#_output_modes]
 == Modos de salida
 
 - **Resumen (predeterminado)**: Visión general de alto nivel de recursos y diagnósticos
@@ -64,7 +64,7 @@ fleet analyze --no-color monitor.json
 - **Detallado**: Análisis completo que incluye información del controlador, consistencia de la API y eventos
 - **JSON**: Salida legible por máquina para scripts y automatización
 
-[#_multi-snapshot-analysis]
+[#_multi_snapshot_analysis]
 == Análisis de múltiples instantáneas
 
 Cuando tu archivo monitor.json contiene múltiples instantáneas (un objeto JSON por línea):
@@ -84,7 +84,7 @@ fleet analyze --all monitor.json
 fleet analyze --compare snapshot2.json snapshot1.json
 ----
 
-[#_see-also]
+[#_see_also]
 == VÉASE
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]

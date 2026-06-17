@@ -25,7 +25,7 @@ fleet monitor [flags]
   -h, --help                      help for monitor
 ----
 
-[#_quick-start]
+[#_quick_start]
 === 快速入门
 
 监控命令输出 **紧凑的 JSON**（每行一个快照）。使用 `jq` 进行格式化以提升可读性。
@@ -42,19 +42,19 @@ fleet monitor | fleet analyze
 fleet monitor --watch --interval 60 >> monitor.json
 ----
 
-[#_what-it-detects]
+[#_what_it_detects]
 === 检测内容
 
 监控命令执行全面诊断，以检测以下问题：
 
-[#_resource-lifecycle-issues]
+[#_resource_lifecycle_issues]
 ==== 资源生命周期问题
 *  **生成不匹配的捆绑包**：捆绑包未在其生命周期中进展（generation != observedGeneration）
 *  **卡住的捆绑部署**：捆绑部署中代理未应用新 deploymentIDs 的情况
 *  **多个最终处理器**：具有多个最终处理器的资源（表示存在错误 - 只有内容应具有多个最终处理器以进行引用计数，在 {product_name} v0.11.1 到 v0.14.x 中）
 *  **孤立资源**：具有无法被垃圾回收的删除时间戳的资源
 
-[#_data-consistency-problems]
+[#_data_consistency_problems]
 ==== 数据一致性问题
 * **API 时间旅行**：Kubernetes API 服务器返回过时的缓存数据（通过多次获取资源检测）
 * **提交哈希不匹配**:捆绑包/捆绑部署未更新到 GitRepo 的最新提交
@@ -62,42 +62,42 @@ fleet monitor --watch --interval 60 >> monitor.json
 * **UID不匹配**:拥有对已删除或重新创建资源的引用的 Secrets
 * **DeploymentID不匹配**:BundleDeployments where spec.deploymentID != status.appliedDeploymentID
 
-[#_target-matching-issues]
+[#_target_matching_issues]
 ==== 目标匹配问题
 * **没有部署的捆绑包**：捆绑包创建后，没有集群匹配目标选择器
 * **没有捆绑包的 GitRepos**：GitRepos 未创建任何捆绑包（可能是路径、目标或处理错误）
 * **没有集群的集群组**：集群组的选择器未匹配到任何集群
 * **孤立的捆绑部署**：其父捆绑包被删除的捆绑部署
 
-[#_performance-issues]
+[#_performance_issues]
 ==== 性能问题
 * **大型捆绑包**：捆绑包大于 1MB 可能会影响 etcd 性能
 * **缺失内容资源**:捆绑包关联了 `resourcesSHA256Sum`，但没有对应的内容资源
 * **高资源计数**:大量捆绑包资源可能导致 etcd 压力
 
-[#_agent-cluster-issues]
+[#_agent_cluster_issues]
 ==== 代理和集群问题
 * **代理未就绪**:集群中代理状态为未就绪
 * **缺失最后一次看到**:没有代理检测信号时间戳的集群
 * **过时的最后一次看到**:代理最近没有签到的集群（默认：24小时，可通过`--agent-staleness`配置）
 * **缺失代理捆绑包**：集群名称空间中缺少预期的代理捆绑部署
 
-[#_ownership-chain-issues]
+[#_ownership_chain_issues]
 ==== 所有权链问题
 * **所有权损坏**:没有 GitRepo 所有者的捆绑包，没有捆绑包所有者的捆绑部署
 * **无效的 Secret 所有者**：捆绑包 Secrets 中存在不正确或缺失的所有者引用
 
-[#_generation-observation-mismatches]
+[#_generation_observation_mismatches]
 ==== 生成/观察不匹配
 * **GitRepo 生成漂移**:GitRepo 生成 != 观察到的生成（控制器未处理更新）
 * **捆绑包 生成漂移**：捆绑包 生成 != 观察到的生成（控制器未处理更新）
 * **捆绑部署 同步生成漂移**：捆绑部署 同步生成 != 强制同步生成（代理未应用强制同步）
 * **内容过时生成**:内容资源具有过时的生成值
 
-[#_usage-examples]
+[#_usage_examples]
 === 使用示例
 
-[#_basic-monitoring]
+[#_basic_monitoring]
 ==== 基本监控
 
 [source,bash]
@@ -112,7 +112,7 @@ fleet monitor -n fleet-local | jq
 fleet monitor -n fleet-default | jq
 ----
 
-[#_continuous-monitoring]
+[#_continuous_monitoring]
 ==== 持续监控
 
 [source,bash]
@@ -124,7 +124,7 @@ fleet monitor --watch --interval 60 >> monitor.json
 fleet monitor --watch --interval 30 >> monitor.json
 ----
 
-[#_targeted-diagnostics]
+[#_targeted_diagnostics]
 ==== 针对性诊断
 
 [source,bash]
@@ -152,7 +152,7 @@ fleet monitor | jq '.diagnostics | {
 }'
 ----
 
-[#_comparing-states]
+[#_comparing_states]
 ==== 比较状态
 
 [source,bash]
@@ -167,10 +167,10 @@ kubectl edit gitrepo my-repo
 fleet monitor > after.json
 ----
 
-[#_common-troubleshooting-scenarios]
+[#_common_troubleshooting_scenarios]
 === 常见故障排除场景
 
-[#_scenario-1-bundle-not-deploying]
+[#_scenario_1_bundle_not_deploying]
 ==== 方案 1:Bundle 未部署
 
 [source,bash]
@@ -188,7 +188,7 @@ jq '.diagnostics.bundlesWithNoDeployments' bundle-status.json
 jq '.diagnostics.gitRepoBundleInconsistencies' bundle-status.json
 ----
 
-[#_scenario-2-agent-not-reporting-status]
+[#_scenario_2_agent_not_reporting_status]
 ==== 方案 2:代理未报告状态
 
 [source,bash]
@@ -203,7 +203,7 @@ fleet monitor | jq '.clusters[] | select(.agentStatus != "ready")'
 fleet monitor | jq '.clusters[] | {name, lastSeen, agentAge}'
 ----
 
-[#_scenario-3-resources-stuck-with-deletion-timestamps]
+[#_scenario_3_resources_stuck_with_deletion_timestamps]
 ==== 方案 3：资源被删除时间戳卡住
 
 [source,bash]
@@ -218,7 +218,7 @@ fleet monitor | jq '{
 fleet monitor | jq '.bundles[] | select(.deletionTimestamp != null) | {name, finalizers}'
 ----
 
-[#_scenario-4-commits-not-propagating]
+[#_scenario_4_commits_not_propagating]
 ==== 方案 4：提交未传播
 
 [source,bash]
@@ -235,7 +235,7 @@ fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies[] |
   select(.commitMismatch == true)'
 ----
 
-[#_scenario-5-performance-issues]
+[#_scenario_5_performance_issues]
 ==== 方案 5：性能问题
 
 [source,bash]
@@ -251,7 +251,7 @@ fleet monitor | jq '[.bundles[] | {name, size: .sizeBytes, sizeMB: (.sizeBytes /
 fleet monitor | jq '.diagnostics.bundlesWithMissingContent'
 ----
 
-[#_continuous-monitoring-workflow]
+[#_continuous_monitoring_workflow]
 === 持续监控工作流
 
 用于长期监控和趋势分析:
@@ -271,7 +271,7 @@ fleet analyze --diff /var/log/fleet-monitor.json > fleet-report-$(date +%Y%m%d).
 find /var/log -name "fleet-report-*.txt" -mtime +7 -delete
 ----
 
-[#_integration-with-alerting]
+[#_integration_with_alerting]
 === 与警报集成
 
 监控命令可以与监控系统集成：
@@ -297,10 +297,10 @@ fleet monitor | jq -r '
 '
 ----
 
-[#_understanding-diagnostics]
+[#_understanding_diagnostics]
 === 理解诊断
 
-[#_stuck-resources]
+[#_stuck_resources]
 ==== 卡住的资源
 
 当资源被认为是“卡住”时：
@@ -321,12 +321,12 @@ fleet monitor | jq -r '
 
 * `syncGeneration` != `forceSyncGeneration` 当 `forceSyncGeneration > 0` 时（与卡住的捆绑部署单独跟踪）
 
-[#_api-consistency-check]
+[#_api_consistency_check]
 ==== API一致性检查
 
 监控器对相同资源进行多次获取，以检测“时间旅行”——当Kubernetes API服务器由于过时的缓存返回不同的资源版本时。这至关重要，因为过时的数据可能会使捆绑包看起来卡住，而实际上它们正在进展。
 
-[#_commit-tracking]
+[#_commit_tracking]
 ==== 提交跟踪
 
 监控器在整个生命周期中跟踪Git提交哈希：
@@ -334,7 +334,7 @@ fleet monitor | jq -r '
 
 不匹配指示同步过程失败的地方。
 
-[#_performance-considerations]
+[#_performance_considerations]
 === 性能方面的考虑
 
 * 监控命令获取集群中的所有 Fleet 资源
@@ -343,7 +343,7 @@ fleet monitor | jq -r '
   * 运行频率较低（例如，每 120+ 秒而不是 60 秒）
   * 监控命令本身的资源使用情况
 
-[#_troubleshooting-the-monitor-command]
+[#_troubleshooting_the_monitor_command]
 === 故障排除监控命令
 
 如果监控命令失败：
@@ -364,7 +364,7 @@ kubectl get crds | grep fleet.cattle.io
 fleet monitor --verbose 2>&1 | tee monitor-debug.log
 ----
 
-[#_see-also]
+[#_see_also]
 === 另请参阅
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

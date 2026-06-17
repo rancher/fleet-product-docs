@@ -18,7 +18,7 @@ Esta é uma configuração simples, suportada para produção, ideal para desenv
 [#_prerequisites]
 == Pré-requisitos
 
-[#_helm-3]
+[#_helm_3]
 === Helm 3
 
 Fleet é distribuído como um gráfico Helm. Helm 3 é uma CLI apenas do cliente, sem componente do lado do servidor.
@@ -31,7 +31,7 @@ Para instalar o Helm 3, siga as instruções oficiais em https://helm.sh/docs/in
 Para uma configuração de cluster único, instale {product_name} no mesmo cluster que você pretende gerenciar com GitOps.
 {product_name} suporta qualquer versão do Kubernetes suportada pela comunidade, tipicamente {versions.next.kubernetes} ou posterior.
 
-[#_default-installation]
+[#_default_installation]
 == Instalação Padrão
 
 Instale os seguintes gráficos Helm para configurar {product_name}.
@@ -64,7 +64,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet \
     fleet/fleet
 ----
 
-[#_verify-the-installation]
+[#_verify_the_installation]
 === Verifique a instalação
 
 Execute os seguintes comandos para verificar se os pods do controlador {product_name} estão em execução:
@@ -85,10 +85,10 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 Agora você pode xref:how-tos-for-users/gitrepo-add.adoc[registrar repositórios Git] no namespace `fleet-local` para começar a implantar recursos.
 
-[#_tweaking-your-product-name-installation]
+[#_tweaking_your_product_name_installation]
 == Ajustando sua instalação do {product_name}
 
-[#_controller-and-agent-replicas]
+[#_controller_and_agent_replicas]
 === Réplicas do Controlador e do Agente
 
 A partir do {product_name} v0.13, o gráfico do Helm expõe configurações de contagem de réplicas para cada tipo de controlador e para o agente:
@@ -101,7 +101,7 @@ A partir do {product_name} v0.13, o gráfico do Helm expõe configurações de c
 Cada um tem como padrão uma réplica.
 
 
-[#_enabling-imagescan]
+[#_enabling_imagescan]
 === Habilitando o imagescan
 
 O recurso xref:how-tos-for-users/imagescan.adoc[imagescan] está desativado por padrão, o que significa que:
@@ -111,12 +111,12 @@ O recurso xref:how-tos-for-users/imagescan.adoc[imagescan] está desativado por 
 
 Para resolver isso, instale o Fleet com `--set imagescan.enabled=true`.
 
-[#_additional-ssh-known-hosts]
+[#_additional_ssh_known_hosts]
 === Hosts conhecidos adicionais do SSH
 
 Ao interagir com repositórios git através do SSH, as verificações rigorosas de chave de host estão habilitadas por padrão, o que significa que {product_name} rejeitará tentativas de conexão SSH para hosts para os quais não existe uma entrada `known_hosts`.
 
-Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_strict-host-key-checks[verificações rigorosas de chave de host].
+Para mais informações, consulte xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[verificações rigorosas de chave de host].
 
 Por padrão, o Fleet instala entradas `known_hosts` para alguns provedores de hospedagem git amplamente utilizados.
 
@@ -136,7 +136,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet 
   --set additionalKnownHosts={'ourgitserver.company ssh-rsa <fingerprint>','our-other-git-server.company ssh-ed25519 <fingerprint2>'}
 ----
 
-[#_multi-controller-installation-sharding]
+[#_multi_controller_installation_sharding]
 == Instalação Multi-Controlador: Sharding
 
 [#_deployment]
@@ -189,7 +189,7 @@ kubectl -n cattle-fleet-system get pods -l app=gitjob \
   -o=custom-columns='Name:.metadata.name,Shard-ID:.metadata.labels.fleet\.cattle\.io/shard-id,Node:spec.nodeName'
 ----
 
-[#_how-it-works]
+[#_how_it_works]
 === Como funciona
 
 Cada controlador do Fleet processa recursos rotulados com seu ID de shard.
@@ -218,7 +218,7 @@ IDs de shard desconhecidos (por exemplo, `boo`) são ignorados.
 
 Para adicionar ou remover shards, reimplante {product_name} com uma lista de shards atualizada.
 
-[#_configuration-for-multi-cluster]
+[#_configuration_for_multi_cluster]
 == Configuração para Multi-Cluster
 
 [CAUTION]
@@ -235,7 +235,7 @@ Para registro iniciado pelo gerenciador, detalhes adicionais do servidor API sã
 Sem eles, apenas o registro iniciado pelo agente é possível.
 ====
 
-[#_api-server-url-and-ca-certificate]
+[#_api_server_url_and_ca_certificate]
 === URL do Servidor API e Certificado CA
 
 O Fleet Manager requer acesso ao servidor API do Kubernetes.
@@ -252,7 +252,7 @@ clusters:
     server: https://example.com:6443
 ----
 
-[#_extract-ca-certificate]
+[#_extract_ca_certificate]
 ==== Extraia o Certificado CA
 
 O campo `certificate-authority-data` está codificado em Base64.
@@ -277,7 +277,7 @@ Para kubeconfigs de múltiplos clusters:
 kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem
 ----
 
-[#_extract-api-server]
+[#_extract_api_server]
 ==== Extraia o servidor API
 
 [source,bash]
@@ -319,7 +319,7 @@ ZXItY2FAMTU5ODM5MDQ0NzAeFw0yMDA4MjUyMTIwNDdaFw0zMDA4MjMyMTIwNDda
 -----END CERTIFICATE-----
 ----
 
-[#_install-for-multi-cluster]
+[#_install_for_multi_cluster]
 === Instalar para Múltiplos Clusters
 
 Assuma que a URL do servidor API é `https://example.com:6443` e o CA está em `ca.pem`.

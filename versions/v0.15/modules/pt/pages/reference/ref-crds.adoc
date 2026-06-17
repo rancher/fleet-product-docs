@@ -18,7 +18,7 @@
 * <<_gitreporestriction,Restrição de Repositório Git>>
 * <<_imagescan,ImageScan>>
 
-[#_sub-resources]
+[#_sub_resources]
 == Recursos Secundários
 
 * <<_bundledisplay,Exibição de Pacote>>

@@ -6,7 +6,7 @@
 [#_description]
 == Description
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Fix status conflict between agent and fleet-controller by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3005[#3005]

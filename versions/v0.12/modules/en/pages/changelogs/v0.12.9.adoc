@@ -5,7 +5,7 @@
 
 *Released on 2025-11-18 14:54:06 +0000 UTC UTC by `github-actions[bot]`.*
     
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * Update gomod-k8s-dependencies to v0.32.9 by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4231
 * Add userID to log messages by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4245

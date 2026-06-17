@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-07-17 16:29:25 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Honor Helm's MaxHistory when using drift correction by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2517[#2517]

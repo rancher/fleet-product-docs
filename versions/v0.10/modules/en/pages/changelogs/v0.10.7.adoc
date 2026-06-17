@@ -8,7 +8,7 @@
 [#_description]
 == Description
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Disable jobs cleanup cronjob if gitOps is disabled by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3125[#3125]

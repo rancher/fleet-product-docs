@@ -5,7 +5,7 @@
 
 *Released on 2025-09-18 09:00:23 +0000 UTC by `github-actions[bot]`.*
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * update hashicorp/go-getter to v1.7.9 and ulitunitz/xz t… by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4112
 

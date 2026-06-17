@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :doctype: book
 
-[#_create-gitrepo-instance]
+[#_create_gitrepo_instance]
 == Crea una instancia de GitRepo
 
 Los repositorios Git se registran creando un recurso `GitRepo` en Kubernetes. Consulta el xref:tutorials/tut-deployment.adoc[tutorial de creación de un despliegue] para ejemplos.
@@ -13,12 +13,12 @@ xref:explanations/gitrepo-content.adoc[Contenidos del Repositorio Git] tiene det
 Los campos disponibles del recurso personalizado GitRepo están documentados en la xref:reference/ref-gitrepo.adoc[referencia del recurso GitRepo] Añadiendo un Repositorio Git Privado
 [NOTE]
 ====
-{product_name} no soporta la autenticación del servidor proxy SSH al clonar <<_adding-a-private-git-repository,añadiendo-un-repositorio-git-privado>> o <<_using-private-helm-repositories,Usando Repositorios Helm Privados>>
+{product_name} no soporta la autenticación del servidor proxy SSH al clonar <<_adding_a_private_git_repository,añadiendo-un-repositorio-git-privado>> o <<_using_private_helm_repositories,Usando Repositorios Helm Privados>>
 . Utiliza autenticación HTTPS con un nombre de usuario y contraseña o un token de acceso personal.
 ====
 
 
-[#_proper-namespace]
+[#_proper_namespace]
 === Espacio de Nombres Correcto
 
 Los repositorios Git se añaden al gestor {product_name} utilizando el tipo de recurso personalizado `GitRepo`. El tipo `GitRepo` está en un espacio de nombres. Por defecto, Rancher creará dos espacios de trabajo {product_name}: 
@@ -26,11 +26,11 @@ Los repositorios Git se añaden al gestor {product_name} utilizando el tipo de r
 * `fleet-default` contiene todos los clústeres en sentido descendente que ya están registrados a través de Rancher.
 * `fleet-local` contendrá el clúster local por defecto.
 
-Si estás utilizando {product_name} en un estilo de xref:explanations/concepts.adoc[clúster único], el espacio de nombres siempre será *fleet-local*. Consulta xref:explanations/namespaces.adoc#_cluster-registration-namespace-fleet-local[registro de clúster] para más información sobre el espacio de nombres `fleet-local`.
+Si estás utilizando {product_name} en un estilo de xref:explanations/concepts.adoc[clúster único], el espacio de nombres siempre será *fleet-local*. Consulta xref:explanations/namespaces.adoc#_cluster_registration_namespace_fleet_local[registro de clúster] para más información sobre el espacio de nombres `fleet-local`.
 
 Para un estilo xref:explanations/concepts.adoc[multi-clúster], asegúrate de utilizar el repositorio correcto que se mapeará a los clústeres de destino adecuados.
 
-[#_override-workload-s-namespace]
+[#_override_workload_s_namespace]
 == Sobrescribir el Espacio de Nombres de la Carga de Trabajo
 
 El campo `targetNamespace` sobrescribirá cualquier espacio de nombres en el paquete. Si el despliegue contiene recursos de ámbito de clúster, fallará.
@@ -41,7 +41,7 @@ Toma precedencia sobre todas las demás definiciones de espacio de nombres:
 
 Las definiciones de espacio de nombres de carga de trabajo pueden ser restringidas con `allowedTargetNamespaces` en el recurso `GitRepoRestriction`.
 
-[#_adding-a-private-git-repository]
+[#_adding_a_private_git_repository]
 == Añadiendo un repositorio Git privado
 
 {product_name} admite los siguientes mecanismos de autenticación para repositorios privados:
@@ -105,7 +105,7 @@ La clave tiene que estar en formato PEM.
 ====
 
 
-[#_known-hosts]
+[#_known_hosts]
 === Hosts conocidos
 
 {product_name} admite poner `known_hosts` en el secreto SSH. Aquí hay un ejemplo de cómo añadirlo:
@@ -132,7 +132,7 @@ stringData:
     |1|YJr1VZoi6dM0oE+zkM0do3Z04TQ=|7MclCn1fLROZG+BgR4m1r8TLwWc= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==
 ----
 
-[#_strict-host-key-checks]
+[#_strict_host_key_checks]
 ==== Comprobaciones estrictas de claves de host
 
 El valor del gráfico `insecureSkipHostKeyChecks` define cómo se comporta Fleet con respecto a `known_hosts` al establecer conexiones SSH.
@@ -147,16 +147,16 @@ Tenga en cuenta que esto es compatible con Fleet buscando un secreto `gitcredent
 
 Si no existe tal secreto, o no hay entradas `known_hosts` disponibles en ese secreto, entonces Fleet utiliza su propio mapa de configuración `known-hosts`, creado recientemente en el momento de la instalación con entradas estáticas para los proveedores de git más utilizados.
 
-Más detalles xref:how-tos-for-operators/installation.adoc#_additional-ssh-known-hosts[aquí] sobre dónde provienen las entradas predeterminadas y cómo poblar entradas adicionales en el momento de la instalación.
+Más detalles xref:how-tos-for-operators/installation.adoc#_additional_ssh_known_hosts[aquí] sobre dónde provienen las entradas predeterminadas y cómo poblar entradas adicionales en el momento de la instalación.
 
 La ausencia del mapa de configuración, si no hay secreto disponible, se considera un síntoma de un despliegue incompleto de Fleet, y se informa como tal.
 
 Fleet solo utiliza una única fuente de entradas `known_hosts` a la vez. Esto significa que, incluso si un secreto contiene entradas inválidas (o insuficientes), entonces Fleet no buscará entradas válidas en el mapa de configuración. Esto se aplica a un secreto referenciado en un `GitRepo` así como a un posible secreto `gitcredential`, si no se referencia ningún secreto en el `GitRepo`.
 
-[#_using-http-auth]
+[#_using_http_auth]
 === Usando autenticación HTTP
 
-Cree un secreto que contenga el nombre de usuario y la contraseña. Puede reemplazar la contraseña con un token de acceso personal si es necesario. También vea xref:troubleshooting.adoc#_http-secrets-in-github[secretos HTTP en Github].
+Cree un secreto que contenga el nombre de usuario y la contraseña. Puede reemplazar la contraseña con un token de acceso personal si es necesario. También vea xref:troubleshooting.adoc#_http_secrets_in_github[secretos HTTP en Github].
 
 [source,bash]
 ----
@@ -180,7 +180,7 @@ Al igual que con SSH, haga referencia al secreto en su recurso GitRepo a través
 Al usar BitBucket y tokens de acceso, el nombre de usuario debe ser `x-token-auth`.
 ====
 
-[#_using-a-github-app]
+[#_using_a_github_app]
 === Usando una aplicación de GitHub
 
 Los siguientes campos son necesarios para habilitar {product_name} para autenticar a GitHub usando una aplicación de GitHub:
@@ -221,7 +221,7 @@ Rodear el valor, o el nombre de la variable de entorno (por ejemplo, `--from-lit
 
 Asegúrate de hacer referencia a ese secreto en tu recurso GitRepo a través de `clientSecretName`.
 
-[#_using-custom-ca-bundles]
+[#_using_custom_ca_bundles]
 === Usando paquetes CA personalizados
 
 Validar un repositorio utilizando un certificado firmado por una Autoridad Certificadora personalizada se puede hacer especificando un campo `cabundle` en un `GitRepo`.
@@ -237,13 +237,13 @@ Ten en cuenta que si existen secretos que especifican paquetes CA, por ejemplo, 
 endif::[]
 ====
 
-[#_using-private-helm-repositories]
+[#_using_private_helm_repositories]
 == Usando repositorios Helm privados
 
 [CAUTION]
 ====
 Las credenciales se utilizarán incondicionalmente para todos los repositorios Helm referenciados por el recurso GitRepo.
-Asegúrate de no filtrar credenciales mezclando repositorios públicos y privados. Usa xref:#_use-different-helm-credentials-for-each-path[credenciales Helm diferentes para cada vía], o divídelas en diferentes GitRepos, o usa `helmRepoURLRegex` para limitar el alcance de las credenciales a ciertos servidores.
+Asegúrate de no filtrar credenciales mezclando repositorios públicos y privados. Usa xref:#_use_different_helm_credentials_for_each_path[credenciales Helm diferentes para cada vía], o divídelas en diferentes GitRepos, o usa `helmRepoURLRegex` para limitar el alcance de las credenciales a ciertos servidores.
 ====
 
 
@@ -271,7 +271,7 @@ Por ejemplo, para añadir un secreto en kubectl, ejecuta
 
 Una vez creado el secreto, especifícalo en `gitRepo.spec.helmSecretName`. Asegúrate de que el secreto se crea en el mismo espacio de nombres que el GitRepo.
 
-[#_use-different-helm-credentials-for-each-path]
+[#_use_different_helm_credentials_for_each_path]
 === Utiliza diferentes credenciales de helm para cada vía
 
 {product_name} te permite definir credenciales únicas para cada vía de chart de Helm en un repositorio Git utilizando el campo helmSecretNameForPaths.
@@ -405,14 +405,14 @@ kubectl label secret path-auth-secret -n fleet-local resources.cattle.io/backup=
 Asegúrate de que la copia de seguridad esté cifrada para proteger credenciales sensibles.
 ====
 
-[#_storing-credentials-in-git]
+[#_storing_credentials_in_git]
 == Almacenando Credenciales en Git
 
 Se recomienda no almacenar credenciales en Git. Incluso si el repositorio está debidamente protegido, los secretos están en riesgo durante la clonación, etc.
 Como solución alternativa, herramientas como SOPS pueden cifrar credenciales.
 
 En su lugar, referencia secretos en el clúster de sentido descendente. Para paquetes de estilo manifiesto y estilo kustomize, haz esto en los manifiestos, por ejemplo, link:https://kubernetes.io/docs/tasks/inject-data-application/distribute-credentials-secure/#create-a-pod-that-has-access-to-the-secret-data-through-a-volume[montando los secretos] o link:https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-environment-variables[referenciándolos como variables de entorno].
-Los paquetes de estilo Helm pueden usar xref:explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom] para leer valores de un secreto en el clúster de sentido descendente.
+Los paquetes de estilo Helm pueden usar xref:explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom] para leer valores de un secreto en el clúster de sentido descendente.
 
 Al utilizar Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/[encriptación en reposo] y almacenar credenciales en Git, configura el clúster de sentido ascendente para incluir varios {product_name} CRD en la lista de recursos de encriptación:
 
@@ -424,12 +424,12 @@ Al utilizar Kubernetes link:https://kubernetes.io/docs/tasks/administer-cluster/
 - contents.fleet.cattle.io
 ----
 
-[#_backing-up-and-restoring]
+[#_backing_up_and_restoring]
 == Realizando copias de seguridad y restauración
 
 Al realizar copias de seguridad y restaurar {product_name} con cargas de trabajo existentes, ya sean GitRepos o HelmOps, considera:
 
-[#_kubernetes-api-server-availability]
+[#_kubernetes_api_server_availability]
 === Disponibilidad del servidor API de Kubernetes
 
 Un {product_name} agente en un clúster de sentido descendente monitoriza un espacio de nombres específico del clúster en el clúster de sentido ascendente.

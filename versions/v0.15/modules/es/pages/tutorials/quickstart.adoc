@@ -48,7 +48,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet \
     fleet/fleet
 ----
 
-[#_add-a-git-repo-to-watch]
+[#_add_a_git_repo_to_watch]
 == Añadir un repositorio de Git a vigilar
 
 Cambia `spec.repo` por tu repositorio de git preferido.  Los archivos de manifiesto de Kubernetes que deben ser desplegados deben estar en `/manifests` en tu repositorio.
@@ -72,7 +72,7 @@ EOF
 kubectl apply -f example.yaml
 ----
 
-[#_get-status]
+[#_get_status]
 == Obtener estado
 
 Obtener el estado de lo que está haciendo la Fleet
@@ -93,7 +93,7 @@ NAME       READY   UP-TO-DATE   AVAILABLE   AGE
 frontend   3/3     3            3           116m
 ----
 
-[#_next-steps]
+[#_next_steps]
 == Pasos siguientes
 
 ¿Necesitas...

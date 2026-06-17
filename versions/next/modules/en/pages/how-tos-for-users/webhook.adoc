@@ -20,7 +20,7 @@ For installations with many repositories or when you want to reduce latency (the
 * Bitbucket Server  
 * Gogs  
 
-[#_1-configure-the-webhook-service]
+[#_1_configure_the_webhook_service]
 == 1. Configure the Webhook Service
 
 {product_name} uses a `gitjob` service to handle webhook requests.  
@@ -127,7 +127,7 @@ This approach allows a smooth migration from Ingress Nginx to Traefik while keep
 You can configure https://kubernetes.io/docs/concepts/services-networking/ingress/#tls[TLS] on Ingress for secure communication.
 ====
 
-[#_2-configure-the-webhook-callback-url]
+[#_2_configure_the_webhook_callback_url]
 == 2. Configure the Webhook Callback URL
 
 Go to your Git provider and configure the webhook callback URL.  
@@ -151,7 +151,7 @@ Only `application/json` is supported due to limitations in the webhook library.
 When a webhook is configured, the polling interval automatically adjusts to one hour.
 ====
 
-[#_3-optional-configure-a-webhook-secret]
+[#_3_optional_configure_a_webhook_secret]
 == 3. (Optional) Configure a Webhook Secret
 
 The webhook secret validates the payload sent from your Git provider.  
@@ -169,7 +169,7 @@ Each supported provider uses a specific key name in the Kubernetes secret.
 | Azure DevOps | `azure-password`
 |===
 
-[#_option-1-configure-a-cluster-wide-secret]
+[#_option_1_configure_a_cluster_wide_secret]
 === Option 1: Configure a Cluster-Wide Secret
 
 In this approach, the secret applies to the entire cluster, and all GitRepos use it automatically.  
@@ -199,7 +199,7 @@ kubectl create secret generic gitjob-webhook \
   --from-literal=azure-password=pass123
 ----
 
-[#_option-2-configure-a-secret-per-gitrepo]
+[#_option_2_configure_a_secret_per_gitrepo]
 === Option 2: Configure a Secret per GitRepo
 
 You can define a unique webhook secret for each GitRepo.  
@@ -224,7 +224,7 @@ spec:
 
 If both a cluster-wide secret and a per-GitRepo secret exist, {product_name} uses the per-GitRepo secret.
 
-[#_4-test-the-webhook]
+[#_4_test_the_webhook]
 == 4. Test the Webhook
 
 Go to your Git provider and test the webhook connection. You should receive an HTTP response code confirming the webhook delivery.

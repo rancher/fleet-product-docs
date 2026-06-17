@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2025-05-16 07:43:52 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 Prevent empty Patch updates from Drift reconciler by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3577[#3577]

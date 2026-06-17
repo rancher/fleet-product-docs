@@ -10,7 +10,7 @@ L'analyse d'image dans Fleet vous permet de scanner votre dépôt d'images, de r
 Cette fonctionnalité est considérée comme une fonctionnalité expérimentale.
 Par défaut, cette option est désactivée.
 
-Plus d'informations xref:how-tos-for-operators/installation.adoc#_enabling-imagescan[ici] sur la façon de l'activer.
+Plus d'informations xref:how-tos-for-operators/installation.adoc#_enabling_imagescan[ici] sur la façon de l'activer.
 ====
 
 

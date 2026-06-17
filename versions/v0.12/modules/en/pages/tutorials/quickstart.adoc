@@ -49,7 +49,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet \
     fleet/fleet
 ----
 
-[#_add-a-git-repo-to-watch]
+[#_add_a_git_repo_to_watch]
 == Add a Git Repo to Watch
 
 Change `spec.repo` to your git repo of choice.  Kubernetes manifest files that should
@@ -74,7 +74,7 @@ EOF
 kubectl apply -f example.yaml
 ----
 
-[#_get-status]
+[#_get_status]
 == Get Status
 
 Get status of what fleet is doing

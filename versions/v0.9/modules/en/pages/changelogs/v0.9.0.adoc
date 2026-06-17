@@ -5,12 +5,12 @@
 
 *(rancherio-gh-m) released this 2023-11-07 12:30:45 +0000 UTC*
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
 {product_name} 0.9 contains major https://github.com/rancher/gitjob/releases/tag/v0.1.96[changes to Gitjob]. The existing git handling code has been unified and now uses the go-git library. The Tekton CLI, which was used for cloning, has been removed. The release improves the performance on downstream clusters, by using a caching client with the Helm SDK.
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Add dev scripts to simplify using E2E tests by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/1764[#1764]
@@ -43,7 +43,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.8.0...v0.9.0[v0.8.0\...v0.9.0]
 
-[#_known-issues]
+[#_known_issues]
 === Known Issues
 
 * Gitjob might report "git binary not found" if the path within the repository does not exist. https://github.com/rancher/rancher/issues/43499[rancher/rancher#43499]

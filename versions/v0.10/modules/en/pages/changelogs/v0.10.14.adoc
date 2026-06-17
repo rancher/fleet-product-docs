@@ -8,7 +8,7 @@
 [#_description]
 == Description
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Update gomod-k8sio-dependencies (release/v0.10) by @renovate-rancher in https://github.com/rancher/fleet/pull/3693[#3693]

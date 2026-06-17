@@ -38,7 +38,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --username string                        Basic auth username for helm repo
 ----
 
-[#_options-inherited-from-parent-commands]
+[#_options_inherited_from_parent_commands]
 == Options inherited from parent commands
 
 ----
@@ -48,7 +48,7 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
-[#_see-also]
+[#_see_also]
 === SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

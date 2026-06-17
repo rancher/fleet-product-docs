@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2025-04-22 14:44:59 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Avoids returning nil map when options.Helm is used by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3572[#3572]

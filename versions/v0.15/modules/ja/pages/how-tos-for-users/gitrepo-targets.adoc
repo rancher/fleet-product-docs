@@ -20,7 +20,7 @@ endif::[]
 
 `GitRepos`をダウンストリームクラスターにデプロイする際には、クラスターをターゲットにマッピングする必要があります。
 
-[#_defining-targets]
+[#_defining_targets]
 == ターゲットの定義
 
 `GitRepo`のデプロイメントターゲットは、クラスターまたはクラスターグループと一致させるために`spec.targets`フィールドを使用して行います。YAML仕様は以下の通りです。
@@ -60,7 +60,7 @@ spec:
     clusterName: cluster1
 ----
 
-[#_target-matching]
+[#_target_matching]
 == ターゲットの一致
 
 `GitRepo`と同じ名前空間内のすべてのクラスターおよびクラスターグループは、すべてのターゲットに対して評価されます。
@@ -88,7 +88,7 @@ targets:
 
 Rancherで{product_name}を使用する際は、`clusters.fleet.cattle.io`リソースの名前を入力してください。
 
-[#_default-target]
+[#_default_target]
 == デフォルトターゲット
 
 `GitRepo`にターゲットが設定されていない場合、デフォルトターゲットの値が適用されます。 デフォルトターゲットの値は以下の通りです。
@@ -102,7 +102,7 @@ targets:
 
 これは、デフォルトの場所をセットアップしたい場合、未設定のGitReposが向かうクラスターグループをdefaultと呼び、そこにクラスターを追加するだけで済むことを意味します。
 
-[#_customization-per-cluster]
+[#_customization_per_cluster]
 == クラスターごとのカスタマイズ
 
 [IMPORTANT]
@@ -169,7 +169,7 @@ targetCustomizations:
 構成管理はデプロイメントに限定されず、一般的な構成管理に拡張できます。{product_name}は、任意のクラスターセット間でのカスタマイズを通じて、自動的に構成管理を適用できます。
 ====
 
-[#_limitations-when-overriding-helm-chart-settings-with-targetcustomizations]
+[#_limitations_when_overriding_helm_chart_settings_with_targetcustomizations]
 === `targetCustomizations` を使用して Helm チャート設定を上書きする際の制限
 
 `helm.chart`、`helm.repo`、および `helm.version` は `targetCustomizations` で指定できますが、これらのフィールドを上書きすることには重要な制限があります。
@@ -190,7 +190,7 @@ targetCustomizations:
 * 各環境のために別々の `GitRepo` リソースを作成します。
 
 
-[#_additional-examples]
+[#_additional_examples]
 == 追加の例
 
 生の Kubernetes YAML、Helm チャート、Kustomize、およびその三者の組み合わせを使用した例は、 https://github.com/rancher/fleet-examples/[{product_name} Examples リポジトリ] にあります。

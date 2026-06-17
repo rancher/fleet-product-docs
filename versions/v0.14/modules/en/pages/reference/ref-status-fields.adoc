@@ -3,7 +3,7 @@
 :page-revdate: {revdate}
 :page-aliases: /ref-status-fields
 
-[#_display-states]
+[#_display_states]
 == Display States
 
 GitRepos, HelmOps, Clusters, and Bundles have different states in each phase of applying Bundles.
@@ -63,7 +63,7 @@ From best to worst:
 
 [#_bundles]
 == Bundles
-[#_bundle-statuses]
+[#_bundle_statuses]
 === Bundle Statuses
 
 * *Ready* : Bundles have been deployed, and all resources are ready. If not, the `message` field of the `Ready` condition contains an aggregation of BundleDeployment states.
@@ -105,14 +105,14 @@ From best to worst:
 * *Stalled* : The controller encountered an error or failed to make progress.
 * *Accepted* : GitRepo restrictions were applied and external Helm secrets exist.
 
-[#_helmop-conditions]
+[#_helmop_conditions]
 == HelmOp Conditions
 
 * *Ready* : `True` if all BundleDeployments were deployed successfully; `False` if any are not ready.
 * *Accepted* : `False` if Helm options are invalid, chart versions can’t be resolved, polling failed, or Bundle creation failed.
 * *Polled* : `True` if polling succeeded. `False` otherwise, with an error message.
 
-[#_status-display]
+[#_status_display]
 == status.display
 
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
@@ -122,7 +122,7 @@ The `status.display` fields are shared between GitRepos and GitOps. Both resourc
 * `message` : Contains relevant deployment condition messages.
 * `error` : `true` if an error message exists.
 
-[#_resources-list]
+[#_resources_list]
 == Resources List
 
 Resources deployed to target clusters are categorized under `GitRepos` and `HelmOps`.
@@ -188,7 +188,7 @@ The `BundleDeployment` resource includes two additional fields for better visibi
 
 The `status.ResourceCounts` list for HelmOps is derived from `bundleDeployments`.
 
-[#_resource-counts]
+[#_resource_counts]
 == Resource Counts
 
 This shows how resource counts propagate between resources.
@@ -209,7 +209,7 @@ In Clusters, `status.ResourceCounts` is derived from GitRepos.
 
 In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.
 
-[#_class-diagram]
+[#_class_diagram]
 == Class Diagram
 
 image::ClusterGroups_classDiagram.svg[Propagation of Ready status]

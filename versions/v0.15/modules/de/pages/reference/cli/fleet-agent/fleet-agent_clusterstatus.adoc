@@ -20,7 +20,7 @@ fleet-agent clusterstatus [flags]
       --namespace string          system namespace is the namespace, the agent runs in, e.g. cattle-fleet-system
 ----
 
-[#_see-also]
+[#_see_also]
 == SIEHE AUCH
 
 * xref:/reference/cli/fleet-agent/fleet-agent.adoc[Fleet agent]     - Verwalten Sie die Operationen mit dem Fleet agent, der mit dem Fleet-Controller kommuniziert

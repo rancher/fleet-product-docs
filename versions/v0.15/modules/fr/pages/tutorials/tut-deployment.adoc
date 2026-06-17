@@ -15,7 +15,7 @@ Pour plus de détails sur les options disponibles par dépôt Git, voir xref:how
 ====
 
 
-[#_single-cluster-examples]
+[#_single_cluster_examples]
 == Exemples de cluster unique
 
 Tous les exemples déploieront du contenu sur des clusters sans personnalisations par cluster. C'est un bon point de départ pour comprendre les bases de la structuration des dépôts Git pour{product_name}.
@@ -144,7 +144,7 @@ EOF
 ----
 ====
 
-[#_multi-cluster-examples]
+[#_multi_cluster_examples]
 == Exemples Multi-Cluster
 
 Les exemples ci-dessous déploieront un multi-repo git sur plusieurs clusters à la fois et configureront l'application différemment pour chaque cible.

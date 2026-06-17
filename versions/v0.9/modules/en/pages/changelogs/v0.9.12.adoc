@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-11-04 06:02:50 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 * Update Kubernetes libraries to v1.28.12 v0.29.7 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3107
 * Update gitjob version to 0.9.18 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3106

@@ -65,7 +65,7 @@ fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluste
 fleet bundlediff -n cluster-fleet-local-local-abc123
 ----
 
-[#_see-also]
+[#_see_also]
 == Reportez-vous également à la section
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]     - Gérer les opérations de {product_name}

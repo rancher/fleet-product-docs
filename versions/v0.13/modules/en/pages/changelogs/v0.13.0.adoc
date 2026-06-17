@@ -3,12 +3,12 @@
 :page-revdate: {revdate}
 :page-date: 2025-07-23 15:09:14 +0000 UTC
 
-[#_breaking-changes]
+[#_breaking_changes]
 == Breaking changes
 
-* When using SSH to point to a git repository, Fleet checks host keys by default, rejecting connection attempts to unknown hosts xref:how-tos-for-users/gitrepo-add.adoc#_known-hosts[Add GitRepo], by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3523
+* When using SSH to point to a git repository, Fleet checks host keys by default, rejecting connection attempts to unknown hosts xref:how-tos-for-users/gitrepo-add.adoc#_known_hosts[Add GitRepo], by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3523
 
-[#_notable-changes]
+[#_notable_changes]
 == Notable changes
 
 * HelmOps and OCI storage receive new features and are no longer experimental
@@ -18,9 +18,9 @@
 [#_additions]
 == Additions
 
-* Fleet now supports a new, user-driven bundle scan method, for more flexibility. The usual scanning method is still supported xref:explanations/gitrepo-content.adoc#_alternative-scan-explicitly-defined-by-the-user[Alterate scan], by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3480
-* Replica counts are now configurable, for controllers as well as agents xref:how-tos-for-operators/installation.adoc#_controller-and-agent-replicas[Controller and agent replicas], by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3457
-* Fleet can now handle a separate webhook secret for each GitRepo xref:how-tos-for-users/webhook.adoc#_option-2-configure-a-secret-per-gitrepo[Define a secret for each GitRepo], by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3490
+* Fleet now supports a new, user-driven bundle scan method, for more flexibility. The usual scanning method is still supported xref:explanations/gitrepo-content.adoc#_alternative_scan_explicitly_defined_by_the_user[Alterate scan], by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3480
+* Replica counts are now configurable, for controllers as well as agents xref:how-tos-for-operators/installation.adoc#_controller_and_agent_replicas[Controller and agent replicas], by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3457
+* Fleet can now handle a separate webhook secret for each GitRepo xref:how-tos-for-users/webhook.adoc#_option_2_configure_a_secret_per_gitrepo[Define a secret for each GitRepo], by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3490
 * Fleet charts support extra labels and annotations, propagating them to controller deployments by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3531 and by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3664
 * Agent leader election is now configurable (https://github.com/rancher/fleet/blob/main/charts/fleet/values.yaml#L135-L138[example]), by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3463
 * The old service account migration is removed by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3601
@@ -41,7 +41,7 @@ HelmOps is no longer experimental.
 
 Metrics and cluster statuses now include HelmOps data. See the xref:how-tos-for-users/helm-ops.adoc[Fleet Helm documentation] for more details.
 
-[#_oci-storage]
+[#_oci_storage]
 === OCI Storage
 
 OCI storage is no longer experimental, and is enabled by default, although bundles will not use it by default. It can still be disabled by setting `OCI_STORAGE=false` in `extraEnv` when installing Fleet.
@@ -50,7 +50,7 @@ It also supports garbage collection on a best-effort basis, as well as improved 
     
 See the xref:how-tos-for-users/oci-storage.adoc[Fleet OCI documentation] for more details.
 
-[#_traceability-improvements]
+[#_traceability_improvements]
 === Traceability improvements
 
 Provenance of Docker manifests is now attested. Patch by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3846
@@ -90,7 +90,7 @@ And also:
 * Using SSH with keys to download Helm charts should work again by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3863
 
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * The benchmark suite:
     * Outputs a report improved by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3550
@@ -110,7 +110,7 @@ And also:
 * Fleet v0.13.0 supports Kubernetes 1.33, by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3734
 
 
-[#_new-contributors]
+[#_new_contributors]
 == New Contributors
 
 * https://github.com/rbreddy[@rbreddy] made their first contribution in https://github.com/rancher/fleet/pull/3485

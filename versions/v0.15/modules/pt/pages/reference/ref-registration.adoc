@@ -2,36 +2,36 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_how-does-cluster-registration-work]
+[#_how_does_cluster_registration_work]
 == Como funciona o registro de cluster?
 
 Este texto descreve o registro de cluster com mais detalhes técnicos. O texto ignora o registro iniciado pelo agente, pois não é comumente utilizado.
-xref:how-tos-for-operators/cluster-registration.adoc#_agent-initiated[O registro iniciado pelo agente] é xref:how-tos-for-operators/cluster-registration.adoc#_create-cluster-registration-tokens["\`ClusterRegistrationToken` primeiro"], o que significa que a pré-criação de um cluster é opcional.
+xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[O registro iniciado pelo agente] é xref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["\`ClusterRegistrationToken` primeiro"], o que significa que a pré-criação de um cluster é opcional.
 
 Veja xref:how-tos-for-operators/cluster-registration.adoc[Registrar Clusters Descendentes] para aprender como registrar clusters.
 
-[#_cluster-first]
+[#_cluster_first]
 === Cluster primeiro
 
 `fleet-controller` inicia e pode inicializar o recurso do cluster local. No Rancher, a criação do recurso do cluster local é tratada pelo controlador fleetcluster, mas, de outra forma, o processo é idêntico.
 
 O processo é idêntico para o cluster local ou qualquer cluster downstream. Começa criando um recurso de cluster, que se refere a um segredo kubeconfig.
 
-[#_creating-the-bootstrap-secret-for-the-downstream-cluster]
+[#_creating_the_bootstrap_secret_for_the_downstream_cluster]
 === Criando o Segredo de Inicialização para o Cluster downstream
 
 Nesta etapa, um `ClusterRegistationToken` e uma conta de serviço "importar" são criados com base em um recurso `Cluster`.
 
 O controlador {product_name} cria um xref:explanations/architecture.adoc#_security[`ClusterRegistrationToken`] e aguarda sua conclusão. O `ClusterRegistationToken` aciona a criação da conta de serviço "importar", que pode criar `ClusterRegistrations` e ler qualquer segredo no namespace de registro do sistema (por exemplo, "cattle-fleet-clusters-system"). O controlador `import.go` se enfileirará até que a conta de serviço "importar" exista, pois essa conta é necessária para criar o segredo `fleet-agent-bootstrap`.
 
-[#_creating-the-product-name-agent-deployment]
+[#_creating_the_product_name_agent_deployment]
 === Criando o {product_name} Implantação do Agente
 
 O controlador {product_name} agora criará a implantação do agente {product_name} e o segredo de inicialização no cluster descendente.
 
 O segredo de inicialização contém a URL do servidor API do cluster ascendente e é usado para construir um kubeconfig para acessar o cluster ascendente. Ambos os valores são retirados do configmap de configuração do controlador {product_name}. Esse configmap faz parte do chart Helm.
 
-[#_product-name-agent-starts-registration-upgrades-to-request-account]
+[#_product_name_agent_starts_registration_upgrades_to_request_account]
 === {product_name} Agente Inicia Registro, Atualiza para Conta de Solicitação
 
 O agente usa a conta 'importar' para fazer upgrade para uma conta de solicitação.
@@ -46,7 +46,7 @@ O novo kubeconfig usa a conta "solicitação". A conta "solicitação" pode aces
 
 image::FleetRegistrationToken.svg[Estático, 600]
 
-[#_product-name-agent-is-registered-watches-for-bundledeployments]
+[#_product_name_agent_is_registered_watches_for_bundledeployments]
 === {product_name} Agente está Registrado, Observa por `BundleDeployments`
 
 Neste ponto, o agente está totalmente registrado e persistirá a conta 'solicitação' em um segredo `fleet-agent`.
@@ -54,7 +54,7 @@ A URL do servidor API e o CA são copiadas do segredo de inicialização, que he
 
 O segredo de inicialização é excluído. Quando o agente reiniciar, ele não irá se registrar novamente, uma vez que o segredo de inicialização está ausente.
 
-O agente começa a observar seu xref:explanations/namespaces.adoc#_cluster-namespaces[namespace do cluster] para `BundleDeployments`. Neste ponto, o agente está pronto para implantar cargas de trabalho.
+O agente começa a observar seu xref:explanations/namespaces.adoc#_cluster_namespaces[namespace do cluster] para `BundleDeployments`. Neste ponto, o agente está pronto para implantar cargas de trabalho.
 
 [#_notes]
 === Notes
@@ -67,7 +67,7 @@ O agente começa a observar seu xref:explanations/namespaces.adoc#_cluster-names
 [#_diagram]
 == Diagrama
 
-[#_registration-flow]
+[#_registration_flow]
 === Fluxo de Registro
 
 [mermaid, format=svg]
@@ -128,7 +128,7 @@ graph TD
     B4 --> C1
 ....
 
-[#_registration-process-and-controllers]
+[#_registration_process_and_controllers]
 === Processo de Registro e Controladores
 
 Análise detalhada do processo de registro para clusters. Isso mostra a interação de controladores, recursos e contas de serviço durante o registro de um novo cluster downstream ou do cluster local.
@@ -136,12 +136,12 @@ Análise detalhada do processo de registro para clusters. Isso mostra a interaç
 É importante notar que existem várias maneiras de iniciar isso:
 
 * Criando uma configuração de bootstrap. {product_name} faz isso para o agente local.
-* Criando um recurso `Cluster` com um kubeconfig. O Rancher faz isso para clusters downstream. Veja xref:how-tos-for-operators/cluster-registration.adoc#_manager-initiated[registro iniciado pelo gerente].
-* Crie um recurso `ClusterRegistrationToken`, opcionalmente crie um recurso `Cluster` para um cluster pré-definido (`clientID`). Veja xref:how-tos-for-operators/cluster-registration.adoc#_agent-initiated[registro iniciado pelo agente].
+* Criando um recurso `Cluster` com um kubeconfig. O Rancher faz isso para clusters downstream. Veja xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[registro iniciado pelo gerente].
+* Crie um recurso `ClusterRegistrationToken`, opcionalmente crie um recurso `Cluster` para um cluster pré-definido (`clientID`). Veja xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[registro iniciado pelo agente].
 
 image::FleetRegistration.svg[Registro]
 
-[#_secrets-during-agent-deployment]
+[#_secrets_during_agent_deployment]
 === Segredos durante a Implantação do Agente
 
 Este diagrama mostra os recursos criados durante o registro e foca na configuração do servidor API do k8s.
@@ -156,14 +156,14 @@ Há um caso especial, se o agente for para o cluster local/"inicializar", os val
 
 image::FleetRegistrationSecrets.svg[Segredos de Registro]
 
-[#_product-name-cluster-registration-in-rancher]
+[#_product_name_cluster_registration_in_rancher]
 == {product_name} Registro de Cluster no Rancher
 
 O Rancher instala o chart Helm do Fleet. A URL do servidor API e o CA são https://github.com/rancher/rancher/blob/release/v2.9/pkg/controllers/dashboard/fleetcharts/controller.go#L111-L112[derivados das configurações do Rancher].
 
 {product_name} passará esses valores para um agente {product_name}, para que ele possa se conectar de volta ao controlador {product_name}.
 
-[#_import-cluster-into-rancher]
+[#_import_cluster_into_rancher]
 === Importar Cluster para o Rancher
 
 Quando o usuário executa `curl | kubectl apply`, o manifesto aplicado inclui a implantação do agente Rancher.

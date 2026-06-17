@@ -25,7 +25,7 @@ A cluster refers to:
 * a https://kubernetes.io/docs/concepts/architecture/[Kubernetes cluster] managed by {product_name}
 * a `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[resource] in Fleet's API, which {product_name} uses to manage that Kubernetes cluster
 
-[#_continuous-delivery-deployment]
+[#_continuous_delivery_deployment]
 == Continuous Delivery/Deployment
 
 Definitions and distinctions between Continuous Delivery and Continuous Deployment greatly vary, for instance
@@ -35,13 +35,13 @@ depending on:
 
 This much is clear, though: {product_name}'s goal is to make it easier to automate deployments.
 
-[#_custom-resource]
+[#_custom_resource]
 == Custom Resource
 
 See https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[kubernetes custom resource official documentation].
 In short, a custom resource is a resource defined for the purposes of an application (in our case {product_name}), to extend the set of resources supported by the Kubernetes API (pods, deployments, services, etc).
 
-[#_custom-resource-definition]
+[#_custom_resource_definition]
 == Custom Resource Definition
 
 See https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[kubernetes custom resource definitions official documentation] from the Kubernetes docs.
@@ -55,12 +55,12 @@ whether part of a user workload or part of {product_name} itself, such as an age
 * the action of deploying a user workload, which means {product_name} reading configuration (`GitRepo`, `fleet.yaml`, etc) and,
 as a result, creating resources on target clusters.
 
-[#_downstream-cluster]
+[#_downstream_cluster]
 == Downstream Cluster
 
 A downstream cluster is a Kubernetes cluster where user workloads will run, without any Fleet controllers living there. It is a target cluster for Fleet, where only a Fleet agent lives beside user workloads.
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == fleet.yaml
 
 A `fleet.yaml` file lives in a git repository and stores options for a bundle and bundle deployments to be generated from that bundle. More information is available xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
@@ -82,7 +82,7 @@ Creating a `GitRepo` pointing to a set of paths in a git repository enables {pro
 
 Refers to a https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[Kubernetes label].
 
-[#_multi-cluster]
+[#_multi_cluster]
 == Multi-Cluster
 
 A multi-cluster setup involves more than one cluster: the upstream cluster, needed to manage deployment of workloads, and at least one downstream cluster.
@@ -128,7 +128,7 @@ Bundledeployment and a few others.
 
 {product_name} uses this word in the context of determining where a workload will run. This represents a destination cluster for a workload.
 
-[#_upstream-cluster]
+[#_upstream_cluster]
 == Upstream Cluster
 
 A Kubernetes cluster where Fleet controllers run. This is the cluster where `GitRepo`s, bundles and bundle deployments are created. Also called management cluster.

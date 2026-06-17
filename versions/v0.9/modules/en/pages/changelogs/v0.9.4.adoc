@@ -5,10 +5,10 @@
 
 *(rancherio-gh-m) released this 2024-05-02 12:48:10 +0000 UTC*
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Bump github.com/hashicorp/go-getter to v1.7.4 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2350[#2350]

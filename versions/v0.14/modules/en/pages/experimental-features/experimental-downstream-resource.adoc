@@ -11,9 +11,9 @@ This is an experimental feature.
 From {product_name} v0.14.0 onwards, {product_name} supports propagating external resources to downstream clusters.
 
 This simplifies dealing with dependencies of charts, such as values coming from external resources.
-See also xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom].
+See also xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
 
-[#_how-it-works]
+[#_how_it_works]
 == How it works
 
 HelmOps support a new `downstreamResources` field, which can be used to reference resources by kind and name.

@@ -20,7 +20,7 @@ Este enfoque solo se aplica si estás ejecutando {product_name} en un estilo de 
 
 Al desplegar `GitRepos` en clústeres en sentido descendente, los clústeres deben estar mapeados a un objetivo.
 
-[#_defining-targets]
+[#_defining_targets]
 == Definiendo Objetivos
 
 Los objetivos de despliegue de `GitRepo` se realizan utilizando el campo `spec.targets` para hacer coincidir clústeres o grupos de clústeres. La especificación YAML es la siguiente.
@@ -60,7 +60,7 @@ spec:
     clusterName: cluster1
 ----
 
-[#_target-matching]
+[#_target_matching]
 == Coincidencia de Objetivos
 
 Todos los clústeres y grupos de clústeres en el mismo espacio de nombres que el `GitRepo` serán evaluados contra todos los objetivos.
@@ -88,7 +88,7 @@ targets:
 
 Al usar {product_name} en Rancher, asegúrate de poner el nombre del recurso `clusters.fleet.cattle.io`.
 
-[#_default-target]
+[#_default_target]
 == Objetivo por defecto
 
 Si no se establece un objetivo para el `GitRepo`, se aplica el valor de objetivos por defecto.  El valor de objetivos por defecto es el siguiente.
@@ -102,7 +102,7 @@ targets:
 
 Esto significa que si deseas configurar una ubicación por defecto a la que irán los GitRepos no configurados, solo tienes que crear un grupo de clústeres llamado por defecto y añadirle clústeres.
 
-[#_customization-per-cluster]
+[#_customization_per_cluster]
 == Personalización por clúster
 
 [IMPORTANT]
@@ -169,7 +169,7 @@ targetCustomizations:
 La gestión de la configuración no se limita a los despliegues, sino que puede ampliarse a la gestión general de la configuración. {product_name} es capaz de aplicar la gestión de la configuración a través de la personalización entre cualquier conjunto de clústeres de forma automática.
 ====
 
-[#_limitations-when-overriding-helm-chart-settings-with-targetcustomizations]
+[#_limitations_when_overriding_helm_chart_settings_with_targetcustomizations]
 === Limitaciones al sobrescribir la configuración del chart de Helm con `targetCustomizations`
 
 Aunque `helm.chart`, `helm.repo` y `helm.version` pueden especificarse en `targetCustomizations`, sobrescribir estos campos tiene limitaciones importantes.
@@ -190,7 +190,7 @@ Si diferentes entornos requieren diferentes charts o registros, utiliza uno de l
 * Crea recursos `GitRepo` separados para cada entorno.
 
 
-[#_additional-examples]
+[#_additional_examples]
 == Ejemplos adicionales
 
 Ejemplos utilizando YAML de Kubernetes en bruto, charts de Helm, Kustomize y combinaciones de los tres se encuentran en el https://github.com/rancher/fleet-examples/[{product_name} repositorio de Ejemplos].

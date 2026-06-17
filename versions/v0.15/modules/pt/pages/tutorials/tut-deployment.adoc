@@ -15,7 +15,7 @@ Para mais detalhes sobre as opções disponíveis para cada repositório Git, ve
 ====
 
 
-[#_single-cluster-examples]
+[#_single_cluster_examples]
 == Exemplos de Cluster Único
 
 Todos os exemplos implantarão conteúdo em clusters sem personalizações por cluster. Este é um bom ponto de partida para entender o básico de como estruturar repositórios Git para{product_name}.
@@ -144,7 +144,7 @@ EOF
 ----
 ====
 
-[#_multi-cluster-examples]
+[#_multi_cluster_examples]
 == Exemplos de Múltiplos Clusters
 
 Os exemplos abaixo implantarão vários repositórios Git em vários clusters ao mesmo tempo e configurarão o aplicativo de forma diferente para cada alvo.

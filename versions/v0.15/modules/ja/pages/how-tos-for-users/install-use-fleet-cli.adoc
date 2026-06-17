@@ -16,12 +16,12 @@
 詳細については、xref:how-tos-for-operators/installation.adoc[Fleetのインストール]を参照してください。
 ====
 
-[#_install-fleet-cli]
+[#_install_fleet_cli]
 == Install Fleet CLI
 
 Fleet CLIは、link:https://github.com/rancher/fleet/releases[Fleet GitHubリリースページ]からダウンロードできるスタンドアロンのバイナリです。
 
-[#_linux-macos]
+[#_linux_macos]
 === Linux/macOS
 
 [source,bash]
@@ -33,7 +33,7 @@ chmod +x fleet
 sudo mv fleet /usr/local/bin/
 ----
 
-[#_windows-powershell]
+[#_windows_powershell]
 === Windows（PowerShell）
 
 [source,powershell]
@@ -41,7 +41,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
-[#_verify-installation]
+[#_verify_installation]
 === インストールを確認してください
 
 [source,bash]
@@ -59,7 +59,7 @@ fleet --version
 * Helmがインストールされています。
 * Fleet CLIはインストールされており、ターミナルでアクセス可能です。
 
-[#_verify-prerequisites]
+[#_verify_prerequisites]
 === 前提条件の確認
 
 [source,bash]
@@ -69,7 +69,7 @@ helm version
 fleet --version
 ----
 
-[#_key-commands]
+[#_key_commands]
 == 主要コマンド
 
 {product_name}は、バンドルを作成、プレビュー、およびデプロイするためのいくつかのCLIコマンドを提供します。これらのコマンドは、デバッグやバンドルライフサイクルの理解に役立ちます。
@@ -92,13 +92,13 @@ fleet target my-bundle ./manifests
 * `fleet deploy`:`fleet target`の出力、またはダンプされた`bundledeployment`/contentリソースを取得し、それをクラスターにデプロイします—ちょうど`fleet-agent`が行うように。
 +
 これらのシナリオで使用できます：
-** `fleet apply -o - name ./folder`を使用して、作成する前にバンドルのYAMLを確認します。詳細については、xref:explanations/ref-bundle-stages.adoc#_examining-the-bundle-lifecycle-with-the-cli[CLIを使用したバンドルライフサイクルの調査]を参照してください。
+** `fleet apply -o - name ./folder`を使用して、作成する前にバンドルのYAMLを確認します。詳細については、xref:explanations/ref-bundle-stages.adoc#_examining_the_bundle_lifecycle_with_the_cli[CLIを使用したバンドルライフサイクルの調査]を参照してください。
 ** ターゲットと共に使用して、セレクターをデバッグし、どのダウンストリームクラスターがターゲットにされているかを確認します。
 ** `fleet deploy --dry-run`を使用して、適用せずにデプロイされるリソースを表示します。
 
 image::fleetCLI-key-components.svg[Fleet CLIの主要コマンドの動作を説明する図]
 
-[#_deploy-a-sample-bundle-using-fleet-cli]
+[#_deploy_a_sample_bundle_using_fleet_cli]
 == Fleet CLIを使用してサンプルバンドルをデプロイする
 
 CLIを使用してローカルに適用することで、GitReposを使用せずにワークロードをデプロイできます。例えば、link:https://github.com/rancher/fleet-examples[Fleetのサンプルリポジトリ]を使用します：
@@ -118,7 +118,7 @@ fleet apply -o my-cool-bundle manifests
 
 このコマンドは、ネームスペースに`Bundle`リソースを作成します。
 
-[#_convert-a-helm-chart-into-a-bundle]
+[#_convert_a_helm_chart_into_a_bundle]
 == Helmチャートをバンドルに変換する
 
 Fleet CLIを使用してHelmチャートをバンドルに変換できます。例えば、*external-secrets*オペレーターのチャートを変換するには：
@@ -162,11 +162,11 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Helmの所有権の競合が発生した場合は、バンドルを削除して再適用してください。
 
-[#_verify-agent-and-controller-status]
+[#_verify_agent_and_controller_status]
 === エージェントとコントローラーのステータスを確認する
 
 バンドルやデプロイメントの問題をトラブルシューティングする前に、Fleet agentがダウンストリームクラスターに登録されて実行中であることを確認してください。
-詳細については、xref:reference/ref-registration.adoc#_product-name-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments]を参照してください。
+詳細については、xref:reference/ref-registration.adoc#_product_name_agent_is_registered_watches_for_bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments]を参照してください。
 
 特定のクラスターでバンドルが準備できていない場合は、次のことを確認してください：
 

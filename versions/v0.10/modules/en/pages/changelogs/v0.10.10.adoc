@@ -8,7 +8,7 @@
 [#_description]
 == Description
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Bump kubernetes to v1.30.10 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3414[#3414]

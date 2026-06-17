@@ -2,36 +2,36 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
-[#_how-does-cluster-registration-work]
+[#_how_does_cluster_registration_work]
 == Wie funktioniert die Clusterregistrierung?
 
 Dieser Text beschreibt die Clusterregistrierung mit mehr technischen Details. Der Text ignoriert die agenteninitiierte Registrierung, da sie nicht häufig verwendet wird.
-xref:how-tos-for-operators/cluster-registration.adoc#_agent-initiated[Agenteninitiierte Registrierung] ist xref:how-tos-for-operators/cluster-registration.adoc#_create-cluster-registration-tokens["\`ClusterRegistrationToken` zuerst"], was bedeutet, dass das Vorab-Erstellen eines Clusters optional ist.
+xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[Agenteninitiierte Registrierung] ist xref:how-tos-for-operators/cluster-registration.adoc#_create_cluster_registration_tokens["\`ClusterRegistrationToken` zuerst"], was bedeutet, dass das Vorab-Erstellen eines Clusters optional ist.
 
 Siehe xref:how-tos-for-operators/cluster-registration.adoc[Downstream-Cluster registrieren], um zu lernen, wie man Cluster registriert.
 
-[#_cluster-first]
+[#_cluster_first]
 === Cluster zuerst
 
 `fleet-controller` startet und kann die lokale Clusterressource neu starten. In Rancher wird die Erstellung der lokalen Clusterressource stattdessen vom fleetcluster-Controller übernommen, aber der Prozess ist ansonsten identisch.
 
 Der Prozess ist identisch für den lokalen Cluster oder jeden Downstream-Cluster. Es beginnt mit der Erstellung einer Clusterressource, die auf ein kubeconfig-Geheimnis verweist.
 
-[#_creating-the-bootstrap-secret-for-the-downstream-cluster]
+[#_creating_the_bootstrap_secret_for_the_downstream_cluster]
 === Erstellung des Bootstrap-Geheimnisses für den Downstream-Cluster
 
 In diesem Schritt werden ein `ClusterRegistationToken` und ein "import"-Dienstkonto basierend auf einer `Cluster`-Ressource erstellt.
 
 Der {product_name}-Controller erstellt ein xref:explanations/architecture.adoc#_security[`ClusterRegistrationToken`] und wartet, bis es abgeschlossen ist. Der `ClusterRegistationToken` löst die Erstellung des "import"-Dienstkontos aus, das `ClusterRegistrations` erstellen und jedes Geheimnis im Systemregistrierungs-Namespace (z. B. "cattle-fleet-clusters-system") lesen kann. Der `import.go`-Controller wird sich in die Warteschlange einreihen, bis das "import"-Dienstkonto existiert, da dieses Konto benötigt wird, um das `fleet-agent-bootstrap`-Geheimnis zu erstellen.
 
-[#_creating-the-product-name-agent-deployment]
+[#_creating_the_product_name_agent_deployment]
 === Erstellung des {product_name}-Agenten-Deployments
 
 Der {product_name}-Controller wird nun das {product_name}-Agenten-Deployment und das Bootstrap-Geheimnis im Downstream-Cluster erstellen.
 
 Das Bootstrap-Geheimnis enthält die API-Server-URL des upstream-Clusters und wird verwendet, um ein kubeconfig zu erstellen, um auf den upstream-Cluster zuzugreifen. Beide Werte stammen aus dem {product_name} Controller-Config-Configmap. Dieses Configmap ist Teil des Helm-Charts.
 
-[#_product-name-agent-starts-registration-upgrades-to-request-account]
+[#_product_name_agent_starts_registration_upgrades_to_request_account]
 === {product_name} Agent startet die Registrierung und wechselt zu einem "request"-Konto.
 
 Der Agent verwendet das "import"-Konto, um zu einem "request"-Konto zu wechseln.
@@ -46,7 +46,7 @@ Die neue Kubeconfig verwendet das "request"-Konto. Das "request"-Konto kann auf 
 
 image::FleetRegistrationToken.svg[Statisch, 600]
 
-[#_product-name-agent-is-registered-watches-for-bundledeployments]
+[#_product_name_agent_is_registered_watches_for_bundledeployments]
 === {product_name} Agent ist registriert, beobachtet `BundleDeployments`
 
 An diesem Punkt ist der Agent vollständig registriert und wird das "request"-Konto in ein `fleet-agent`-Geheimnis speichern.
@@ -54,7 +54,7 @@ Die API-Server-URL und CA werden aus dem Bootstrap-Geheimnis kopiert, das diese 
 
 Das Bootstrap-Geheimnis wird gelöscht. Wenn der Agent neu startet, wird er sich nicht erneut registrieren, da das Bootstrap-Geheimnis fehlt.
 
-Der Agent beginnt, seinen xref:explanations/namespaces.adoc#_cluster-namespaces[Cluster-Namespace] für `BundleDeployments` zu beobachten. An diesem Punkt ist der Agent bereit, Workloads bereitzustellen.
+Der Agent beginnt, seinen xref:explanations/namespaces.adoc#_cluster_namespaces[Cluster-Namespace] für `BundleDeployments` zu beobachten. An diesem Punkt ist der Agent bereit, Workloads bereitzustellen.
 
 [#_notes]
 === Anmerkungen
@@ -67,7 +67,7 @@ Der Agent beginnt, seinen xref:explanations/namespaces.adoc#_cluster-namespaces[
 [#_diagram]
 == Diagramm
 
-[#_registration-flow]
+[#_registration_flow]
 === Registrierungsfluss
 
 [mermaid, format=svg]
@@ -128,7 +128,7 @@ graph TD
     B4 --> C1
 ....
 
-[#_registration-process-and-controllers]
+[#_registration_process_and_controllers]
 === Registrierungsprozess und Controller
 
 Detaillierte Analyse des Registrierungsprozesses für Cluster. Dies zeigt die Interaktion von Controllern, Ressourcen und Service Accounts während der Registrierung eines neuen Downstream-Clusters oder des lokalen Clusters.
@@ -136,12 +136,12 @@ Detaillierte Analyse des Registrierungsprozesses für Cluster. Dies zeigt die In
 Es ist wichtig zu beachten, dass es mehrere Möglichkeiten gibt, dies zu starten:
 
 * Erstellen einer Bootstrap-Konfiguration. {product_name} erledigt dies für den lokalen Agent.
-* Erstellen einer `Cluster`-Ressource mit einem Kubeconfig. Rancher macht dies für Downstream-Cluster. Siehe xref:how-tos-for-operators/cluster-registration.adoc#_manager-initiated[manager-initiierte Registrierung].
-* Erstellen Sie eine `ClusterRegistrationToken` Ressource, optional eine `Cluster` Ressource für einen vordefinierten (`clientID`) Cluster. Siehe xref:how-tos-for-operators/cluster-registration.adoc#_agent-initiated[agent-initiierte Registrierung].
+* Erstellen einer `Cluster`-Ressource mit einem Kubeconfig. Rancher macht dies für Downstream-Cluster. Siehe xref:how-tos-for-operators/cluster-registration.adoc#_manager_initiated[manager-initiierte Registrierung].
+* Erstellen Sie eine `ClusterRegistrationToken` Ressource, optional eine `Cluster` Ressource für einen vordefinierten (`clientID`) Cluster. Siehe xref:how-tos-for-operators/cluster-registration.adoc#_agent_initiated[agent-initiierte Registrierung].
 
 image::FleetRegistration.svg[Registrierung]
 
-[#_secrets-during-agent-deployment]
+[#_secrets_during_agent_deployment]
 === Geheimnisse während der Agentenbereitstellung
 
 Dieses Diagramm zeigt die Ressourcen, die während der Registrierung erstellt werden, und konzentriert sich auf die Konfiguration des k8s API-Servers.
@@ -156,14 +156,14 @@ Es gibt einen Sonderfall: Wenn der Agent für den lokalen/"Bootstrap" Cluster is
 
 image::FleetRegistrationSecrets.svg[Registrierungsgeheimnisse]
 
-[#_product-name-cluster-registration-in-rancher]
+[#_product_name_cluster_registration_in_rancher]
 == {product_name} Clusterregistrierung in Rancher
 
 Rancher installiert das Fleet Helm-Chart. Die API-Server-URL und CA werden https://github.com/rancher/rancher/blob/release/v2.9/pkg/controllers/dashboard/fleetcharts/controller.go#L111-L112[aus den Einstellungen von Rancher abgeleitet].
 
 {product_name} wird diese Werte an einen {product_name} Agenten weitergeben, damit er sich mit dem {product_name} Controller verbinden kann.
 
-[#_import-cluster-into-rancher]
+[#_import_cluster_into_rancher]
 === Cluster in Rancher importieren
 
 Wenn der Benutzer `curl | kubectl apply` ausführt, enthält das angewandte Manifest die Bereitstellung des Rancher-Agenten.

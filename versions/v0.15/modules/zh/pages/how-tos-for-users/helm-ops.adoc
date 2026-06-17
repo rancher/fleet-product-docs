@@ -22,7 +22,7 @@ Fleet HelmOps 控制器将创建轻量级捆绑包，指向引用的 Helm 图表
 
 使用此功能时，Helm 图表从下游集群下载，因此必须能够访问 Helm 注册表。
 
-[#_creating-a-helmop-resource]
+[#_creating_a_helmop_resource]
 == 创建 HelmOp 资源
 
 可以按如下方式创建 +HelmOp+ 资源，以开始直接部署 Helm 图表：
@@ -47,12 +47,12 @@ insecureSkipTLSVerify: false
 
 对于私有图表，这需要在与 +HelmOp+ 资源相同的命名空间中创建一个 Helm 访问密钥（由字段 +helmSecretName+ 引用）。Fleet HelmOps 控制器负责将该密钥复制到目标下游集群，使 Fleet 代理能够访问注册表。
 
-[#_supported-use-cases]
+[#_supported_use_cases]
 == 支持的用例
 
 在可引用 Helm 图表的 3 个字段中，让我们澄清一些规则。根据 Helm 安装 https://helm.sh/docs/helm/helm_install/[文档]，有 6 种方式来表达要安装的图表。其中 3 种使用了存储库别名或本地文件系统，这在 Fleet 的 HelmOps 上下文中不可用。这给我们留下了 3 个选项：
 
-[#_absolute-url]
+[#_absolute_url]
 === 绝对 URL
 
 通过绝对 URL 引用 Helm 图表就像在 ++图表++ 字段中提供一个指向 +.tgz+ 文件的 URL 一样简单。Helm 选项看起来像：
@@ -69,7 +69,7 @@ version: ''
 
 如果在这种情况下指定了非空的储存库或非空的版本，则 HelmOp 状态中会出现错误，并且不会创建任何捆绑包，部署将中止。
 
-[#_chart-reference-and-repo-url]
+[#_chart_reference_and_repo_url]
 === 图表引用和储存库 URL
 
 Helm 图表也可以通过其储存库和图表名称进行引用，版本是可选的，可以是静态版本或版本约束。
@@ -88,7 +88,7 @@ version: '1.2.3'
 
 在这种情况下，只有 ++版本++ 字段可以为空。如果 ++图表++ 或 ++储存库++ 字段中的任何一个为空，{product_name} 会在 HelmOp 状态中设置错误，并且不会创建任何捆绑包。
 
-[#_oci-registry]
+[#_oci_registry]
 === OCI 注册表
 
 Helm 支持 OCI 注册表，可以在 {product_name} 中使用 ++储存库++ 字段进行引用。
@@ -120,7 +120,7 @@ version: '1.2.3' # optional
 
 {product_name} 可以轮询引用的 Helm 注册表，定期检查是否有新版本可用。当然，这只有在 +version+ 字段包含版本约束时才有意义，这可能解析为多个版本。
 
-[#_how-to-enable-it]
+[#_how_to_enable_it]
 === 如何启用它
 
 轮询涉及一个 +pollingInterval+ 字段，类似于 GitOps 中存在的字段。然而，在 HelmOps 的情况下，默认轮询间隔为 0 秒，这意味着轮询将被禁用。
@@ -130,7 +130,7 @@ version: '1.2.3' # optional
 * +pollingInterval+ 字段设置为非零持续时间（例如 +10s+、+1m+ 等）
 * +version+ 字段设置为有效的语义版本约束（例如 +2.x.x+、++< 1.0++），而不是静态版本（例如 1.2.3）
 
-[#_what-it-does]
+[#_what_it_does]
 === 作用
 
 当轮询被启用时，{product_name} 在配置的间隔内执行以下操作：
@@ -143,16 +143,16 @@ version: '1.2.3' # optional
 *** 如果发生错误，则为 +false+，并带有错误信息。
 ** 将 ++Last Polling Time++ 字段更新为上次轮询尝试的开始时间，即使它失败。
 
-[#_using-private-helm-repositories]
+[#_using_private_helm_repositories]
 == 使用私有 Helm 储存库
 
 这与 gitOps 的工作方式相同，通过字段 `helmSecretName` 引用 Helm 访问密钥。
 
-有关更多信息，请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using-private-helm-repositories[私有 Helm 储存库]。
+有关更多信息，请参阅 xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[私有 Helm 储存库]。
 
 关于为每个路径使用单独凭据的部分并不相关，因为与 GitRepo 不同，HelmOp 资源仅引用单个 Helm 图表。
 
-[#_status-updates]
+[#_status_updates]
 == 状态更新
 
 创建 HelmOp 资源会导致创建一个捆绑包，如果 Helm 选项有效并且可以找到图表版本。

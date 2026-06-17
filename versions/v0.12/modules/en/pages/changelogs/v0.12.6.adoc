@@ -5,7 +5,7 @@
 
 *Released on 2025-08-22 13:59:39 +0000 UTC by `github-actions[bot]`.*
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * Calculate hash with all data, not only processed (#3917) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3923
 * Adds InsecureTLS and BasicHTTP to helm secret (#3872) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3950

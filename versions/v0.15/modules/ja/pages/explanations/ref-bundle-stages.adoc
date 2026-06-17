@@ -6,7 +6,7 @@
 
 {product_name}バンドルのライフサイクルを示すために、 https://github.com/rancher/fleet-examples/tree/master/multi-cluster/helm[multi-cluster/helm]をケーススタディとして使用します。
 
-. ユーザーは、multi-cluster/helmリポジトリを指すxref:how-tos-for-users/gitrepo-add.adoc#_create-gitrepo-instance[GitRepo]を作成します。
+. ユーザーは、multi-cluster/helmリポジトリを指すxref:how-tos-for-users/gitrepo-add.adoc#_create_gitrepo_instance[GitRepo]を作成します。
 . `gitjob-controller`はGitRepoから変更を同期し、ポーリングまたはxref:how-tos-for-users/webhook.adoc[webhook event]からの変更を検出します。すべてのコミット変更に対して、`gitjob-controller`はgitリポジトリをクローンし、`fleet.yaml`やその他のマニフェストなどのリポジトリからコンテンツを読み取り、{product_name}xref:reference/ref-status-fields.adoc#_bundles[バンドル]を作成するジョブを生成します。
 +
 [NOTE]
@@ -22,14 +22,14 @@
 
 image::FleetBundleStages.svg[バンドルステージ]
 
-[#_examining-the-bundle-lifecycle-with-the-cli]
+[#_examining_the_bundle_lifecycle_with_the_cli]
 == CLIを使用したバンドルライフサイクルの検証
 
 いくつかのFleet CLIコマンドが、バンドルのデバッグに役立ちます。
 
 image::fleetCLI-key-components.svg[Fleet CLIの主要コマンドの動作を説明する図]
 
-[#_fleet-apply]
+[#_fleet_apply]
 === fleet apply
 
 xref:reference/cli/fleet-cli/fleet_apply.adoc[Apply]は、Helmチャート、マニフェスト、またはKustomizeフォルダーなどのKubernetesリソースを含むフォルダーを{product_name}バンドルリソースにレンダリングします。
@@ -42,19 +42,19 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 `fleet apply`を使用してバンドルを作成する方法に関する詳細情報は、xref:how-tos-for-users/bundle-add.adoc[バンドルに関するセクション]で見つけることができます。
 
-[#_fleet-target]
+[#_fleet_target]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Target]はファイルからバンドルを読み込み、ライブクラスターと連携して`bundledeployment`および`content`リソースを出力します。これはFleetコントローラーが作成するものです。ネームスペースを引数として受け取るため、例えばクラスターリソースをそのネームスペース内で探すことができます。"ターゲティング"中に使用されるデータ構造をダンプすることもできるため、ラベルやクラスター名に関して取られた決定を確認できます。
 
-[#_fleet-deploy]
+[#_fleet_deploy]
 === フリートデプロイ
 
 xref:reference/cli/fleet-cli/fleet_deploy.adoc[デプロイ]は`fleet target`の出力、またはダンプされたバンドルデプロイメント/コンテンツリソースを受け取り、それをクラスターにデプロイします。これはFleet agentが行うことと同様です。ドライランモードでは、helmを使ってインストールするのではなく、生成されるリソースを出力します。コマンドは入力リソースを作成しないため、実行中のFleet agentがデプロイメントをガーベジコレクトする可能性があります。
 
 デプロイコマンドは、エアギャップ(された)クラスターにバンドルを持ち込むために使用できます。
 
-[#_lifecycle-cli]
+[#_lifecycle_cli]
 === ライフサイクルCLI
 
 Fleet CLIコマンドは、バンドルライフサイクルのデバッグと理解を助けます。以下の例は、CLIを使用した完全なバンドルライフサイクルを示しています：

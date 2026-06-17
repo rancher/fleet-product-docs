@@ -4,10 +4,10 @@
 :date: 2024-09-13 12:27:15 +0000 UTC
 
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Make Helm release garbage collection interval configurable by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2780[#2780]

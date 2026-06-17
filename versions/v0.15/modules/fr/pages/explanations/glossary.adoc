@@ -25,7 +25,7 @@ Un cluster fait référence à{nbsp}:
 * un https://kubernetes.io/docs/concepts/architecture/[cluster Kubernetes] géré par {product_name}
 * une `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[ressource] dans l'API de Fleet, que {product_name} utilise pour gérer ce cluster Kubernetes.
 
-[#_continuous-delivery-deployment]
+[#_continuous_delivery_deployment]
 == Livraison continue/déploiement continu
 
 Les définitions et distinctions entre la livraison continue et le déploiement continu varient considérablement, par exemple en fonction de{nbsp}: +
@@ -34,13 +34,13 @@ Les définitions et distinctions entre la livraison continue et le déploiement 
 
 Cela est clair, cependant{nbsp}: l'objectif de {product_name} est de faciliter l'automatisation des déploiements.
 
-[#_custom-resource]
+[#_custom_resource]
 == Ressource personnalisée
 
 Voir https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[documentation officielle des ressources personnalisées Kubernetes].
 En résumé, une ressource personnalisée est une ressource définie aux fins d'une application (dans notre cas {product_name}), pour étendre l'ensemble des ressources prises en charge par l'API Kubernetes (pods, déploiements, services, etc.).
 
-[#_custom-resource-definition]
+[#_custom_resource_definition]
 == Définition de ressource personnalisée
 
 Voir https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[documentation officielle des définitions de ressources personnalisées Kubernetes] dans la documentation Kubernetes.
@@ -54,12 +54,12 @@ qu'il fasse partie d'une charge de travail utilisateur ou de {product_name} lui-
 * l'action de déployer une charge de travail utilisateur, ce qui signifie que {product_name} lit la configuration (`GitRepo`, `fleet.yaml`, etc.) et,
 en conséquence, crée des ressources sur les clusters cibles.
 
-[#_downstream-cluster]
+[#_downstream_cluster]
 == Cluster aval
 
 Un cluster aval est un cluster Kubernetes où les charges de travail utilisateur s'exécuteront, sans aucun contrôleur Fleet y vivant. C'est un cluster cible pour Fleet, où seul un agent Fleet vit à côté des charges de travail utilisateur.
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == fleet.yaml
 
 Un fichier `fleet.yaml` vit dans un dépôt git et stocke des options pour un bundle et des déploiements de bundle à générer à partir de ce bundle. Des informations supplémentaires sont disponibles xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
@@ -80,7 +80,7 @@ Créer un `GitRepo` pointant vers un ensemble de chemins dans un dépôt git per
 
 Fait référence à un https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[label Kubernetes].
 
-[#_multi-cluster]
+[#_multi_cluster]
 == Multi-Cluster
 
 Une configuration multi-cluster implique plus d'un cluster{nbsp}: le cluster en amont, nécessaire pour gérer le déploiement des charges de travail, et au moins un cluster en aval.
@@ -118,7 +118,7 @@ Cela fait généralement référence aux ressources Kubernetes, qui peuvent êtr
 
 {product_name} utilise ce mot dans le contexte de la détermination de l'endroit où une charge de travail sera exécutée. Cela représente un cluster de destination pour une charge de travail.
 
-[#_upstream-cluster]
+[#_upstream_cluster]
 == Cluster en amont
 
 Un cluster Kubernetes où les contrôleurs Fleet s'exécutent. C'est le cluster où les `GitRepo`, les bundles et les déploiements de bundles sont créés. Également appelé cluster de gestion.

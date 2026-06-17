@@ -4,7 +4,7 @@
 
 A reference list of, mostly internal, configuration options.
 
-[#_configure-product-install-options-in-rancher]
+[#_configure_product_install_options_in_rancher]
 == Configure {product_name} Install Options In Rancher
 
 Rancher looks for Helm values in a ConfigMap called `rancher-config` in the `cattle-system` namespace.
@@ -38,7 +38,7 @@ kubectl patch cm -n cattle-system rancher-config --type merge \
   --patch '{"data":{"fleet": "controller:\n  reconciler:\n    workers:\n      gitrepo: \"200\"\n      bundle: \"200\"\n      bundledeployment: \"200\"\n"}}'
 ----
 
-[#_helm-charts]
+[#_helm_charts]
 == Helm Charts
 
 The Helm charts accept, at least, the options as shown with their default in `values.yaml`:
@@ -47,7 +47,7 @@ The Helm charts accept, at least, the options as shown with their default in `va
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
-[#_environment-variables]
+[#_environment_variables]
 == Environment Variables
 
 The controllers can be started with these environment variables:
@@ -101,7 +101,7 @@ Annotations used by fleet:
 * `fleet.cattle.io/managed` - appears unused
 * `fleet.cattle.io/service-account`
 
-[#_product-name-agent-configuration]
+[#_product_name_agent_configuration]
 == {product_name} agent configuration
 
 Tolerations, affinity and resources can be customized for the {product_name} agent. These fields can be provided when creating a

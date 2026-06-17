@@ -17,12 +17,12 @@ You can use `fleet apply` without installing {product_name} in your clusters. Ho
 For more information, see xref:how-tos-for-operators/installation.adoc[Install Fleet].
 ====
 
-[#_install-fleet-cli]
+[#_install_fleet_cli]
 == Install Fleet CLI
 
 Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases[Fleet GitHub releases page].
 
-[#_linux-macos]
+[#_linux_macos]
 === Linux/macOS
 
 [source,bash]
@@ -34,7 +34,7 @@ chmod +x fleet
 sudo mv fleet /usr/local/bin/
 ----
 
-[#_windows-powershell]
+[#_windows_powershell]
 === Windows (PowerShell)
 
 [source,powershell]
@@ -42,7 +42,7 @@ sudo mv fleet /usr/local/bin/
 Invoke-WebRequest -Uri "https://github.com/rancher/fleet/releases/latest/download/fleet-windows-amd64.exe" -OutFile "fleet.exe"
 ----
 
-[#_verify-installation]
+[#_verify_installation]
 === Verify installation
 
 [source,bash]
@@ -60,7 +60,7 @@ Make sure you have the following tools installed and configured:
 * Helm is installed.
 * Fleet CLI is installed and accessible in your terminal.
 
-[#_verify-prerequisites]
+[#_verify_prerequisites]
 === Verify prerequisites
 
 [source,bash]
@@ -70,7 +70,7 @@ helm version
 fleet --version
 ----
 
-[#_key-commands]
+[#_key_commands]
 == Key Commands
 
 {product_name} provides several CLI commands to create, preview, and deploy bundles. These commands are useful for debugging and understanding the bundle lifecycle.
@@ -93,13 +93,13 @@ fleet target my-bundle ./manifests
 * `fleet deploy`: Takes the output of `fleet target`, or a dumped `bundledeployment`/content resource, and deploys it to a cluster—just like `fleet-agent` would.
 +
 You can use it in these scenarios:
-** `fleet apply -o - name ./folder` to check the YAML of the bundle before creating it. For more information, see xref:explanations/ref-bundle-stages.adoc#_examining-the-bundle-lifecycle-with-the-cli[Examining the Bundle Lifecycle with the CLI].
+** `fleet apply -o - name ./folder` to check the YAML of the bundle before creating it. For more information, see xref:explanations/ref-bundle-stages.adoc#_examining_the_bundle_lifecycle_with_the_cli[Examining the Bundle Lifecycle with the CLI].
 ** Use with a target to debug selectors and verify which downstream clusters are targeted.
 ** `fleet deploy --dry-run` to print resources that would be deployed, without applying them.
 
 image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
 
-[#_deploy-a-sample-bundle-using-fleet-cli]
+[#_deploy_a_sample_bundle_using_fleet_cli]
 == Deploy a Sample Bundle Using Fleet CLI
 
 You can deploy workloads without using GitRepos by applying them locally with the CLI. For example, use the link:https://github.com/rancher/fleet-examples[Fleet examples repository]:
@@ -119,7 +119,7 @@ fleet apply -o my-cool-bundle manifests
 
 This command creates a `Bundle` resource in the namespace.
 
-[#_convert-a-helm-chart-into-a-bundle]
+[#_convert_a_helm_chart_into_a_bundle]
 == Convert a Helm Chart into a Bundle
 
 You can use Fleet CLI to convert a Helm chart into a bundle. For example, to convert the *external-secrets* operator chart:
@@ -163,11 +163,11 @@ kubectl describe bundle -n fleet-local <bundle-name>
 ----
 * Delete and reapply the bundle if you encounter Helm ownership conflicts.
 
-[#_verify-agent-and-controller-status]
+[#_verify_agent_and_controller_status]
 === Verify Agent and Controller Status
 
 Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
-For more information, see xref:reference/ref-registration.adoc#_product-name-agent-is-registered-watches-for-bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+For more information, see xref:reference/ref-registration.adoc#_product_name_agent_is_registered_watches_for_bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
 
 If a bundle is not ready on a given cluster, check the following:
 

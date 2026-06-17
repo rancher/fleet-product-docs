@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2024-09-13 12:44:41 +0000 UTC
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Bump Docker to v23.0.14 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2761[#2761]

@@ -48,7 +48,7 @@ helm -n cattle-fleet-system install --create-namespace --wait fleet \
     fleet/fleet
 ----
 
-[#_add-a-git-repo-to-watch]
+[#_add_a_git_repo_to_watch]
 == 添加要监视的 Git 储存库
 
 将 `spec.repo` 更改为您选择的 Git 储存库。 应部署的 Kubernetes 清单文件应位于您的储存库中的 `/manifests`。
@@ -72,7 +72,7 @@ EOF
 kubectl apply -f example.yaml
 ----
 
-[#_get-status]
+[#_get_status]
 == 获取状态
 
 获取 Fleet 的当前状态
@@ -93,7 +93,7 @@ NAME       READY   UP-TO-DATE   AVAILABLE   AGE
 frontend   3/3     3            3           116m
 ----
 
-[#_next-steps]
+[#_next_steps]
 == 后续步骤
 
 您是否需要...

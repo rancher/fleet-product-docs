@@ -25,7 +25,7 @@ Um cluster refere-se a:
 * um https://kubernetes.io/docs/concepts/architecture/[cluster Kubernetes] gerenciado por {product_name}
 * um `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[recurso] na API do Fleet, que {product_name} usa para gerenciar esse cluster Kubernetes.
 
-[#_continuous-delivery-deployment]
+[#_continuous_delivery_deployment]
 == Entrega/Implantação Contínua
 
 As definições e distinções entre Entrega Contínua e Implantação Contínua variam bastante, por exemplo
@@ -35,13 +35,13 @@ dependendo de:
 
 Isso é claro, no entanto: o objetivo de {product_name} é facilitar a automação de implantações.
 
-[#_custom-resource]
+[#_custom_resource]
 == Recurso Personalizado
 
 Veja https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/[documentação oficial de recursos personalizados do Kubernetes].
 Em resumo, um recurso personalizado é um recurso definido para os propósitos de uma aplicação (no nosso caso {product_name}), para estender o conjunto de recursos suportados pela API do Kubernetes (pods, implantações, serviços etc.).
 
-[#_custom-resource-definition]
+[#_custom_resource_definition]
 == Definição de Recurso Personalizado
 
 Veja https://kubernetes.io/docs/concepts/extend-kubernetes/api-extension/custom-resources/#customresourcedefinitions[documentação oficial de definições de recursos personalizados do Kubernetes] da documentação do Kubernetes.
@@ -53,12 +53,12 @@ Uma implantação pode se referir a:
 * uma https://kubernetes.io/docs/reference/kubernetes-api/workload-resources/deployment-v1/[implantação Kubernetes], seja parte de uma carga de trabalho do usuário ou parte de {product_name} em si, como uma implantação de agente ou implantações de controladores;
 * a ação de implantar uma carga de trabalho do usuário, o que significa {product_name} ler a configuração (`GitRepo`, `fleet.yaml`, etc) e, como resultado, criar recursos em clusters de destino.
 
-[#_downstream-cluster]
+[#_downstream_cluster]
 == Cluster downstream
 
 Um cluster downstream é um cluster Kubernetes onde as cargas de trabalho do usuário serão executadas, sem nenhum controlador do Fleet residindo lá. É um cluster de destino para o Fleet, onde apenas um agente do Fleet reside ao lado das cargas de trabalho do usuário.
 
-[#_fleet-yaml]
+[#_fleet_yaml]
 == fleet.yaml
 
 Um arquivo `fleet.yaml` reside em um repositório git e armazena opções para um pacote e implantações de pacotes a serem geradas a partir desse pacote. Há mais informações disponíveis em xref:reference/ref-fleet-yaml.adoc[fleet.yaml].
@@ -79,7 +79,7 @@ Criar um `GitRepo` apontando para um conjunto de caminhos em um repositório git
 
 Refere-se a um https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/[rótulo do Kubernetes].
 
-[#_multi-cluster]
+[#_multi_cluster]
 == Multi-Cluster
 
 Uma configuração multi-cluster envolve mais de um cluster: o cluster upstream, necessário para gerenciar a implantação de cargas de trabalho, e pelo menos um cluster downstream.
@@ -119,7 +119,7 @@ Isso geralmente se refere a recursos do Kubernetes, que podem ser:
 
 {product_name} usa esta palavra no contexto de determinar onde uma carga de trabalho será executada. Isso representa um cluster de destino para uma carga de trabalho.
 
-[#_upstream-cluster]
+[#_upstream_cluster]
 == Cluster Upstream
 
 Um cluster Kubernetes onde os controladores Fleet são executados. Este é o cluster onde `GitRepo`s, pacotes e implantações de pacotes são criados. Também chamado de cluster de gerenciamento.

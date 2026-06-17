@@ -15,7 +15,7 @@ Für weitere Details zu den Optionen, die pro Git-Repository verfügbar sind, si
 ====
 
 
-[#_single-cluster-examples]
+[#_single_cluster_examples]
 == Einzel-Cluster-Beispiele
 
 Alle Beispiele werden Inhalte an Cluster ohne clusterspezifische Anpassungen bereitstellen. Dies ist ein guter Ausgangspunkt, um die Grundlagen der Strukturierung von Git-Repos für {product_name} zu verstehen.
@@ -144,7 +144,7 @@ EOF
 ----
 ====
 
-[#_multi-cluster-examples]
+[#_multi_cluster_examples]
 == Multi-Cluster-Beispiele
 
 Die folgenden Beispiele werden ein Multi-Git-Repo gleichzeitig auf mehrere Cluster bereitstellen und die App für jedes Ziel unterschiedlich konfigurieren.

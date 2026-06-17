@@ -15,7 +15,7 @@ fleet cleanup [flags]
   -h, --help   help for cleanup
 ----
 
-[#_see-also]
+[#_see_also]
 == 另请参阅
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - 管理 {product_name} 操作

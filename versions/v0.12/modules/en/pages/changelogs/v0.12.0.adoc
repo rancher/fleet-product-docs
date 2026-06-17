@@ -2,7 +2,7 @@
 :revdate: 2025-02-05
 :page-revdate: {revdate}
 
-[#_release-note]
+[#_release_note]
 == Release Note
 
 This release adds a new HelmOps controller that allows you to manage Helm charts using the HelmApp CRD. This controller is experimental and is not enabled by default.
@@ -12,7 +12,7 @@ When a bundle fails to deploy to a cluster, e.g. because the cluster is missing 
 
 The agent has been switched from a StatefulSet to a Deployment. This change allows the agent to scale horizontally and is a step towards making the agent more resilient to failures. The agent now exposes the number of worker goroutines it is running, which can be used to tune the agent's performance.
 
-[#_what-s-changed]
+[#_what_s_changed]
 === What's Changed
 
 * Bump Copyright statements to 2025 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3176
@@ -86,7 +86,7 @@ Resources in Status Fields:
 * Fix BundleDeployment resource counts when a resource is missing by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3408
 * Delete both, statefulset and deployment on agent update by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3449
 
-[#_new-contributors]
+[#_new_contributors]
 === New Contributors
 * https://github.com/sestegra[@sestegra] made their first contribution in https://github.com/rancher/fleet/pull/3321
 

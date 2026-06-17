@@ -4,7 +4,7 @@
 :page-date: 2026-01-21 14:41:13 +0000 UTC
 
 
-[#_what-s-changed]
+[#_what_s_changed]
 == What's Changed
 * Delete finalizers in content resources after upgrade by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/4462
 * Use controlled Requeue for non-ready dependencies during deploy by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/4470

@@ -10,9 +10,9 @@ Esta es una función experimental.
 A partir de {product_name} v0.14.0, {product_name} admite la propagación de recursos externos a clústeres en sentido descendente.
 
 Esto simplifica el manejo de las dependencias de los charts, como los valores que provienen de recursos externos.
-Ver también xref:/explanations/gitrepo-content.adoc#_using-valuesfrom[valuesFrom].
+Ver también xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
 
-[#_how-it-works]
+[#_how_it_works]
 == Funcionamiento
 
 HelmOps admite un nuevo campo `downstreamResources`, que se puede utilizar para referenciar recursos por tipo y nombre.
