@@ -11,6 +11,7 @@ content:
 
 urls:
   html_extension_style: drop
+  latest_version_segment: ''
 
 ui:
   bundle:
