@@ -32,6 +32,7 @@ deploy resources without conflicts.
 ====
 
 
+[#_example_product_name_standalone]
 == Example {product_name} Standalone
 
 This would create a user 'fleetuser', who can only manage GitRepo resources in the 'project1' namespace.
@@ -55,6 +56,7 @@ If we want to give access to multiple namespaces, we can use a single cluster ro
 
 This makes sure, tenants can't interfere with GitRepo resources from other tenants, since they don't have access to their namespaces.
 
+[#_allow_access_to_clusters]
 == Allow Access to Clusters
 
 This assumes all GitRepos created by 'fleetuser' have the `team: one` label. Different labels could be used, to select different cluster namespaces.
@@ -88,6 +90,7 @@ namespaceSelector:
 
 The xref:how-tos-for-users/gitrepo-targets.adoc[`target` section] in the GitRepo resource can be used to deploy only to a subset of the matched clusters.
 
+[#_restricting_access_to_downstream_clusters]
 == Restricting Access to Downstream Clusters
 
 Admins can further restrict tenants by creating a `GitRepoRestriction` in each of their namespaces.
@@ -106,6 +109,7 @@ allowedTargetNamespaces:
 
 This will deny the creation of cluster wide resources, which may interfere with other tenants and limit the deployment to the 'project1simpleapp' namespace.
 
+[#_an_example_gitrepo_resource]
 == An Example GitRepo Resource
 
 A GitRepo resource created by a tenant, without admin access could look like this:

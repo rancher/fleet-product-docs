@@ -22,12 +22,14 @@ image::fleet-ociStorage-flow.png[A visual asset displaying the flow of {product_
 {product_name} checks for the integrity of OCI artifacts and tags OCI artifacts as `latest`.
 ====
 
+[#_prerequisites]
 == Prerequisites
 
 * A running OCI registry.
 * A Kubernetes secret with valid credentials.
 * A {product_name} installation (v2.12.0 or later).
 
+[#_how_to_enable_oci_storage]
 == How to enable OCI storage
 
 To enable OCI storage, create a secret that includes the necessary information and access options for the OCI registry. There are two ways of defining secrets:
@@ -70,6 +72,7 @@ The secret must have the type: `fleet.cattle.io/bundle-oci-storage/v1alpha1`. {p
 
 Changing the secret does not trigger a redeployment. {product_name} uses the new registry only after a Git update or a manual force update.
 
+[#_secret_field_reference]
 === Secret Field Reference
 
 The fields you can configure are:
@@ -87,6 +90,7 @@ The fields you can configure are:
 | `basicHTTP`       | Enables HTTP instead of HTTPS.              | Base64-encoded `true/false` | Not recommended. Allows insecure traffic. By default, `basicHTTP` is set to `false`.
 |===
 
+[#_product_name_example]
 == {product_name} Example
 
 Consider the following `GitRepo` file:

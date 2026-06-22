@@ -5,8 +5,10 @@
 
 *(rancherio-gh-m) released this 2024-06-05 07:58:14 +0000 UTC*
 
+[#_release_note]
 == Release Note
 
+[#_what_s_changed]
 === What's Changed
 
 * Bump gitjob to version 0.9.8 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2478[#2478]
@@ -14,6 +16,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.4...v0.9.5[v0.9.4\...v0.9.5]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.5/sha256sum-amd64.txt[sha256sum-amd64.txt]

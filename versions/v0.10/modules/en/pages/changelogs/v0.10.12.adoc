@@ -5,8 +5,10 @@
 
 *Released on 2025-04-22 15:00:15 +0000 UTC by `github-actions[bot]`.*
 
+[#_description]
 == Description
 
+[#_what_s_changed]
 === What's Changed
 
 
@@ -14,6 +16,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.11...v0.10.12[v0.10.11...v0.10.12]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.10.12/fleet-agent-0.10.12.tgz[fleet-agent-v0.10.12.tgz]

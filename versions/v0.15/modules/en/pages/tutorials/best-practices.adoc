@@ -123,7 +123,7 @@ The scaling limit of {product_name} is the total number of BundleDeployments (ca
 To maximize performance benefits, use node selectors to assign different controller shards to different dedicated Kubernetes worker nodes. This approach is highly recommended if a single node doesn't have enough CPU to handle the processing load. 
 ====
 
-* Reference: xref:how-tos-for-operators/installation.adoc#multi-controller-install-sharding[Multi-Controller Installation: Sharding],  https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale].
+* Reference: xref:how-tos-for-operators/installation.adoc#_multi_controller_installation_sharding[Multi-Controller Installation: Sharding],  https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale].
 
 == Performance and Hardware Tuning (Control Plane)
 

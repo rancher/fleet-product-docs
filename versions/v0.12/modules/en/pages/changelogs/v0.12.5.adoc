@@ -5,14 +5,18 @@
 
 *Released on 2025-07-29 08:04:31 +0000 UTC by `github-actions[bot]`.*
 
+[#_description]
 == Description
 
+[#_notes]
 === Notes
 This is a bugfix release with a few dependency updates.
 
+[#_bugfixes]
 === Bugfixes
 * Fix edge case issue with SSH Helm chart downloads with keys by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3882[#3882]
 
+[#_what_s_changed]
 === What's Changed
 * Update gomod-k8s-dependencies to v0.32.6 (release/v0.12) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3820[#3820]
 * Update dependency Go to v1.23.11 (release/v0.12) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/3869[#3869]
@@ -20,6 +24,7 @@ This is a bugfix release with a few dependency updates.
 
 *Full Changelog:* https://github.com/rancher/fleet/compare/v0.12.4...v0.12.5[`v0.12.4...v0.12.5`]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.5/fleet-agent-0.12.5.tgz[`fleet-agent-0.12.5.tgz`]

@@ -1,0 +1,40 @@
+= Conceptos Básicos
+:revdate: 23/07/2025
+:page-revdate: {revdate}
+
+{product_name} es fundamentalmente un conjunto de definiciones de recursos personalizadas (CRD) y controladores para gestionar GitOps para un solo clúster de Kubernetes o una ampliación a gran escala de clústeres de Kubernetes.
+
+[IMPORTANT]
+====
+
+Para más información sobre las convenciones de nomenclatura de CRD, haz clic en xref:troubleshooting.adoc#_naming_conventions_for_crds[Convenciones de nomenclatura para CRD].
+====
+
+A continuación se presentan algunos de los conceptos de {product_name} que serán útiles a lo largo de esta documentación:
+
+* *{product_name} Gestor*: El componente centralizado que orquesta los despliegues de activos de Kubernetes desde git. En una configuración de múltiples clústeres, este será típicamente un clúster de Kubernetes dedicado. En una configuración de un solo clúster, el {product_name} gestor se ejecutará en el mismo clúster que estás gestionando con GitOps.
+* *{product_name} controlador*: Los controladores que se ejecutan en el {product_name} gestor orquestando GitOps. En la práctica, el {product_name} gestor y los {product_name} controladores se utilizan de manera bastante intercambiable.
+* *Estilo de Clúster Único*: Este es un estilo de instalación de {product_name} en el que el gestor y el clúster en sentido descendente son el mismo clúster.  Este es un patrón muy simple para comenzar rápidamente con GitOps.
+* *Estilo de Múltiples Clústeres*: Este es un estilo de ejecución de {product_name} en el que tienes un gestor central que gestiona un gran número de clústeres en sentido descendente.
+* *{product_name} agente*: Cada clúster en sentido descendente gestionado ejecutará un agente que se comunica de vuelta al {product_name} gestor.
+  Este agente es solo otro conjunto de controladores de Kubernetes que se ejecutan en el clúster en sentido descendente.
+* *GitRepo*: Los repositorios de Git que son vigilados por {product_name} están representados por el tipo `GitRepo`.
+
+____
+*Ejemplo de orden de instalación a través de recursos personalizados de `GitRepo` al usar {product_name} para la configuración de clústeres en sentido descendente:*
+
+. Instalar https://github.com/projectcalico/calico[Calico] CRD y controladores.
+. Establecer una o múltiples políticas de red global a nivel de clúster.
+. Instalar https://github.com/open-policy-agent/gatekeeper[GateKeeper]. Ten en cuenta que *las etiquetas de clúster* y *los overlays* son características críticas en {product_name} ya que determinan qué clústeres en sentido descendente recibirán cada parte del lote.
+. Configurar y establecer ingress y los daemons del sistema.
+____
+
+* *Lote*: Una unidad interna utilizada para la orquestación de recursos desde git.
+  Cuando se escanea un `GitRepo` producirá uno o más lotes. Los lotes son una colección de recursos que se despliegan en un clúster. `Bundle` es la unidad de despliegue fundamental utilizada en {product_name}. El contenido de un `Bundle` puede ser manifiestos de Kubernetes, configuración de Kustomize o gráficos de Helm.
+  Independientemente de la fuente, el contenido se renderiza dinámicamente en un gráfico de Helm por el agente y se instala en el clúster en sentido descendente como un lanzamiento de Helm.
+ ** Para ver el *ciclo de vida de un paquete*, haz clic en xref:explanations/ref-bundle-stages.adoc[ciclo de vida del paquete].
+* *Despliegue de Paquete*: Cuando un `Bundle` se despliega en un clúster, una instancia de un `Bundle` se llama `BundleDeployment`.
+  Un `BundleDeployment` representa el estado de ese `Bundle` en un clúster específico con sus personalizaciones específicas del clúster. El agente {product_name} solo es consciente de los recursos `BundleDeployment` que se crean para el clúster que el agente está gestionando.
+ ** Para un ejemplo de cómo desplegar manifiestos de Kubernetes a través de clústeres utilizando la personalización de {product_name}, haz clic en xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[personalización por clúster].
+* *Clúster Descendente*: Los clústeres a los que {product_name} despliega manifiestos se denominan clústeres descendentes. En el caso de uso de un solo clúster, el clúster de Kubernetes {product_name} es tanto el clúster gestor como el clúster descendente al mismo tiempo.
+* *Token de Registro de Clúster*: Tokens utilizados por los agentes para registrar un nuevo clúster.

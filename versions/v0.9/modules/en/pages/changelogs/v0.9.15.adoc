@@ -3,11 +3,13 @@
 :page-revdate: {revdate}
 :date: 2025-02-20 13:13:14 +0000 UTC
 
+[#_what_s_changed]
 == What's Changed
 * Bump gitjob to v0.9.21 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3378
 
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.9.14-rc.1...v0.9.15[v0.9.14\...v0.9.15]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.15/fleet-agent-0.9.15.tgz[fleet-agent-0.9.15.tgz]

@@ -4,6 +4,7 @@
 :date: 2025-05-16 12:14:19 +0000 UTC
 
 
+[#_what_s_changed]
 == What's Changed
 * Bump go mods by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3674
 
@@ -12,6 +13,7 @@ _Full Changelog_: https://github.com/rancher/fleet/compare/v0.9.17...v0.9.18[v0.
 
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.18/fleet-agent-0.9.18.tgz[fleet-agent-0.9.18.tgz]

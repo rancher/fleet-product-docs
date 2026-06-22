@@ -1,0 +1,87 @@
+* xref:index.adoc[Übersicht]
+* xref:persona.adoc[Schlüssel-Personas und ihre Rollen]
+* Anleitungen
+** xref:tutorials/quickstart.adoc[Kurzanleitung]
+** xref:tutorials/tut-deployment.adoc[Erstellen einer Implementierung]
+** xref:tutorials/uninstall.adoc[Deinstallieren]
+* Erläuterungen
+** xref:explanations/architecture.adoc[Architektur]
+** xref:explanations/concepts.adoc[Kernelkonzepte]
+** xref:explanations/ref-bundle-stages.adoc[Bundle-Lebenszyklus]
+** xref:explanations/gitrepo-content.adoc[Inhalte des Git-Repositorys]
+** xref:explanations/namespaces.adoc[Namespaces]
+** xref:explanations/resources-during-deployment.adoc[Benutzerdefinierte Ressourcen während der Implementierung]
+** xref:explanations/glossary.adoc[Benutzerdefinierte Ressourcen während der Implementierung]
+* Anleitungen für Betreiber
+** xref:how-tos-for-operators/installation.adoc[Installationsdetails]
+** xref:how-tos-for-operators/cluster-registration.adoc[Registrieren von Downstream-Clustern]
+** xref:how-tos-for-operators/cluster-group.adoc[Clustergruppen erstellen]
+** xref:how-tos-for-operators/multi-user.adoc[Multi-User einrichten]
+** xref:how-tos-for-operators/resource-limits.adoc[Ressourcengrenzen konfigurieren]
+* Anleitungen für Benutzer
+** xref:how-tos-for-users/gitrepo-add.adoc[Erstellen einer GitRepo-Ressource]
+** xref:how-tos-for-users/gitrepo-targets.adoc[Mapping zu Downstream-Clustern]
+** xref:how-tos-for-users/bundle-diffs.adoc[Generieren von Diffs zum Ignorieren modifizierter GitRepos]
+** xref:how-tos-for-users/webhook.adoc[Verwendung von Webhooks anstelle von Polling]
+** xref:how-tos-for-users/imagescan.adoc[Verwendung von Image-Scans zur Aktualisierung von Container-Image-Referenzen]
+** xref:how-tos-for-users/bundle-add.adoc[Erstellen einer Bundle-Ressource]
+** xref:how-tos-for-users/observability.adoc[Einblick]
+** xref:how-tos-for-users/oci-storage.adoc[OCI-Speicher]
+** xref:how-tos-for-users/rollout.adoc[Rollout-Strategie]
+** xref:how-tos-for-users/helm-ops.adoc[Helm-Operationen]
+** xref:how-tos-for-users/fetch-helm-oci.adoc[Helm-Operationen abrufen]
+** xref:how-tos-for-users/fine-tune-error.adoc[Feinabstimmung der Fehlererkennung]
+
+* Fleet CLI
+** xref:how-tos-for-users/install-use-fleet-cli.adoc[Fleet CLI installieren und verwenden]
+** xref:how-tos-for-users/validate-fleet-cli.adoc[Fleet CLI-Implementierung validieren]
+
+* Kurz nachgeschlagen
+** CLI 
+*** Fleet 
+**** xref:reference/cli/fleet-cli/fleet.adoc[fleet]
+**** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet anwenden]
+**** xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet Bündeldiff]
+**** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet bereitstellen]
+**** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet Ziel]
+**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
+*** Fleet Fehlersuche
+**** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analysieren]
+**** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet überwachen]
+**** xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dumpen]
+*** Fleet Agent 
+**** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
+**** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent Clusterstatus]
+**** xref:reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent registrieren]
+*** Löschoptionen
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet bereinigen]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Bereinigung der Fleet-Clusterregistrierung]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Bereinigung des Fleet-Gitjobs]
+*** Fleet Controller 
+**** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
+**** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
+**** xref:reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller Bereinigung]
+**** xref:reference/cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-gitjob]
+
+** Ressourcen und APIs
+*** xref:reference/ref-crds.adoc[Benutzerdefinierte Ressourcen-Spezifikation]
+*** xref:reference/ref-crd-schema.adoc[CRD Schema]
+*** xref:reference/ref-gitrepo.adoc[GitRepo Resource]
+*** xref:reference/ref-bundle.adoc[Bundle-Ressource]
+*** xref:reference/ref-resources.adoc[Liste der implementierten Ressourcen]
+** Konfigurationsreferenz
+*** xref:reference/ref-fleet-yaml.adoc[fleet.yaml]
+*** xref:reference/ref-configuration.adoc[Konfiguration]
+** Status und Interna
+*** xref:reference/ref-status-fields.adoc[Cluster- und Bundle-Zustand]
+*** xref:reference/ref-registration.adoc[Interna der Clusterregistrierung]
+* xref:troubleshooting.adoc[Fehlerbehebung]
+
+* Experimentelle Funktionen
+** xref:experimental-features/enableexperimental.adoc[Experimentelle Funktionen aktivieren]
+** xref:experimental-features/scheduling.adoc[Planung]
+** xref:experimental-features/experimental-downstream-resource.adoc[Automatisierte Verbreitung von Ressourcen an Downstream-Cluster]
+** xref:reference/ref-schedule.adoc[Ressourcenreferenz planen]
+
+* Changelog
+** xref:changelogs/v0.15.0.adoc[v0.15.0]

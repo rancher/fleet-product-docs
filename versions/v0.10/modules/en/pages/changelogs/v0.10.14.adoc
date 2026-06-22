@@ -5,8 +5,10 @@
 
 *Released on 2025-06-20 15:01:43 +0000 UTC by `github-actions[bot]`.*
 
+[#_description]
 == Description
 
+[#_what_s_changed]
 === What's Changed
 
 * Update gomod-k8sio-dependencies (release/v0.10) by @renovate-rancher in https://github.com/rancher/fleet/pull/3693[#3693]
@@ -14,6 +16,7 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.13...v0.10.14[v0.10.13...v0.10.14]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.10.14/fleet-agent-0.10.14.tgz[fleet-agent-0.10.14.tgz]

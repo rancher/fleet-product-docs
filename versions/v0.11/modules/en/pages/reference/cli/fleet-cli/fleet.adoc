@@ -8,12 +8,14 @@ Manage {product_name} operations
 fleet [flags]
 ----
 
+[#_options]
 == Options
 
 ----
   -h, --help   help for fleet
 ----
 
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]	 - Create bundles from directories, and output them or apply them on a cluster

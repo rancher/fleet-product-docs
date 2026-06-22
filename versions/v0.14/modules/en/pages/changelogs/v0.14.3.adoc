@@ -5,6 +5,7 @@
 :page-date: 2026-02-20 10:21:35 +0000 UTC
 
 
+[#_what_s_changed]
 == What's Changed
 * Avoid using DeepCopy when copying Downstream Resources (#4560) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/4576
 * Clear Reason when Ready condition transitions from non-ready to ready by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/4580

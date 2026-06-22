@@ -8,6 +8,7 @@ Configure the Fleet manager that communicates with the Fleet agent
 fleet-manager [flags]
 ----
 
+[#_options]
 == Options
 
 ----

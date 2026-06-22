@@ -1,0 +1,7 @@
+= Recursos Personalizados Durante la Ampliación
+:revdate: 30-04-2025
+:page-revdate: {revdate}
+
+Esto muestra los recursos, también los internos, involucrados en la creación de una ampliación desde un repositorio Git.
+
+image::FleetResources.svg[Recursos]

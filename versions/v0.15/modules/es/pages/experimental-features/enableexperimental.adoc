@@ -1,0 +1,51 @@
+= Cómo habilitar características experimentales
+:revdate: 2025-10-10
+:page-revdate: {revdate}
+
+{product_name} admite características experimentales que están desactivadas por defecto y pueden ser habilitadas por el usuario.
+
+Habilitar o deshabilitar características experimentales se realiza utilizando variables de entorno adicionales que están disponibles al desplegar `rancher/fleet`.
+
+Para más información, consulta Configurar las opciones de instalación de xref:reference/ref-configuration.adoc#_configure_product_install_options_in_rancher[{product_name} en Rancher]
+
+[#_available_experimental_features]
+== Características experimentales disponibles
+
+{product_name} actualmente admite las siguientes características experimentales, activadas a través de sus respectivas variables de entorno:
+
+* xref:experimental-features/scheduling.adoc[Programación]
+* xref:experimental-features/experimental-downstream-resource.adoc[Propagación automatizada de recursos a clústeres en sentido descendente]
+
+[#_enabling_an_experimental_feature]
+== Habilitando una característica experimental
+
+[#_enabling_when_installing_product_name_stand_alone]
+=== Habilitando al instalar {product_name} de forma independiente
+
+Todo lo que necesitas hacer es pasar algo como:
+
+[source,bash]
+----
+--set-string extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string extraEnv[0].value=true
+----
+
+a tu comando `helm install` o `helm upgrade`.
+
+[NOTE]
+====
+Tienes que usar `--set-string` porque de lo contrario el valor booleano no funcionará como se espera.
+====
+
+[#_enabling_when_installing_product_name_with_rancher]
+=== Habilitando al instalar {product_name} con Rancher
+
+También puedes activar las características experimentales en {product_name} al instalar Rancher.
+
+Los parámetros son los mismos, pero tienes que añadir el prefijo `fleet.`:
+
+[source,bash]
+----
+--set-string fleet.extraEnv[0].name=EXPERIMENTAL_SCHEDULES \
+--set-string fleet.extraEnv[0].value=true
+----

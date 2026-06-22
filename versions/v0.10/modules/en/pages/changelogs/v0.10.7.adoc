@@ -5,14 +5,17 @@
 
 *Released on 2024-12-11 12:15:23 +0000 UTC by `github-actions[bot]`.*
 
+[#_description]
 == Description
 
+[#_what_s_changed]
 === What's Changed
 
 * Disable jobs cleanup cronjob if gitOps is disabled by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/3125[#3125]
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.10.6...v0.10.7[v0.10.6...v0.10.7]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.10.7/fleet-agent-0.10.7.tgz[fleet-agent-v0.10.7.tgz]

@@ -1,0 +1,24 @@
+= クラスタグループの作成
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+ネームスペース内のクラスタはクラスタグループにまとめることができます。クラスタグループは本質的に名前付きセレクタです。
+クラスタグループの唯一のパラメータは本質的にセレクタです。
+特定の規模に達すると、クラスタグループはクラスタを管理するより合理的な方法になります。
+クラスタグループは、デプロイメントの集約された状態を提供し、ターゲットを管理するためのより簡単な方法を提供します。
+
+クラスタグループは、以下のように`ClusterGroup`リソースを作成することで作られます。
+
+[,yaml]
+----
+kind: ClusterGroup
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: production-group
+  namespace: clusters
+spec:
+  # This is the standard metav1.LabelSelector format to match clusters by labels
+  selector:
+    matchLabels:
+      env: prod
+----

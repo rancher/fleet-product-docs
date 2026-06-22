@@ -4,6 +4,7 @@
 
 A reference list of, mostly internal, configuration options.
 
+[#_helm_charts]
 == Helm Charts
 
 The Helm charts accept, at least, the options as shown with their default in `values.yaml`:
@@ -12,6 +13,7 @@ The Helm charts accept, at least, the options as shown with their default in `va
 * https://github.com/rancher/fleet/blob/main/charts/fleet-crd/values.yaml
 * https://github.com/rancher/fleet/blob/main/charts/fleet-agent/values.yaml
 
+[#_environment_variables]
 == Environment Variables
 
 The controllers can be started with these environment variables:
@@ -20,6 +22,7 @@ The controllers can be started with these environment variables:
 * `FLEET_CLUSTER_ENQUEUE_DELAY` - tune how often non-ready clusters are checked
 * `FLEET_CPU_PPROF_PERIOD` - used to turn on https://github.com/rancher/fleet/blob/main/docs/performance.md[performance profiling]
 
+[#_configuration]
 == Configuration
 
 In cluster configuration for the agent and fleet manager. Changing these can lead to full re-deployments.
@@ -29,6 +32,7 @@ The config https://github.com/rancher/fleet/blob/main/internal/config/config.go#
 * cattle-fleet-system/fleet-agent
 * cattle-fleet-system/fleet-controller
 
+[#_labels]
 == Labels
 
 Labels used by fleet:
@@ -41,6 +45,7 @@ Labels used by fleet:
 * `fleet.cattle.io/managed=true` - cluster namespaces with this label will be cleaned up. Other resources will be cleaned up if it is in a label. Used in Rancher to identify fleet namespaces.
 * `fleet.cattle.io/bootstrap-token` - unused
 
+[#_annotations]
 == Annotations
 
 Annotations used by fleet:
@@ -55,6 +60,7 @@ Annotations used by fleet:
 * `fleet.cattle.io/managed` - appears unused
 * `fleet.cattle.io/service-account`
 
+[#_product_name_agent_configuration]
 == {product_name} agent configuration
 
 Tolerations, affinity and resources can be customized for the {product_name} agent. These fields can be provided when creating a

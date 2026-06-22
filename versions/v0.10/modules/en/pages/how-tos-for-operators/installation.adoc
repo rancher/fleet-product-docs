@@ -12,6 +12,7 @@ image::single-cluster.png[Static, 600]
 
 Single-cluster is the default installation. The same cluster will run both the {product_name} manager and the {product_name} agent. The cluster will communicate with Git server to deploy resources to this local cluster. This is the simplest setup and very useful for dev/test and small scale setups. This use case is supported as a valid use case for production.
 
+[#_prerequisites]
 == Prerequisites
 
 [tabs]
@@ -25,6 +26,7 @@ Kubernetes::
 {product_name} is a controller running on a Kubernetes cluster so an existing cluster is required. For the single cluster use case you will install {product_name} to the cluster which you intend to manage with GitOps. Any Kubernetes community supported version of Kubernetes will work, in practice this means 1.20.5 or greater.
 ====
 
+[#_default_install]
 == Default Install
 
 Install the following two Helm charts.
@@ -86,8 +88,10 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 You can now xref:how-tos-for-users/gitrepo-add.adoc[register some git repos] in the `fleet-local` namespace to start deploying Kubernetes resources.
 
+[#_multi_controller_install_sharding]
 == Multi-controller install: sharding
 
+[#_deployment]
 === Deployment
 
 From 0.10 onwards, {product_name} supports static sharding. Each shard is defined by its shard ID. Optionally, a shard can have a https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/#nodeselector[node selector], instructing {product_name} to create all controller pods and jobs for that shard on nodes matching that selector.
@@ -131,6 +135,7 @@ gitjob-shard-baz-6d67f596dc-fsz9m   baz        k3d-upstream-server-2
 gitjob-shard-foo-8697bb7f67-wzsfj   foo        k3d-upstream-server-0
 ----
 
+[#_how_it_works]
 === How it works
 
 With sharding in place, each {product_name} controller will process resources bearing its own shard ID. This also holds for the unsharded controller, which has no set shard ID and will therefore process all unsharded resources.
@@ -161,6 +166,7 @@ On the other hand, a GitRepo with an unknown label ID (eg. `boo` in the above ex
 
 Removing or adding supported shard IDs currently requires redeploying {product_name} with a new set of shard IDs.
 
+[#_configuration_for_multi_cluster]
 == Configuration for Multi-Cluster
 
 [CAUTION]
@@ -178,6 +184,7 @@ However, to allow for xref:how-tos-for-operators/cluster-registration.adoc#_mana
 ====
 
 
+[#_api_server_url_and_ca_certificate]
 === API Server URL and CA certificate
 
 In order for your {product_name} management installation to properly work it is important the correct API server URL and CA certificates are configured properly.  The {product_name} agents will communicate to the Kubernetes API server URL. This means the Kubernetes API server must be accessible to the downstream clusters.  You will also need to obtain the CA certificate of the API server. The easiest way to obtain this information is typically from your kubeconfig file (`$HOME/.kube/config`). The `server`, `certificate-authority-data`, or `certificate-authority` fields will have these values.
@@ -192,6 +199,7 @@ clusters:
     server: https://example.com:6443
 ----
 
+[#_extract_ca_certificate]
 ==== Extract CA certificate
 
 Please note that the `certificate-authority-data` field is base64 encoded and will need to be decoded before you save it into a file. This can be done by saving the base64 encoded contents to a file and then running:
@@ -229,6 +237,7 @@ kubectl config view -o json --raw  | jq -r '.clusters[] | select(.name=="CLUSTER
 --
 ====
 
+[#_extract_api_server]
 ==== Extract API Server
 
 If you have a multi-cluster setup, you can use this command:
@@ -241,6 +250,7 @@ API_SERVER_URL=$(kubectl config view -o json --raw  | jq -r '.clusters[] | selec
 API_SERVER_CA="ca.pem"
 ----
 
+[#_validate]
 ==== Validate
 
 First validate the server URL is correct.
@@ -276,6 +286,7 @@ KDs/pb3fnMTtpA==
 ----END CERTIFICATE----
 ----
 
+[#_install_for_multi_cluster]
 === Install for Multi-Cluster
 
 In the following example it will be assumed the API server URL from the `KUBECONFIG` which is `+https://example.com:6443+` and the CA certificate is in the file `ca.pem`. If your API server URL is signed by a well-known CA you can omit the `apiServerCA` parameter below or just create an empty `ca.pem` file (ie `touch ca.pem`).

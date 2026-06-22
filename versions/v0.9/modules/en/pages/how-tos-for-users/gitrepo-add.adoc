@@ -3,6 +3,7 @@
 :page-revdate: {revdate}
 :doctype: book
 
+[#_create_gitrepo_instance]
 == Create GitRepo Instance
 
 Git repositories are registered by creating a `GitRepo` resource in Kubernetes. Refer
@@ -12,6 +13,7 @@ xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about
 
 The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
 
+[#_proper_namespace]
 == Proper Namespace
 
 Git repos are added to the {product_name} manager using the `GitRepo` custom resource type. The `GitRepo` type is namespaced. By default, Rancher will create two {product_name} workspaces: *fleet-default* and *fleet-local*.
@@ -23,6 +25,7 @@ If you are using {product_name} in a xref:explanations/concepts.adoc[single clus
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
+[#_adding_private_git_repository]
 == Adding Private Git Repository
 
 {product_name} supports both http and ssh auth key for private repository. To use this you have to create a secret in the same namespace.
@@ -95,6 +98,7 @@ If you are using openssh format for the private key and you are creating it in t
 ====
 
 
+[#_using_http_auth]
 === Using HTTP Auth
 
 Create a secret containing username and password. You can replace the password with a personal access token if necessary. Also see xref:troubleshooting.adoc#_http_secrets_in_github[HTTP secrets in Github].
@@ -108,6 +112,7 @@ Just like with SSH, reference the secret in your GitRepo resource via `clientSec
    branch: main
    clientSecretName: basic-auth-secret
 
+[#_using_private_helm_repositories]
 == Using Private Helm Repositories
 
 [CAUTION]
@@ -129,6 +134,7 @@ For example, to add a secret in kubectl, run
 
 After secret is created, specify the secret to `gitRepo.spec.helmSecretName`. Make sure secret is created under the same namespace with gitrepo.
 
+[#_use_different_helm_credentials_for_each_path]
 === Use different helm credentials for each path
 
 [IMPORTANT]

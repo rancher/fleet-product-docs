@@ -12,6 +12,7 @@ From {product_name} v0.14.0 onwards, {product_name} supports propagating externa
 This simplifies dealing with dependencies of charts, such as values coming from external resources.
 See also xref:/explanations/gitrepo-content.adoc#_using_valuesfrom[valuesFrom].
 
+[#_how_it_works]
 == How it works
 
 HelmOps support a new `downstreamResources` field, which can be used to reference resources by kind and name.
@@ -48,6 +49,7 @@ remain on the upstream cluster, though.
 If resources referenced through `downstreamResources` should stay on downstream clusters even after they are no longer targeted, xref:/reference/ref-bundle.adoc[keepResources] should be set to `true` on the HelmOp.
 ====
 
+[#_monitoring]
 == Monitoring
 
 From version v0.15.0 onwards, {product_name} monitors changes made to secrets and configmaps that are listed in `DownstreamResources`. It also checks whether a secret or configmap was created after the Bundle was created.

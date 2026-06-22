@@ -1,0 +1,67 @@
+= Validar el despliegue de Fleet CLI
+:revdate: 2025-10-6
+:page-revdate: {revdate}
+
+Después de aplicar un paquete utilizando Fleet CLI, puedes validar el despliegue inspeccionando el `Bundle` y su `BundleDeployments` asociado.
+
+Cada clúster downstream de {product_name} lista:
+
+* Qué paquetes se han desplegado en él.
+* Su estado de preparación.
+* Cualquier error o problema de sincronización.
+
+Para validar si tu `fleet apply` creó un paquete y si se desplegó en el número correcto de objetivos, ejecuta:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -A
+----
+
+image::validate-deployment-ss.png[Una captura de pantalla que muestra la validación del despliegue de Fleet]
+
+Verás los siguientes campos:
+
+* `BUNDLEDEPLOYMENTS-READY` — Muestra cuántos objetivos están listos de un total.
+* `STATUS` — Puede mostrar *Listo*, *Modificado*, u otras condiciones basadas en el despliegue.
+
+[NOTE]
+====
+Si `BUNDLEDEPLOYMENTS-READY` muestra `1/1`, el paquete se ha desplegado con éxito en un clúster.
+====
+
+Para obtener una vista detallada de cómo se renderizó y aplicó el paquete, ejecuta:
+
+[source,bash]
+----
+kubectl get bundles.fleet.cattle.io -n fleet-local my-nginx-bundle -o yaml
+----
+
+Busca los siguientes campos en la sección `status`:
+
+[source,yaml]
+----
+status:
+  display:
+    readyClusters: 1/1
+  summary:
+    desiredReady: 1
+    ready: 1
+  conditions:
+    type: Ready
+    status: "True"
+----
+
+Esto indica que:
+
+* El paquete fue programado para un clúster.
+* El clúster objetivo acusó recibo y aplicó los recursos.
+* El controlador marcó el despliegue como listo.
+
+También puedes verificar el objeto `BundleDeployment` correspondiente, ya que cada `BundleDeployment` corresponde a un clúster objetivo:
+
+[source,bash]
+----
+kubectl get bundledeployments.fleet.cattle.io -A
+----
+
+Para más información, consulta xref:reference/ref-status-fields.adoc[Status Fields].

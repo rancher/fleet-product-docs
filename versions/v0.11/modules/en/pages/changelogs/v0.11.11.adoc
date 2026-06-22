@@ -6,6 +6,7 @@
 *Released on 2025-09-18 09:13:26 +0000 UTC by `github-actions[bot]`.*
 
 
+[#_what_s_changed]
 == What's Changed
 * chore(deps): update github.com/ulikunitz/xz to v0.5.15 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4111
 
@@ -13,6 +14,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.11.10...v0.11.11[v0.11.10...v0.11.11]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.11.11/fleet-0.11.11.tgz[fleet-0.11.11.tgz]

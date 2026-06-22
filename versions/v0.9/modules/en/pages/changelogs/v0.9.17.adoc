@@ -3,6 +3,7 @@
 :page-revdate: {revdate}
 :date: 2025-04-07 10:35:44 +0000 UTC
 
+[#_what_s_changed]
 == What's Changed
 * Update gitjob version to 0.9.24 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3516
 
@@ -10,6 +11,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.9.16...v0.9.17[v0.9.16\...v0.9.17]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.17/fleet-0.9.17.tgz[fleet-0.9.17.tgz]

@@ -1,0 +1,7 @@
+= Recursos Personalizados Durante a Implantação
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+Isto mostra os recursos, também os internos, envolvidos na criação de uma implantação a partir de um repositório git.
+
+image::FleetResources.svg[Recursos]

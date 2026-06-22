@@ -1,0 +1,87 @@
+* xref:index.adoc[概要]
+* xref:persona.adoc[主要なペルソナとその役割]
+* チュートリアル
+** xref:tutorials/quickstart.adoc[クイックスタート]
+** xref:tutorials/tut-deployment.adoc[デプロイメントの作成]
+** xref:tutorials/uninstall.adoc[アンインストール]
+* 説明
+** xref:explanations/architecture.adoc[アーキテクチャ]
+** xref:explanations/concepts.adoc[コアコンセプト]
+** xref:explanations/ref-bundle-stages.adoc[バンドルライフサイクル]
+** xref:explanations/gitrepo-content.adoc[Gitリポジトリの内容]
+** xref:explanations/namespaces.adoc[ネームスペース]
+** xref:explanations/resources-during-deployment.adoc[デプロイメント中のカスタムリソース]
+** xref:explanations/glossary.adoc[デプロイメント中のカスタムリソース]
+* オペレーター向けハウツー
+** xref:how-tos-for-operators/installation.adoc[インストール詳細]
+** xref:how-tos-for-operators/cluster-registration.adoc[ダウンストリームクラスタの登録]
+** xref:how-tos-for-operators/cluster-group.adoc[クラスタグループの作成]
+** xref:how-tos-for-operators/multi-user.adoc[マルチユーザーのセットアップ]
+** xref:how-tos-for-operators/resource-limits.adoc[リソース制限の設定]
+* ユーザー向けハウツー
+** xref:how-tos-for-users/gitrepo-add.adoc[GitRepoリソースの作成]
+** xref:how-tos-for-users/gitrepo-targets.adoc[ダウンストリームクラスタへのマッピング]
+** xref:how-tos-for-users/bundle-diffs.adoc[変更されたGitReposを無視するための差分生成]
+** xref:how-tos-for-users/webhook.adoc[ポーリングの代わりにWebhookを使用する]
+** xref:how-tos-for-users/imagescan.adoc[コンテナイメージ参照を更新するためのイメージスキャンの使用]
+** xref:how-tos-for-users/bundle-add.adoc[バンドルリソースの作成]
+** xref:how-tos-for-users/observability.adoc[監視]
+** xref:how-tos-for-users/oci-storage.adoc[OCIストレージ]
+** xref:how-tos-for-users/rollout.adoc[ロールアウト戦略]
+** xref:how-tos-for-users/helm-ops.adoc[ヘルムオプス]
+** xref:how-tos-for-users/fetch-helm-oci.adoc[ヘルムオプスを取得する]
+** xref:how-tos-for-users/fine-tune-error.adoc[エラー検出の微調整]
+
+* Fleet CLI
+** xref:how-tos-for-users/install-use-fleet-cli.adoc[Fleet CLI のインストールと使用]
+** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]
+
+* リファレンス
+** CLI 
+*** Fleet 
+**** xref:reference/cli/fleet-cli/fleet.adoc[fleet]
+**** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
+**** xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[Fleet bundlediff]
+**** xref:reference/cli/fleet-cli/fleet_deploy.adoc[Fleet deploy]
+**** xref:reference/cli/fleet-cli/fleet_target.adoc[Fleet target]
+**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[Fleet gitcloner]
+*** Fleetのトラブルシューティング
+**** xref:reference/cli/fleet-cli/fleet_analyze.adoc[Fleet analyze]
+**** xref:reference/cli/fleet-cli/fleet_monitor.adoc[Fleet monitor]
+**** xref:reference/cli/fleet-cli/fleet_dump.adoc[Fleet dump]
+*** Fleet Agent 
+**** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
+**** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
+**** xref:reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register]
+*** クリーンアップ
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[Fleet cleanup]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Fleet cluster registration cleanup]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Fleet gitjob cleanup]
+*** Fleet Controller 
+**** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
+**** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
+**** xref:reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]
+**** xref:reference/cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-gitjob]
+
+** リソースとAPI
+*** xref:reference/ref-crds.adoc[カスタムリソース仕様]
+*** xref:reference/ref-crd-schema.adoc[CRDスキーマ]
+*** xref:reference/ref-gitrepo.adoc[GitRepoリソース]
+*** xref:reference/ref-bundle.adoc[バンドルリソース]
+*** xref:reference/ref-resources.adoc[デプロイされたリソースの一覧]
+** 構成リファレンス
+*** xref:reference/ref-fleet-yaml.adoc[fleet.yaml]
+*** xref:reference/ref-configuration.adoc[設定]
+** ステータスと内部情報
+*** xref:reference/ref-status-fields.adoc[クラスターとバンドルの状態]
+*** xref:reference/ref-registration.adoc[クラスター登録の内部情報]
+* xref:troubleshooting.adoc[トラブルシューティング]
+
+* 実験的機能
+** xref:experimental-features/enableexperimental.adoc[実験的機能を有効にする]
+** xref:experimental-features/scheduling.adoc[スケジューリング]
+** xref:experimental-features/experimental-downstream-resource.adoc[リソースをダウンストリームクラスターに自動伝播する]
+** xref:reference/ref-schedule.adoc[リソース参照のスケジュール]
+
+* 変更ログ
+** xref:changelogs/v0.15.0.adoc[v0.15.0]

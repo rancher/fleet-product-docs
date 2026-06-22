@@ -5,6 +5,7 @@
 
 *Released on 2025-12-12 15:06:55 +0000 UTC UTC by `github-actions[bot]`.*
 
+[#_what_s_changed]
 == What's Changed
 * Update gomod-k8s-dependencies to v0.32.10 (release/v0.12) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4324
 * Update dependency go to v1.24.11 (release/v0.12) by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4407
@@ -14,6 +15,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.12.9...v0.12.10[v0.12.9...v0.12.10]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.10/fleet-0.12.10.tgz[fleet-0.12.10.tgz]

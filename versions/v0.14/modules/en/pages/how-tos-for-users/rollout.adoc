@@ -23,6 +23,7 @@ The rollout configuration options are documented in the `rolloutStrategy` field 
 If `rolloutStrategy` is not specified in `fleet.yaml`, {product_name} uses the default values.
 ====
 
+[#_how_does_partitioning_work]
 == How Does Partitioning Work?
 
 Partitions are solely used for grouping and controlling the rollout of `BundleDeployments` across clusters. They do not affect deployment options in any way.
@@ -158,6 +159,7 @@ image::partition-rollout-flow.png[A visual asset displaying the flow of deployin
 {product_name} processes partitions in the order they appear in the `fleet.yaml` file.
 ====
 
+[#_single_partition]
 === Single Partition
 
 If you don’t define `rolloutStrategy.partitions`, {product_name} creates partitions automatically based on the number of targeted clusters:
@@ -171,10 +173,12 @@ For example, with 200 clusters (meeting the default `autoPartitionThreshold`), {
 2. Evaluate readiness based on `maxUnavailable`.
 . If the condition is met, proceed to the next 50, and so on.
 
+[#_multiple_partitions]
 === Multiple Partitions
 
 If you define multiple partitions, {product_name} uses `maxUnavailablePartitions` to limit how many partitions can be `NotReady` at once. If the number of `NotReady` partitions exceeds `maxUnavailablePartitions`, {product_name} pauses the rollout.
 
+[#_preventing_image_pull_storms]
 == Preventing image pull storms
 
 During rollout, each downstream cluster pulls container images. If hundreds of clusters begin pulling images simultaneously, this can overwhelm the registry and behave like a DDoS attack.
@@ -203,6 +207,7 @@ How rollout proceeds:
 
 If you want or need to process fewer than 40 deployments at once, you can put fewer clusters into each partition.
 
+[#_use_cases_and_behavior]
 == Use Cases and Behavior
 
 If the number of clusters doesn’t divide evenly, {product_name} rounds down partition sizes. For example, 230 clusters with `autoPartitionSize: 25%` results in:
@@ -210,6 +215,7 @@ If the number of clusters doesn’t divide evenly, {product_name} rounds down pa
 * Four partitions of 57 clusters
 * One partition of 2 clusters
 
+[#_scenario_50_clusters_single_partition]
 === Scenario: 50 Clusters (Single Partition)
 
 [source,yaml]
@@ -228,6 +234,7 @@ The following diagram illustrates how {product_name} handles 50 clusters in a si
 
 image::deploy-50Clusters.png[50 clusters scenario]
 
+[#_scenario_100_clusters_single_partition]
 === Scenario: 100 Clusters (Single Partition) 
 
 [source,yaml]
@@ -243,6 +250,7 @@ rolloutStrategy:
 
 If 10 clusters (10% of 100 clusters) are unavailable, the deployment of the remaining 50 clusters is paused until less than 10 clusters are `NotReady`. 
 
+[#_scenario_200_clusters_multiple_partitions]
 === Scenario: 200 Clusters (Multiple Partitions)
 
 [source,yaml]
@@ -260,6 +268,7 @@ rolloutStrategy:
 
 {product_name} creates `BundleDeployments` for 20 clusters, waits for them to become `Ready`, then proceeds to the next. This effectively limits the amount of image pulls from downstream clusters to up to ~40 images at a time.
 
+[#_scenario_200_clusters_strict_readiness_manual_partitions]
 === Scenario: 200 Clusters (Strict Readiness, Manual partitions)
 
 Manual partitioning allows you control over cluster grouping with `maxUnavailablePartitions: 0`. 
@@ -292,6 +301,7 @@ image::partition-fleet-rollout.png[Manual partitions scenario]
 
 This ensures full readiness and staged rollout across all 200 clusters. Use this approach when you need precise rollout sequencing and full cluster readiness before advancing. 
 
+[#_rollout_strategy_defaults]
 == Rollout Strategy Defaults
 
 If partition-level rollout values are not defined, {product_name} applies the global values from `rolloutStrategy` in `fleet.yaml`. Partition-specific settings override global values when explicitly set.

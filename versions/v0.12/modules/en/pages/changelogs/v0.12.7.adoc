@@ -5,6 +5,7 @@
 
 *Released on 2025-09-18 10:56:32 +0000 UTC by `github-actions[bot]`.*
 
+[#_what_s_changed]
 == What's Changed
 * Improve bundle value secret logging by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/4086
 * Use patch to update bundledeployment status by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4094
@@ -14,6 +15,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.12.6...v0.12.7[v0.12.6...v0.12.7]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.7/fleet-crd-0.12.7.tgz[fleet-crd-0.12.7.tgz]

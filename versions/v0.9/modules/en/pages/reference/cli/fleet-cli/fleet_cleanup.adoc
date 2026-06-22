@@ -8,6 +8,7 @@ Clean up outdated cluster registrations
 fleet cleanup [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -19,6 +20,7 @@ fleet cleanup [flags]
       --min string        Minimum delay between deletes (default: 10ms)
 ----
 
+[#_options_inherited_from_parent_commands]
 == Options inherited from parent commands
 
 ----
@@ -28,6 +30,7 @@ fleet cleanup [flags]
       --system-namespace string   System namespace of the controller (default "cattle-fleet-system")
 ----
 
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

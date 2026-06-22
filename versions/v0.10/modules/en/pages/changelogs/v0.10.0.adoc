@@ -3,10 +3,12 @@
 :page-revdate: {revdate}
 :date: 2024-07-17 11:54:57 +0000 UTC
 
+[#_release_note]
 == Release Note
 
 The {product_name} v0.10 release brings significant changes, including a redesign that splits components into containers and switches to the controller-runtime framework. The rewritten controllers switch to structured logging. To reduce image size and complexity, v0.10 integrates the gitjob repository, merges various controller codes, and introduces new features such as sharding with node selectors, prometheus metrics, configurable leader election, and worker count for the fleet-controller. The release deprecates the "fleet test" command in favor of "`target`" and "`deploy`" with a dry-run option and adds experimental OCI content storage. Bug fixes enhance drift detection, cluster status reporting, and various operational aspects, while automation improvements bolster testing, CI, and the release workflow.
 
+[#_what_s_changed]
 === What's Changed
 
 .Click to Expand Details
@@ -66,6 +68,7 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.5...v0.10.0[v0.9.5...v0.10.0]
 
+[#_additions]
 === Additions
 
 * Populate bundle status from bundleDeployment status resources by https://github.com/rubhanazeem[@rubhanazeem] in https://github.com/rancher/fleet/pull/2535[#2535]
@@ -97,6 +100,7 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * Creation of a New Webhook endpoint for Github test Webhook by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2395[#2395]
 * Add a Parameter to Configure Worker count for fleet-controller by https://github.com/Tommy12789[@Tommy12789] in https://github.com/rancher/fleet/pull/2430[#2430]
 
+[#_bugfixes]
 === Bugfixes
 
 * Ignore status fields during drift detection by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/2522[#2522]
@@ -119,6 +123,7 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * Partially replace cleanup with finalizers by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2431[#2431]
 * Moves functionality from gitrepo to gitjob controller by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/2475[#2475]
 
+[#_redesign]
 === Redesign
 
 * Convert fleet-agent to controller-runtime by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/1772[#1772]
@@ -129,11 +134,13 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * Remove `GitJob` resource by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/2129[#2129]
 * Clustergroup controller migration by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/2400[#2400]
 
+[#_performance]
 === Performance
 
 * Reduce the number of times that Bundle resources are serialized by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1952[#1952]
 * Replace json-based implementation of DeepCopy on GenericMap by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/1915[#1915]
 
+[#_ci_automation]
 === CI / Automation
 
 .Click to Expand Details
@@ -220,6 +227,7 @@ The {product_name} v0.10 release brings significant changes, including a redesig
 * Re-enable fossa by https://github.com/olblak[@olblak] in https://github.com/rancher/fleet/pull/2446[#2446]
 ====
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.10.0/fleet-0.10.0.tgz[fleet-0.10.0.tgz]

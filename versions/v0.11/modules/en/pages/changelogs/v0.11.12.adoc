@@ -6,6 +6,7 @@
 *Released on 2026-01-21 14:35:42 +0000 UTC by `github-actions[bot]`.*
 
 
+[#_what_s_changed]
 == What's Changed
 * Update Kubernetes to v0.31.14 by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4325
 * Update base images in Dockerfiles to version 15.7 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4544
@@ -15,6 +16,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.11.11...v0.11.12[v0.11.11...v0.11.12]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.11.12/fleet-crd-0.11.12.tgz[fleet-crd-0.11.12.tgz]

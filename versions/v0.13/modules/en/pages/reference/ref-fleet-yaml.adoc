@@ -8,6 +8,7 @@ For more information about customizing bundles using `fleet.yaml`, see xref:expl
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`], which contains the xref:/reference/ref-crds.adoc#_bundlespec[BundleSpec].
+[#_full_example]
 == Full Example
 
 [%collapsible]
@@ -323,6 +324,7 @@ overrideTargets:
 ----
 ====
 
+[#_general_bundle_configuration]
 == General Bundle Configuration
 
 These options define the fundamental properties and behavior of the bundle itself and apply to all bundle types.
@@ -337,6 +339,7 @@ These options define the fundamental properties and behavior of the bundle itsel
 | `overrideTargets` | A list of target customizations that override any targets defined in the GitRepo. | All
 |===
 
+[#_namespace_configuration]
 === Namespace Configuration
 
 These options control the Kubernetes namespace where resources will be deployed.
@@ -350,10 +353,12 @@ These options control the Kubernetes namespace where resources will be deployed.
 | `namespaceAnnotations` | Annotations to be added to the namespace created by {product_name}. | All
 |===
 
+[#_helm_bundle_configuration]
 == Helm Bundle Configuration
 
 All bundles are deployed using Helm, but these options are specific to *Helm-style bundles* (those with a `Chart.yaml` file).
 
+[#_chart_source]
 === Chart Source
 
 These options specify how to download the chart. The reference can be a local path, go-getter URL, Helm repo, or OCI Helm repo.
@@ -375,6 +380,7 @@ The chart reference can be one of the following:
 * Helm repository (`repo` + `version`)
 * OCI Helm repository (`repo` + `version`)
 
+[#_helm_chart]
 ==== `helm.chart`
 
 Specifies a custom location for the Helm chart. For example:
@@ -395,6 +401,7 @@ If a CA bundle is configured in a secret referenced in `helmSecretName`, it will
 See https://github.com/rancher/fleet/issues/3646[fleet#3646] for details.
 ====
 
+[#_helm_version]
 ==== `helm.version`
 
 Determines which chart to download from OCI registries.
@@ -405,6 +412,7 @@ OCI registries do not support the `+` character in semver tags. Helm replaces `+
 Use the `+` version in `fleet.yaml`; {product_name} performs the same replacement internally.
 ====
 
+[#_values]
 === Values
 
 Options for customizing Helm chart values.
@@ -423,6 +431,7 @@ See xref:/explanations/gitrepo-content.adoc#_using_helm_values[Using Helm Values
 
 For value processing stages, refer to xref:explanations/ref-bundle-stages.adoc[Bundle lifecycle].
 
+[#_values_templating]
 === Values Templating
 
 {product_name} supports Go template expressions for advanced templating needs.  
@@ -433,7 +442,7 @@ See the https://masterminds.github.io/sprig/[Sprig template functions] for avail
 Avoid functions that produce random output (for example, `uuidv4`), as they trigger redeployments.
 ====
 
-You can test values templating with the CLI. For more information, refer to xref:explanations/ref-bundle-stages.adoc#fleet-target[fleet-target].
+You can test values templating with the CLI. For more information, refer to xref:explanations/ref-bundle-stages.adoc#_fleet_target[fleet-target].
 
 Template context keys:
 
@@ -475,6 +484,7 @@ ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }m
 ----
 ====
 
+[#_helm_deployment]
 == Helm Deployment
 
 These options control how {product_name}’s agent deploys resources.  
@@ -493,6 +503,7 @@ They also apply to *kustomize-* and *manifest-style bundles*.
 | `helm.skipSchemaValidation` | Skip `values.schema.json` validation. | All
 |===
 
+[#_kustomize_configuration]
 == Kustomize Configuration
 
 Used when deploying from a directory containing a `kustomization.yaml` file.
@@ -502,6 +513,7 @@ Used when deploying from a directory containing a `kustomization.yaml` file.
 | `kustomize.dir` | Custom folder for Kustomize resources. Must contain a `kustomization.yaml` file. | Kustomize
 |===
 
+[#_deployment_strategy_rollout]
 == Deployment Strategy (Rollout)
 
 These options control how updates roll out across clusters.
@@ -517,6 +529,7 @@ These options control how updates roll out across clusters.
 
 For more information, see xref:how-tos-for-users/rollout.adoc[Rollout Strategies].
 
+[#_targeting_and_customization]
 == Targeting and Customization
 
 These options let you customize deployments for specific clusters or cluster groups.
@@ -539,6 +552,7 @@ These options let you customize deployments for specific clusters or cluster gro
 | `targetCustomizations.correctDrift` | Enables drift correction for managed resources. | All
 |===
 
+[#_supported_customizations]
 === Supported Customizations
 
 * xref:/reference/ref-crds.adoc#_bundledeploymentoptions[DefaultNamespace]

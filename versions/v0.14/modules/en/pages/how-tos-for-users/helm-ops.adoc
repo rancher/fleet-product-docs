@@ -5,6 +5,7 @@
 
 HelmOps is a simplified way of creating bundles by directly pointing to a Helm repository or to an OCI registry, without needing to set up a git repository.
 
+[#_summary]
 == Summary
 
 When a ++GitRepo++ resource is created, {product_name} monitors a git repository, creating one or more bundles from paths specified in the ++GitRepo++, following a GitOps, or git-driven, approach to continuous deployment. This requires a git repository to be available, possibly containing ++fleet.yaml++ or other configuration files.
@@ -22,6 +23,7 @@ When constraints are invalid or no matching version can be found, {product_name}
 
 When using this feature, Helm charts are downloaded from downstream clusters, which must therefore have access to Helm registries.
 
+[#_creating_a_helmop_resource]
 == Creating a HelmOp resource
 
 A ++HelmOp++ resource can be created as follows to start deploying Helm charts directly:
@@ -46,10 +48,12 @@ spec:
 
 For private charts, this requires a Helm access secret (referenced by field ++helmSecretName++) to be created in the same namespace as the ++HelmOp++ resource. The Fleet HelmOps controller takes care of copying that secret to targeted downstream clusters, enabling the Fleet agent to access the registry.
 
+[#_supported_use_cases]
 == Supported use cases
 
 With 3 fields available to reference a Helm chart, let's clarify a few rules. As per the Helm install https://helm.sh/docs/helm/helm_install/[documentation], there are 6 ways of expressing a chart to install. 3 of them use either repository aliases or the local filesystem, which are not available in Fleet's HelmOps context. This leaves us with 3 options:
 
+[#_absolute_url]
 === Absolute URL
 
 Referencing a Helm chart by absolute URL is as simple as providing a URL to a ++.tgz++ file in the ++chart++ field. Helm options would look like:
@@ -65,6 +69,7 @@ helm:
 
 If a non-empty repo, or a non-empty version is specified in this case, an error will appear in the HelmOp status and no bundle will be created, aborting deployment.
 
+[#_chart_reference_and_repo_url]
 === Chart reference and repo URL
 
 A Helm chart can also be referenced through its repository and chart name, with an optional version, which may be a static version or a version constraint.
@@ -83,7 +88,7 @@ helm:
 
 In this case, only the ++version++ field may be empty. If any of the ++chart++ or ++repo++ field is empty, {product_name} set an error in the HelmOp status and no bundle will be created.
 
-[[oci-registry]]
+[#_oci_registry]
 === OCI registry
 
 Helm supports OCI registries, which can be referenced in {product_name} using the ++repo++ field.
@@ -110,10 +115,12 @@ In this case, {product_name} will be downloading OCI artifacts. This means that:
 ====
 
 
+[#_polling]
 == Polling
 
 {product_name} can poll the referenced Helm registry, periodically checking if new versions are available. Of course, this only makes sense if the ++version++ field contains a version constraint, which may resolve to multiple versions.
 
+[#_how_to_enable_it]
 === How to enable it
 
 Polling involves a ++pollingInterval++ field, similar to what exists for GitOps. However, in the HelmOps case, the default polling interval is 0 seconds, meaning that polling will be disabled.
@@ -123,6 +130,7 @@ The following conditions must be met on a HelmOp resource for {product_name} to 
 * The ++pollingInterval++ field is set to a non-zero duration (e.g. ++10s++, ++1m++, etc)
 * The ++version++ field is set to a valid semantic versioning constraint (e.g. ++2.x.x++, ++< 1.0++), not a static version (e.g. 1.2.3)
 
+[#_what_it_does]
 === What it does
 
 When polling is enabled, {product_name} does the following at the configured interval:
@@ -135,6 +143,7 @@ When polling is enabled, {product_name} does the following at the configured int
 *** with ++false++ with an error if a failure happened
 ** updating the ++Last Polling Time++ field to the starting time of the last polling attempt, even if it failed.
 
+[#_using_private_helm_repositories]
 == Using private Helm repositories
 
 This works the same way as it does for gitOps, by referencing a Helm access secret through field `helmSecretName`.
@@ -143,6 +152,7 @@ For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_pr
 
 The part on using separate credentials for each path is not relevant though, since unlike a GitRepo, a HelmOp resource only references a single Helm chart.
 
+[#_status_updates]
 == Status updates
 
 Creating a HelmOp resource leads to a bundle being created, if Helm options are valid and a chart version can be found.

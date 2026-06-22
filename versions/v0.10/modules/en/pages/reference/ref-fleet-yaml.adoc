@@ -13,6 +13,7 @@ The content of the fleet.yaml corresponds to the struct at
 https://github.com/rancher/fleet/blob/b501b7e7864d37e310dfcdb109c73e5aec4240bb/pkg/bundlereader/read.go#L132-L139[pkg/bundlereader/read.go],
 which contains the xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
+[#_reference]
 == Reference
 
 .fleet.yaml
@@ -343,9 +344,11 @@ overrideTargets:
         env: dev
 ----
 
+[#_helm_options]
 == Helm Options
 
 [discrete]
+[#_how_fleet_agent_deploys_the_bundle]
 === How fleet-agent deploys the bundle
 
 These options also apply to kustomize- and manifest-style bundles.  They control
@@ -363,6 +366,7 @@ Helm CLI options for install and update.
 * waitForJobs
 
 [discrete]
+[#_helm_chart_download_options]
 === Helm Chart Download Options
 
 These options are for Helm-style bundles, they specify how to download the
@@ -382,6 +386,7 @@ of the chart. go-getter also allows to download a chart from a Git repo.
 * an OCI Helm repository, specified by `repo` and optionally `version`.
 
 [discrete]
+[#_helm_chart_value_options]
 === Helm Chart Value Options
 
 Options for the downloaded Helm chart.
@@ -390,6 +395,7 @@ Options for the downloaded Helm chart.
 * valuesFiles
 * valueFrom
 
+[#_templating]
 == Templating
 
 It is possible to specify the keys and values as go template strings for

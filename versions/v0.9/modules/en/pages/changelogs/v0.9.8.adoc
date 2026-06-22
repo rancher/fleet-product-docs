@@ -3,14 +3,17 @@
 :page-revdate: {revdate}
 :date: 2024-08-13 14:30:43 +0000 UTC
 
+[#_release_note]
 == Release Note
 
+[#_what_s_changed]
 === What's Changed
 
 * Update Gitjob version to 0.9.13 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/2740[#2740]
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.9.6...v0.9.8[v0.9.6\...v0.9.8]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.9.8/fleet-crd-0.9.8.tgz[fleet-crd-0.9.8.tgz]

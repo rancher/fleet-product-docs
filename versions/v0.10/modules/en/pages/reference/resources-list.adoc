@@ -1,5 +1,6 @@
 = Resources
 
+[#_resources_list]
 == Resources List
 :revdate: 2025-10-27
 :page-revdate: {revdate}
@@ -14,6 +15,7 @@ The deployed resources within bundles can be found in `status.ResourceKey`. This
 
 Similar to bundles, the deployed resources in `GitRepos` are listed in `status.Resources`. This list is also derived from `bundleDeployments`.
 
+[#_resource_counts]
 == Resource Counts
 
 === GitRepos

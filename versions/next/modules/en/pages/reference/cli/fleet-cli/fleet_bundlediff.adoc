@@ -23,6 +23,7 @@ flag is required when querying a `BundleDeployment` by name.
 fleet bundlediff [flags]
 ----
 
+[#_options]
 == Options
 
 [source,text]
@@ -44,6 +45,7 @@ fleet bundlediff [flags]
                                  'iso8601', 'rfc3339', or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_examples]
 == Examples
 
 [source,bash]
@@ -68,6 +70,7 @@ fleet bundlediff --fleet-yaml --bundle-deployment my-bundle-deployment -n cluste
 fleet bundlediff -n cluster-fleet-local-local-abc123
 ----
 
+[#_see_also]
 == See also
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]	 - Manage {product_name} operations

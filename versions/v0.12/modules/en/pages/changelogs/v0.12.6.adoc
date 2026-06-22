@@ -5,6 +5,7 @@
 
 *Released on 2025-08-22 13:59:39 +0000 UTC by `github-actions[bot]`.*
 
+[#_what_s_changed]
 == What's Changed
 * Calculate hash with all data, not only processed (#3917) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3923
 * Adds InsecureTLS and BasicHTTP to helm secret (#3872) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/3950
@@ -18,6 +19,7 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.12.5...v0.12.6[v0.12.5...v0.12.6]
 
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.6/fleet-0.12.6.tgz[fleet-0.12.6.tgz]

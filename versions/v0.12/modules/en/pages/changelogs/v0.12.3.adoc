@@ -3,8 +3,10 @@
 :page-revdate: {revdate}
 :date: 2025-05-16 07:43:52 +0000 UTC
 
+[#_release_note]
 == Release Note
 
+[#_what_s_changed]
 === What's Changed
 
 Prevent empty Patch updates from Drift reconciler by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3577[#3577]
@@ -22,6 +24,7 @@ Prevent empty Patch updates from Drift reconciler by https://github.com/aruiz14[
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.12.2...v0.12.3[v0.12.2...v0.12.3]
 
+[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.12.3/fleet-crd-0.12.3.tgz[fleet-crd-0.12.3.tgz]

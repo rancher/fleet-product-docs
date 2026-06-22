@@ -1,0 +1,23 @@
+= Fleet cleanup
+:revdate: 23/07/2025
+:page-revdate: {revdate}
+
+Eliminar recursos obsoletos
+
+----
+fleet cleanup [flags]
+----
+
+[#_options]
+== Opciones
+
+----
+  -h, --help   help for cleanup
+----
+
+[#_see_also]
+== VÉASE
+
+* xref:/reference/cli/fleet-cli/fleet.adoc[Fleet]     - Gestionar {product_name} operaciones
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[Fleet cleanup clusterregistration]     - Eliminar registros de clúster obsoletos
+* xref:/reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[Fleet cleanup gitjob]     - Eliminar trabajos de git obsoletos

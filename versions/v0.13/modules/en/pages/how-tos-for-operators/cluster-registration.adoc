@@ -4,6 +4,7 @@
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 
+[#_overview]
 == Overview
 
 There are two specific styles to registering clusters. These styles will be referred
@@ -11,6 +12,7 @@ to as *agent-initiated* and *manager-initiated* registration. Typically one woul
 go with the agent-initiated registration but there are specific use cases in which
 manager-initiated is a better workflow.
 
+[#_agent_initiated_registration]
 === Agent-Initiated Registration
 
 Agent-initiated refers to a pattern in which the downstream cluster installs an agent with a
@@ -21,6 +23,7 @@ never need to have direct network access.
 
 It is not commonly used in Rancher. Rancher does not need to make an outbound API request to the downstream cluster, as it uses a tunnel to provide that connectivity.
 
+[#_manager_initiated_registration]
 === Manager-Initiated Registration
 
 Manager-initiated registration is a process in which you register an existing Kubernetes cluster
@@ -88,6 +91,7 @@ or https://github.com/rancher/rancher[Rancher].
 |===
 
 
+[#_agent_initiated]
 == Agent Initiated
 
 A downstream cluster is registered by installing an agent via helm and using the *cluster registration token* and optionally a *client ID* or *cluster labels*.
@@ -102,6 +106,7 @@ Agent-initiated registration is normally not used with Rancher.
 ====
 
 
+[#_cluster_registration_token_and_client_id]
 === Cluster Registration Token and Client ID
 
 The *cluster registration token* is a credential that will authorize the downstream cluster agent to be
@@ -113,6 +118,7 @@ There are two styles of registering an agent. You can have the cluster for this 
 case you will probably want to specify *cluster labels* upon registration.  Or you can have the agent register to a predefined
 cluster in the {product_name} manager, in which case you will need a *client ID*.  The former approach is typically the easiest.
 
+[#_install_agent_for_a_new_cluster]
 === Install Agent For a New Cluster
 
 The {product_name} agent is installed as a Helm chart. Following are explanations how to determine and set its parameters.
@@ -219,6 +225,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
+[#_install_agent_for_a_predefined_cluster]
 === Install Agent For a Predefined Cluster
 
 Client IDs are for the purpose of predefining clusters in the {product_name} manager with existing labels and repos targeted to them.
@@ -320,6 +327,7 @@ NAME                   BUNDLES-READY   NODES-READY   SAMPLE-NODE             LAS
 my-cluster             1/1             1/1           k3d-cluster2-server-0   2020-08-31T19:23:10Z
 ----
 
+[#_create_cluster_registration_tokens]
 === Create Cluster Registration Tokens
 
 [IMPORTANT]
@@ -343,11 +351,13 @@ token after a successful registration please note that usually other system boot
 Since the cluster registration token is forgotten, if you need to re-register a cluster you must
 give the cluster a new registration token.
 
+[#_token_ttl]
 ==== Token TTL
 
 Cluster registration tokens can be reused by any cluster in a namespace.  The tokens can be given a TTL
 such that it will expire after a specific time.
 
+[#_create_a_new_token]
 ==== Create a new Token
 
 The `ClusterRegistationToken` is a namespaced type and should be created in the same namespace
@@ -377,6 +387,7 @@ One way to do so is via the following one-liner:
 while ! kubectl --namespace=clusters  get secret new-token; do sleep 5; done
 ----
 
+[#_obtaining_token_value_agent_values_yaml]
 ==== Obtaining Token Value (Agent values.yaml)
 
 The token value contains YAML content for a `values.yaml` file that is expected to be passed to `helm install`
@@ -392,6 +403,7 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 
 Once the `values.yaml` is ready it can be used repeatedly by clusters to register until the TTL expires.
 
+[#_manager_initiated]
 == Manager Initiated
 
 The manager-initiated registration flow is accomplished by creating a
@@ -406,6 +418,7 @@ The manager-initiated registration is used when you add a cluster from the Ranch
 ====
 
 
+[#_create_kubeconfig_secret]
 === Create Kubeconfig Secret
 
 The format of this secret is intended to match the https://cluster-api.sigs.k8s.io/developer/architecture/controllers/cluster#secrets[format] of the kubeconfig

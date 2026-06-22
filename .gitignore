@@ -4,3 +4,5 @@ node_modules/
 build/
 .vscode/
 .DS_Store
+versions/add-header.py
+versions/fix-xref.py

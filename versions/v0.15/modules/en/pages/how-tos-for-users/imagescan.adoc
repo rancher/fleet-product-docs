@@ -11,7 +11,7 @@ without the need to manually update your manifests.
 This feature is considered as experimental feature.
 It is disabled by default.
 
-More information xref:how-tos-for-operators/installation.adoc#enabling-imagescan[here] on how to enable it.
+More information xref:how-tos-for-operators/installation.adoc#_enabling_imagescan[here] on how to enable it.
 ====
 
 

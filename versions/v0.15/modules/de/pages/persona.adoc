@@ -1,0 +1,30 @@
+= Wichtige Personas und ihre Rollen
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+[cols="1,2,2", options="header"]
+|===
+|Persona |Verantwortlichkeiten |Hauptvorteile
+
+|Plattformingenieure
+a|* Einrichtung und Verwaltung der {product_name} Installation über Cluster hinweg.
+* Definition und Durchsetzung von Multi-Cluster-Anwendungs- und Richtlinienimplementierungen.
+* Verwaltung von GitRepo und `fleet.yaml` Konfigurationen.
+* Durchführung von clusterweiten Updates und Rollbacks.
+a|* Zentralisierte Kontrolle über Cluster.
+* Verbesserte Standardisierung und Compliance.
+
+|Anwendungsentwickler
+a|* Strukturierung von Anwendungs-Helm-Charts oder Manifests in Git.
+* Definition von Implementierungszielen und -umgebungen in `fleet.yaml`.
+* Überwachung des Implementierungsstatus über UI oder Kommandozeilenschnittstelle.
+a|* GitOps-basierte Workflows.
+* Schnellere, automatisierte und konsistente Implementierungen in verschiedenen Umgebungen.
+
+|Sicherheitsadministratoren
+a|* Definition und Durchsetzung von Sicherheitsrichtlinien als Code.
+* Bereitstellung von Sicherheitswerkzeugen und -konfigurationen.
+* Überprüfung und Verwaltung der Sicherheitslage über Cluster.
+a|* Reduziertes Risiko und zentralisierte Compliance-Verwaltung.
+* Automatisierte, konsistente Sicherheitskonfiguration.
+|===

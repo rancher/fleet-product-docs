@@ -4,6 +4,7 @@
 
 Clusters and Bundles have different states in each phase of applying Bundles.
 
+[#_bundles]
 == Bundles
 
 *Ready*: Bundles have been deployed and all resources are ready.
@@ -20,6 +21,7 @@ Clusters and Bundles have different states in each phase of applying Bundles.
 
 *Modified*: Bundles have been deployed and all resources are ready, but there are some changes that were not made from the Git Repository.
 
+[#_clusters]
 == Clusters
 
 *WaitCheckIn*: Waiting for agent to report registration information and cluster status back.

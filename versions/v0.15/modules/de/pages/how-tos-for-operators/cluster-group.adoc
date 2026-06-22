@@ -1,0 +1,24 @@
+= Clustergruppen erstellen
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+Cluster in einem Namespace können in eine Clustergruppe eingeordnet werden. Eine Clustergruppe ist im Wesentlichen ein benannter Selektor.
+Der einzige Parameter für eine Clustergruppe ist im Wesentlichen der Selektor.
+Wenn Sie eine gewisse Größenordnung erreichen, sind Clustergruppen eine sinnvollere Methode, um Ihre Cluster zu verwalten.
+Clustergruppen dienen dem Zweck, den aggregierten Status der Implementierungen anzuzeigen und bieten zudem eine einfachere Möglichkeit, Ziele zu verwalten.
+
+Eine Clustergruppe wird erstellt, indem eine `ClusterGroup` Ressource wie unten erstellt wird.
+
+[,yaml]
+----
+kind: ClusterGroup
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: production-group
+  namespace: clusters
+spec:
+  # This is the standard metav1.LabelSelector format to match clusters by labels
+  selector:
+    matchLabels:
+      env: prod
+----

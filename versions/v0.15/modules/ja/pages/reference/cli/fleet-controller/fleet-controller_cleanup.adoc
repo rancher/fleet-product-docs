@@ -1,0 +1,33 @@
+= フリートコントローラーのクリーンアップ
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+古いコントローラーリソースをクリーンアップする
+
+----
+fleet-controller cleanup [flags]
+----
+
+[#_options]
+== オプション
+
+[source,text]
+----
+  -h, --help                help for cleanup
+      --kubeconfig string   kubeconfig file
+      --namespace string    namespace to watch
+----
+
+[#_options_inherited_from_parent_commands]
+== 親コマンドから継承されたオプション
+
+[source,text]
+----
+      --debug             Turn on debug logging
+      --debug-level int   If debugging is enabled, set klog -v=X
+----
+
+[#_see_also]
+== 関連項目
+
+* xref:reference/cli/fleet-controller/fleet-controller.adoc[フリートコントローラー]     - Fleet agentと通信するフリートコントローラーを管理する

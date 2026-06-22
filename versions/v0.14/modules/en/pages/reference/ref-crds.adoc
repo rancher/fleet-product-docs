@@ -4,6 +4,7 @@
 :doctype: book
 :page-aliases: /ref-crds
 
+[#_resources]
 == Resources
 
 * <<Bundle,Bundle>>
@@ -18,6 +19,7 @@
 * <<GitRepoRestriction,GitRepoRestriction>>
 * <<ImageScan,ImageScan>>
 
+[#_sub_resources]
 == Sub Resources
 
 * <<BundleDisplay,BundleDisplay>>
@@ -91,6 +93,7 @@
 * <<FleetYAML,FleetYAML>>
 * <<ImageScanYAML,ImageScanYAML>>
 
+[#_bundle]
 === Bundle
 
 Bundle contains the resources of an application and its deployment options. It will be deployed as a Helm chart to target clusters.
@@ -119,6 +122,7 @@ When a GitRepo is scanned it will produce one or more bundles. Bundles are a col
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledisplay]
 === BundleDisplay
 
 BundleDisplay contains the number of ready, desiredready clusters and a summary state for the bundle.
@@ -140,6 +144,7 @@ BundleDisplay contains the number of ready, desiredready clusters and a summary 
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundlelist]
 === BundleList
 
 BundleList contains a list of Bundle
@@ -161,6 +166,7 @@ BundleList contains a list of Bundle
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundleref]
 === BundleRef
 
 |===
@@ -180,6 +186,7 @@ BundleList contains a list of Bundle
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundleresource]
 === BundleResource
 
 BundleResource represents the content of a single resource from the bundle, like a YAML manifest.
@@ -206,6 +213,7 @@ BundleResource represents the content of a single resource from the bundle, like
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundlespec]
 === BundleSpec
 
 |===
@@ -251,6 +259,7 @@ BundleResource represents the content of a single resource from the bundle, like
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundlestatus]
 === BundleStatus
 
 |===
@@ -330,6 +339,7 @@ BundleResource represents the content of a single resource from the bundle, like
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundlesummary]
 === BundleSummary
 
 BundleSummary contains the number of bundle deployments in each state and a list of non-ready resources. It is used in the bundle, clustergroup, cluster and gitrepo status.
@@ -386,6 +396,7 @@ BundleSummary contains the number of bundle deployments in each state and a list
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundletarget]
 === BundleTarget
 
 BundleTarget declares clusters to deploy to. {product_name} will merge the BundleDeploymentOptions from customizations into this struct.
@@ -437,6 +448,7 @@ BundleTarget declares clusters to deploy to. {product_name} will merge the Bundl
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundletargetrestriction]
 === BundleTargetRestriction
 
 BundleTargetRestriction is used internally by {product_name} and should not be modified. It acts as an allow list, to prevent the creation of BundleDeployments from Targets created by TargetCustomizations in fleet.yaml.
@@ -473,6 +485,7 @@ BundleTargetRestriction is used internally by {product_name} and should not be m
 <<Resources,Back to Custom Resources>>
 
 
+[#_nonreadyresource]
 === NonReadyResource
 
 NonReadyResource contains information about a bundle that is not ready for a given state like "ErrApplied". It contains a list of non-ready or modified resources and their states.
@@ -509,6 +522,7 @@ NonReadyResource contains information about a bundle that is not ready for a giv
 <<Resources,Back to Custom Resources>>
 
 
+[#_partition]
 === Partition
 
 Partition defines a separate rollout strategy for a set of clusters.
@@ -550,6 +564,7 @@ Partition defines a separate rollout strategy for a set of clusters.
 <<Resources,Back to Custom Resources>>
 
 
+[#_partitionstatus]
 === PartitionStatus
 
 PartitionStatus is the status of a single rollout partition.
@@ -586,6 +601,7 @@ PartitionStatus is the status of a single rollout partition.
 <<Resources,Back to Custom Resources>>
 
 
+[#_resourcekey]
 === ResourceKey
 
 ResourceKey lists resources, which will likely be deployed.
@@ -617,6 +633,7 @@ ResourceKey lists resources, which will likely be deployed.
 <<Resources,Back to Custom Resources>>
 
 
+[#_rolloutstrategy]
 === RolloutStrategy
 
 RolloverStrategy controls the rollout of the bundle across clusters.
@@ -653,6 +670,7 @@ RolloverStrategy controls the rollout of the bundle across clusters.
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeployment]
 === BundleDeployment
 
 BundleDeployment is used internally by {product_name} and should not be used directly. When a Bundle is deployed to a cluster an instance of a Bundle is called a BundleDeployment. A BundleDeployment represents the state of that Bundle on a specific cluster with its cluster-specific customizations. The {product_name} agent is only aware of BundleDeployment resources that are created for the cluster the agent is managing.
@@ -679,6 +697,7 @@ BundleDeployment is used internally by {product_name} and should not be used dir
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeploymentdisplay]
 === BundleDeploymentDisplay
 
 |===
@@ -703,6 +722,7 @@ BundleDeployment is used internally by {product_name} and should not be used dir
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeploymentlist]
 === BundleDeploymentList
 
 BundleDeploymentList contains a list of BundleDeployment
@@ -724,6 +744,7 @@ BundleDeploymentList contains a list of BundleDeployment
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeploymentoptions]
 === BundleDeploymentOptions
 
 |===
@@ -813,6 +834,7 @@ If you do not want Fleet to apply the `helm.sh/resource-policy: keep`, configure
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeploymentresource]
 === BundleDeploymentResource
 
 BundleDeploymentResource contains the metadata of a deployed resource.
@@ -849,6 +871,7 @@ BundleDeploymentResource contains the metadata of a deployed resource.
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeploymentspec]
 === BundleDeploymentSpec
 
 |===
@@ -898,6 +921,7 @@ BundleDeploymentResource contains the metadata of a deployed resource.
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundledeploymentstatus]
 === BundleDeploymentStatus
 
 |===
@@ -957,6 +981,7 @@ BundleDeploymentResource contains the metadata of a deployed resource.
 <<Resources,Back to Custom Resources>>
 
 
+[#_comparepatch]
 === ComparePatch
 
 ComparePatch matches a resource and removes fields from the check for modifications.
@@ -998,6 +1023,7 @@ ComparePatch matches a resource and removes fields from the check for modificati
 <<Resources,Back to Custom Resources>>
 
 
+[#_configmapkeyselector]
 === ConfigMapKeySelector
 
 |===
@@ -1017,6 +1043,7 @@ ComparePatch matches a resource and removes fields from the check for modificati
 <<Resources,Back to Custom Resources>>
 
 
+[#_diffoptions]
 === DiffOptions
 
 |===
@@ -1031,6 +1058,7 @@ ComparePatch matches a resource and removes fields from the check for modificati
 <<Resources,Back to Custom Resources>>
 
 
+[#_helmoptions]
 === HelmOptions
 
 HelmOptions for the deployment. For Helm-based bundles, all options can be used, otherwise some options are ignored. For example ReleaseName works with all bundle types.
@@ -1127,6 +1155,7 @@ HelmOptions for the deployment. For Helm-based bundles, all options can be used,
 <<Resources,Back to Custom Resources>>
 
 
+[#_ignoreoptions]
 === IgnoreOptions
 
 IgnoreOptions defines conditions to be ignored when monitoring the Bundle.
@@ -1143,6 +1172,7 @@ IgnoreOptions defines conditions to be ignored when monitoring the Bundle.
 <<Resources,Back to Custom Resources>>
 
 
+[#_kustomizeoptions]
 === KustomizeOptions
 
 KustomizeOptions for a deployment.
@@ -1159,6 +1189,7 @@ KustomizeOptions for a deployment.
 <<Resources,Back to Custom Resources>>
 
 
+[#_localobjectreference]
 === LocalObjectReference
 
 |===
@@ -1173,6 +1204,7 @@ KustomizeOptions for a deployment.
 <<Resources,Back to Custom Resources>>
 
 
+[#_modifiedstatus]
 === ModifiedStatus
 
 ModifiedStatus is used to report the status of a resource that is modified. It indicates if the modification was a create, a delete or a patch.
@@ -1224,6 +1256,7 @@ ModifiedStatus is used to report the status of a resource that is modified. It i
 <<Resources,Back to Custom Resources>>
 
 
+[#_nonreadystatus]
 === NonReadyStatus
 
 NonReadyStatus is used to report the status of a resource that is not ready. It includes a summary.
@@ -1265,6 +1298,7 @@ NonReadyStatus is used to report the status of a resource that is not ready. It 
 <<Resources,Back to Custom Resources>>
 
 
+[#_operation]
 === Operation
 
 Operation of a ComparePatch, usually "remove".
@@ -1291,6 +1325,7 @@ Operation of a ComparePatch, usually "remove".
 <<Resources,Back to Custom Resources>>
 
 
+[#_secretkeyselector]
 === SecretKeySelector
 
 |===
@@ -1310,6 +1345,7 @@ Operation of a ComparePatch, usually "remove".
 <<Resources,Back to Custom Resources>>
 
 
+[#_valuesfrom]
 === ValuesFrom
 
 Define helm values that can come from configmap, secret or external. Credit: https://github.com/fluxcd/helm-operator/blob/0cfea875b5d44bea995abe7324819432070dfbdc/pkg/apis/helm.fluxcd.io/v1/types_helmrelease.go#L439
@@ -1331,6 +1367,7 @@ Define helm values that can come from configmap, secret or external. Credit: htt
 <<Resources,Back to Custom Resources>>
 
 
+[#_yamloptions]
 === YAMLOptions
 
 YAMLOptions, if using raw YAML these are names that map to overlays/\{name} files that will be used to replace or patch a resource.
@@ -1347,6 +1384,7 @@ YAMLOptions, if using raw YAML these are names that map to overlays/\{name} file
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundlenamespacemapping]
 === BundleNamespaceMapping
 
 BundleNamespaceMapping maps bundles to clusters in other namespaces.
@@ -1373,6 +1411,7 @@ BundleNamespaceMapping maps bundles to clusters in other namespaces.
 <<Resources,Back to Custom Resources>>
 
 
+[#_bundlenamespacemappinglist]
 === BundleNamespaceMappingList
 
 BundleNamespaceMappingList contains a list of BundleNamespaceMapping
@@ -1394,6 +1433,7 @@ BundleNamespaceMappingList contains a list of BundleNamespaceMapping
 <<Resources,Back to Custom Resources>>
 
 
+[#_agentstatus]
 === AgentStatus
 
 |===
@@ -1413,6 +1453,7 @@ BundleNamespaceMappingList contains a list of BundleNamespaceMapping
 <<Resources,Back to Custom Resources>>
 
 
+[#_cluster]
 === Cluster
 
 Cluster corresponds to a Kubernetes cluster. {product_name} deploys bundles to targeted clusters. Clusters to which {product_name} deploys manifests are referred to as downstream clusters. In the single cluster use case, the {product_name} Kubernetes cluster is both the manager and downstream cluster at the same time.
@@ -1439,6 +1480,7 @@ Cluster corresponds to a Kubernetes cluster. {product_name} deploys bundles to t
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterdisplay]
 === ClusterDisplay
 
 |===
@@ -1458,6 +1500,7 @@ Cluster corresponds to a Kubernetes cluster. {product_name} deploys bundles to t
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterlist]
 === ClusterList
 
 ClusterList contains a list of Cluster
@@ -1479,6 +1522,7 @@ ClusterList contains a list of Cluster
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterspec]
 === ClusterSpec
 
 |===
@@ -1553,6 +1597,7 @@ ClusterList contains a list of Cluster
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterstatus]
 === ClusterStatus
 
 |===
@@ -1677,6 +1722,7 @@ ClusterList contains a list of Cluster
 <<Resources,Back to Custom Resources>>
 
 
+[#_clustergroup]
 === ClusterGroup
 
 ClusterGroup is a re-usable selector to target a group of clusters.
@@ -1703,6 +1749,7 @@ ClusterGroup is a re-usable selector to target a group of clusters.
 <<Resources,Back to Custom Resources>>
 
 
+[#_clustergroupdisplay]
 === ClusterGroupDisplay
 
 |===
@@ -1727,6 +1774,7 @@ ClusterGroup is a re-usable selector to target a group of clusters.
 <<Resources,Back to Custom Resources>>
 
 
+[#_clustergrouplist]
 === ClusterGroupList
 
 ClusterGroupList contains a list of ClusterGroup
@@ -1748,6 +1796,7 @@ ClusterGroupList contains a list of ClusterGroup
 <<Resources,Back to Custom Resources>>
 
 
+[#_clustergroupspec]
 === ClusterGroupSpec
 
 |===
@@ -1762,6 +1811,7 @@ ClusterGroupList contains a list of ClusterGroup
 <<Resources,Back to Custom Resources>>
 
 
+[#_clustergroupstatus]
 === ClusterGroupStatus
 
 |===
@@ -1806,6 +1856,7 @@ ClusterGroupList contains a list of ClusterGroup
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistration]
 === ClusterRegistration
 
 ClusterRegistration is used internally by {product_name} and should not be used directly.
@@ -1832,6 +1883,7 @@ ClusterRegistration is used internally by {product_name} and should not be used 
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationlist]
 === ClusterRegistrationList
 
 ClusterRegistrationList contains a list of ClusterRegistration
@@ -1853,6 +1905,7 @@ ClusterRegistrationList contains a list of ClusterRegistration
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationspec]
 === ClusterRegistrationSpec
 
 |===
@@ -1877,6 +1930,7 @@ ClusterRegistrationList contains a list of ClusterRegistration
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationstatus]
 === ClusterRegistrationStatus
 
 |===
@@ -1896,6 +1950,7 @@ ClusterRegistrationList contains a list of ClusterRegistration
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationtoken]
 === ClusterRegistrationToken
 
 ClusterRegistrationToken is used by agents to register a new cluster.
@@ -1922,6 +1977,7 @@ ClusterRegistrationToken is used by agents to register a new cluster.
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationtokenlist]
 === ClusterRegistrationTokenList
 
 ClusterRegistrationTokenList contains a list of ClusterRegistrationToken
@@ -1943,6 +1999,7 @@ ClusterRegistrationTokenList contains a list of ClusterRegistrationToken
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationtokenspec]
 === ClusterRegistrationTokenSpec
 
 |===
@@ -1957,6 +2014,7 @@ ClusterRegistrationTokenList contains a list of ClusterRegistrationToken
 <<Resources,Back to Custom Resources>>
 
 
+[#_clusterregistrationtokenstatus]
 === ClusterRegistrationTokenStatus
 
 |===
@@ -1976,6 +2034,7 @@ ClusterRegistrationTokenList contains a list of ClusterRegistrationToken
 <<Resources,Back to Custom Resources>>
 
 
+[#_content]
 === Content
 
 Content is used internally by {product_name} and should not be used directly. It contains the resources from a bundle for a specific target cluster.
@@ -2002,6 +2061,7 @@ Content is used internally by {product_name} and should not be used directly. It
 <<Resources,Back to Custom Resources>>
 
 
+[#_contentlist]
 === ContentList
 
 ContentList contains a list of Content
@@ -2023,6 +2083,7 @@ ContentList contains a list of Content
 <<Resources,Back to Custom Resources>>
 
 
+[#_commitspec]
 === CommitSpec
 
 CommitSpec specifies how to commit changes to the git repository
@@ -2049,6 +2110,7 @@ CommitSpec specifies how to commit changes to the git repository
 <<Resources,Back to Custom Resources>>
 
 
+[#_correctdrift]
 === CorrectDrift
 
 |===
@@ -2073,6 +2135,7 @@ CommitSpec specifies how to commit changes to the git repository
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitrepo]
 === GitRepo
 
 GitRepo describes a git repository that is watched by {product_name}. The resource contains the necessary information to deploy the repo, or parts of it, to target clusters.
@@ -2099,6 +2162,7 @@ GitRepo describes a git repository that is watched by {product_name}. The resour
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitrepodisplay]
 === GitRepoDisplay
 
 |===
@@ -2128,6 +2192,7 @@ GitRepo describes a git repository that is watched by {product_name}. The resour
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitrepolist]
 === GitRepoList
 
 GitRepoList contains a list of GitRepo
@@ -2149,6 +2214,7 @@ GitRepoList contains a list of GitRepo
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitreporesource]
 === GitRepoResource
 
 GitRepoResource contains metadata about the resources of a bundle.
@@ -2220,6 +2286,7 @@ GitRepoResource contains metadata about the resources of a bundle.
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitreporesourcecounts]
 === GitRepoResourceCounts
 
 GitRepoResourceCounts contains the number of resources in each state.
@@ -2271,6 +2338,7 @@ GitRepoResourceCounts contains the number of resources in each state.
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitrepospec]
 === GitRepoSpec
 
 |===
@@ -2395,6 +2463,7 @@ GitRepoResourceCounts contains the number of resources in each state.
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitrepostatus]
 === GitRepoStatus
 
 |===
@@ -2479,6 +2548,7 @@ GitRepoResourceCounts contains the number of resources in each state.
 <<Resources,Back to Custom Resources>>
 
 
+[#_gittarget]
 === GitTarget
 
 GitTarget is a cluster or cluster group to deploy to.
@@ -2514,6 +2584,7 @@ GitTarget is a cluster or cluster group to deploy to.
 
 <<Resources,Back to Custom Resources>>
 
+[#_ociregistryspec]
 === OCIRegistrySpec
 
 |===
@@ -2542,6 +2613,7 @@ GitTarget is a cluster or cluster group to deploy to.
 
 <<Resources,Back to Custom Resources>>
 
+[#_resourceperclusterstate]
 === ResourcePerClusterState
 
 ResourcePerClusterState is generated for each non-ready resource of the bundles.
@@ -2583,6 +2655,7 @@ ResourcePerClusterState is generated for each non-ready resource of the bundles.
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitreporestriction]
 === GitRepoRestriction
 
 GitRepoRestriction is a resource that can optionally be used to restrict the options of GitRepos in the same namespace.
@@ -2629,6 +2702,7 @@ GitRepoRestriction is a resource that can optionally be used to restrict the opt
 <<Resources,Back to Custom Resources>>
 
 
+[#_gitreporestrictionlist]
 === GitRepoRestrictionList
 
 GitRepoRestrictionList contains a list of GitRepoRestriction
@@ -2649,6 +2723,7 @@ GitRepoRestrictionList contains a list of GitRepoRestriction
 
 <<Resources,Back to Custom Resources>>
 
+[#_alphabeticalpolicy]
 === AlphabeticalPolicy
 
 AlphabeticalPolicy specifies a alphabetical ordering policy.
@@ -2665,6 +2740,7 @@ AlphabeticalPolicy specifies a alphabetical ordering policy.
 <<Resources,Back to Custom Resources>>
 
 
+[#_imagepolicychoice]
 === ImagePolicyChoice
 
 ImagePolicyChoice is a union of all the types of policy that can be supplied.
@@ -2686,6 +2762,7 @@ ImagePolicyChoice is a union of all the types of policy that can be supplied.
 <<Resources,Back to Custom Resources>>
 
 
+[#_imagescan]
 === ImageScan
 
 |===
@@ -2710,6 +2787,7 @@ ImagePolicyChoice is a union of all the types of policy that can be supplied.
 <<Resources,Back to Custom Resources>>
 
 
+[#_imagescanlist]
 === ImageScanList
 
 ImageScanList contains a list of ImageScan
@@ -2731,6 +2809,7 @@ ImageScanList contains a list of ImageScan
 <<Resources,Back to Custom Resources>>
 
 
+[#_imagescanspec]
 === ImageScanSpec
 
 API is taken from https://github.com/fluxcd/image-reflector-controller
@@ -2777,6 +2856,7 @@ API is taken from https://github.com/fluxcd/image-reflector-controller
 <<Resources,Back to Custom Resources>>
 
 
+[#_imagescanstatus]
 === ImageScanStatus
 
 |===
@@ -2821,6 +2901,7 @@ API is taken from https://github.com/fluxcd/image-reflector-controller
 <<Resources,Back to Custom Resources>>
 
 
+[#_semverpolicy]
 === SemVerPolicy
 
 SemVerPolicy specifies a semantic version policy.
@@ -2836,6 +2917,7 @@ SemVerPolicy specifies a semantic version policy.
 
 <<Resources,Back to Custom Resources>>
 
+[#_fleetyaml]
 === FleetYAML
 
 FleetYAML is the top-level structure of the fleet.yaml file. The fleet.yaml file adds options to a bundle. Any directory with a fleet.yaml is automatically turned into a bundle.
@@ -2876,6 +2958,7 @@ FleetYAML is the top-level structure of the fleet.yaml file. The fleet.yaml file
 
 <<Resources,Back to Custom Resources>>
 
+[#_imagescanyaml]
 === ImageScanYAML
 
 ImageScanYAML is a single entry in the ImageScan list from fleet.yaml.

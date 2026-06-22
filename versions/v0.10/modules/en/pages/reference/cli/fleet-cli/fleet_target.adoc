@@ -8,6 +8,7 @@ Print available targets for a bundle
 fleet target [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -23,6 +24,7 @@ fleet target [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

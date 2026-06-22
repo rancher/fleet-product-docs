@@ -1,0 +1,40 @@
+= コアコンセプト
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name}は基本的に、Kubernetesカスタムリソース定義（CRD）とコントローラのセットであり、単一のKubernetesクラスタまたは大規模なKubernetesクラスタデプロイメントのGitOpsを管理します。
+
+[IMPORTANT]
+====
+
+CRDの命名規則についての詳細は、xref:troubleshooting.adoc#_naming_conventions_for_crds[CRDの命名規則]をクリックしてください。
+====
+
+以下は、このドキュメント全体で役立つ{product_name}の主な概念です：
+
+* *{product_name} マネージャー*：これは、gitからKubernetesアセットのデプロイメントをオーケストレーションする一元化されたコンポーネントです。マルチクラスターセットアップでは、通常、専用のKubernetesクラスターになります。シングルクラスターセットアップでは、{product_name}マネージャーはGitOpsで管理している同じクラスター上で実行されます。
+* *{product_name} コントローラ*：GitOpsをオーケストレーションする{product_name}マネージャー上で実行されるコントローラです。実際には、{product_name}マネージャーと{product_name}コントローラはほぼ同様に使われます。
+* *シングルクラスター方式*：これは、マネージャーとダウンストリームクラスターが同一のクラスターである{product_name}のインストール方式です。 これは、GitOpsを迅速に立ち上げるための非常にシンプルなパターンです。
+* *マルチクラスター方式*：これは、中央のマネージャーが多数のダウンストリームクラスターを管理するスタイルの{product_name}の実行方法です。
+* *{product_name} エージェント*：管理される各ダウンストリームクラスターは、{product_name}マネージャーに通信するエージェントを実行します。
+  このエージェントは、ダウンストリームクラスター内で実行される別のKubernetesコントローラのセットです。
+* *GitRepo*：{product_name}によって監視されるGitリポジトリは、`GitRepo`というタイプで表されます。
+
+____
+*ダウンストリームクラスターの設定管理に`GitRepo`を使用する場合の、{product_name}カスタムリソースによるインストール順序の例：*
+
+. https://github.com/projectcalico/calico[Calico]のCRDとコントローラをインストールします。
+. 1つまたは複数のクラスター全体のグローバルネットワークポリシーを設定します。
+. https://github.com/open-policy-agent/gatekeeper[GateKeeper]をインストールします。{product_name}において、*クラスターラベル*と*オーバーレイ*は、バンドルの各部分がどのクラスターに配信されるかを決定する重要な機能です。ご注意ください。
+. イングレスとシステムデーモンをセットアップおよび設定します。
+____
+
+* *バンドル*：gitからのリソースのオーケストレーションに使用される内部ユニットです。
+  `GitRepo`がスキャンされると、1つ以上のバンドルが生成されます。バンドルは、クラスターにデプロイされるリソースのコレクションです。`Bundle`は{product_name}で使用される基本的なデプロイメントユニットです。`Bundle`の内容は、Kubernetesマニフェスト、Kustomize設定、またはHelmチャートである可能性があります。
+  ソースに関係なく、内容はエージェントによって動的にHelmチャートにレンダリングされ、ダウンストリームクラスターにHelmリリースとしてインストールされます。
+ ** *バンドルのライフサイクル*を表示するには、xref:explanations/ref-bundle-stages.adoc[バンドルライフサイクル]をクリックしてください。
+* *バンドルデプロイメント*:`Bundle`がクラスターにデプロイされると、`Bundle`のインスタンスは`BundleDeployment`と呼ばれます。
+  `BundleDeployment`は、特定のクラスターにおけるその`Bundle`の状態を、クラスター固有のカスタマイズと共に表します。{product_name}エージェントは、エージェントが管理しているクラスターのために作成された`BundleDeployment`リソースのみを認識しています。
+ ** {product_name}カスタマイズを使用してクラスター間でKubernetesマニフェストをデプロイする方法の例については、xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[クラスターごとのカスタマイズ]をクリックしてください。
+* *ダウンストリームクラスター*:{product_name}がマニフェストをデプロイするクラスターは、ダウンストリームクラスターと呼ばれます。単一クラスターのユースケースでは、{product_name}マネージャーKubernetesクラスターが同時にマネージャーとダウンストリームクラスターの役割を果たします。
+* *クラスタ登録トークン*:新しいクラスターを登録するためにエージェントによって使用されるトークン。

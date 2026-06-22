@@ -1,0 +1,87 @@
+* xref:index.adoc[概述]
+* xref:persona.adoc[关键角色及其职责]
+* 教程
+** xref:tutorials/quickstart.adoc[快速入门]
+** xref:tutorials/tut-deployment.adoc[创建部署]
+** xref:tutorials/uninstall.adoc[卸装]
+* 原理说明
+** xref:explanations/architecture.adoc[体系结构]
+** xref:explanations/concepts.adoc[核心概念]
+** xref:explanations/ref-bundle-stages.adoc[包生命周期]
+** xref:explanations/gitrepo-content.adoc[Git 仓库内容]
+** xref:explanations/namespaces.adoc[名称空间]
+** xref:explanations/resources-during-deployment.adoc[部署期间的自定义资源]
+** xref:explanations/glossary.adoc[部署期间的自定义资源]
+* 运维人员操作指南
+** xref:how-tos-for-operators/installation.adoc[安装细节]
+** xref:how-tos-for-operators/cluster-registration.adoc[注册下游集群]
+** xref:how-tos-for-operators/cluster-group.adoc[创建集群组]
+** xref:how-tos-for-operators/multi-user.adoc[设置多用户]
+** xref:how-tos-for-operators/resource-limits.adoc[配置资源限制]
+* 用户操作指南
+** xref:how-tos-for-users/gitrepo-add.adoc[创建 GitRepo 资源]
+** xref:how-tos-for-users/gitrepo-targets.adoc[映射到下游集群]
+** xref:how-tos-for-users/bundle-diffs.adoc[生成忽略修改的 GitRepos 的差异]
+** xref:how-tos-for-users/webhook.adoc[使用 Webhook 代替轮询]
+** xref:how-tos-for-users/imagescan.adoc[使用镜像扫描更新容器镜像引用]
+** xref:how-tos-for-users/bundle-add.adoc[创建包资源]
+** xref:how-tos-for-users/observability.adoc[可观测性]
+** xref:how-tos-for-users/oci-storage.adoc[OCI 存储]
+** xref:how-tos-for-users/rollout.adoc[发布策略]
+** xref:how-tos-for-users/helm-ops.adoc[Helm 操作]
+** xref:how-tos-for-users/fetch-helm-oci.adoc[获取 Helm 操作]
+** xref:how-tos-for-users/fine-tune-error.adoc[微调错误检测]
+
+* Fleet CLI
+** xref:how-tos-for-users/install-use-fleet-cli.adoc[安装和使用 Fleet CLI]
+** xref:how-tos-for-users/validate-fleet-cli.adoc[验证 Fleet CLI 部署]
+
+* 参考手册
+** CLI 
+*** Fleet 
+**** xref:reference/cli/fleet-cli/fleet.adoc[fleet]
+**** xref:reference/cli/fleet-cli/fleet_apply.adoc[fleet apply]
+**** xref:reference/cli/fleet-cli/fleet_bundlediff.adoc[fleet bundlediff]
+**** xref:reference/cli/fleet-cli/fleet_deploy.adoc[fleet deploy]
+**** xref:reference/cli/fleet-cli/fleet_target.adoc[fleet target]
+**** xref:reference/cli/fleet-cli/fleet_gitcloner.adoc[fleet gitcloner]
+*** Fleet 故障排除
+**** xref:reference/cli/fleet-cli/fleet_analyze.adoc[fleet analyze]
+**** xref:reference/cli/fleet-cli/fleet_monitor.adoc[fleet monitor]
+**** xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump]
+*** Fleet Agent 
+**** xref:reference/cli/fleet-agent/fleet-agent.adoc[fleet-agent]
+**** xref:reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]
+**** xref:reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register]
+*** 清理
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_clusterregistration.adoc[fleet 集群注册清理]
+**** xref:reference/cli/fleet-cli/cleanup/fleet_cleanup_gitjob.adoc[fleet gitjob 清理]
+*** Fleet 控制器 
+**** xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]
+**** xref:reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]
+**** xref:reference/cli/fleet-controller/fleet-controller_cleanup.adoc[fleet-controller cleanup]
+**** xref:reference/cli/fleet-controller/fleet-controller_gitjob.adoc[fleet-gitjob]
+
+** 资源和 API
+*** xref:reference/ref-crds.adoc[自定义资源规范]
+*** xref:reference/ref-crd-schema.adoc[CRD 架构]
+*** xref:reference/ref-gitrepo.adoc[GitRepo 资源]
+*** xref:reference/ref-bundle.adoc[包资源]
+*** xref:reference/ref-resources.adoc[已部署资源列表]
+** 配置参考
+*** xref:reference/ref-fleet-yaml.adoc[fleet.yaml]
+*** xref:reference/ref-configuration.adoc[配置]
+** 状态和内部信息
+*** xref:reference/ref-status-fields.adoc[集群和包状态]
+*** xref:reference/ref-registration.adoc[集群注册内部信息]
+* xref:troubleshooting.adoc[查错]
+
+* 实验性功能
+** xref:experimental-features/enableexperimental.adoc[启用实验性功能]
+** xref:experimental-features/scheduling.adoc[安排日程]
+** xref:experimental-features/experimental-downstream-resource.adoc[资源自动传播到下游集群]
+** xref:reference/ref-schedule.adoc[调度资源引用]
+
+* 更改日志
+** xref:changelogs/v0.15.0.adoc[v0.15.0]

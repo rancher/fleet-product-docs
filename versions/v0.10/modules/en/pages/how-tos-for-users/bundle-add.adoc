@@ -56,6 +56,7 @@ spec:
   - clusterName: local
 ----
 
+[#_limitations]
 == Limitations
 
 Helm options related to downloading the helm chart will be ignored. The helm chart is downloaded by the fleet-cli, which creates the bundles. The bundle has to contain all the resources from the chart. Therefore the bundle will ignore:
@@ -67,6 +68,7 @@ You can't use a `fleet.yaml` in resources, it is only used by the fleet-cli to c
 
 The `spec.targetRestrictions` field is not useful, as it is an allow list for targets specified in `spec.targets`. It is not needed, since `targets` are explicitly given in a bundle and an empty `targetRestrictions` defaults to allow.
 
+[#_convert_a_helm_chart_into_a_bundle]
 == Convert a Helm Chart into a Bundle
 
 You can use the {product_name} CLI to convert a Helm chart into a bundle.

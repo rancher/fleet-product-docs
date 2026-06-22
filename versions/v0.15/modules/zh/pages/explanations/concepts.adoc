@@ -1,0 +1,40 @@
+= 核心概念
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} 基本上是一组 Kubernetes 自定义资源定义（CRD）和控制器，用于管理单个 Kubernetes 集群或大规模部署的 GitOps。
+
+[IMPORTANT]
+====
+
+有关 CRD 命名约定的更多信息，请点击 xref:troubleshooting.adoc#_naming_conventions_for_crds[CRD 命名约定]。
+====
+
+以下是 {product_name} 的一些概念，这些概念在整个文档中将非常有用：
+
+* *{product_name} 管理器*：协调从 git 部署 Kubernetes 资产的集中组件。在多集群设置中，这通常是一个专用的 Kubernetes 集群。在单集群设置中，{product_name} 管理器将在您使用 GitOps 管理的同一集群上运行。
+* *{product_name} 控制器*：在 {product_name} 管理器上运行的控制器负责协调 GitOps。在实践中，{product_name} 管理器和 {product_name} 控制器的使用是相当可互换的。
+* *单集群风格*：这是一种安装 {product_name} 的风格，其中管理器和下游集群是同一个集群。 这是一种非常简单的模式，可以快速启动并运行 GitOps。
+* *多集群风格*：这是一种运行 {product_name} 的风格，其中您有一个中央管理器来管理大量下游集群。
+* *{product_name} 代理*：每个受管的下游集群都会运行一个代理，与 {product_name} 管理器进行通信。
+  该代理只是运行在下游集群中的另一组 Kubernetes 控制器。
+* *GitRepo*：由 {product_name} 监视的 Git 仓库由类型 `GitRepo` 表示。
+
+____
+*使用`GitRepo`{product_name}自定义资源定义进行下游集群的配置管理时的示例安装顺序：*
+
+. 安装 https://github.com/projectcalico/calico[Calico] CRDs和控制器。
+. 设置一个或多个集群级别的全球网络策略。
+. 安装 https://github.com/open-policy-agent/gatekeeper[GateKeeper]。请注意，*集群标签*和*覆盖层*是{product_name}中的关键特性，因为它们决定了哪些集群将获得包的每个部分。
+. 设置和配置入口和系统守护程序。
+____
+
+* *分发包*：用于从 git 编排资源的内部分发包。
+  当扫描`GitRepo`时，它将生成一个或多个单元。分发包是一组被部署到集群中的资源。`Bundle` 是 {product_name} 中使用的基本部署单元。`Bundle`的内容可以是Kubernetes清单、Kustomize配置或Helm图表。
+  无论来源如何，内容都由代理动态渲染为Helm图表，并作为helm发布安装到下游集群中。
+ ** 要查看*分发包的生命周期*，请点击xref:explanations/ref-bundle-stages.adoc[分发包生命周期]。
+* *分发包部署*：当`Bundle`被部署到集群时，`Bundle`的一个实例称为`BundleDeployment`。
+  `BundleDeployment`表示该`Bundle`在特定集群上的状态及其集群特定的自定义。{product_name}代理仅了解为其管理的集群创建的`BundleDeployment`资源。
+ ** 要查看如何使用{product_name}自定义在集群之间部署Kubernetes清单的示例，请点击xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[每个集群的自定义]。
+* *下游集群*：{product_name}部署清单的集群称为下游集群。在单一集群使用案例中，{product_name} 管理器所在的 Kubernetes 集群同时充当管理器和下游集群。
+* *集群注册词元*:代理用于注册新集群的词元。

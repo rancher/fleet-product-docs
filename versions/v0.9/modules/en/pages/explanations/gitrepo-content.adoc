@@ -14,6 +14,7 @@ you want to make sure the directories you are scanning in git do not contain
 arbitrarily large resources. Right now there is a limitation that the resources
 deployed must *gzip to less than 1MB*.
 
+[#_how_repos_are_scanned]
 == How repos are scanned
 
 Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
@@ -46,6 +47,7 @@ The following files are looked for to determine the how the resources will be de
 | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
+[#_excluding_files_and_directories_from_bundles]
 === Excluding files and directories from bundles
 
 {product_name} supports file and directory exclusion by means of `.fleetignore` files, in a similar fashion to how `.gitignore`
@@ -83,6 +85,7 @@ This currently comes with a few limitations, the following not being supported:
 * Double asterisks (`+**+`)
 * Explicit inclusions with `!`
 
+[#_fleet_yaml]
 == `fleet.yaml`
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
@@ -110,6 +113,7 @@ The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fl
 For a private Helm repo, users can reference a secret from the git repo resource.
 See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories] for more information.
 
+[#_using_helm_values]
 == Using Helm Values
 
 *How changes are applied to `values.yaml`*:
@@ -117,6 +121,7 @@ See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Usi
 * Note that the most recently applied changes to the `values.yaml` will override any previously existing values.
 * When changes are applied to the `values.yaml` from multiple sources at the same time, the values will update in the following order: `helm.values` \-> `helm.valuesFiles` \-> `helm.valuesFrom`. That means `valuesFrom` will take precedence over both, `valuesFiles` and `values`.
 
+[#_using_valuesfrom]
 === Using ValuesFrom
 
 These examples showcase the style and format for using `valuesFrom`. ConfigMaps and Secrets should be created in _downstream clusters_.
@@ -174,6 +179,7 @@ helm:
     replicas: "4"
 ----
 
+[#_per_cluster_customization]
 == Per Cluster Customization
 
 The `GitRepo` defines which clusters a git repository should be deployed to and the `fleet.yaml` in the repository
@@ -217,6 +223,7 @@ targetCustomizations:
 
 Refer to xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clusters] for more information and a list of supported customizations.
 
+[#_raw_yaml_resource_customization]
 == Raw YAML Resource Customization
 
 When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how the resource are

@@ -1,0 +1,40 @@
+= Kernelkonzepte
+:revdate: 2025-07-23
+:page-revdate: {revdate}
+
+{product_name} ist grundsätzlich eine Reihe von benutzerdefinierten Ressourcenbeschreibungen in Kubernetes (CRDs) und Controllern, um GitOps für einen einzelnen Kubernetes-Cluster oder eine groß angelegte Bereitstellung von Kubernetes-Clustern zu verwalten.
+
+[IMPORTANT]
+====
+
+Für weitere Informationen zu den Namenskonventionen von CRDs klicken Sie auf xref:troubleshooting.adoc#_naming_conventions_for_crds[Namenskonventionen für CRDs].
+====
+
+Im Folgenden sind einige der Konzepte von {product_name} aufgeführt, die in dieser Dokumentation nützlich sein werden:
+
+* *{product_name} Manager*: Die zentrale Komponente, die die Bereitstellungen von Kubernetes-Ressourcen aus Git orchestriert. In einer Multi-Cluster-Umgebung wird dies typischerweise ein dedizierter Kubernetes-Cluster sein. In einer Einzel-Cluster-Umgebung wird der {product_name} Manager im selben Cluster ausgeführt, den Sie mit GitOps verwalten.
+* *{product_name} Controller*: Die auf dem {product_name} Manager laufenden Controller, die GitOps orchestrieren. In der Praxis werden der {product_name} Manager und die {product_name} Controller recht austauschbar verwendet.
+* *Einzel-Cluster-Stil*: Dies ist ein Installationsstil von {product_name}, bei dem der Manager und der Downstream-Cluster derselbe Cluster sind.  Dies ist ein sehr einfaches Muster, um schnell mit GitOps zu starten.
+* *Multi-Cluster-Stil*: Dies ist ein Stil, um {product_name} auszuführen, bei dem Sie einen zentralen Manager haben, der eine große Anzahl von Downstream-Clustern verwaltet.
+* *{product_name} Agent*: In jedem verwalteten Downstream-Cluster läuft ein Agent, der mit dem {product_name} Manager kommuniziert.
+  Dieser Agent ist nur eine weitere Gruppe von Kubernetes-Controllern, die im Downstream-Cluster ausgeführt werden.
+* *GitRepo*: Git-Repositories, die von {product_name} überwacht werden, werden durch den Typ `GitRepo` dargestellt.
+
+____
+*Beispielinstallationsreihenfolge über `GitRepo` benutzerdefinierte Ressourcen bei der Verwendung von {product_name} für die Konfiguration von Downstream-Clustern:*
+
+. Installieren Sie https://github.com/projectcalico/calico[Calico] CRDs und Controller.
+. Legen Sie eine oder mehrere clusterweite globale Netzwerkrichtlinien fest.
+. Installieren Sie https://github.com/open-policy-agent/gatekeeper[GateKeeper]. Beachten Sie, dass *Cluster-Labels* und *Overlays* kritische Funktionen in {product_name} sind, da sie bestimmen, welche Cluster jeden Teil des Bundles erhalten.
+. Richten Sie Ingress- und System-Daemons ein und konfigurieren Sie diese.
+____
+
+* *Bundle*: Eine interne Unit, die für die Orchestrierung von Ressourcen aus Git verwendet wird.
+  Wenn ein `GitRepo` gescannt wird, erzeugt es ein oder mehrere Bundles. Bundles sind eine Sammlung von Ressourcen, die in einem Cluster bereitgestellt werden. `Bundle` ist die grundlegende Unit, die in {product_name} verwendet wird. Der Inhalt eines `Bundle` kann Kubernetes-Manifeste, Kustomize-Konfigurationen oder Helm-Charts sein.
+  Unabhängig von der Quelle werden die Inhalte dynamisch von dem Agenten in ein Helm-Chart gerendert und als Helm-Release in den Downstream-Cluster installiert.
+ ** Um den *Lebenszyklus eines Bundles* zu sehen, klicken Sie auf xref:explanations/ref-bundle-stages.adoc[Lebenszyklus des Bundles].
+* *BundleDeployment*: Wenn ein `Bundle` in einem Cluster bereitgestellt wird, wird eine Instanz eines `Bundle` als `BundleDeployment` bezeichnet.
+  Ein `BundleDeployment` repräsentiert den Zustand dieses `Bundle` in einem bestimmten Cluster mit seinen clusterspezifischen Anpassungen. Der {product_name} Agent ist nur über `BundleDeployment` Ressourcen informiert, die für den Cluster erstellt werden, den der Agent verwaltet.
+ ** Für ein Beispiel, wie man Kubernetes-Manifeste über Cluster hinweg mit {product_name} Anpassungen bereitstellt, klicken Sie auf xref:how-tos-for-users/gitrepo-targets.adoc#_customization_per_cluster[Anpassung pro Cluster].
+* *Downstream-Cluster*: Cluster, in die {product_name} Manifeste bereitstellt, werden als Downstream-Cluster bezeichnet. Im Fall eines einzelnen Cluster-Anwendungsfalls ist der {product_name} Manager-Kubernetes-Cluster sowohl der Manager als auch der Downstream-Cluster zur gleichen Zeit.
+* *Cluster-Registrierungstoken*: Tokens, die von Agenten verwendet werden, um einen neuen Cluster zu registrieren.

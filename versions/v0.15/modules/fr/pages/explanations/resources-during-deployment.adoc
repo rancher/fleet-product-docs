@@ -1,0 +1,7 @@
+= Ressources personnalisées lors du déploiement
+:revdate: 2025-04-30
+:page-revdate: {revdate}
+
+Ceci montre les ressources, y compris celles internes, impliquées dans la création d'un déploiement à partir d'un dépôt git.
+
+image::FleetResources.svg[Ressources]
