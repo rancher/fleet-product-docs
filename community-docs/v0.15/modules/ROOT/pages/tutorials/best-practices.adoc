@@ -94,9 +94,9 @@ When webhooks are configured, {product_name} automatically scales back polling i
 
 [NOTE]
 ====
-You can use cluster labels to install additional platform applications on downstream clusters. Apply one label at a time and wait for the installation to complete before applying the next label. 
-Start with foundational platform components first.
+You can use cluster labels to install additional platform applications on downstream clusters. Multiple labels can be applied simultaneously—either during cluster creation or by updating an existing cluster. The system automatically manages the installation order based on application dependencies configured via `dependsOn`.
 
+For example,
 * ++needs-storage=true++ for *SUSE Storage*
 * ++needs-private-registry=true++ for *SUSE Private Registry*
 * ++needs-security=true++ for *SUSE Security*
@@ -106,7 +106,6 @@ Start with foundational platform components first.
 
 The following example uses cluster labels to dynamically deploy applications to matching clusters. The ++neuvector++ application depends on the ++neuvector-crd++ bundle. Fleet deploys the ++neuvector-crd++ bundle first and waits until the required resources become ready before deploying dependent workloads.
 
-.fleet.yaml
 [source,yaml]
 ====
 defaultNamespace: cattle-neuvector-system
