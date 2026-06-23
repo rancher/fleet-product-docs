@@ -220,6 +220,22 @@ Unknown shard IDs (for example, `boo`) are ignored.
 
 To add or remove shards, redeploy {product_name} with an updated shard list.
 
+== Node Selectors
+
+Fleet charts can be configured to run controllers and agents on specific cluster nodes, using the `nodeSelector` Helm
+value, found at:
+* `nodeSelector` in the `fleet` chart
+* `fleetAgent.nodeSelector` in the `fleet-agent` chart
+
+Fleet agents are not affected by sharding; however, controllers may also receive node selectors from sharding
+configuration.
+
+In case both global and sharded node selectors are provided, both will be applied to Fleet controller deployments. No
+checks are run for overlaps or conflicting node selectors between both sources.
+
+From 0.15.3 onwards, Git jobs created by the gitOps controller to update workloads from GitRepo resources will inherit
+the `fleet-controller` deployment's node selectors.
+
 == Configuration for Multi-Cluster
 
 [CAUTION]
