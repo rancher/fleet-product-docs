@@ -38,15 +38,15 @@ Both examples below include the cluster resources. Remove them if using the oper
 
 === Stand-alone {product_name}
 
-This creates a tenant whose service account can manage their own resources in namespace `project1`. The `tenant1-policy-read` role is optional — omit it if you prefer tenants not to see the `Policy` directly.
+This creates a tenant whose service account can manage their own resources in namespace `workspace1`. The `tenant1-policy-read` role is optional — omit it if you prefer tenants not to see the `Policy` directly.
 
 [source,bash]
 ----
-kubectl create namespace project1
+kubectl create namespace workspace1
 
 # The ServiceAccount represents the tenant's upstream identity on the management
 # cluster. Co-locating it with the tenant's namespace is cleaner than using 'default'.
-kubectl create serviceaccount tenant1 -n project1
+kubectl create serviceaccount tenant1 -n workspace1
 
 # Tenant gets write access to their own GitRepo / HelmOp / Bundle resources,
 # and to cluster resources if they register their own downstream clusters.
@@ -62,10 +62,10 @@ kubectl create clusterrole tenant1-policy-read \
   --verb=get,list,watch \
   --resource=policies.fleet.cattle.io
 
-kubectl create rolebinding tenant1-write -n project1 \
-  --serviceaccount=project1:tenant1 --clusterrole=tenant1-write
-kubectl create rolebinding tenant1-policy-read -n project1 \
-  --serviceaccount=project1:tenant1 --clusterrole=tenant1-policy-read
+kubectl create rolebinding tenant1-write -n workspace1 \
+  --serviceaccount=workspace1:tenant1 --clusterrole=tenant1-write
+kubectl create rolebinding tenant1-policy-read -n workspace1 \
+  --serviceaccount=workspace1:tenant1 --clusterrole=tenant1-policy-read
 ----
 
 For a second tenant in their own namespace, repeat with a different name and namespace; the two `ClusterRole` objects can be reused.
@@ -79,12 +79,12 @@ In a Rancher-integrated setup, Rancher's own auth provider (local users, LDAP, O
 apiVersion: management.cattle.io/v3
 kind: FleetWorkspace
 metadata:
-  name: project1
+  name: workspace1
 ---
 apiVersion: management.cattle.io/v3
 kind: FleetWorkspace
 metadata:
-  name: project2
+  name: workspace2
 ----
 
 Then the `GlobalRole`. The `policies` block is optional — see above. The cluster resources follow the same model described above: remove them if the operator manages cluster registration.
@@ -94,9 +94,9 @@ Then the `GlobalRole`. The `policies` block is optional — see above. The clust
 apiVersion: management.cattle.io/v3
 kind: GlobalRole
 metadata:
-  name: fleet-projects1and2
+  name: fleet-workspaces1and2
 namespacedRules:
-  project1:
+  workspace1:
     - apiGroups:
         - fleet.cattle.io
       resources:
@@ -117,7 +117,7 @@ namespacedRules:
         - get
         - list
         - watch
-  project2:
+  workspace2:
     - apiGroups:
         - fleet.cattle.io
       resources:
@@ -142,8 +142,8 @@ rules:
   - apiGroups:
       - management.cattle.io
     resourceNames:
-      - project1
-      - project2
+      - workspace1
+      - workspace2
     resources:
       - fleetworkspaces
     verbs:
@@ -168,12 +168,12 @@ kind: BundleNamespaceMapping
 apiVersion: fleet.cattle.io/v1alpha1
 metadata:
   name: mapping
-  namespace: project1
+  namespace: workspace1
 # Bundles to match by label. The labels are defined in fleet.yaml's labels
 # field or in the GitRepo metadata.labels field.
 bundleSelector:
   matchLabels:
-    tenant: project1
+    tenant: workspace1
 # Namespaces containing clusters, matched by label.
 namespaceSelector:
   matchLabels:
@@ -209,7 +209,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: tenant-1-deploy
-  namespace: project1-workloads
+  namespace: workspace1-workloads
 rules:
   - apiGroups: ["apps"]
     resources: ["deployments", "statefulsets", "daemonsets"]
@@ -222,7 +222,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: tenant-1-deploy
-  namespace: project1-workloads
+  namespace: workspace1-workloads
 subjects:
   - kind: ServiceAccount
     name: tenant-1-deployer
@@ -236,7 +236,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: tenant-2-deploy
-  namespace: project2-workloads
+  namespace: workspace2-workloads
 rules:
   - apiGroups: ["apps"]
     resources: ["deployments", "statefulsets", "daemonsets"]
@@ -249,7 +249,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: tenant-2-deploy
-  namespace: project2-workloads
+  namespace: workspace2-workloads
 subjects:
   - kind: ServiceAccount
     name: tenant-2-deployer
@@ -310,7 +310,7 @@ kind: Policy
 apiVersion: fleet.cattle.io/v1alpha1
 metadata:
   name: tenant-1-policy
-  namespace: project1
+  namespace: workspace1
 requireServiceAccount: true
 allowedServiceAccounts:
   - tenant-1-deployer
@@ -345,9 +345,9 @@ kind: GitRepo
 apiVersion: fleet.cattle.io/v1alpha1
 metadata:
   name: simpleapp
-  namespace: project1
+  namespace: workspace1
   labels:
-    tenant: project1
+    tenant: workspace1
 spec:
   repo: https://github.com/tenant-1/simpleapp
   paths:
