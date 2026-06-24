@@ -108,6 +108,42 @@ The xref:how-tos-for-users/imagescan.adoc[imagescan] feature is disabled by defa
 
 To remedy this, install Fleet with `--set imagescan.enabled=true`.
 
+[[disabling-local-agent]]
+=== Disabling the Local Cluster Agent
+
+By default, {product_name} deploys an agent on the management (local) cluster so that it can receive GitOps deployments just like any downstream cluster.
+If you want to use the management cluster exclusively as a control plane and prevent workloads from being deployed onto it, you can disable the local agent.
+
+When the local agent is disabled:
+
+* The local `Cluster` and `ClusterGroup` resources remain registered.
+* The `fleet-agent` is **not** deployed on the management cluster. If an agent is already running, it will be removed.
+* The local cluster will not receive any bundle deployments.
+
+To disable the local agent at installation time:
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet \
+  --set bootstrap.localAgentDisabled=true
+----
+
+To disable it on an existing installation, upgrade the chart:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade fleet fleet/fleet \
+  --set bootstrap.localAgentDisabled=true
+----
+
+To re-enable the local agent, set the value back to `false` (the default):
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade fleet fleet/fleet \
+  --set bootstrap.localAgentDisabled=false
+----
+
 [[additional-ssh-known-hosts]]
 === Additional SSH known hosts
 
