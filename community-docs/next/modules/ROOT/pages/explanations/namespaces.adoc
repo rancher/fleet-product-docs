@@ -102,6 +102,11 @@ registered through Rancher.
 * `fleet-local` will contain the local cluster by default. Access to
 `fleet-local` is limited.
 
+When Rancher creates a workspace:
+
+* Rancher creates a role binding that grants the workspace creator cluster-wide read and write permissions on all {product_name} resources. (The `FleetWorkspace` is a cluster-scoped resource.)
+* Regular users have read and write permissions only on GitRepos and bundles. They have read permissions (get, list, and watch) on the remaining {product_name} resources.
+
 [WARNING] 
 .Important Information
 ====
