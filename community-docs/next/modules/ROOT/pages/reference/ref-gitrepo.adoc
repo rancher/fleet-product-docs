@@ -129,8 +129,8 @@ spec:
   # downstream cluster in the cattle-fleet-system namespace. It is assumed
   # this service account already exists so it should be created beforehand,
   # for instance coming from another git repo registered with
-  # the {product_name} manager.
-  # If no service account is configured, {product_name} checks for a service account
+  # the Fleet manager.
+  # If no service account is configured, Fleet checks for a service account
   # named "fleet-default".
   #
   # serviceAccount: moreSecureAccountThanClusterAdmin
