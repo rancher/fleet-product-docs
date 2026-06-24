@@ -385,7 +385,9 @@ After applying the configuration, verify each layer:
 * *Setting a `defaultServiceAccount` that is not in `allowedServiceAccounts`.* Defaults are applied before validation, so a default outside the allow-list is rejected, not silently accepted. Every `GitRepo` or `HelmOp` that omits the field and falls back to the default then fails validation. Keep defaults inside the allow-list.
 * *Forgetting to bootstrap the downstream `ServiceAccount` on every cluster the tenant targets.* Deployments to clusters without the `ServiceAccount` fail at the agent. Use the bootstrap pattern in Step 2 to keep coverage in sync with the cluster inventory.
 * *Configuring `Policy` for `GitRepo` only, ignoring `HelmOp`.* The `helmOp.*` block must be set if tenants have RBAC to create `HelmOp` resources. Without it, only the top-level `requireServiceAccount` / `allowedServiceAccounts` constrain HelmOps; source repositories, charts, and Helm credential secrets remain unrestricted.
-* *Granting tenants write access to `BundleDeployment`*: tenants should not have permissions to create `bundledeployments`, as those resources are meant to be created from `bundles`, by Fleet controllers. Ensuring that only Fleet controllers can create `bundledeployments` enables greater control over workloads, through `GitRepoRestriction` and `Policy` resources which restrict `GitRepo`, `HelmOp` and ultimately `Bundle` resources.
+* *Granting tenants write access to `BundleDeployment`*: tenants should not have permissions to create `bundledeployments`, as those resources are meant to be created from `bundles`, by Fleet controllers. Ensuring that only Fleet controllers can create `bundledeployments` enables greater control over workloads, with:
+** `GitRepoRestriction` resources restricting `GitRepo`, and hence `Bundle` resources
+** `Policy` resources which restrict `GitRepo`, `HelmOp` and ultimately `Bundle` resources.
 
 
 == Migration from GitRepoRestriction
