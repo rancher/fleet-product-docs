@@ -313,11 +313,11 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/ref-crds.adoc[{product_name} CRD Reference].
 
-=== Restricting GitRepo Deployments (Multi-Tenancy)
+=== Restricting Tenant Deployments (Multi-Tenancy)
 
-*The Best Practice:* In multi-tenant environments, prevent users from deploying bundles into unauthorized namespaces or using restricted service accounts.
+*The Best Practice:* In multi-tenant environments, prevent tenants from running deployments with privileged service accounts or pulling from unauthorized repositories.
 
-*The Implementation:* Deploy a ++GitRepoRestriction++ CRD. This allows administrators to define whitelists for ++allowedTargetNamespaces++, ++allowedServiceAccounts++, and ++allowedRepoPatterns++.
+*The Implementation:* Create a ++Policy++ resource in each tenant's namespace, declaring ++requireServiceAccount: true++, the allowed ++ServiceAccount++ list, and source/credential allow-lists for ++GitRepo++ and ++HelmOp++ resources. Restrict tenants to read-only RBAC on ++Policy++ objects. Express which downstream namespaces a tenant may deploy to as RBAC on the tenant's downstream ++ServiceAccount++, not at the {product_name} layer.
 
 [NOTE]
 ====
@@ -328,4 +328,4 @@ To mitigate that, you should anchor regular expressions used in ``allowedRepoPat
 ``^https://example.site/org``.
 ====
 
-* Reference: xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].
+* Reference: xref:explanations/multi-tenancy.adoc[Multi-Tenancy] and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup].

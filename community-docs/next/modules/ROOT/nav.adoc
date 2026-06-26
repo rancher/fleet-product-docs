@@ -10,6 +10,8 @@
 ** xref:explanations/concepts.adoc[Core Concepts]
 ** xref:explanations/ref-bundle-stages.adoc[Bundle Lifecycle]
 ** xref:explanations/gitrepo-content.adoc[Git Repository Contents]
+** xref:explanations/target-customization.adoc[Target Customization]
+** xref:explanations/multi-tenancy.adoc[Multi-Tenancy]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Custom Resources During Deployment]
 ** xref:explanations/glossary.adoc[Glossary]
@@ -17,7 +19,7 @@
 ** xref:how-tos-for-operators/installation.adoc[Installation Details]
 ** xref:how-tos-for-operators/cluster-registration.adoc[Register Downstream Clusters]
 ** xref:how-tos-for-operators/cluster-group.adoc[Create Cluster Groups]
-** xref:how-tos-for-operators/multi-user.adoc[Setup Multi User]
+** xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup]
 ** xref:how-tos-for-operators/resource-limits.adoc[Configure Resource Limits]
 * How-tos for Users
 ** xref:how-tos-for-users/gitrepo-add.adoc[Create a GitRepo Resource]
@@ -69,6 +71,7 @@
 *** xref:reference/ref-crd-schema.adoc[CRD Schema]
 *** xref:reference/ref-gitrepo.adoc[GitRepo Resource]
 *** xref:reference/ref-bundle.adoc[Bundle Resource]
+*** xref:reference/ref-policy.adoc[Policy Resource]
 *** xref:reference/ref-resources.adoc[List of Deployed Resources]
 ** Configuration Reference
 *** xref:reference/ref-fleet-yaml.adoc[fleet.yaml]

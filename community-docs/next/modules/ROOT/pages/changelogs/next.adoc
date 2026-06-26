@@ -1,5 +1,11 @@
 = "Next 🚧"
-:revdate: 2024-09-09
+:revdate: 2026-05-21
 :page-revdate: {revdate}
 
 We are still working on the next release.
+
+== Highlights
+
+* New `Policy` custom resource for multi-tenant authorization. `Policy` restricts which `ServiceAccount`, credential secrets, and source repositories `GitRepo`, `HelmOp`, and `Bundle` resources in a namespace may use. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the trust model and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the operator recipe.
+* `GitRepoRestriction` will be deprecated in v0.17 and may be removed as soon as v0.18. It remains supported until removed. It has known security limitations — its repo patterns are matched unanchored, and it does not cover `HelmOp` or `Bundle` resources. Migration to `Policy` is strongly recommended. The xref:how-tos-for-operators/tenant-setup.adoc#_migration_from_gitreporestriction[Migration from GitRepoRestriction] section walks through translating an existing setup.
+* The `Setup Multi User` page has been renamed `Tenant Setup` and rewritten around the new model. The previous URL continues to resolve.

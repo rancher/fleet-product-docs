@@ -39,7 +39,7 @@ It takes precendence over all other namespace definitions:
 
 `gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
 
-Workload namespace definitions can be restricted with `allowedTargetNamespaces` in the `GitRepoRestriction` resource.
+Your operator may restrict which `serviceAccount`, `clientSecretName`, and `repo` values your `GitRepo` may use via a `Policy` in your namespace. If a constraint is violated, the `GitRepo`'s status condition reports which field was rejected. Target-namespace restrictions are enforced by the downstream cluster's RBAC on the `ServiceAccount` you reference, not by {product_name} itself; if the `ServiceAccount` does not have permission to write to the target namespace, the deployment will fail on the downstream cluster. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the model.
 
 == Adding A Private Git Repository
 
