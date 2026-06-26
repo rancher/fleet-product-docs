@@ -145,6 +145,22 @@ Perform the following steps to assess:
 * Check that your repo is accessible from your dev machine, and that you can download the Helm chart successfully
 * Check that your credentials for the git repo are valid
 
+=== Helm credentials are not forwarded when `helmRepoURLRegex` is empty
+
+If Helm credentials are configured in an auth secret but `spec.helmRepoURLRegex` is empty, {product_name} does not forward those credentials to Helm repositories.
+
+When this happens, {product_name} logs a warning similar to:
+
+----
+helmRepoURLRegex is empty: Helm credentials will not be forwarded to any repository; set spec.helmRepoURLRegex to enable credential forwarding
+----
+
+To fix this issue:
+
+* Set `spec.helmRepoURLRegex` on the `GitRepo` so it matches the Helm repository URL prefixes you trust.
+* Regex matching is automatically anchored at the start of the repository URL. Use patterns with a protocol prefix, for example: `https://charts\.example\.com/`
+* If you are upgrading from an older release, review auto-migrated `helmRepoURLRegex` values and tighten them if they are broader than necessary.
+
 === Helm chart repo: certificate signed by unknown authority
 
 If your GitJob returns the error below, you may have added the wrong certificate chain:

@@ -54,15 +54,15 @@ spec:
 
   # If fleet.yaml contains a private Helm repo that requires authentication,
   # provide the credentials in a K8s secret and specify them here.
-  # Danger: the credentials will be sent to all repositories referenced from
-  # this gitrepo. See section below for more information.
+  # Helm credentials are forwarded only when helmRepoURLRegex matches the
+  # Helm repository URL. See section below for more information.
   #
   # helmSecretName: my-helm-secret
 
   # Helm credentials from helmSecretName will be used if the helm repository url matches this regular expression.
-  # Credentials will always be used if it is empty or not provided
+  # Credentials will not be used if it is empty or not provided
   #
-  # helmRepoURLRegex: https://charts.rancher.io/*
+  # helmRepoURLRegex: https://charts\.rancher\.io/
 
   # Contains the auth secret for private Helm repository for each path.
   
