@@ -313,6 +313,7 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/ref-crds.adoc[{product_name} CRD Reference].
 
+[#_restricting_gitrepo_deployments_multi_tenancy]
 === Restricting Tenant Deployments (Multi-Tenancy)
 
 *The Best Practice:* In multi-tenant environments, prevent tenants from running deployments with privileged service accounts or pulling from unauthorized repositories.

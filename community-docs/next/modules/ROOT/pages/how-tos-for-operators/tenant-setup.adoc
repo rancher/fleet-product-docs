@@ -1,7 +1,7 @@
 = Tenant Setup
 :revdate: 2026-05-21
 :page-revdate: {revdate}
-:page-aliases: /multi-user, /tenant-setup
+:page-aliases:/tenant-setup
 
 This guide applies only to setups where multiple independent teams share a {product_name} manager. If all users are administrators with full trust, none of this is required.
 
