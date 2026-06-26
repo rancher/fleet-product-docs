@@ -64,13 +64,15 @@ The ++fleet-controller++ service account is used by the main Fleet controller po
 
 Namespace: ++cattle-fleet-system++
 
-The ++gitjob++ service account is used by the GitJob controller. It creates temporary pods to clone Git repositories and generate bundles.
+The ++gitjob++ service account is used to run the GitJob controller and the internal background jobs responsible for cleaning up completed Git jobs. 
+
+This service account is not used to execute the temporary pods that clone Git repositories and generate bundles. Instead, those operational pods run under a dedicated service account created automatically for each Git repository, named `git-<gitrepo_name>`.
 
 ==== ++import++ service account
 
 Namespace: ++fleet-default++
 
-The ++import++ service account is created temporarily during downstream cluster registration.
+The ++import++ service account is created temporarily during downstream cluster registration. Its name is dynamically generated and derived from the cluster registration token (resulting in a format like ++import-<token-id>++).
 
 {product_name} only grants permissions to:
 
@@ -131,3 +133,8 @@ All service accounts referenced by a ++GitRepo++ must exist in the ++cattle-flee
 In multi-tenant environments, restrict which service accounts users can reference in Git repositories.
 
 Use a ++GitRepoRestriction++ resource to define an ++allowedServiceAccounts++ allowlist. If a ++GitRepo++ references an unauthorized service account, {product_name} blocks the deployment.
+
+[NOTE]
+====
+Support for ++GitRepoRestriction++ is deprecated in favor of the ++Policy++ resource. For multi-tenant environment , use ++Policy++ resources to define restrictions across all {product_name} components, including bundles and Helm operations.
+====

@@ -45,3 +45,96 @@ subresource of it's `Cluster` resource.
 An overview of the components and how they interact on a high level.
 
 image::FleetComponents.svg[Static, 600]
+
+== Service accounts
+
+{product_name} creates and uses several Kubernetes service accounts to securely manage the GitOps lifecycle. Understanding these service accounts and their permissions helps you maintain a least-privilege security model.
+
+=== Management cluster service accounts
+
+When you install {product_name} on the upstream management cluster, {product_name} creates service accounts for its core controllers. As you register downstream clusters and add Git repositories, {product_name} dynamically creates additional service accounts with restricted permissions.
+
+==== ++fleet-controller++ service account
+
+Namespace: ++cattle-fleet-system++
+
+The ++fleet-controller++ service account is used by the main Fleet controller pod. It manages bundles, clusters, and cluster groups, reconciles {product_name} resources, and runs GitJobs to process Git repositories.
+
+==== ++gitjob++ service account
+
+Namespace: ++cattle-fleet-system++
+
+The ++gitjob++ service account is used to run the GitJob controller and the internal background jobs responsible for cleaning up completed Git jobs. 
+
+This service account is not used to execute the temporary pods that clone Git repositories and generate bundles. Instead, those operational pods run under a dedicated service account created automatically for each Git repository, named `git-<gitrepo_name>`.
+
+==== ++import++ service account
+
+Namespace: ++fleet-default++
+
+The ++import++ service account is created temporarily during downstream cluster registration. Its name is dynamically generated and derived from the cluster registration token (resulting in a format like ++import-<token-id>++).
+
+{product_name} only grants permissions to:
+
+* create ++ClusterRegistration++ requests
+* read secrets within the ++cattle-fleet-clusters-system++ namespace
+
+After cluster registration completes, the downstream agent removes the account and no longer uses it.
+
+==== ++request++ service account
+
+Namespace: ++fleet-default++
+
+The ++request++ service account becomes the permanent identity of a registered downstream cluster.
+
+{product_name} restricts this account using least-privilege RBAC policies. The account can:
+
+* list ++BundleDeployment++ resources within its assigned cluster namespace
+* list ++Content++ resources within its assigned cluster namespace
+* update the status subresources of ++BundleDeployment++ and ++Cluster++ resources
+
+The account cannot:
+
+* access data from other clusters
+* modify desired state resources
+* manage resources outside its assigned namespace
+
+==== ++GitRepo++ service accounts
+
+Namespace: ++fleet-default++
+
+{product_name} automatically creates a dedicated service account, role, and role binding for each ++GitRepo++ resource. This isolation helps separate permissions between Git repositories and reduces cross-repository access.
+
+=== Downstream cluster service accounts
+
+Downstream clusters run {product_name} agents that retrieve configuration from the management cluster and perform Helm deployments.
+
+==== ++fleet-agent++ service account
+
+Namespace: ++cattle-fleet-system++
+
+The ++fleet-agent++ service account is used by the Fleet agent running on downstream clusters. It communicates with the upstream management cluster, monitors for new ++BundleDeployment++ resources, and reports deployment status changes.
+
+The agent authenticates using the credentials associated with the ++request++ service account.
+
+==== Deployment service accounts
+
+When {product_name} deploys workloads to a downstream cluster, it uses a deployment service account to execute the deployment.
+
+You can explicitly configure which downstream service account {product_name} should use by setting the ++serviceAccount++ field in:
+
+* ++fleet.yaml++
+* ++GitRepo++ resources
+
+All service accounts referenced by a ++GitRepo++ must exist in the ++cattle-fleet-system++ namespace on the downstream cluster.
+
+==== Restrict allowed service accounts
+
+In multi-tenant environments, restrict which service accounts users can reference in Git repositories.
+
+Use a ++GitRepoRestriction++ resource to define an ++allowedServiceAccounts++ allowlist. If a ++GitRepo++ references an unauthorized service account, {product_name} blocks the deployment.
+
+[NOTE]
+====
+Support for ++GitRepoRestriction++ is deprecated in favor of the ++Policy++ resource. For multi-tenant environment , use ++Policy++ resources to define restrictions across all {product_name} components, including bundles and Helm operations.
+====
