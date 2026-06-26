@@ -90,13 +90,14 @@ When webhooks are configured, {product_name} automatically scales back polling i
 
 *The Best Practice:* Maintain all targeting rules within the Git repository. Avoid defining application-to-cluster mappings through a UI or DB. Keeping targeting rules, deployment dependencies, and platform configuration in Git ensures deployments remain declarative, reusable, and version-controlled.
 
-*The Implementation:* Use a ++ClusterGroup++ CRD to define reusable selectors (e.g., env=prod). Map workloads to these clusters using label matching in the ++targets:++ section of your fleet.yaml to dynamically evaluate and deploy to matching clusters as they come online.
+*The Implementation:* Use a ++ClusterGroup++ CRD to define reusable selectors (e.g., env=prod). Map workloads to these clusters using label matching in the `targets` section of your fleet.yaml to dynamically evaluate and deploy to matching clusters as they come online.
 
 [NOTE]
 ====
 You can use cluster labels to install additional platform applications on downstream clusters. Multiple labels can be applied simultaneously—either during cluster creation or by updating an existing cluster. The system automatically manages the installation order based on application dependencies configured via `dependsOn`.
 
 For example,
+
 * ++needs-storage=true++ for *SUSE Storage*
 * ++needs-private-registry=true++ for *SUSE Private Registry*
 * ++needs-security=true++ for *SUSE Security*
@@ -107,7 +108,7 @@ For example,
 The following example uses cluster labels to dynamically deploy applications to matching clusters. The `neuvector` application depends on the `neuvector-crd` bundle. Fleet deploys the `neuvector-crd` bundle first and waits until the required resources become ready before deploying dependent workloads.
 
 [source,yaml]
-====
+----
 defaultNamespace: cattle-neuvector-system
 
 helm:
@@ -118,7 +119,7 @@ helm:
   valuesFiles:
     - values.yaml
 
-overrideTargets:
+targets:
   - clusterSelector:
       matchLabels:
         needs-security: "true"
@@ -130,7 +131,7 @@ dependsOn:
 
 labels:
   provides: neuvector
-====
+----
 
 Use the ++provides: <app-name>++ label to define application dependencies between Fleet bundles.
 
