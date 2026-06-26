@@ -53,12 +53,13 @@ You may not need to create diff rules for replica count changes managed by an HP
 == Configure compare patches example
 
 The following ++fleet.yaml++ example handles two common runtime modification scenarios:
+
 * a controller injecting a certificate into a webhook
 * a temporary initialization job
 
 .fleet.yaml
-[souce, yaml]
-====
+[source, yaml]
+----
 diff:
   comparePatches:
 
@@ -76,7 +77,10 @@ diff:
     - apiVersion: batch/v1
       kind: Job
       namespace: fleet-demo
-====
+      operations:
+        - op: remove
+          path: /status
+----
 
 In this example:
 * {product_name} ignores runtime-generated webhook fields
@@ -86,21 +90,6 @@ In this example:
 ====
 Instead of manually creating JSON Patch paths, use the ++fleet bundlediff++ CLI command. After you commit and push the updated ++fleet.yaml++, {product_name} reconciles the change and transitions the bundle from Modified to Ready.
 
-====
-
-Some resources, such as generated Job objects, can have dynamically generated names. Instead of creating a separate diff rule for each resource, use regular expressions in the name field.
-
-For example, you need to ignores all Job resources in the fleet-demo namespace whose names start with demo.
-
-.fleet.yaml
-[souce, yaml]
-====
-diff:
-  comparePatches:
-    - apiVersion: batch/v1
-      kind: Job
-      namespace: fleet-demo
-      name: ^demo-.*
 ====
 
 == Generating comparePatches with `fleet bundlediff`

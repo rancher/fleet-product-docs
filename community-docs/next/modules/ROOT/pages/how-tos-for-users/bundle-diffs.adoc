@@ -21,6 +21,77 @@ image::ModifiedBundle.png[Static, 600]
 
 With the patch, users can instruct {product_name} to ignore object modifications and entire objects.
 
+[NOTE]
+====
+Use ++diff.comparePatches++ in your ++fleet.yaml++ file to filter expected runtime changes. This helps ensure that a ++Modified bundle++ represents actual configuration drift that requires investigation.
+====
+
+== When to add diffs
+
+Add a compare patch when Kubernetes components modify resources automatically in a predictable and harmless way after deployment. Some common scenarios include:
+
+* Admission webhooks injecting certificates or configuration
+** For example, a cluster can automatically inject a ++caBundle++ into a ++ValidatingWebhookConfiguration++.
+* Controllers adding runtime defaults
+** For example, a policy engine can inject default CPU limits or tolerations into a Deployment.
+* Temporary lifecycle jobs that are automatically removed after completion
+** For example, some Helm charts create temporary initialization jobs, that automatically delete themselves after completion.
+
+== When not to add diffs
+
+Do not use comparePatches to hide unexpected configuration drift or manual changes.
+
+If an administrator manually edits a {product_name}-managed resource using kubectl edit, {product_name} marks the bundle as ++Modified++.
+
+Do not ignore these changes with a diff rule. Instead either revert the manual change to match the Git repository or update the Git repository with the new desired state.
+
+[NOTE]
+====
+You may not need to create diff rules for replica count changes managed by an HPA. Since,  {product_name} automatically ignores changes to the replicas field for Deployment and StatefulSet resources when the values remain within the HPA-managed range.
+====
+
+== Configure compare patches example
+
+The following ++fleet.yaml++ example handles two common runtime modification scenarios:
+
+* a controller injecting a certificate into a webhook
+* a temporary initialization job
+
+.fleet.yaml
+[source, yaml]
+----
+diff:
+  comparePatches:
+
+    # Ignore runtime-injected webhook fields
+    - apiVersion: admissionregistration.k8s.io/v1
+      kind: ValidatingWebhookConfiguration
+      name: gatekeeper-validating-webhook-configuration
+      operations:
+        - op: remove
+          path: /webhooks/0/clientConfig/caBundle
+        - op: remove
+          path: /webhooks/0/rules
+
+    # Ignore temporary jobs in the fleet-demo namespace
+    - apiVersion: batch/v1
+      kind: Job
+      namespace: fleet-demo
+      operations:
+        - op: remove
+          path: /status
+----
+
+In this example:
+* {product_name} ignores runtime-generated webhook fields
+* {product_name} ignores temporary jobs created and deleted by the application lifecycle
+
+[NOTE]
+====
+Instead of manually creating JSON Patch paths, use the ++fleet bundlediff++ CLI command. After you commit and push the updated ++fleet.yaml++, {product_name} reconciles the change and transitions the bundle from Modified to Ready.
+
+====
+
 == Generating comparePatches with `fleet bundlediff`
 
 The `fleet bundlediff` CLI command reads the diff information already present in
