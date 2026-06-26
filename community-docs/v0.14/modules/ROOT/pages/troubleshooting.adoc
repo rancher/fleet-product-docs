@@ -199,7 +199,7 @@ helmRepoURLRegex is empty: Helm credentials will not be forwarded to any reposit
 To fix this issue:
 
 * Set `spec.helmRepoURLRegex` on the `GitRepo` so it matches the Helm repository URL prefixes you trust.
-* Regex matching is automatically anchored at the start of the repository URL. Use patterns with a protocol prefix, for example: `https://charts\.example\.com/`
+* Regex matching is automatically anchored at the start of the repository URL. Use patterns with a protocol prefix, for example: `https://charts\.example\.com(/|$)`
 * If you are upgrading from an older release, review auto-migrated `helmRepoURLRegex` values and tighten them if they are broader than necessary.
 
 === Helm chart repo: certificate signed by unknown authority

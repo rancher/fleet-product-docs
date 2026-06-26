@@ -62,7 +62,7 @@ spec:
   # Helm credentials from helmSecretName will be used if the helm repository url matches this regular expression.
   # Credentials will not be used if it is empty or not provided
   #
-  # helmRepoURLRegex: https://charts\.rancher\.io/
+  # helmRepoURLRegex: https://charts\.rancher\.io(/|$)
 
   # Contains the auth secret for private Helm repository for each path.
   
