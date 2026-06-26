@@ -104,7 +104,7 @@ For example,
 
 ====
 
-The following example uses cluster labels to dynamically deploy applications to matching clusters. The ++neuvector++ application depends on the ++neuvector-crd++ bundle. Fleet deploys the ++neuvector-crd++ bundle first and waits until the required resources become ready before deploying dependent workloads.
+The following example uses cluster labels to dynamically deploy applications to matching clusters. The `neuvector` application depends on the `neuvector-crd` bundle. Fleet deploys the `neuvector-crd` bundle first and waits until the required resources become ready before deploying dependent workloads.
 
 [source,yaml]
 ====
