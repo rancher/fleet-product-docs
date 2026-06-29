@@ -1,7 +1,7 @@
 = {product_name} Templating
 :revdate: 2026-05-14
 :page-revdate: {revdate}
-:page-aliases: /template
+:page-aliases: /templating
 
 Templating helps you customize deployments for different clusters without maintaining separate configuration files. This helps you:
 
