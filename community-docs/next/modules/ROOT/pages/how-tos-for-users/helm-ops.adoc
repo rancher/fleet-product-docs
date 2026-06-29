@@ -22,6 +22,10 @@ When constraints are invalid or no matching version can be found, {product_name}
 
 When using this feature, Helm charts are downloaded from downstream clusters, which must therefore have access to Helm registries.
 
+== Restrictions Your Operator May Apply
+
+Your operator may restrict which `serviceAccount`, `helmSecretName`, `helm.repo` URL, and `helm.chart` values your `HelmOp` may use via a `Policy` in your namespace. If a constraint is violated, the `HelmOp`'s status condition reports which field was rejected. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the model.
+
 == Creating a HelmOp resource
 
 A ++HelmOp++ resource can be created as follows to start deploying Helm charts directly:
@@ -31,20 +35,26 @@ A ++HelmOp++ resource can be created as follows to start deploying Helm charts d
 apiVersion: fleet.cattle.io/v1alpha1
 kind: HelmOp
 metadata:
-name: my-awesome-helmop
-namespace: "fleet-local"
+  name: my-awesome-helmop
+  namespace: "fleet-local"
 spec:
-helm:
-releaseName: my-fantastic-chart
-repo: [https://foo.bar/baz](https://foo.bar/baz)
-chart: fantastic-chart
-version: ''
-namespace: that-amazing-namespace
-helmSecretName: my-top-secret-helm-access
-insecureSkipTLSVerify: false
+  helm:
+    releaseName: my-fantastic-chart
+    repo: https://foo.bar/baz
+    chart: fantastic-chart
+    version: ''
+  namespace: that-amazing-namespace
+  helmSecretName: my-top-secret-helm-access
+  insecureSkipTLSVerify: false
 ----
 
 For private charts, this requires a Helm access secret (referenced by field ++helmSecretName++) to be created in the same namespace as the ++HelmOp++ resource. The Fleet HelmOps controller takes care of copying that secret to targeted downstream clusters, enabling the Fleet agent to access the registry.
+
+[NOTE]
+====
+The `releaseName` field is optional; if not specified, Fleet will derive it from the name of the HelmOp, truncating it
+if needed.
+====
 
 == Supported use cases
 
@@ -56,12 +66,12 @@ Referencing a Helm chart by absolute URL is as simple as providing a URL to a ++
 
 [source,yaml]
 ----
-helm:
-chart: [https://example.com/charts/my-chart-1.2.3.tgz](https://example.com/charts/my-chart-1.2.3.tgz)
-# can be omitted
+  helm:
+    chart: https://example.com/charts/my-chart-1.2.3.tgz
 
-repo: ''
-version: ''
+    # can be omitted
+    repo: ''
+    version: ''
 ----
 
 If a non-empty repo, or a non-empty version is specified in this case, an error will appear in the HelmOp status and no bundle will be created, aborting deployment.
@@ -76,10 +86,10 @@ Example:
 
 [source,yaml]
 ----
-helm:
-repo: [https://foo.bar/baz](https://foo.bar/baz)
-chart: fantastic-chart
-version: '1.2.3'
+  helm:
+    repo: https://foo.bar/baz
+    chart: fantastic-chart
+    version: '1.2.3'
 ----
 
 In this case, only the ++version++ field may be empty. If any of the ++chart++ or ++repo++ field is empty, {product_name} set an error in the HelmOp status and no bundle will be created.
@@ -93,9 +103,9 @@ In this case, Helm options would be similar to this:
 
 [source,yaml]
 ----
-helm:
-repo: oci://foo.bar/baz
-version: '1.2.3' # optional
+  helm:
+    repo: oci://foo.bar/baz
+    version: '1.2.3' # optional
 ----
 
 When an OCI URL is provided in the ++repo++ field, a non-empty ++chart++ field will lead to an error in the HelmOps status, and no bundle being created.
@@ -143,6 +153,42 @@ This works the same way as it does for gitOps, by referencing a Helm access secr
 For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Private Helm repo].
 
 The part on using separate credentials for each path is not relevant though, since unlike a GitRepo, a HelmOp resource only references a single Helm chart.
+
+== Propagating image pull secrets to downstream clusters
+
+`helmSecretName` only covers authentication for pulling the Helm chart itself. If the chart deploys workloads
+whose container images are hosted in a private registry, the downstream clusters also need a
+`kubernetes.io/dockerconfigjson` secret to pull those images at runtime.
+
+Create the image pull secret in the same namespace as the `HelmOp` on the upstream cluster:
+
+[source,bash]
+----
+kubectl create secret docker-registry application-collection-secret \
+  -n fleet-local \
+  --docker-server=<registry> \
+  --docker-username=<user> \
+  --docker-password=<password>
+----
+
+Then reference it via `downstreamResources` so {product_name} copies it to each targeted downstream cluster
+before deploying the workload:
+
+[source,yaml]
+----
+spec:
+  helm:
+    values:
+      global:
+        imagePullSecrets:
+          - application-collection-secret
+  downstreamResources:
+    - kind: Secret
+      name: application-collection-secret
+----
+
+For more details on `downstreamResources`, including lifecycle and monitoring behaviour, refer to
+xref:how-tos-for-users/downstream-resource-propagation.adoc[Automatically copying resources to downstream clusters].
 
 == Status updates
 

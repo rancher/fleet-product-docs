@@ -1,9 +1,40 @@
 <script src="{{{uiRootPath}}}/js/site.js"></script>
 <script async src="{{{uiRootPath}}}/js/vendor/highlight.js"></script>
+
 {{#if env.SITE_SEARCH_PROVIDER}}
 {{> search-scripts}}
 {{/if}}
+
 <script src="{{uiRootPath}}/js/vendor/langSelection.js"></script>
 <script async src="{{{uiRootPath}}}/js/vendor/tabs.js"></script>
 
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
 
+  document.querySelectorAll('pre code.language-mermaid').forEach((block) => {
+    const parent = block.parentElement;
+
+    const div = document.createElement('div');
+    div.className = 'mermaid';
+    div.textContent = block.textContent;
+
+    parent.replaceWith(div);
+  });
+
+  mermaid.initialize({
+    startOnLoad: true,
+    securityLevel: 'loose',
+    theme: 'default'
+  });
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  // Target a warning block if it is the very first element of the document
+  const topWarning = document.querySelector('article.doc > .admonitionblock.warning:first-child');
+  
+  if (topWarning && topWarning.textContent.includes("This is unreleased documentation")) {
+    topWarning.style.display = 'none';
+  }
+});
+</script>

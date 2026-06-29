@@ -11,7 +11,7 @@
 ** xref:explanations/gitrepo-content.adoc[Git Repository Contents]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Custom Resources During Deployment]
-** xref:explanations/glossary.adoc[Custom Resources During Deployment]
+** xref:explanations/glossary.adoc[Glossary]
 
 * How-tos for Operators
 ** xref:how-tos-for-operators/installation.adoc[Installation Details]
@@ -73,12 +73,6 @@
 *** xref:reference/ref-registration.adoc[Cluster Registration Internals]
 
 * xref:troubleshooting.adoc[Troubleshooting]
-
-* Experimental Features
-** xref:experimental-features/enableexperimental.adoc[Enable Experimental Features]
-** xref:experimental-features/scheduling.adoc[Scheduling]
-** xref:experimental-features/experimental-downstream-resource.adoc[Automated Propagation of Resources to Downstream Clusters]
-** xref:reference/ref-schedule.adoc[Schedule Resource Reference]
 
 * Changelog
 ** xref:changelogs/v0.13.0.adoc[v0.13.0]

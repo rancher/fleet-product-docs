@@ -88,9 +88,54 @@ When webhooks are configured, {product_name} automatically scales back polling i
 
 === Keep Targeting Rules in Git
 
-*The Best Practice:* Maintain all targeting rules within the Git repository. Avoid defining application-to-cluster mappings through a UI or DB. Keeping rules in a Git repository ensures the state is declarative and version-controlled.
+*The Best Practice:* Maintain all targeting rules within the Git repository. Avoid defining application-to-cluster mappings through a UI or DB. Keeping targeting rules, deployment dependencies, and platform configuration in Git ensures deployments remain declarative, reusable, and version-controlled.
 
-*The Implementation:* Use a ++ClusterGroup++ CRD to define reusable selectors (e.g., env=prod). Map workloads to these clusters using label matching in the ++targets:++ section of your fleet.yaml to dynamically evaluate and deploy to matching clusters as they come online.
+*The Implementation:* Use a ++ClusterGroup++ CRD to define reusable selectors (e.g., env=prod). Map workloads to these clusters using label matching in the `targets` section of your fleet.yaml to dynamically evaluate and deploy to matching clusters as they come online.
+
+[NOTE]
+====
+You can use cluster labels to install additional platform applications on downstream clusters. Multiple labels can be applied simultaneously—either during cluster creation or by updating an existing cluster. The system automatically manages the installation order based on application dependencies configured via `dependsOn`.
+
+For example,
+
+* ++needs-storage=true++ for *SUSE Storage*
+* ++needs-private-registry=true++ for *SUSE Private Registry*
+* ++needs-security=true++ for *SUSE Security*
+* ++needs-observability=true++ for *SUSE Observability*
+
+====
+
+The following example uses cluster labels to dynamically deploy applications to matching clusters. The `neuvector` application depends on the `neuvector-crd` bundle. Fleet deploys the `neuvector-crd` bundle first and waits until the required resources become ready before deploying dependent workloads.
+
+[source,yaml]
+----
+defaultNamespace: cattle-neuvector-system
+
+helm:
+  chart: neuvector
+  repo: https://charts.rancher.io
+  version: "107.0.2+up2.8.9"
+
+  valuesFiles:
+    - values.yaml
+
+targets:
+  - clusterSelector:
+      matchLabels:
+        needs-security: "true"
+
+dependsOn:
+  - selector:
+      matchLabels:
+        provides: neuvector-crd
+
+labels:
+  provides: neuvector
+----
+
+Use the ++provides: <app-name>++ label to define application dependencies between Fleet bundles.
+
+Applications can reference these labels using ++dependsOn++ selectors to ensure dependent applications deploy only after required platform components become ready. In the above example, ++neuvector++ depends on ++neuvector-crd++.
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema], xref:tutorials/tut-deployment.adoc[Deployment Tutorial].
 
@@ -162,7 +207,7 @@ You can use the ++fleet monitor++ CLI tool to detect API Time Travel by fetching
 
 *The Implementation:* To copy credentials from the upstream cluster, use the ++downstreamResources++ field in the HelmOps CRD. This dynamically copies existing upstream secrets to downstream clusters before deployment.
 
-* Reference: xref:experimental-features/experimental-downstream-resource.adoc[Experimental Downstream Resources].
+* Reference: xref:how-tos-for-users/downstream-resource-propagation.adoc[Downstream Resources Propagation].
 
 == Drift Management and Edge Deployments
 
@@ -313,10 +358,10 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/ref-crds.adoc[{product_name} CRD Reference].
 
-=== Restricting GitRepo Deployments (Multi-Tenancy)
+=== Restricting Tenant Deployments (Multi-Tenancy)
 
-*The Best Practice:* In multi-tenant environments, prevent users from deploying bundles into unauthorized namespaces or using restricted service accounts.
+*The Best Practice:* In multi-tenant environments, prevent tenants from running deployments with privileged service accounts or pulling from unauthorized repositories.
 
-*The Implementation:* Deploy a ++GitRepoRestriction++ CRD. This allows administrators to define whitelists for ++allowedTargetNamespaces++, ++allowedServiceAccounts++, and ++allowedRepoPatterns++.
+*The Implementation:* Create a ++Policy++ resource in each tenant's namespace, declaring ++requireServiceAccount: true++, the allowed ++ServiceAccount++ list, and source/credential allow-lists for ++GitRepo++ and ++HelmOp++ resources. Restrict tenants to read-only RBAC on ++Policy++ objects. Express which downstream namespaces a tenant may deploy to as RBAC on the tenant's downstream ++ServiceAccount++, not at the {product_name} layer.
 
-* Reference: xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].
+* Reference: xref:explanations/multi-tenancy.adoc[Multi-Tenancy] and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup].

@@ -98,6 +98,11 @@ env: prod
 . Waits for readiness.
 . Proceeds to the next partition.
 
+[Note]
+====
+When using manual partitions, Fleet only includes targets that match a configured partition selector in the rollout. Targets that do not match any partition selector are discarded, and no rollout is created for them.
+====
+
 image::deploy-targets-partition.png[A visual asset displaying the flow of partition rollout.]
 
 

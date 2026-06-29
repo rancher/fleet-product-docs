@@ -39,7 +39,7 @@ It takes precendence over all other namespace definitions:
 
 `gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
 
-Workload namespace definitions can be restricted with `allowedTargetNamespaces` in the `GitRepoRestriction` resource.
+Your operator may restrict which `serviceAccount`, `clientSecretName`, and `repo` values your `GitRepo` may use via a `Policy` in your namespace. If a constraint is violated, the `GitRepo`'s status condition reports which field was rejected. Target-namespace restrictions are enforced by the downstream cluster's RBAC on the `ServiceAccount` you reference, not by {product_name} itself; if the `ServiceAccount` does not have permission to write to the target namespace, the deployment will fail on the downstream cluster. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the model.
 
 == Adding A Private Git Repository
 
@@ -254,8 +254,8 @@ endif::[]
 
 [CAUTION]
 ====
-The credentials will be used unconditionally for all Helm repositories referenced by the gitrepo resource.
-Make sure you don't leak credentials by mixing public and private repositories. Use <<Use different helm credentials for each path,different helm credentials for each path>>, or split them into different gitrepos, or use `helmRepoURLRegex` to limit the scope of credentials to certain servers.
+Helm credentials are forwarded only when `helmRepoURLRegex` is set and matches the Helm repository URL.
+Use specific `helmRepoURLRegex` patterns so credentials are only forwarded to trusted Helm repository URLs. You can also use <<Use different helm credentials for each path,different helm credentials for each path>> or split charts into different gitrepos.
 ====
 
 
@@ -290,6 +290,15 @@ For example, to add a secret in kubectl, run
 `kubectl create secret -n $namespace generic helm --from-literal=username=foo --from-literal=password=bar --from-file=cacerts=/path/to/cacerts --from-file=ssh-privatekey=/path/to/privatekey.pem`
 
 After secret is created, specify the secret to `gitRepo.spec.helmSecretName`. Make sure secret is created under the same namespace with gitrepo.
+
+[NOTE]
+====
+`helmSecretName` only covers authentication for pulling the Helm chart. If the chart deploys workloads whose
+container images are hosted in a private registry, the downstream clusters also need a
+`kubernetes.io/dockerconfigjson` secret to pull those images at runtime. For HelmOps, this can be propagated
+automatically using `downstreamResources`. Refer to
+xref:how-tos-for-users/helm-ops.adoc#_propagating_image_pull_secrets_to_downstream_clusters[Propagating image pull secrets to downstream clusters].
+====
 
 === Use different helm credentials for each path
 
