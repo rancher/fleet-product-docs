@@ -1,7 +1,7 @@
 = {product_name} Templating
 :revdate: 2026-05-14
 :page-revdate: {revdate}
-:page-aliases: /template
+:page-aliases: /templating
 
 Templating helps you customize deployments for different clusters without maintaining separate configuration files. This helps you:
 
@@ -12,12 +12,12 @@ Templating helps you customize deployments for different clusters without mainta
 
 {product_name} preprocesses the following files:
 
-* ++fleet.yaml++
+* `fleet.yaml`
 * Helm values files
 * Kubernetes manifests
 * HelmOps resources
 
-When you install Helm charts using {product_name}. It is important to distinguish between {product_name}-managed files and internal Helm chart files:
+When you install Helm charts using {product_name}, it is important to distinguish between {product_name}-managed files and internal Helm chart files:
 
 * *Helm chart ++values.yaml++ (No templating):*
 ** The default ++values.yaml++ file bundled inside a Helm chart does not support {product_name} templating. Any substitutions happen during the standard Helm chart rendering phase, before {product_name} applies the chart. If you use ++${var}++ in this file, Helm treats it as plain text.
@@ -28,32 +28,23 @@ When you install Helm charts using {product_name}. It is important to distinguis
 
 Before a ++Bundle++ is created, the Fleet controller scans specific files (like ++fleet.yaml++ and ++values.yaml++). It searches for ++${ }++ delimiters. These are used instead of standard Go-template ++{{ }}++ to avoid collisions with Helm's own templating engine.
 
-[source,mermaid]
-====
-graph LR
-    A[Git Repository] -->|"fleet.yaml / manifests"| B(Fleet Controller)
-    B -->|"Stage 1: Pre-processing"| C{Template Engine}
-    C -->|"Evaluates ${ }"| D[Processed BundleDeployment]
-    D -->|"Distributed to"| E(Downstream Fleet Agent)
-    E -->|"Stage 2: Helm Execution"| F{Helm Engine}
-    F -->|"Evaluates {{ }}"| G[Live K8s Resources]
-====
+image::templating_works.svg[Templating Flow]
 
 For example, if you have a ++values.yaml++ file with:
 
-[source,yaml]
-====
+[,yaml]
+----
 values:
   region: ${ .ClusterLabels.region }
-====
+----
 
 If the target cluster contains the label: ++region: us-west++. Then the {product_name} generates:
 
-[source,yaml]
-====
+[,yaml]
+----
 values:
   region: us-west
-====
+----
 
 == {product_name} versus Helm templating
 
@@ -82,49 +73,33 @@ values:
 
 For example, if you have a ++fleet.yaml++ with:
 
-[source,yaml]
-====
+[,yaml]
+----
 values:
   cluster: ${ .ClusterName }
 
 config:
   message: "{{ .Values.message }}"
-====
+----
 
 In this example:
 
 * {product_name} resolves ++${ .ClusterName }++
 * Helm later resolves ++{{ .Values.message }}++
 
-== ++Value precedence++
+== Value precedence
 
 When {product_name} prepares the final values for a deployment, it merges configuration from multiple sources. If the same key exists in multiple places, the source with the highest precedence wins.
+Here are possible sources of values, listed in decreasing order of precedence:
 
 . `templateValues`: Values generated here always overwrite other sources. Use this for logic-heavy variables.
 . `targetCustomizations`: Overrides defined for specific cluster groups.
-. `helm.values`: Global values defined in your {product_name}.yaml.
-. `helm.valuesFrom`: Values loaded dynamically from ConfigMaps or Secrets on downstream clusters.
-. `helm.valuesFiles`: External YAML files referenced in the helm block.
+. `helm.valuesFrom`: Values loaded dynamically from ConfigMaps or Secrets on downstream clusters. These take precedence over files and inline values.
+. `helm.valuesFiles`: External YAML files referenced in the helm block. These override inline helm.values.
+. `helm.values`: Global inline values defined in your {product_name}.yaml.
 . `Chart values.yaml`: The default values bundled inside the Helm chart.
 
-[source, mermaid]
-====
-graph LR
-    direction LR
-    V1[1. Chart values.yaml <br/><i>(Lowest - Defaults)</i>]
-    V2[2. helm.valuesFiles <br/><i>(External YAML)</i>]
-    V3[3. helm.values <br/><i>(Global fleet.yaml)</i>]
-    V4[4. targetCustomizations <br/><i>(Cluster Overrides)</i>]
-    V5[5. templateValues <br/><i>(Highest - Logic Driven)</i>]
-
-    V1 --> V2
-    V2 --> V3
-    V3 --> V4
-    V4 --> V5
-
-    classDef high fill:#f96,stroke:#333,color:#000
-    class V5 high
-====
+image::value_precendence_templating.svg[Value Precedence in templating]
 
 == Accessing Cluster data
 
@@ -168,31 +143,31 @@ Avoid using Sprig functions that produce random output (for example, ++uuidv4++)
 
 Use ++default++ to ensure a deployment doesn't fail if a label is missing.
 
-[source,yaml]
-====
+[,yaml]
+----
 values:
   region: ${ default "us-east-1" .ClusterLabels.region }
-====
+----
 
 === Conditional Logic
 
 Change configuration based on the environment.
 
-[source,yaml]
-====
+[,yaml]
+----
 values:
   # Sets 'stable' for prod, 'latest' for others
   imageTag: ${ if eq .ClusterLabels.env "prod" }stable${ else }latest${ end }
-====
+----
 
 === String Manipulation
 
-[source,yaml]
-====
+[,yaml]
+----
 values:
   # Converts cluster name to uppercase
   upperName: ${ upper .ClusterName }
-====
+----
 
 === Use templateValues for cluster-specific data
 
@@ -202,8 +177,8 @@ You can define cluster-specific data mappings directly on the downstream cluster
 
 You can define a value once in ++templateValues++ and reference it multiple times in the ++values++ block using the ++.TemplateValues++ prefix.
 
-[source,yaml]
-====
+[,yaml]
+----
 helm:
   templateValues:
     # 1. Define once
@@ -220,7 +195,7 @@ helm:
         enabled: "${ .ClusterValues.enableMetrics }"
         # Example of using ClusterLabels alongside ClusterValues
         siteIdentifier: "${ index .ClusterLabels \"site-id\" }"
-====
+----
 
 === Structural Generation (Advanced)
 
@@ -228,8 +203,8 @@ Standard YAML blocks must be valid YAML before processing. This prevents you fro
 
 The following example deploys different image tags depending on the cluster environment.
 
-[source,yaml]
-====
+[,yaml]
+----
 helm:
   templateValues:
     imageTag: ${ if eq .ClusterLabels.env "prod" }stable${ else }latest${ end }
@@ -238,44 +213,28 @@ helm:
     image:
       repository: nginx
       tag: ${ .TemplateValues.imageTag }
-====
+----
 
 This results in
 
-* If the cluster label is ++env=prod++, then the gendered image tab is ++stable++.
-* If the cluster label is ++env=dev++, then the gendered image tab is ++latest++.
+* If the cluster label is ++env=prod++, then the rendered image tag is ++stable++.
+* If the cluster label is ++env=dev++, then the rendered image tag is ++latest++.
 
 == *Disable preprocessing*
 
 If you use other templating languages in your configurations and want to avoid conflicts with {product_name}'s templating engine, you can turn off {product_name}'s templating entirely in fleet.yaml.
 
-[source,yaml]
-====
+[,yaml]
+----
 helm:
   disablePreProcess: true
-====
+----
 
 This helps you template syntax conflicts with {product_name} preprocessing, if you want to preserve raw template expressions.
 
 This flowchart below provides a clear path for file processing.
 
-[source, mermaid]
-====
-flowchart TD
-    Start([File in GitRepo]) --> Type{File Type?}
-    
-    Type -- "fleet.yaml" --> Process[Pre-process ${ }]
-    Type -- "valuesFiles" --> Process
-    Type -- "K8s Manifest" --> Process
-    
-    Type -- "Internal chart/values.yaml" --> Skip[Skip Pre-processing]
-    
-    Process --> Disable{disablePreProcess: true?}
-    Disable -- Yes --> Literal[Treat as Literal Text]
-    Disable -- No --> Render[Render Template Values]
-    
-    Skip --> Helm[Handled by Helm Engine]
-====
+image::disable_preprocessing_templating.svg[Disable Preprocessing Flow]
 
 == Escaping expressions
 
