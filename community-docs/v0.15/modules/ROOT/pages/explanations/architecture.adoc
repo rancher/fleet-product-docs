@@ -54,13 +54,13 @@ image::FleetComponents.svg[Static, 600]
 
 When you install {product_name} on the upstream management cluster, {product_name} creates service accounts for its core controllers. As you register downstream clusters and add Git repositories, {product_name} dynamically creates additional service accounts with restricted permissions.
 
-==== ++fleet-controller++ service account
+==== fleet-controller service account
 
 Namespace: ++cattle-fleet-system++
 
 The ++fleet-controller++ service account is used by the main Fleet controller pod. It manages bundles, clusters, and cluster groups, reconciles {product_name} resources, and runs GitJobs to process Git repositories.
 
-==== ++gitjob++ service account
+==== gitjob service account
 
 Namespace: ++cattle-fleet-system++
 
@@ -68,7 +68,7 @@ The ++gitjob++ service account is used to run the GitJob controller and the inte
 
 This service account is not used to execute the temporary pods that clone Git repositories and generate bundles. Instead, those operational pods run under a dedicated service account created automatically for each Git repository, named `git-<gitrepo_name>`.
 
-==== ++import++ service account
+==== import service account
 
 Namespace: ++fleet-default++
 
@@ -81,7 +81,7 @@ The ++import++ service account is created temporarily during downstream cluster 
 
 After cluster registration completes, the downstream agent removes the service account and no longer uses it.
 
-==== ++request++ service account
+==== request service account
 
 Namespace: ++fleet-default++
 
@@ -99,7 +99,7 @@ The account cannot:
 * modify desired state resources
 * manage resources outside its assigned namespace
 
-==== ++GitRepo++ service accounts
+==== GitRepo service accounts
 
 Namespace: ++fleet-default++
 
@@ -109,7 +109,7 @@ Namespace: ++fleet-default++
 
 Downstream clusters run {product_name} agents that retrieve configuration from the management cluster and perform Helm deployments.
 
-==== ++fleet-agent++ service account
+==== fleet-agent service account
 
 Namespace: ++cattle-fleet-system++
 
