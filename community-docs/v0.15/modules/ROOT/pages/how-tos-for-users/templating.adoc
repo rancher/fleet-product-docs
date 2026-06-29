@@ -99,7 +99,7 @@ Here are possible sources of values, listed in decreasing order of precedence:
 . `helm.values`: Global inline values defined in your {product_name}.yaml.
 . `Chart values.yaml`: The default values bundled inside the Helm chart.
 
-image::value_precendence_templating.svg[Value Precedence in templating]
+image::value_precedence_templating.svg[Value Precedence in templating]
 
 == Accessing Cluster data
 
