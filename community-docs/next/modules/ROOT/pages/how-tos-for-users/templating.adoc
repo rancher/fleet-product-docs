@@ -38,7 +38,7 @@ values:
   region: ${ .ClusterLabels.region }
 ----
 
-If the target cluster contains the label: ++region: us-west++. Then the {product_name} generates:
+If the target cluster contains the label: ++region: us-west++. Then {product_name} generates:
 
 [,yaml]
 ----
