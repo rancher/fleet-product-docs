@@ -23,7 +23,7 @@ Use the `ignore.conditions` setting in the `fleet.yaml` file to tell {product_na
 ----
 # from ref-fleet-yaml
 
-# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# Ignore fields when monitoring a Bundle. This can be used when Fleet thinks
 # some conditions in Custom Resources makes the Bundle to be in an error state
 # when it shouldn't.
 ignore:

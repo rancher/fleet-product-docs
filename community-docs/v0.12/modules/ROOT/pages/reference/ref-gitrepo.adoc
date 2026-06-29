@@ -53,15 +53,15 @@ spec:
 
   # If fleet.yaml contains a private Helm repo that requires authentication,
   # provide the credentials in a K8s secret and specify them here.
-  # Danger: the credentials will be sent to all repositories referenced from
-  # this gitrepo. See section below for more information.
+  # Helm credentials are forwarded only when helmRepoURLRegex matches the
+  # Helm repository URL. See section below for more information.
   #
   # helmSecretName: my-helm-secret
 
   # Helm credentials from helmSecretName will be used if the helm repository url matches this regular expression.
-  # Credentials will always be used if it is empty or not provided
+  # Credentials will not be used if it is empty or not provided
   #
-  # helmRepoURLRegex: https://charts.rancher.io/*
+  # helmRepoURLRegex: https://charts\.rancher\.io(/|$)
 
   # Contains the auth secret for private Helm repository for each path.
   
@@ -128,8 +128,8 @@ spec:
   # downstream cluster in the cattle-fleet-system namespace. It is assumed
   # this service account already exists so it should be created beforehand,
   # for instance coming from another git repo registered with
-  # the {product_name} manager.
-  # If no service account is configured, {product_name} checks for a service account
+  # the Fleet manager.
+  # If no service account is configured, Fleet checks for a service account
   # named "fleet-default".
   #
   # serviceAccount: moreSecureAccountThanClusterAdmin

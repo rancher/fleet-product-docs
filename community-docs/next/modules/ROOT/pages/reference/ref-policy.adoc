@@ -1,0 +1,149 @@
+= Policy Resource
+:revdate: 2026-05-21
+:page-revdate: {revdate}
+:page-aliases: /ref-policy
+
+The Policy resource restricts what GitRepo, HelmOp, and Bundle resources in the same namespace may do. It also lets operators set default values for selected fields when those fields are left empty.
+
+For the conceptual model, see xref:explanations/multi-tenancy.adoc[Multi-Tenancy]. For the operator recipe, see xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup]. The field-by-field schema is at xref:reference/ref-crds.adoc#_policy[Policy spec].
+
+[source,yaml]
+----
+kind: Policy
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  # Any name can be used here. Multiple Policy objects in the same namespace
+  # are aggregated. See "Aggregation" below.
+  name: tenant-policy
+  namespace: project1
+
+# When true, every GitRepo, HelmOp, and Bundle in this namespace must have a
+# non-empty serviceAccount after any defaulting has been applied. Empty
+# service accounts are rejected with a status condition on the offending
+# resource.
+requireServiceAccount: true
+
+# When non-empty, restricts the set of service accounts that GitRepo, HelmOp,
+# and Bundle resources may reference. The check applies to the top-level
+# spec.serviceAccount and to every per-target serviceAccount on Bundles.
+allowedServiceAccounts:
+  - tenant-1-deployer
+
+# GitRepo-specific defaults and restrictions. Applied only by the GitRepo
+# reconciler, before the top-level checks run.
+gitRepo:
+  # Applied to GitRepo objects whose spec.serviceAccount is empty.
+  defaultServiceAccount: tenant-1-deployer
+
+  # Applied to GitRepo objects whose spec.clientSecretName is empty.
+  defaultClientSecretName: tenant-1-git-credentials
+
+  # When non-empty, restricts the set of clientSecretName values GitRepos
+  # may reference.
+  allowedClientSecretNames:
+    - tenant-1-git-credentials
+
+  # Regex patterns. A GitRepo's spec.repo must match at least one entry.
+  # The controller anchors every pattern as ^(?:<pattern>)$, so explicit
+  # ^ and $ anchors are not required.
+  allowedRepoPatterns:
+    - https://github\.com/tenant-1/.*
+
+# HelmOp-specific defaults and restrictions. Applied only by the HelmOp
+# reconciler, before the top-level checks run.
+helmOp:
+  # Applied to HelmOp objects whose spec.serviceAccount is empty.
+  defaultServiceAccount: tenant-1-deployer
+
+  # Applied to HelmOp objects whose spec.helmSecretName is empty.
+  defaultHelmSecretName: tenant-1-helm-credentials
+
+  # When non-empty, restricts the set of credential secret names HelmOps
+  # may reference.
+  allowedHelmSecretNames:
+    - tenant-1-helm-credentials
+
+  # Regex patterns. A HelmOp's spec.helm.repo must match at least one entry.
+  # The controller anchors every pattern as ^(?:<pattern>)$, so explicit
+  # ^ and $ anchors are not required.
+  allowedHelmRepoPatterns:
+    - https://charts\.tenant-1\.example\.com/.*
+
+  # Regex patterns. A HelmOp's spec.helm.chart must match at least one entry.
+  allowedChartPatterns:
+    - tenant-1/.*
+----
+
+== Aggregation
+
+Multiple Policy objects in the same namespace are aggregated:
+
+* Allow-lists (`allowedServiceAccounts`, `gitRepo.allowedClientSecretNames`, `gitRepo.allowedRepoPatterns`, `helmOp.allowedHelmSecretNames`, `helmOp.allowedHelmRepoPatterns`, `helmOp.allowedChartPatterns`) are unioned across all Policy objects in the namespace.
+* For default fields (`gitRepo.defaultServiceAccount`, `gitRepo.defaultClientSecretName`, `helmOp.defaultServiceAccount`, `helmOp.defaultHelmSecretName`), the first non-empty value wins after sorting Policy objects by name.
+* `requireServiceAccount` is true if any Policy in the namespace sets it.
+
+Because allow-lists union across all Policy objects in the namespace, write access to Policy must be restricted to administrators. A tenant who can create their own Policy in their namespace can extend the allow-list. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the required RBAC.
+
+== Where each field is enforced
+
+[cols="3,1,1,1", options="header"]
+|===
+| Field | GitRepo reconciler | HelmOp reconciler | Bundle reconciler
+
+| `requireServiceAccount`
+| validates
+| validates
+| validates
+
+| `allowedServiceAccounts`
+| validates
+| validates
+| validates (top-level + per-target)
+
+| `gitRepo.defaultServiceAccount`
+| applies
+| —
+| —
+
+| `gitRepo.defaultClientSecretName`
+| applies
+| —
+| —
+
+| `gitRepo.allowedClientSecretNames`
+| validates
+| —
+| —
+
+| `gitRepo.allowedRepoPatterns`
+| validates
+| —
+| —
+
+| `helmOp.defaultServiceAccount`
+| —
+| applies
+| —
+
+| `helmOp.defaultHelmSecretName`
+| —
+| applies
+| —
+
+| `helmOp.allowedHelmSecretNames`
+| —
+| validates
+| —
+
+| `helmOp.allowedHelmRepoPatterns`
+| —
+| validates
+| —
+
+| `helmOp.allowedChartPatterns`
+| —
+| validates
+| —
+|===
+
+A Policy violation surfaces as a status condition on the offending GitRepo, HelmOp, or Bundle. The Bundle reconciler validates only and does not apply defaults. The GitRepo reconciler writes resolved defaults back to the GitRepo resource. The HelmOp reconciler applies defaults in memory and carries them into the generated Bundle; the HelmOp resource itself is left unchanged.

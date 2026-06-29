@@ -254,8 +254,8 @@ endif::[]
 
 [CAUTION]
 ====
-The credentials will be used unconditionally for all Helm repositories referenced by the gitrepo resource.
-Make sure you don't leak credentials by mixing public and private repositories. Use <<Use different helm credentials for each path,different helm credentials for each path>>, or split them into different gitrepos, or use `helmRepoURLRegex` to limit the scope of credentials to certain servers.
+Helm credentials are forwarded only when `helmRepoURLRegex` is set and matches the Helm repository URL.
+Use specific `helmRepoURLRegex` patterns so credentials are only forwarded to trusted Helm repository URLs. You can also use <<Use different helm credentials for each path,different helm credentials for each path>> or split charts into different gitrepos.
 ====
 
 
