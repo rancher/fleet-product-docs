@@ -83,6 +83,7 @@ diff:
 ----
 
 In this example:
+
 * {product_name} ignores runtime-generated webhook fields
 * {product_name} ignores temporary jobs created and deleted by the application lifecycle
 
