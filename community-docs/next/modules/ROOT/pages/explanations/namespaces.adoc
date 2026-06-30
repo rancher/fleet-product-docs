@@ -66,6 +66,71 @@ in all namespaces that match `namespaceSelector`. One can specify labels for the
 created bundles from git by putting labels in the `fleet.yaml` file or on the
 `metadata.labels` field on the `GitRepo`.
 
+[#_restricting_gitrepos]
+=== Restricting GitRepos
+
+A namespace can contain multiple `GitRepoRestriction` resources. All `GitRepos`
+created in that namespace will be checked against the list of restrictions. If a
+`GitRepo` violates one of the constraints its `BundleDeployment` will be in an
+error state and won't be deployed.
+
+This can also be used to set the defaults for GitRepo's `serviceAccount` and
+`clientSecretName` fields.
+
+[,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: typically-unique
+allowedClientSecretNames: []
+allowedRepoPatterns: []
+allowedServiceAccounts: []
+allowedTargetNamespaces: []
+defaultClientSecretName: ""
+defaultServiceAccount: ""
+----
+
+==== Allowed Target Namespaces
+
+This can be used to limit a deployment to a set of namespaces on a downstream
+cluster. If an allowedTargetNamespaces restriction is present, all `GitRepos`
+must specify a `targetNamespace` and the specified namespace must be in the
+allow list. This also prevents the creation of cluster wide resources.
+
+==== Allowed target namespace selector
+
+`allowedTargetNamespaceSelector` restricts deployments to namespaces on
+downstream clusters whose labels match the given selector. When this field is
+set in a `GitRepoRestriction`, all `GitRepos` must specify a `targetNamespace`.
+The Fleet agent checks the labels of that namespace on the downstream cluster
+before deploying a bundle:
+
+* If the namespace exists and its labels match the selector, deployment proceeds.
+* If the namespace exists but its labels do not match, the `BundleDeployment` is
+* set to an error state and the bundle is not deployed.
+* If the namespace does not exist on the downstream cluster, the deployment fails
+  with an error. Pre-creating the namespace and labelling it correctly is
+  required; Helm's `createNamespace` option does not apply when this selector is
+  set.
+
+Multiple `GitRepoRestriction` resources in the same namespace each contribute
+their `allowedTargetNamespaceSelector`. The selectors are merged before being
+propagated to bundle deployments; a namespace must satisfy all of them.
+
+[source,yaml]
+----
+kind: GitRepoRestriction
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: restriction
+  namespace: workspace1
+allowedTargetNamespaceSelector:
+  matchLabels:
+    team: frontend
+----
+
 === Restricting What Tenants May Do in a Namespace
 
 A namespace can contain one or more `Policy` resources that restrict which service accounts, credential secrets, and source repositories the `GitRepo`, `HelmOp`, and `Bundle` resources in that namespace may use. Downstream namespace restrictions are not expressed at this layer — they are encoded as RBAC on the tenant's downstream `ServiceAccount`. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the trust model and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the operator recipe.
