@@ -109,7 +109,7 @@ before deploying a bundle:
 
 * If the namespace exists and its labels match the selector, deployment proceeds.
 * If the namespace exists but its labels do not match, the `BundleDeployment` is
-* set to an error state and the bundle is not deployed.
+set to an error state and the bundle is not deployed.
 * If the namespace does not exist on the downstream cluster, the deployment fails
   with an error. Pre-creating the namespace and labelling it correctly is
   required; Helm's `createNamespace` option does not apply when this selector is
