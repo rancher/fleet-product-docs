@@ -41,6 +41,6 @@ helm:
 
 == Using authenticated registries
 
-If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. {product_name} uses this secret to pull the chart and deploy it to the targeted clusters.
+If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource and set `spec.helmRepoURLRegex` to match trusted OCI registry URLs (for example `oci://ghcr\.io(/|$)`). {product_name} uses this secret to pull the chart and deploy it to the targeted clusters.
 
 For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml with authentication].
