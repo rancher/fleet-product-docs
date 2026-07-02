@@ -1,4 +1,5 @@
 = Fleet 监控
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 用于故障排除 {product_name} 部署的高级诊断工具。
 

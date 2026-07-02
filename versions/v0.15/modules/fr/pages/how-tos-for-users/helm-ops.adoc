@@ -1,4 +1,5 @@
 = HelmOps
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-01
 :page-revdate: {revdate}
 

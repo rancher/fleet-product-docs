@@ -1,4 +1,5 @@
 = 生成忽略修改的 GitRepos 的差异
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

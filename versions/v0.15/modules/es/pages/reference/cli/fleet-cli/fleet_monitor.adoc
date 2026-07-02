@@ -1,4 +1,5 @@
 = monitor de Fleet
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 Herramienta de diagnóstico avanzada para solucionar problemas de ampliaciones {product_name}.
 

@@ -1,4 +1,5 @@
 = fleet monitor
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 Advanced diagnostic tool for troubleshooting  {product_name} deployments.
 

@@ -1,6 +1,7 @@
 :doctype: book
 
 = Détails de l'installation
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

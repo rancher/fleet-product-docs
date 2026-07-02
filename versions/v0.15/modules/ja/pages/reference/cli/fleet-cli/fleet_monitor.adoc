@@ -1,4 +1,5 @@
 = Fleetモニター
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 トラブルシューティングのための高度な診断ツール {product_name} デプロイメント用。
 

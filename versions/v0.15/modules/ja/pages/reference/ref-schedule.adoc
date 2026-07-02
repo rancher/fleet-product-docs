@@ -1,4 +1,5 @@
 = リソースのスケジュール
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-10-10
 :page-revdate: {revdate}
 

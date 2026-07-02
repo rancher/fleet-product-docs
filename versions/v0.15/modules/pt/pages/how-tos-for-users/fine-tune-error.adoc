@@ -1,4 +1,5 @@
 = Detecção de Erro de Ajuste Fino
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-12
 :page-revdate: {revdate}
 

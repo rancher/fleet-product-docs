@@ -1,4 +1,5 @@
 = fleet.yaml
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 `fleet.yaml` 文件为包添加选项。任何包含 `fleet.yaml` 文件的目录会自动转换为包。
 

@@ -1,4 +1,5 @@
 = fleet.yaml
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 `fleet.yaml`ファイルはバンドルにオプションを追加します。`fleet.yaml`ファイルがあるディレクトリは自動的にバンドルに変換されます。
 

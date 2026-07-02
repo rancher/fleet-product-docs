@@ -1,4 +1,5 @@
 = Fleet Monitor
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 Erweitertes Diagnosetool zur Fehlersuche bei {product_name} Implementierungen.
 

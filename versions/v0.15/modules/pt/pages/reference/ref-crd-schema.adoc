@@ -1,4 +1,5 @@
 = {product_name} Resumo do Esquema CRD
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 

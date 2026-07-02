@@ -1,4 +1,5 @@
 = fleet.yaml
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 O arquivo `fleet.yaml` adiciona opções a um bundle. Qualquer diretório com um arquivo `fleet.yaml` é automaticamente transformado em um bundle.
 
