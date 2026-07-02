@@ -101,8 +101,8 @@ allow list. This also prevents the creation of cluster-wide resources.
 
 ==== Allowed target namespace selector
 
-`allowedTargetNamespaceSelector` restricts deployments to namespaces on
-downstream clusters whose labels match the given selector. When this field is
+`allowedTargetNamespaceSelector` restricts deployments, on downstream clusters, to namespaces
+with labels matching the given selector. When this field is
 set in a `GitRepoRestriction`, all `GitRepos` must specify a `targetNamespace`.
 The Fleet agent checks the labels of that namespace on the downstream cluster
 before deploying a bundle:
