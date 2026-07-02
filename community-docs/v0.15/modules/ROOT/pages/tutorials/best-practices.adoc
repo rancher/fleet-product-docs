@@ -358,10 +358,20 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/ref-crds.adoc[{product_name} CRD Reference].
 
-=== Restricting GitRepo Deployments (Multi-Tenancy)
+[#_restricting_tenant_deployments_multi_tenancy]
+=== Restricting Tenant Deployments (Multi-Tenancy)
 
 *The Best Practice:* In multi-tenant environments, prevent users from deploying bundles into unauthorized namespaces or using restricted service accounts.
 
-*The Implementation:* Deploy a ++GitRepoRestriction++ CRD. This allows administrators to define whitelists for ++allowedTargetNamespaces++, ++allowedServiceAccounts++, and ++allowedRepoPatterns++.
+*The Implementation:* Create a ++Policy++ resource in each tenant's namespace, declaring ++requireServiceAccount: true++, the allowed ++ServiceAccount++ list, and source/credential allow-lists for ++GitRepo++ and ++HelmOp++ resources. Restrict tenants to read-only RBAC on ++Policy++ objects. Express which downstream namespaces a tenant may deploy to as RBAC on the tenant's downstream ++ServiceAccount++, not at the {product_name} layer.
+
+[NOTE]
+====
+`allowedRepoPatterns` supports regular expressions which will be matched on a _substring_ basis. This means that an
+expression such as `\https://example.site/org` may have more matches than intended, not limited to `example.site` hosts.
+
+To mitigate that, you should anchor regular expressions used in `allowedRepoPatterns`. The above example could become
+`^https://example.site/org`.
+====
 
 * Reference: xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].
