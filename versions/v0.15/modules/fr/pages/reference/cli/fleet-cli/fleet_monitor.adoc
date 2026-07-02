@@ -1,4 +1,5 @@
 = Moniteur Fleet
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 Outil de diagnostic avancé pour le dépannage {product_name} des déploiements.
 

@@ -1,4 +1,5 @@
 = 部署期间的自定义资源
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

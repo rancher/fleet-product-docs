@@ -1,4 +1,5 @@
 = fleet.yaml
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 Le fichier `fleet.yaml` ajoute des options à un paquet. Tout répertoire contenant un fichier `fleet.yaml` est automatiquement transformé en paquet.
 

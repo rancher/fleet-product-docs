@@ -1,4 +1,5 @@
 = Recuperar gráficos de Helm de los registros de OCI.
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-09-01
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Custom Resources During Deployment
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

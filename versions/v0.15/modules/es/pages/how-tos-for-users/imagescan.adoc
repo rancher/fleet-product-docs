@@ -1,4 +1,5 @@
 = Usando Image Scan para actualizar las referencias de la imagen del contenedor
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

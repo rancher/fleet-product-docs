@@ -1,4 +1,5 @@
 = Limpieza de Fleet: registro de clúster
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

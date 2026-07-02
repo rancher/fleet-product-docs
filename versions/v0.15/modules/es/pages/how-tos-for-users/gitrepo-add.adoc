@@ -1,4 +1,5 @@
 = Crea un recurso GitRepo
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 23-07-2025
 :page-revdate: {revdate}
 :doctype: book

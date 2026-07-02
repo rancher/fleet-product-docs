@@ -1,4 +1,5 @@
 = Fleet CLI installieren und verwenden
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-10-6
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = v0.15.0
+:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-03-23
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC

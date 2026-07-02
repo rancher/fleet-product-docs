@@ -1,4 +1,5 @@
 = Fleet monitor
+:page-languages: [en, de, es, fr, ja, pt, zh]
 
 Ferramenta de diagnóstico avançada para solucionar problemas de implantações {product_name}.
 
