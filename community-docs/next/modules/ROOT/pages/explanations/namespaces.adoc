@@ -69,6 +69,11 @@ created bundles from git by putting labels in the `fleet.yaml` file or on the
 [#_restricting_gitrepos]
 === Restricting GitRepos
 
+[IMPORTANT]
+====
+The `GitRepoRestriction` resource is deprecated and would be removed in a future release. For comprehensive multi-tenant environment governance, it is highly recommended to use the new `Policy` resource instead. For more information, refer to xref:_restricting_tenant_deployments_multi_tenancy[restricting tenant deployments for multi tenancy].
+====
+
 A namespace can contain multiple `GitRepoRestriction` resources. All `GitRepos`
 created in that namespace will be checked against the list of restrictions. If a
 `GitRepo` violates one of the constraints its `BundleDeployment` will be in an
@@ -131,6 +136,7 @@ allowedTargetNamespaceSelector:
     team: frontend
 ----
 
+[#_restricting_tenant_deployments_multi_tenancy]
 === Restricting What Tenants May Do in a Namespace
 
 A namespace can contain one or more `Policy` resources that restrict which service accounts, credential secrets, and source repositories the `GitRepo`, `HelmOp`, and `Bundle` resources in that namespace may use. Downstream namespace restrictions are not expressed at this layer — they are encoded as RBAC on the tenant's downstream `ServiceAccount`. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the trust model and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the operator recipe.
