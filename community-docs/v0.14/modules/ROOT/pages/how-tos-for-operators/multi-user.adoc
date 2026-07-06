@@ -204,6 +204,8 @@ allowedTargetNamespaces:
 
 This will deny the creation of cluster wide resources, which may interfere with other tenants and limit the deployment to the 'workspace1simpleapp' namespace.
 
+Check out xref:tutorials/best-practices.adoc#_restricting_tenant_deployments_multi_tenancy[best practices] for `GitRepoRestrictions`.
+
 == An Example GitRepo Resource
 
 A GitRepo resource created by a tenant, without admin access could look like this:
