@@ -49,6 +49,16 @@ In practice, the operator is responsible for creating the `ServiceAccount` (plus
 
 If a tenant's resource names a `ServiceAccount` that does not exist on the downstream cluster, the deployment fails with a clear error.
 
+== The Default `fleet-default` ServiceAccount
+
+A tenant resource does not have to name a `ServiceAccount` explicitly. When none is configured, the {product_name} agent looks for a `ServiceAccount` named `fleet-default` in the `cattle-fleet-system` namespace on the downstream cluster and impersonates it if it exists.
+
+If `fleet-default` does not exist either, the agent falls back to its own identity, which is effectively cluster-admin. This fallback is precisely the behaviour that pinning a tenant to a `ServiceAccount` exists to prevent: a deployment that resolves to no `ServiceAccount` runs with full privileges on the downstream cluster, and the downstream RBAC is no longer the source of truth for what it may do.
+
+For this reason, do not treat the absence of a `ServiceAccount` as a security boundary. Set `requireServiceAccount: true` on the `Policy` so that a resource which does not name a `ServiceAccount` is rejected rather than silently deployed as the agent. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the recommended configuration.
+
+The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallback, or the agent itself — is also the identity used to apply `namespaceLabels` and `namespaceAnnotations` to the target namespace. Those namespace mutations are therefore gated by the same downstream RBAC as the deployment itself, rather than by the agent's cluster-admin credentials whenever a `ServiceAccount` is resolved.
+
 == What Policy Deliberately Does Not Cover
 
 `Policy` has no field that restricts which downstream namespaces a tenant may deploy to. This is intentional: namespace restrictions are the responsibility of the downstream cluster's RBAC on the tenant's `ServiceAccount`, not of {product_name}.
