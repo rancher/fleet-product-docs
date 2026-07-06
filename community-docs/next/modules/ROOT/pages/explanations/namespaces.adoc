@@ -100,21 +100,21 @@ defaultServiceAccount: ""
 ==== Allowed Target Namespaces
 
 This can be used to limit a deployment to a set of namespaces on a downstream
-cluster. If an allowedTargetNamespaces restriction is present, all `GitRepos`
+cluster. If an `allowedTargetNamespaces` restriction is present, all `GitRepos`
 must specify a `targetNamespace` and the specified namespace must be in the
-allow list. This also prevents the creation of cluster wide resources.
+allow list. This also prevents the creation of cluster-wide resources.
 
 ==== Allowed target namespace selector
 
-`allowedTargetNamespaceSelector` restricts deployments to namespaces on
-downstream clusters whose labels match the given selector. When this field is
+`allowedTargetNamespaceSelector` restricts deployments, on downstream clusters, to namespaces
+with labels matching the given selector. When this field is
 set in a `GitRepoRestriction`, all `GitRepos` must specify a `targetNamespace`.
 The Fleet agent checks the labels of that namespace on the downstream cluster
 before deploying a bundle:
 
 * If the namespace exists and its labels match the selector, deployment proceeds.
 * If the namespace exists but its labels do not match, the `BundleDeployment` is
-* set to an error state and the bundle is not deployed.
+set to an error state and the bundle is not deployed.
 * If the namespace does not exist on the downstream cluster, the deployment fails
   with an error. Pre-creating the namespace and labelling it correctly is
   required; Helm's `createNamespace` option does not apply when this selector is
