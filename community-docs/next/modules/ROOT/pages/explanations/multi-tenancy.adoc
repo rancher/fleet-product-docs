@@ -59,6 +59,21 @@ For this reason, do not treat the absence of a `ServiceAccount` as a security bo
 
 The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallback, or the agent itself — is also the identity used to apply `namespaceLabels` and `namespaceAnnotations` to the target namespace. Those namespace mutations are therefore gated by the same downstream RBAC as the deployment itself, rather than by the agent's cluster-admin credentials whenever a `ServiceAccount` is resolved.
 
+== Namespace Creation
+
+By default, {product_name} lets Helm create the target namespace if it does not already exist. Creating a namespace requires the `create` verb on the cluster-scoped `namespaces` resource. That verb cannot be confined to a single namespace or tenant: granting it to a tenant's `ServiceAccount` lets that tenant create *any* namespace on the downstream cluster, which breaks the isolation that pinning to a `ServiceAccount` is meant to provide.
+
+To avoid this, when a `Policy` in the tenant's namespace sets `requireServiceAccount: true`, {product_name} disables Helm namespace creation for deployments in that namespace. The tenant's `ServiceAccount` therefore does not need `namespaces.create`, and the target namespace must already exist on the downstream cluster. Creating it is the operator's responsibility — typically through the same {product_name}-manager-owned `GitRepo` used to bootstrap the tenant's `ServiceAccount` and RBAC. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup].
+
+An operator who has secured namespace creation through other means — a `ValidatingAdmissionPolicy`, Kyverno, or similar — can re-enable it by setting `allowNamespaceCreation: true` on the `Policy`.
+
+Two properties of this field are worth noting:
+
+* It only takes effect together with `requireServiceAccount`. Without a `ServiceAccount` requirement, namespace creation is left at its default (enabled), because there is no tenant boundary to protect.
+* Like the rest of `Policy`, it aggregates across all `Policy` objects in the namespace with *least-restrictive* (OR) semantics. If any `Policy` in the namespace sets `allowNamespaceCreation: true`, namespace creation is enabled for every deployment in that namespace. An operator relying on creation staying disabled must ensure that no `Policy` in the namespace enables it.
+
+Disabling namespace creation does not disable namespace *mutation*: `namespaceLabels` and `namespaceAnnotations` are still applied to the existing namespace, as the resolved `ServiceAccount` and gated by its downstream RBAC (see above).
+
 == What Policy Deliberately Does Not Cover
 
 `Policy` has no field that restricts which downstream namespaces a tenant may deploy to. This is intentional: namespace restrictions are the responsibility of the downstream cluster's RBAC on the tenant's `ServiceAccount`, not of {product_name}.
