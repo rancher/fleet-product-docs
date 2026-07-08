@@ -161,9 +161,9 @@ See link:https://github.com/rancher/fleet/issues/3646[fleet#3646].
 
 [NOTE]
 ====
-`+` character support
+`{plus}` character support
 
-OCI registries don't support the `+` character.
+OCI registries don't support the `{plus}` character.
 ====
 
 === How fleet-agent deploys the bundle
