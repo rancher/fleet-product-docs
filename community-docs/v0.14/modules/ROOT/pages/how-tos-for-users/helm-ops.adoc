@@ -101,11 +101,10 @@ In this case, Helm options would be similar to this:
 ----
   helm:
     repo: oci://foo.bar/baz
-    version: '1.2.3' # optional
+    version: '1.2.3'
 ----
 
 When an OCI URL is provided in the ++repo++ field, a non-empty ++chart++ field will lead to an error in the HelmOps status, and no bundle being created.
-
 
 [NOTE]
 ====
