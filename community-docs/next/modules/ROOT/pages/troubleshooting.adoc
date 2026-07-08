@@ -104,9 +104,9 @@ NAME                                READY   STATUS    RESTARTS   AGE
 fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
-=== Debug `fleet-controller` and `fleet-agent` containers in v0.16
+=== Debug fleet-controller and fleet-agent containers 
 
-For Fleet v0.16, runtime images use `bci-nano` and do not include a shell.
+For {product_name} v0.16, runtime images use `bci-nano` and do not include a shell.
 Use `kubectl debug` with `--target` to inspect a running Fleet container.
 
 [,shell]
@@ -116,7 +116,7 @@ CTRL_POD=$(kubectl get pod -n $FLEET_NS -l app=fleet-controller -o jsonpath='{.i
 kubectl debug $CTRL_POD -n $FLEET_NS -it --image=busybox --target=fleet-controller -- sh
 ----
 
-Example: open a shell with a debug container targeting `fleet-agent`:
+For example, open a shell with a debug container targeting `fleet-agent`:
 
 [,shell]
 ----
