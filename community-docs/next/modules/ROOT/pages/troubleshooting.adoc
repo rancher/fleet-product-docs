@@ -104,6 +104,29 @@ NAME                                READY   STATUS    RESTARTS   AGE
 fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
+=== Debug fleet-controller and fleet-agent containers 
+
+For {product_name} v0.16, runtime images use `bci-nano` and do not include a shell.
+Use `kubectl debug` with `--target` to inspect a running Fleet container.
+
+[,shell]
+----
+FLEET_NS=cattle-fleet-system
+CTRL_POD=$(kubectl get pod -n $FLEET_NS -l app=fleet-controller -o jsonpath='{.items[0].metadata.name}')
+kubectl debug $CTRL_POD -n $FLEET_NS -it --image=busybox --target=fleet-controller -- sh
+----
+
+For example, open a shell with a debug container targeting `fleet-agent`:
+
+[,shell]
+----
+AGENT_NS=cattle-fleet-local-system
+AGENT_POD=$(kubectl get pod -n $AGENT_NS -l app=fleet-agent -o jsonpath='{.items[0].metadata.name}')
+kubectl debug $AGENT_POD -n $AGENT_NS -it --image=busybox --target=fleet-agent -- sh
+----
+
+Trying to run `kubectl exec <pod> -- sh` is expected to fail in v0.16 with an error like `executable file not found in $PATH`.
+
 === Enable debug logging for `fleet-controller` and `fleet-agent`?
 
 Available in Rancher v2.6.3 ({product_name} v0.3.8), the ability to enable debug logging has been added.
@@ -275,7 +298,7 @@ A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the
 
 {product_name} retries apply operations when it detects a resource version conflict. The number of retry attempts is controlled by the `FLEET_APPLY_CONFLICT_RETRIES` environment variable.
 
-The default value is `1`. This means {product_name} only tries the bundle creation or update once, not retrying if a conflict occurs. If conflicts occur frequently under heavy load, increase this value to allow additional retry attempts. Configure this variable as an environment variable on the GitJob deployment. 
+The default value is `1`. This means {product_name} only tries the bundle creation or update once, not retrying if a conflict occurs. If conflicts occur frequently under heavy load, increase this value to allow additional retry attempts. Configure this variable as an environment variable on the GitJob deployment.
 
 For example, when installing with Helm:
 
