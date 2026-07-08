@@ -116,6 +116,15 @@ CTRL_POD=$(kubectl get pod -n $FLEET_NS -l app=fleet-controller -o jsonpath='{.i
 kubectl debug $CTRL_POD -n $FLEET_NS -it --image=busybox --target=fleet-controller -- sh
 ----
 
+Example: open a shell with a debug container targeting `fleet-agent`:
+
+[,shell]
+----
+AGENT_NS=cattle-fleet-local-system
+AGENT_POD=$(kubectl get pod -n $AGENT_NS -l app=fleet-agent -o jsonpath='{.items[0].metadata.name}')
+kubectl debug $AGENT_POD -n $AGENT_NS -it --image=busybox --target=fleet-agent -- sh
+----
+
 Trying to run `kubectl exec <pod> -- sh` is expected to fail in v0.16 with an error like `executable file not found in $PATH`.
 
 === Enable debug logging for `fleet-controller` and `fleet-agent`?
