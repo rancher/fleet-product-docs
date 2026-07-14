@@ -401,8 +401,8 @@ Determines which chart to download from OCI registries.
 
 [NOTE]
 ====
-OCI registries do not support the `+` character in semver tags. Helm replaces `+` with `_` automatically when pushing charts.  
-Use the `+` version in `fleet.yaml`; {product_name} performs the same replacement internally.
+OCI registries do not support the `{plus}` character in semver tags. Helm replaces `{plus}` with `_` automatically when pushing charts.
+Use the `{plus}` version in `fleet.yaml`; {product_name} performs the same replacement internally.
 ====
 
 === Values

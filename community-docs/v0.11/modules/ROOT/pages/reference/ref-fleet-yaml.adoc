@@ -165,9 +165,9 @@ The version also determines which chart to download from OCI registries.
 
 [NOTE]
 ====
-`+` character support
+`{plus}` character support
 
-OCI registries don't support the `+` character.
+OCI registries don't support the `{plus}` character.
 ====
 
 ==== How fleet-agent deploys the bundle
