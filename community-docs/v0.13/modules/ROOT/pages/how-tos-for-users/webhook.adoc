@@ -69,7 +69,7 @@ spec:
                 number: 80
 ----
 
-Ingress Nginx will be https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/[retired], here is an example using Traefik:
+Ingress Nginx has been https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/[retired], here is an example using Traefik:
 
 [source,yaml]
 ----
