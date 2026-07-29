@@ -84,6 +84,13 @@ When webhooks are configured, {product_name} automatically scales back polling i
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:explanations/ref-bundle-stages.adoc[{product_name} Bundle Stages].
 
+[NOTE]
+====
+Always configure a webhook secret so {product_name} can verify that a webhook call genuinely originates from your Git provider.
+====
+
+* Reference: xref:how-tos-for-users/webhook.adoc[Using Webhooks Instead of Polling].
+
 == Targeting Clusters
 
 === Keep Targeting Rules in Git

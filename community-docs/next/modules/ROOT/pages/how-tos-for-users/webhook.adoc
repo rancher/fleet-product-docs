@@ -21,6 +21,12 @@ For installations with many repositories or when you want to reduce latency (the
 * Bitbucket Server  
 * Gogs  
 
+[IMPORTANT]
+====
+Support for unauthenticated webhooks is deprecated and will be removed in a future release.
+See <<configure-a-webhook-secret,Configure a Webhook Secret>> to set one up.
+====
+
 == 1. Configure the Webhook Service
 
 {product_name} uses a `gitjob` service to handle webhook requests.  
@@ -134,11 +140,12 @@ The following image shows an example from GitHub.
 
 image:: ../../images/webhook.png[]
 
-Configuring a secret is optional.  
-The secret is used to validate the webhook payload since the payload shouldn’t be trusted by default.
+[WARNING]
+====
+Support for unauthenticated webhooks is deprecated and will be removed in a future release. Configure a webhook secret to keep your webhooks working once unauthenticated calls are no longer accepted. This is especially important if your webhook endpoint is publicly accessible.
+====
 
-If your webhook endpoint is publicly accessible, it’s strongly recommended to configure a secret.  
-If you set up a secret, continue with step 3.
+Continue with step 3 to configure the secret.
 
 [NOTE]
 ====
@@ -150,9 +157,9 @@ Only `application/json` is supported due to limitations in the webhook library.
 When a webhook is configured, the polling interval automatically adjusts to one hour.
 ====
 
-== 3. (Optional) Configure a Webhook Secret
+[#configure-a-webhook-secret]
+== 3. Configure a Webhook Secret
 
-The webhook secret validates the payload sent from your Git provider.  
 Each supported provider uses a specific key name in the Kubernetes secret.
 
 [cols="1,1", options="header"]
