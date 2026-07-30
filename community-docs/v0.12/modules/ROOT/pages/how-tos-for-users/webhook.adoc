@@ -127,7 +127,7 @@ You can configure https://kubernetes.io/docs/concepts/services-networking/ingres
 Go to your Git provider and configure the webhook callback URL.  
 The following image shows an example from GitHub.
 
-image:: ../../images/webhook.png[]
+image::webhook.png[webhook example on Github]
 
 Configuring a secret is optional.  
 The secret is used to validate the webhook payload since the payload shouldn’t be trusted by default.
