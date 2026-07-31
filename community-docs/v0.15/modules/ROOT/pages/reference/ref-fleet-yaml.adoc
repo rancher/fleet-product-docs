@@ -408,7 +408,7 @@ The chart reference can be one of the following:
 * https://github.com/hashicorp/go-getter?tab=readme-ov-file#url-format[go-getter URL] (`chart`)
 * OCI chart URL (`repo: oci://...`)
 * Helm repository (`repo` + `chart` + optional `version`)
-* OCI Helm repository (`repo: oci://...` + optional `version`)
+* OCI Helm repository (`repo: oci://...` + `version`)
 
 ==== `helm.repo`
 
@@ -418,7 +418,7 @@ For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it l
 ----
 helm:
   repo: "oci://ghcr.io/fleetrepoci/guestbook"
-  version: "0.1.0"  # optional
+  version: "0.1.0"
 ----
 
 This is consistent with how OCI registries are referenced in xref:how-tos-for-users/helm-ops.adoc#oci-registry[HelmOp resources].
