@@ -36,7 +36,6 @@ ____
 . Set up and configure ingress and system daemons.
 ____
 
-
 * *HelmOp*: Helm charts deployed directly from a Helm repository or OCI registry, without a git
   repository, are represented by the type `HelmOp`.
  ** For more details, click xref:how-tos-for-users/helm-ops.adoc[HelmOps].
