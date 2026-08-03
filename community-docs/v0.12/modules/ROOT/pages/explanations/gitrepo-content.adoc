@@ -102,7 +102,7 @@ See link:https://rancher.com/docs/rancher/v2.6/en/deploy-across-clusters/fleet/#
 ====
 
 The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fleet.yaml reference].
-
+For a private Helm repo, users can reference a secret from the git repo resource and set `spec.helmRepoURLRegex` to match trusted Helm or OCI repository URLs.
 See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 == Using Helm Values
