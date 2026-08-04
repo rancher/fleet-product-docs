@@ -1,6 +1,7 @@
 = Core Concepts
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /concepts
 
 {product_name} is fundamentally a set of Kubernetes custom resource definitions (CRDs) and controllers
 to manage GitOps for a single Kubernetes cluster or a large-scale deployment of Kubernetes clusters.
@@ -35,6 +36,9 @@ ____
 . Set up and configure ingress and system daemons.
 ____
 
+* *HelmOp*: Helm charts deployed directly from a Helm repository or OCI registry, without a git
+  repository, are represented by the type `HelmOp`.
+ ** For more details, click xref:how-tos-for-users/helm-ops.adoc[HelmOps].
 * *Bundle*: An internal unit used for the orchestration of resources from git.
   When a `GitRepo` is scanned it will produce one or more bundles. Bundles are a collection of
   resources that get deployed to a cluster. `Bundle` is the fundamental deployment unit used in{product_name}. The

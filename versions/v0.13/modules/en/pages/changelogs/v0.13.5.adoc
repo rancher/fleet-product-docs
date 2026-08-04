@@ -4,7 +4,9 @@
 :page-date: 2025-11-18 14:58:17 +0000 UTC
 
 
-[#_what_s_changed]
+_(github-actions[bot]) released this 2025-11-18 14:58:17 +0000 UTC_
+
+
 == What's Changed
 * Update Kubernetes libraries to v0.33.5 by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4230
 * Update Go to v1.24.9 by @renovate-rancher[bot] in https://github.com/rancher/fleet/pull/4229
@@ -19,7 +21,6 @@
 _Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.4...v0.13.5[v0.13.4...v0.13.5]
 
 
-[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.13.5/fleet-0.13.5.tgz[fleet-0.13.5.tgz]

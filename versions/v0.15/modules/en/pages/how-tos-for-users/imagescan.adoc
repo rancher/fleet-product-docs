@@ -1,6 +1,7 @@
 = Using Image Scan to Update Container Image References
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /imagescan
 
 Image scan in fleet allows you to scan your image repository, fetch the desired image and update your git repository,
 without the need to manually update your manifests.

@@ -1,9 +1,11 @@
 = fleet-controller cleanup
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet-controller_cleanup
 
 Clean up outdated controller resources
 
+[source,text]
 ----
 fleet-controller cleanup [flags]
 ----

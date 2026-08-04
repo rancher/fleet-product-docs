@@ -1,6 +1,7 @@
 = Install and Use Fleet CLI
 :revdate: 2025-10-6
 :page-revdate: {revdate}
+:page-aliases: /install-use-fleet-cli
 
 {product_name} CLI is a command-line interface (CLI) that allows you to interact directly with {product_name} from your local machine. It enables you to create, apply, and inspect `bundles` without requiring a `GitRepo`. Typical use cases include:
 
@@ -19,7 +20,7 @@ For more information, see xref:how-tos-for-operators/installation.adoc[Install F
 [#_install_fleet_cli]
 == Install Fleet CLI
 
-Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases[Fleet GitHub releases page].
+Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases?q=prerelease%3Afalse+tag%3Av0.15&expanded=true[Fleet GitHub releases page].
 
 [#_linux_macos]
 === Linux/macOS
@@ -166,7 +167,7 @@ kubectl describe bundle -n fleet-local <bundle-name>
 === Verify Agent and Controller Status
 
 Before troubleshooting bundle or deployment issues, verify that the Fleet agent is registered and running on the downstream cluster.  
-For more information, see xref:reference/ref-registration.adoc#_product_name_agent_is_registered_watches_for_bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
+For more information, see xref:reference/ref-registration.adoc#_productname_agent_is_registered_watches_for_bundledeployments[Fleet Agent is Registered, Watches for BundleDeployments].
 
 If a bundle is not ready on a given cluster, check the following:
 

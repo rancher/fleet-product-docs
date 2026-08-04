@@ -1,9 +1,11 @@
 = fleet cleanup
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet_cleanup
 
 Clean up outdated resources
 
+[source,yaml]
 ----
 fleet cleanup [flags]
 ----

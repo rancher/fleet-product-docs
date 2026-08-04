@@ -1,9 +1,11 @@
 = fleet cleanup gitjob
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet_cleanup_gitjob
 
 Clean up outdated git jobs
 
+[source,yaml]
 ----
 fleet cleanup gitjob [flags]
 ----

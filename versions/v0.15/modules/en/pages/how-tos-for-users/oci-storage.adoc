@@ -1,6 +1,7 @@
 = OCI Storage
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /oci-storage
 
 {product_name} stores Kubernetes bundle resources in etcd by default. However, etcd has strict size limits and is not optimized for large workloads. If your bundle resources exceed the etcd size limits in the target cluster, consider using an OCI registry as the storage backend.
 
@@ -89,7 +90,7 @@ The fields you can configure are:
 | `basicHTTP`       | Enables HTTP instead of HTTPS.              | Base64-encoded `true/false` | Not recommended. Allows insecure traffic. By default, `basicHTTP` is set to `false`.
 |===
 
-[#_product_name_example]
+[#_productname_example]
 == {product_name} Example
 
 Consider the following `GitRepo` file:

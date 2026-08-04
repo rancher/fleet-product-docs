@@ -2,7 +2,8 @@
 :revdate: 2025-03-23
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC
-:page-aliases: changelogs/latest.adoc
+
+_(github-actions[bot]) released this 2026-03-19 18:32:09 +0000 UTC_
 
 [#_breaking_changes]
 == Breaking Changes
@@ -13,6 +14,7 @@ This release introduces Helm v4 and, since this version also incorporates Server
 To resolve possible issues where drift correction does not work, use `force=true`.  
 This will be fixed in the next release.
 
+[#_future_deprecation_notice]
 == Future Deprecation Notice
 
 Imagescan will be deprecated in a future release.
@@ -23,7 +25,6 @@ Imagescan will be deprecated in a future release.
 [#_additions]
 === Additions
 
-[#_cli]
 ==== CLI
 
 * Add `dump` command to CLI xref:reference/cli/fleet-cli/fleet_dump.adoc[fleet dump] link:https://github.com/rancher/fleet/issues/4030[#4030] by link:https://github.com/weyfonk[@weyfonk] in link:https://github.com/rancher/fleet/pull/4374[#4374]
@@ -123,7 +124,6 @@ Imagescan will be deprecated in a future release.
 
 In some cases, drift correction may not behave as expected due to Helm v4 migration. For more information, refer to link:https://github.com/rancher/fleet/issues/4878[#4878].    
 
-[#_workaround]
 ==== Workaround
 
 Set the following option to force reconciliation:

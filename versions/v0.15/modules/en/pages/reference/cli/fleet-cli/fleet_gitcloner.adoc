@@ -1,9 +1,10 @@
 = fleet gitcloner
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet_gitcloner
 
 Clones a git repository
-
+[source,text]
 ----
 fleet gitcloner [REPO] [PATH] [flags]
 ----

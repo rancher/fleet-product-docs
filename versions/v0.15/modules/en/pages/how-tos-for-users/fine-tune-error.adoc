@@ -1,6 +1,7 @@
 = Fine Tuning Error Detection
 :revdate: 2025-09-12
 :page-revdate: {revdate}
+:page-aliases: /fine-tune-error
 
 {product_name} monitors the `status` field of deployed resources to determine whether a `Bundle` is healthy or in error. In certain cases, {product_name} may interpret a condition in the status field as an error, even if it is expected or harmless.
 
@@ -23,7 +24,7 @@ Use the `ignore.conditions` setting in the `fleet.yaml` file to tell {product_na
 ----
 # from ref-fleet-yaml
 
-# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks
+# Ignore fields when monitoring a Bundle. This can be used when Fleet thinks
 # some conditions in Custom Resources makes the Bundle to be in an error state
 # when it shouldn't.
 ignore:
@@ -122,7 +123,7 @@ You can also disable errors for any value of `Failed` by:
 This configuration ensures that **no value of `Failed`** is treated as an error.
 
 NOTE: 
-Overriding conditions only affects the default error mappings (refer to xref:#_default_error_mappings[Default error mappings]). {product_name} may still mark a resource as an error because other checks, such as those from the `kstatus` library, continue to run after your customization.
+Overriding conditions only affects the default error mappings (refer to xref:_default_error_mappings[Default error mappings]). {product_name} may still mark a resource as an error because other checks, such as those from the `kstatus` library, continue to run after your customization.
 
 [#_enable_error_interpretation_example]
 === Enable error interpretation example

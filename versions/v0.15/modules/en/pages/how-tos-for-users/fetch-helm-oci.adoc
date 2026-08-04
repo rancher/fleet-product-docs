@@ -1,6 +1,7 @@
 = Fetch Helm Charts from OCI Registries
 :revdate: 2025-09-01
 :page-revdate: {revdate}
+:page-aliases: /fetch-helm-oci
 
 {product_name} supports pulling Helm charts stored in OCI registries. OCI registries are commonly used to store and distribute container images. By using them for Helm charts, you can apply the same packaging, authentication, and distribution methods you already use for container images.
 
@@ -63,6 +64,6 @@ This form still works for backwards compatibility, but it is deprecated and will
 [#_using_authenticated_registries]
 == Using authenticated registries
 
-If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource. {product_name} uses this secret to pull the chart and deploy it to the targeted clusters.
+If the OCI registry requires authentication, reference a Kubernetes secret in the GitRepo resource and set `spec.helmRepoURLRegex` to match trusted OCI registry URLs (for example `oci://ghcr\.io(/|$)`). {product_name} uses this secret to pull the chart and deploy it to the targeted clusters.
 
 For more information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[fleet.yaml with authentication].

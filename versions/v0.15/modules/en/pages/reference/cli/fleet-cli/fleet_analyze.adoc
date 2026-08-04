@@ -1,6 +1,7 @@
 = fleet analyze
 :revdate: 2026-02-05
 :page-revdate: {revdate}
+:page-aliases: /fleet_analyze
 
 Analyze snapshots created by `fleet monitor`
 

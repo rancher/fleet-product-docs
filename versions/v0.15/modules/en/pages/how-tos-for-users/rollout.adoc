@@ -1,6 +1,7 @@
 = Rollout Strategy
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /rollout
 
 {product_name} uses a rollout strategy to control how apps are deployed across clusters. You can define the order and grouping of cluster deployments using partitions, enabling controlled rollouts and safer updates.
 
@@ -138,6 +139,11 @@ rolloutStrategy:
 2. Starts rollout to the first partition.  
 3. Waits until the partition is considered `Ready` (depending on the `maxUnavailable` threshold).  
 4. Proceeds to the next partition.
+
+[Note]
+====
+When using manual partitions, Fleet only includes targets that match a configured partition selector in the rollout. Targets that do not match any partition selector are discarded, and no rollout is created for them.
+====
 
 The following diagram illustrates how {product_name} handles rollout across multiple partitions, including readiness checks and deployment flow:
 

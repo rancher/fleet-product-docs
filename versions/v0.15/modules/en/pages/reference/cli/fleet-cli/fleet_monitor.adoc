@@ -1,4 +1,7 @@
 = fleet monitor
+:revdate: 2026-03-03
+:page-revdate: {revdate}
+:page-aliases: /fleet_monitor
 
 Advanced diagnostic tool for troubleshooting  {product_name} deployments.
 
@@ -49,14 +52,12 @@ fleet monitor --watch --interval 60 >> monitor.json
 
 The monitor command performs comprehensive diagnostics to detect:
 
-[#_resource_lifecycle_issues]
 ==== Resource Lifecycle Issues
 *  **Bundles with Generation Mismatch**: Bundles not progressing through their lifecycle (generation != observedGeneration)
 *  **Stuck BundleDeployments**: BundleDeployments where the agent isn't applying new deploymentIDs
 *  **Multiple Finalizers**: Resources with more than one finalizer (indicates bugs - only Contents should have multiple finalizers for ref counting, in  {product_name} v0.11.1 to v0.14.x)
 *  **Orphaned Resources**: Resources with deletion timestamps that can't be garbage collected
 
-[#_data_consistency_problems]
 ==== Data Consistency Problems
 * **API Time Travel**: Kubernetes API server returning stale cached data (detected by fetching resources multiple times)
 * **Commit Hash Mismatches**: Bundles/BundleDeployments not updated to GitRepo's latest commit
@@ -64,32 +65,27 @@ The monitor command performs comprehensive diagnostics to detect:
 * **UID Mismatches**: Secrets with owner references to deleted/recreated resources
 * **DeploymentID Mismatches**: BundleDeployments where spec.deploymentID != status.appliedDeploymentID
 
-[#_target_matching_issues]
 ==== Target Matching Issues
 * **Bundles with No Deployments**: Bundles created but no clusters matched the target selector
 * **GitRepos with No Bundles**: GitRepos that haven't created any bundles (could be bad path, targets, or processing errors)
 * **ClusterGroups with No Clusters**: ClusterGroups with selectors that match no clusters
 * **Orphaned BundleDeployments**: BundleDeployments whose parent Bundle was deleted
 
-[#_performance_issues]
 ==== Performance Issues
 * **Large Bundles**: Bundles >1MB that can impact etcd performance
 * **Missing Content Resources**: Bundles with `resourcesSHA256Sum` but no corresponding Content resource
 * **High Resource Counts**: Large numbers of bundle resources that may cause etcd pressure
 
-[#_agent_cluster_issues]
 ==== Agent & Cluster Issues
 * **Agent Not Ready**: Clusters with non-ready agent status
 * **Missing LastSeen**: Clusters without agent heartbeat timestamp
 * **Stale LastSeen**: Clusters where agent hasn't checked in recently (default: 24h, configurable with `--agent-staleness`)
 * **Missing Agent Bundles**: Cluster namespaces without expected agent bundle deployments
 
-[#_ownership_chain_issues]
 ==== Ownership Chain Issues
 * **Broken Ownership**: Bundles without GitRepo owners, BundleDeployments without Bundle owners
 * **Invalid Secret Owners**: Bundle secrets with incorrect or missing owner references
 
-[#_generation_observation_mismatches]
 ==== Generation/Observation Mismatches
 * **GitRepo Generation Drift**: GitRepo generation != observedGeneration (controller not processing updates)
 * **Bundle Generation Drift**: Bundle generation != observedGeneration (controller not processing updates)
@@ -99,7 +95,6 @@ The monitor command performs comprehensive diagnostics to detect:
 [#_usage_examples]
 === Usage Examples
 
-[#_basic_monitoring]
 ==== Basic Monitoring
 
 [source,bash]
@@ -114,7 +109,6 @@ fleet monitor -n fleet-local | jq
 fleet monitor -n fleet-default | jq
 ----
 
-[#_continuous_monitoring]
 ==== Continuous Monitoring
 
 [source,bash]
@@ -126,7 +120,6 @@ fleet monitor --watch --interval 60 >> monitor.json
 fleet monitor --watch --interval 30 >> monitor.json
 ----
 
-[#_targeted_diagnostics]
 ==== Targeted Diagnostics
 
 [source,bash]
@@ -154,7 +147,6 @@ fleet monitor | jq '.diagnostics | {
 }'
 ----
 
-[#_comparing_states]
 ==== Comparing States
 
 [source,bash]
@@ -172,7 +164,6 @@ fleet monitor > after.json
 [#_common_troubleshooting_scenarios]
 === Common Troubleshooting Scenarios
 
-[#_scenario_1_bundle_not_deploying]
 ==== Scenario 1: Bundle Not Deploying
 
 [source,bash]
@@ -190,7 +181,6 @@ jq '.diagnostics.bundlesWithNoDeployments' bundle-status.json
 jq '.diagnostics.gitRepoBundleInconsistencies' bundle-status.json
 ----
 
-[#_scenario_2_agent_not_reporting_status]
 ==== Scenario 2: Agent Not Reporting Status
 
 [source,bash]
@@ -205,7 +195,6 @@ fleet monitor | jq '.clusters[] | select(.agentStatus != "ready")'
 fleet monitor | jq '.clusters[] | {name, lastSeen, agentAge}'
 ----
 
-[#_scenario_3_resources_stuck_with_deletion_timestamps]
 ==== Scenario 3: Resources Stuck with Deletion Timestamps
 
 [source,bash]
@@ -220,7 +209,6 @@ fleet monitor | jq '{
 fleet monitor | jq '.bundles[] | select(.deletionTimestamp != null) | {name, finalizers}'
 ----
 
-[#_scenario_4_commits_not_propagating]
 ==== Scenario 4: Commits Not Propagating
 
 [source,bash]
@@ -237,7 +225,6 @@ fleet monitor | jq '.diagnostics.gitRepoBundleInconsistencies[] |
   select(.commitMismatch == true)'
 ----
 
-[#_scenario_5_performance_issues]
 ==== Scenario 5: Performance Issues
 
 [source,bash]
@@ -302,7 +289,6 @@ fleet monitor | jq -r '
 [#_understanding_diagnostics]
 === Understanding Diagnostics
 
-[#_stuck_resources]
 ==== Stuck Resources
 
 A resource is considered "stuck" when:
@@ -323,14 +309,12 @@ A resource is considered "stuck" when:
 
 * `syncGeneration` != `forceSyncGeneration` when `forceSyncGeneration > 0` (tracked separately from stuck BundleDeployments)
 
-[#_api_consistency_check]
 ==== API Consistency Check
 
 The monitor performs multiple fetches of the same resources to detect "time travel" - when the Kubernetes API server
 returns different resource versions due to stale caching. This is critical because stale data can make bundles appear
 stuck when they're actually progressing.
 
-[#_commit_tracking]
 ==== Commit Tracking
 
 The monitor tracks Git commit hashes through the entire lifecycle:

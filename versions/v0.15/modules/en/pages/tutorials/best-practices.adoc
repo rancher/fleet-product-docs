@@ -2,8 +2,10 @@
 :revdate: 2026-04-15
 :page-revdate: {revdate}
 
+[#_repository_structure_and_organization]
 == Repository Structure and Organization
 
+[#_avoid_monolithic_repositories_and_binaries]
 === Avoid Monolithic Repositories and Binaries
 
 *The Best Practice:* Maintain lean Git repositories. Do not commit large binaries, images, or video files to your repositories. Large repositories increase cloning times and outbound traffic, which can overwhelm the gitjob controller. Limit the total number of watched repositories to 100 or fewer.
@@ -12,6 +14,7 @@
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:reference/cli/fleet-cli/fleet_apply.adoc[Fleet CLI Reference].
 
+[#_isolate_branches_to_prevent_redundant_loops]
 === Isolate Branches to Prevent Redundant Loops
 
 *The Best Practice:* Avoid having multiple ++GitRepo++ resources watch the same repository and branch. A single commit to a shared branch triggers an update for all associated ++GitRepo++ resources. This effectively acts like calling a ForceUpdate across all of them, forcing a reconciliation loop even if there were absolutely no changes to the specific paths used in those individual GitRepos.
@@ -20,6 +23,7 @@
 
 * Reference: xref:explanations/glossary.adoc[Fleet Glossary].
 
+[#_avoid_deploying_nested_fleet_resources]
 === Avoid Deploying Nested Fleet Resources
 
 *The Best Practice:* Avoid deploying nested {product_name} resources whenever possible. Specifically, try to avoid using a GitRepo to deploy additional ++GitRepo++ resources, or having a ++GitRepo++ directly deploy other {product_name} Bundles.
@@ -28,8 +32,10 @@
 
 * Reference: xref:explanations/glossary.adoc[Fleet Glossary].
 
+[#_bundle_design]
 == Bundle Design
 
+[#_understand_the_primary_scaling_limit_clusters_bundles]
 === Understand the Primary Scaling Limit (Clusters × Bundles)
 
 *The Best Practice:* The primary bottleneck for {product_name} deployments is the total number of ++BundleDeployment++ objects stored in etcd. This limit is determined by the number of clusters multiplied by the number of bundles.
@@ -43,6 +49,7 @@
 ++BundleDeployment++ and Bundle secrets are only created when Helm values are used, which effectively doubles the etcd footprint to (Clusters × Bundles × 2) for Helm-style deployments
 ====
 
+[#_account_for_resource_multipliers]
 === Account for Resource Multipliers
 
 *The Best Practice:* The resource footprint in etcd varies by bundle format. Manifests or Kustomize bundles result in a 1:1 ratio (*Clusters × Bundles*). However, Helm-style bundles increase this footprint to (Clusters × Bundles × 2) + Bundles. This occurs because {product_name} generates an additional Secret for Helm values for every BundleDeployment 
@@ -51,6 +58,7 @@
 
 * Reference: xref:reference/ref-resources.adoc[{product_name} Resource Reference].
 
+[#_consolidate_with_helm_subcharts]
 === Consolidate with Helm Subcharts
 
 *The Best Practice:* Combine multiple application components into a single bundle using Helm subcharts. This consolidation reduces the total number of bundles and prevents etcd database exhaustion.
@@ -59,8 +67,10 @@
 
 * Reference: xref:reference/ref-crd-schema.adoc[Fleet CRD Schema].
 
+[#_environment_management]
 == Environment Management
 
+[#_use_targetcustomizations_carefully]
 === Use targetCustomizations Carefully
 
 *The Best Practice:* Define environment-specific rules within Git. However, do not use ++targetCustomizations++ to override ++helm.chart++, ++helm.repo++, or ++helm.version++ to fetch different charts dynamically. Doing so forces {product_name} to include multiple chart versions in the same bundle, massively bloating the bundle size and potentially exceeding etcd limits.
@@ -69,8 +79,10 @@
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:how-tos-for-users/gitrepo-targets.adoc[GitRepo Targets], xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema]
 
+[#_gitrepo_configuration]
 == GitRepo Configuration
 
+[#_prioritize_webhooks_over_polling]
 === Prioritize Webhooks over Polling
 
 *The Best Practice:* Do not rely on constant polling for Git repositories, as it leads to rate-limiting and high CPU utilization at scale. Configure webhooks to ensure {product_name} only consumes resources when a change is detected.
@@ -84,20 +96,69 @@ When webhooks are configured, {product_name} automatically scales back polling i
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:explanations/ref-bundle-stages.adoc[{product_name} Bundle Stages].
 
+[#_targeting_clusters]
 == Targeting Clusters
 
+[#_keep_targeting_rules_in_git]
 === Keep Targeting Rules in Git
 
-*The Best Practice:* Maintain all targeting rules within the Git repository. Avoid defining application-to-cluster mappings through a UI or DB. Keeping rules in a Git repository ensures the state is declarative and version-controlled.
+*The Best Practice:* Maintain all targeting rules within the Git repository. Avoid defining application-to-cluster mappings through a UI or DB. Keeping targeting rules, deployment dependencies, and platform configuration in Git ensures deployments remain declarative, reusable, and version-controlled.
 
-*The Implementation:* Use a ++ClusterGroup++ CRD to define reusable selectors (e.g., env=prod). Map workloads to these clusters using label matching in the ++targets:++ section of your fleet.yaml to dynamically evaluate and deploy to matching clusters as they come online.
+*The Implementation:* Use a ++ClusterGroup++ CRD to define reusable selectors (e.g., env=prod). Map workloads to these clusters using label matching in the `targets` section of your fleet.yaml to dynamically evaluate and deploy to matching clusters as they come online.
+
+[NOTE]
+====
+You can use cluster labels to install additional platform applications on downstream clusters. Multiple labels can be applied simultaneously—either during cluster creation or by updating an existing cluster. The system automatically manages the installation order based on application dependencies configured via `dependsOn`.
+
+For example,
+
+* ++needs-storage=true++ for *SUSE Storage*
+* ++needs-private-registry=true++ for *SUSE Private Registry*
+* ++needs-security=true++ for *SUSE Security*
+* ++needs-observability=true++ for *SUSE Observability*
+
+====
+
+The following example uses cluster labels to dynamically deploy applications to matching clusters. The ++neuvector++ application depends on the ++neuvector-crd++ bundle. Fleet deploys the ++neuvector-crd++ bundle first and waits until the required resources become ready before deploying dependent workloads.
+
+[source,yaml]
+----
+defaultNamespace: cattle-neuvector-system
+
+helm:
+  chart: neuvector
+  repo: https://charts.rancher.io
+  version: "107.0.2+up2.8.9"
+
+  valuesFiles:
+    - values.yaml
+
+targets:
+  - clusterSelector:
+      matchLabels:
+        needs-security: "true"
+
+dependsOn:
+  - selector:
+      matchLabels:
+        provides: neuvector-crd
+
+labels:
+  provides: neuvector
+----
+
+Use the ++provides: <app-name>++ label to define application dependencies between Fleet bundles.
+
+Applications can reference these labels using ++dependsOn++ selectors to ensure dependent applications deploy only after required platform components become ready. In the above example, ++neuvector++ depends on ++neuvector-crd++.
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema], xref:tutorials/tut-deployment.adoc[Deployment Tutorial].
 
+[#_multi_cluster_strategy_and_scaling]
 == Multi-Cluster Strategy and Scaling
 
 The scaling limit of {product_name} is the total number of BundleDeployments (calculated as downstream clusters × deployed bundles). When scaling to 5,000 - 10,000 clusters, this multiplier creates hundreds of thousands of resources that will overwhelm a single monolithic controller. 
 
+[#_invert_the_traffic_flow_pull_vs_push]
 === Invert the Traffic Flow (Pull vs. Push)
 
 *The Best Practice:* While {product_name} always uses a pull model for application deployments, it offers both pull (agent-initiated) and push (manager-initiated) modes for initial cluster registration. To onboard thousands of clusters, use agent-initiated registration. This pull-based model handles unreliable networks gracefully and avoids exposing the Kubernetes APIs of every remote cluster to the internet.
@@ -112,6 +173,7 @@ The scaling limit of {product_name} is the total number of BundleDeployments (ca
 
 * Reference: https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale], xref:explanations/concepts.adoc[{product_name} Concepts], xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].
 
+[#_implement_sharding]
 === Implement Sharding  
 
 *The Best Practice:*  Sharding primarily improves performance during the bundle creation (apply) phase, where repositories are monitored and cloned. It doesn't significantly improve the targeting phase, which is already fast, and it provides no benefit during the deployment phase, where only the downstream agents and the control plane Kubernetes API server are involved.
@@ -125,8 +187,10 @@ To maximize performance benefits, use node selectors to assign different control
 
 * Reference: xref:how-tos-for-operators/installation.adoc#_multi_controller_installation_sharding[Multi-Controller Installation: Sharding],  https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale].
 
+[#_performance_and_hardware_tuning_control_plane]
 == Performance and Hardware Tuning (Control Plane)
 
+[#_tune_etcd_for_high_scale]
 === Tune etcd for High Scale
 
 *The Best Practice:* Back etcd with fast NVMe (Non-Volatile Memory Express) or SSD storage using ext4 or xfs filesystems (avoid btrfs). Increase the etcd keyspace quota from the default 2 GB to 8 GB to accommodate large resource volumes.
@@ -135,12 +199,14 @@ To maximize performance benefits, use node selectors to assign different control
 
 * Reference: xref:troubleshooting.adoc[{product_name} Troubleshooting].
 
+[#_dedicate_nodes_for_productname]
 === Dedicate Nodes for {product_name}
 
 *The Best Practice:* The {product_name} controller is CPU-intensive and can overwhelm the Kubernetes API server. Schedule the controller on dedicated worker nodes to ensure consistent performance.
 
 *The Implementation:* Apply the ++nodeSelector.role=agent++ configuration to the {product_name} controller deployment to pin it to dedicated compute nodes.
 
+[#_optimize_control_plane_caching]
 === Optimize Control Plane Caching
 
 *The Best Practice:* Caching in the control plane is essential for reducing API load, but at massive scale, the Kubernetes API server can become overwhelmed and return stale cached data. To mitigate this, you must optimize what gets cached and actively monitor the control plane for stale data.
@@ -154,8 +220,10 @@ You can use the ++fleet monitor++ CLI tool to detect API Time Travel by fetching
 
 * Reference: xref:troubleshooting.adoc[{product_name} Troubleshooting], xref:reference/cli/fleet-cli/fleet_monitor.adoc[Fleet Monitor Reference].
 
+[#_secrets_management]
 == Secrets Management
 
+[#_use_valuesfrom_do_not_store_plain_text_secrets_in_git]
 === Use valuesFrom: Do Not Store Plain-Text Secrets in Git
 
 *The Best Practice:* Never embed plain-text credentials in fleet.yaml or Git repositories. Keep credentials local to the cluster or manage them via secure injection.
@@ -164,8 +232,10 @@ You can use the ++fleet monitor++ CLI tool to detect API Time Travel by fetching
 
 * Reference: xref:experimental-features/experimental-downstream-resource.adoc[Experimental Downstream Resources].
 
+[#_drift_management_and_edge_deployments]
 == Drift Management and Edge Deployments
 
+[#_delegate_drift_correction_to_the_edge]
 === Delegate Drift Correction to the Edge
 
 *The Best Practice:* Perform drift detection and correction locally on the downstream cluster. This allows the system to maintain the desired state even when disconnected from the management cluster.
@@ -179,6 +249,7 @@ You can use the ++fleet monitor++ CLI tool to detect API Time Travel by fetching
 
 * Reference: xref:explanations/ref-bundle-stages.adoc[{product_name} Bundle Stages], https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale].
 
+[#_configure_ignore_rules_for_known_drift]
 === Configure Ignore Rules for Known Drift
 
 *The Best Practice:* Strictly maintain the Git repository as the single source of truth for your deployments. You must avoid allowing external tools or manual interventions to modify resources currently managed by {product_name}. 
@@ -189,14 +260,17 @@ However, certain resources are naturally amended at runtime by native Kubernetes
 
 * Reference: xref:how-tos-for-users/bundle-diffs.adoc[Generating  bundle diffs to ignore modified repositories], xref:reference/ref-fleet-yaml.adoc[fleet.yaml Reference]  .
 
+[#_bandwidth_constrained_environments_edge]
 == Bandwidth-Constrained Environments (Edge)
 
+[#_increase_refresh_intervals_for_external_repositories]
 === Increase Refresh Intervals for External Repositories
 
 *The Best Practice:* In bandwidth-constrained edge environments, minimize Git fetch traffic to external repositories.
 
 *The Implementation:* Increase the ++refreshInterval++ on ++ClusterRepo++ resources to a high value, such as several months or a year. You can still force manual updates through the Rancher UI when necessary.
 
+[#_avoid_push_alerts_for_air_gapped_setups]
 === Avoid Push Alerts for Air-Gapped Setups
 
 *The Best Practice:* Use the agent-based pull model to prevent false deployment failures when air-gapped clusters lose connectivity. Clusters will reconcile automatically once the connection is restored.
@@ -205,8 +279,10 @@ However, certain resources are naturally amended at runtime by native Kubernetes
 
 * Reference: xref:reference/ref-fleet-yaml.adoc[fleet.yaml Reference], https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale]
 
+[#_testing_and_ci_cd_integration]
 == Testing and CI/CD Integration
 
+[#_dry_run_and_testing_cli]
 === Dry Run and Testing CLI*
 
 *The Best Practice:* Validate templates and preview cluster targeting locally before pushing changes to the management cluster.
@@ -219,8 +295,10 @@ However, certain resources are naturally amended at runtime by native Kubernetes
 * ++fleet deploy \--dry-run++: Previews the simulated Helm output.  
 * Reference: xref:reference/cli/fleet-cli/fleet.adoc[Fleet CLI Reference], https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale].
 
+[#_managing_rollouts_and_image_pull_storms]
 == Managing Rollouts and Image Pull Storms
 
+[#_prevent_image_pull_storms]
 === Prevent Image Pull Storms
 
 *The Best Practice:* Avoid simultaneous container image pulls across thousands of edge nodes, which can crash registry networks. 
@@ -238,8 +316,10 @@ The default values for:
 
 * Reference: xref:how-tos-for-users/rollout.adoc#_preventing_image_pull_storms[Preventing image pull storms], xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].
 
+[#_observability_and_debugging]
 == Observability and Debugging
 
+[#_use_the_productname_benchmark_suite]
 === Use the {product_name} Benchmark Suite
 
 *The Best Practice:* Do not estimate hardware capacity. Run benchmarks to identify bottlenecks in bundle creation and target matching for your specific environment.
@@ -248,6 +328,7 @@ The default values for:
 
 * Reference: https://www.suse.com/c/rancher_blog/optimizing-rancher-continuous-delivery-with-benchmarks/[Optimizing Rancher CD with Benchmarks].
 
+[#_monitor_api_time_travel_and_stuck_resources]
 === Monitor API Time Travel and Stuck Resources
 
 *The Best Practice:* Regularly audit upstream logs for storage errors or stuck states where reconciliation fails.
@@ -262,8 +343,10 @@ The default values for:
   * Available from version 2.14  
 * Reference: xref:troubleshooting.adoc[{product_name} Troubleshooting], xref:reference/cli/fleet-cli/fleet_monitor.adoc[{product_name} Monitor Reference].
 
+[#_oci_storage_best_practices]
 == OCI Storage Best Practices
 
+[#_offload_massive_bundles_to_oci]
 === Offload Massive Bundles to OCI
 
 *The Best Practice:* If your Kubernetes bundles compress to more than 1MB, etcd cannot store them. Use OCI registries to store Helm charts or large bundles; {product_name} pulls them directly from the registry, drastically reducing API traffic and etcd database bloat.
@@ -277,6 +360,7 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:how-tos-for-users/oci-storage.adoc[OCI Storage Guide].
 
+[#_beware_of_the_secret_penalty]
 === Beware of the Secret Penalty
 
 *The Best Practice:* While OCI reduces manifest size in etcd, it increases the total object count.
@@ -285,8 +369,10 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/ref-resources.adoc[{product_name} Resource Reference].
 
+[#_common_scale_pitfalls_to_avoid]
 == Common Scale Pitfalls to Avoid
 
+[#_exceeding_api_server_limits]
 === Exceeding API Server Limits
 
 *The Best Practice:* Do not exceed 100,000 ++BundleDeployments++ (e.g., deploying 150 bundles to 2,000 clusters). Beyond this point, standard API queries (like kubectl get) may take several minutes, destabilizing the cluster.
@@ -295,6 +381,7 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[{product_name} Cleanup CLI].
 
+[#_pre_configure_crds_for_encryption]
 === Pre-configure CRDs for Encryption
 
 *The Best Practice:* If you use Git to secure credentials, ensure the control plane is prepared. Failure to do so break deployments.
@@ -303,8 +390,10 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:how-tos-for-users/gitrepo-add.adoc[Adding GitRepos], xref:troubleshooting.adoc[{product_name} Troubleshooting].
 
+[#_advanced_configuration_and_security]
 == Advanced Configuration and Security
 
+[#_override_target_rules_without_modifying_git]
 === Override Target Rules Without Modifying Git
 
 *The Best Practice:* Use overrides to quickly change deployment targets without modifying the primary Git repository layout or affecting other environments.
@@ -313,10 +402,20 @@ By default, {product_name} stores Kubernetes bundle resources directly in the et
 
 * Reference: xref:reference/ref-crds.adoc[{product_name} CRD Reference].
 
-=== Restricting GitRepo Deployments (Multi-Tenancy)
+[#_restricting_tenant_deployments_multi_tenancy]
+=== Restricting Tenant Deployments (Multi-Tenancy)
 
 *The Best Practice:* In multi-tenant environments, prevent users from deploying bundles into unauthorized namespaces or using restricted service accounts.
 
-*The Implementation:* Deploy a ++GitRepoRestriction++ CRD. This allows administrators to define whitelists for ++allowedTargetNamespaces++, ++allowedServiceAccounts++, and ++allowedRepoPatterns++.
+*The Implementation:* Create a ++Policy++ resource in each tenant's namespace, declaring ++requireServiceAccount: true++, the allowed ++ServiceAccount++ list, and source/credential allow-lists for ++GitRepo++ and ++HelmOp++ resources. Restrict tenants to read-only RBAC on ++Policy++ objects. Express which downstream namespaces a tenant may deploy to as RBAC on the tenant's downstream ++ServiceAccount++, not at the {product_name} layer.
+
+[NOTE]
+====
+`allowedRepoPatterns` supports regular expressions which will be matched on a _substring_ basis. This means that an
+expression such as `\https://example.site/org` may have more matches than intended, not limited to `example.site` hosts.
+
+To mitigate that, you should anchor regular expressions used in `allowedRepoPatterns`. The above example could become
+`^https://example.site/org`.
+====
 
 * Reference: xref:reference/ref-crd-schema.adoc[{product_name} CRD Schema].

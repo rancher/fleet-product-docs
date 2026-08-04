@@ -3,6 +3,7 @@
 = Installation Details
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /installation
 
 {product_name}  can be installed in two modes: *single-cluster* and *multi-cluster*.
 
@@ -85,7 +86,7 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 You can now xref:how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
 
-[#_tweaking_your_product_name_installation]
+[#_tweaking_your_productname_installation]
 == Tweaking Your {product_name} Installation
 
 [#_controller_and_agent_replicas]
@@ -113,6 +114,42 @@ The xref:how-tos-for-users/imagescan.adoc[imagescan] feature is disabled by defa
   manifests with annotations such as `image: <image>:<tag> # {"$imagescan": "test-scan"}` will not be expanded.
 
 To remedy this, install Fleet with `--set imagescan.enabled=true`.
+
+[#_disabling_the_local_cluster_agent]
+=== Disabling the Local Cluster Agent
+
+By default, {product_name} deploys an agent on the management (local) cluster so that it can receive GitOps deployments just like any downstream cluster.
+If you want to use the management cluster exclusively as a control plane and prevent workloads from being deployed onto it, you can disable the local agent.
+
+When the local agent is disabled:
+
+* The local `Cluster` and `ClusterGroup` resources remain registered.
+* The `fleet-agent` is **not** deployed on the management cluster. If an agent is already running, it will be removed.
+* The local cluster will not receive any bundle deployments.
+
+To disable the local agent at installation time:
+
+[source,bash]
+----
+helm -n cattle-fleet-system install --create-namespace --wait fleet fleet/fleet \
+  --set bootstrap.localAgentDisabled=true
+----
+
+To disable it on an existing installation, upgrade the chart:
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade fleet fleet/fleet \
+  --set bootstrap.localAgentDisabled=true
+----
+
+To re-enable the local agent, set the value back to `false` (the default):
+
+[source,bash]
+----
+helm -n cattle-fleet-system upgrade fleet fleet/fleet \
+  --set bootstrap.localAgentDisabled=false
+----
 
 [#_additional_ssh_known_hosts]
 === Additional SSH known hosts
@@ -228,6 +265,23 @@ Unknown shard IDs (for example, `boo`) are ignored.
 
 To add or remove shards, redeploy {product_name} with an updated shard list.
 
+[#_node_selectors]
+== Node Selectors
+
+Fleet charts can be configured to run controllers and agents on specific cluster nodes, using the `nodeSelector` Helm
+value, found at:
+* `nodeSelector` in the `fleet` chart
+* `fleetAgent.nodeSelector` in the `fleet-agent` chart
+
+Fleet agents are not affected by sharding; however, controllers may also receive node selectors from sharding
+configuration.
+
+In case both global and sharded node selectors are provided, both will be applied to Fleet controller deployments. No
+checks are run for overlaps or conflicting node selectors between both sources.
+
+Git jobs created by the gitOps controller to update workloads from GitRepo resources will inherit the `fleet-controller`
+deployment's node selectors.
+
 [#_configuration_for_multi_cluster]
 == Configuration for Multi-Cluster
 
@@ -262,7 +316,6 @@ clusters:
     server: https://example.com:6443
 ----
 
-[#_extract_ca_certificate]
 ==== Extract CA Certificate
 
 The `certificate-authority-data` field is Base64 encoded.  
@@ -287,7 +340,6 @@ For multi-cluster kubeconfigs:
 kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem
 ----
 
-[#_extract_api_server]
 ==== Extract API Server
 
 [source,bash]
@@ -296,7 +348,6 @@ API_SERVER_URL=$(kubectl config view -o json --raw | jq -r '.clusters[] | select
 API_SERVER_CA="ca.pem"
 ----
 
-[#_validate]
 ==== Validate
 
 Verify the API server URL:
