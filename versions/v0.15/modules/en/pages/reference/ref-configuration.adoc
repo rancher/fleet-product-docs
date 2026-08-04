@@ -2,10 +2,11 @@
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /ref-configuration
 
 A reference list of, mostly internal, configuration options.
 
-[#_configure_product_install_options_in_rancher]
+[#_configure_productname_install_options_in_rancher]
 == Configure {product_name} Install Options In Rancher
 
 Rancher looks for Helm values in a ConfigMap called `rancher-config` in the `cattle-system` namespace.
@@ -103,7 +104,7 @@ Annotations used by fleet:
 * `fleet.cattle.io/managed` - appears unused
 * `fleet.cattle.io/service-account`
 
-[#_product_name_agent_configuration]
+[#_productname_agent_configuration]
 == {product_name} agent configuration
 
 Tolerations, affinity and resources can be customized for the {product_name} agent. These fields can be provided when creating a

@@ -1,7 +1,7 @@
 site:
   title: Continous Delivery
   url: /
-  start_page: v0.15@continuous-delivery:en:index.adoc
+  start_page: v0.16@continuous-delivery:en:index.adoc
 
 content:
   sources:

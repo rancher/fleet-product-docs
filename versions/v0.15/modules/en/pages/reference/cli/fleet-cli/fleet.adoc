@@ -2,9 +2,11 @@
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /fleet
 
 Manage {product_name} operations
 
+[source,text]
 ----
 fleet [flags]
 ----
@@ -12,6 +14,7 @@ fleet [flags]
 [#_options]
 == Options
 
+[source,text]
 ----
   -h, --help   help for fleet
 ----

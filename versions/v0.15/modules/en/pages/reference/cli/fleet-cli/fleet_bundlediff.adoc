@@ -2,6 +2,7 @@
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-03-05
 :page-revdate: {revdate}
+:page-aliases: /fleet_bundlediff
 
 Display bundle diffs from resource status.
 

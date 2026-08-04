@@ -2,6 +2,7 @@
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-11-04
 :page-revdate: {revdate}
+:page-aliases: /experimental-downstream-resource
 
 [WARNING]
 ====

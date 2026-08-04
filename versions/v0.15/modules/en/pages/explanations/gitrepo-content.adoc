@@ -2,6 +2,7 @@
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
+:page-aliases: /gitrepo-content
 
 {product_name} will create bundles from a git repository. This happens either explicitly by specifying paths, or when a `fleet.yaml` is found.
 
@@ -47,7 +48,6 @@ In addition to the previously described method, {product_name} also supports a m
 In this mode, {product_name} will load all resources found within the specified base directory. It will only attempt to locate a `fleet.yaml` file at the root of that directory if an options file is not explicitly provided.
 Unlike the traditional scanning method, this one is not recursive and does not attempt to find Bundle definitions other than those explicitly specified by the user.
 
-[#_example_directory_structure]
 ==== Example Directory Structure
 
 [source,bash]
@@ -80,7 +80,6 @@ driven
             |__ test.yaml
 ----
 
-[#_corresponding_gitrepo_definition]
 ==== Corresponding GitRepo Definition
 
 [source,yaml]
@@ -229,7 +228,7 @@ Refer to Rancher's {product_name} docs for more information.
 ====
 
 The available fields are documented in the xref::/reference/ref-fleet-yaml.adoc[fleet.yaml reference].
-For a private Helm repo, users can reference a secret from the git repo resource.
+For a private Helm repo, users can reference a secret from the git repo resource and set `spec.helmRepoURLRegex` to match trusted Helm or OCI repository URLs.
 See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 [#_using_helm_values]
