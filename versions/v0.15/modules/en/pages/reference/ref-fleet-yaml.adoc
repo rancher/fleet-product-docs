@@ -1,4 +1,7 @@
 = fleet.yaml
+:revdate: 2026-03-05
+:page-revdate: {revdate}
+:page-aliases: /ref-fleet-yaml
 :page-languages: [en, de, es, fr, ja, pt, zh]
 
 The `fleet.yaml` file adds options to a bundle. Any directory with a `fleet.yaml` file is automatically turned into a bundle.
@@ -411,9 +414,8 @@ The chart reference can be one of the following:
 * https://github.com/hashicorp/go-getter?tab=readme-ov-file#url-format[go-getter URL] (`chart`)
 * OCI chart URL (`repo: oci://...`)
 * Helm repository (`repo` + `chart` + optional `version`)
-* OCI Helm repository (`repo: oci://...` + optional `version`)
+* OCI Helm repository (`repo: oci://...` + `version`)
 
-[#_helm_repo]
 ==== `helm.repo`
 
 For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it like this:
@@ -422,12 +424,11 @@ For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it l
 ----
 helm:
   repo: "oci://ghcr.io/fleetrepoci/guestbook"
-  version: "0.1.0"  # optional
+  version: "0.1.0"
 ----
 
 This is consistent with how OCI registries are referenced in xref:how-tos-for-users/helm-ops.adoc#_oci_registry[HelmOp resources].
 
-[#_helm_chart]
 ==== `helm.chart`
 
 Specifies a local path or go-getter URL for the Helm chart. When `helm.repo` is set to a standard (non-OCI) Helm repository URL, `helm.chart` holds the chart name within that repository.
@@ -464,15 +465,14 @@ helm:
 ----
 ====
 
-[#_helm_version]
 ==== `helm.version`
 
 Determines which chart to download from OCI registries.
 
 [NOTE]
 ====
-OCI registries do not support the `+` character in semver tags. Helm replaces `+` with `_` automatically when pushing charts.  
-Use the `+` version in `fleet.yaml`; {product_name} performs the same replacement internally.
+OCI registries do not support the `{plus}` character in semver tags. Helm replaces `{plus}` with `_` automatically when pushing charts.
+Use the `{plus}` version in `fleet.yaml`; {product_name} performs the same replacement internally.
 ====
 
 [#_values]

@@ -29,6 +29,7 @@
 ** xref:how-tos-for-users/observability.adoc[Observability]
 ** xref:how-tos-for-users/oci-storage.adoc[OCI Storage]
 ** xref:how-tos-for-users/rollout.adoc[Rollout Strategy]
+** xref:how-tos-for-users/templating.adoc[Templating]
 ** xref:how-tos-for-users/helm-ops.adoc[Helm Ops]
 ** xref:how-tos-for-users/fetch-helm-oci.adoc[Fetch Helm Ops]
 ** xref:how-tos-for-users/fine-tune-error.adoc[Fine Tuning Error Detection]

@@ -2,6 +2,7 @@
 :page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
+:page-aliases: /fleet_dump
 
 Dump cluster data into an archive.
 
@@ -55,7 +56,6 @@ The `dump` command produces a `.tgz` archive containing the following data:
 This typically includes `monitoring-gitjob` and `monitoring-fleet-controller` services, as well as their
 xref:how-tos-for-operators/installation.adoc#_multi_controller_installation_sharding[sharded] counterparts, if any.
 
-[#_format]
 ==== Format
 
 Raw  {product_name} resources are each stored in a different file, named as `<kind>_<namespace>_<name>`, where `<kind>` is

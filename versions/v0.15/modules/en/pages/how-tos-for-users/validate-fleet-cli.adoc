@@ -1,7 +1,9 @@
 = Validate Fleet CLI Deployment
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-10-6
 :page-revdate: {revdate}
+:page-aliases: /validate-fleet-cli
+:page-languages: [en, de, es, fr, ja, pt, zh]
+
 
 After applying a bundle using Fleet CLI, you can validate the deployment by inspecting the `Bundle` and its associated `BundleDeployments`.
 

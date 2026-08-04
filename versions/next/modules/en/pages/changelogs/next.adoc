@@ -1,5 +1,5 @@
 = "Next 🚧"
-:revdate: 2024-09-09
+:revdate: 2026-05-21
 :page-revdate: {revdate}
 
 We are still working on the next release.
