@@ -349,6 +349,11 @@ overrideTargets:
 ----
 ====
 
+[NOTE]
+====
+For the complete `fleet.yaml` schema see https://raw.githubusercontent.com/rancher/fleet/refs/heads/main/schemas/fleet.yaml.json[latest fleet.yaml.json], or visit https://www.schemastore.org/[schemastore].
+====
+
 == General Bundle Configuration
 
 These options define the fundamental properties and behavior of the bundle itself and apply to all bundle types.
