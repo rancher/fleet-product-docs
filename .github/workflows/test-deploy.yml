@@ -13,18 +13,20 @@ jobs:
   test-community:
     name: Test community docs
     runs-on: ubuntu-latest
+    # Only runs if the PR is targeting the 'main' branch
+    if: github.base_ref == 'main'
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           submodules: recursive
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 18
+          node-version: 24
 
       - name: Install Antora and dependencies
         run: make environment
@@ -53,18 +55,20 @@ jobs:
   test-product:
     name: Test product docs
     runs-on: ubuntu-latest
+    # Only runs if the PR is targeting the 'product-docs' branch
+    if: github.base_ref == 'product-docs'
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           submodules: recursive
 
       - name: Set up Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
         with:
-          node-version: 18
+          node-version: 24
 
       - name: Install Antora and dependencies
         run: make environment
