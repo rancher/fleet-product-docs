@@ -49,6 +49,31 @@ In practice, the operator is responsible for creating the `ServiceAccount` (plus
 
 If a tenant's resource names a `ServiceAccount` that does not exist on the downstream cluster, the deployment fails with a clear error.
 
+== The Default `fleet-default` ServiceAccount
+
+A tenant resource does not have to name a `ServiceAccount` explicitly. When none is configured, the {product_name} agent looks for a `ServiceAccount` named `fleet-default` in the `cattle-fleet-system` namespace on the downstream cluster and impersonates it if it exists.
+
+If `fleet-default` does not exist either, the agent falls back to its own identity, which is effectively cluster-admin. This fallback is precisely the behaviour that pinning a tenant to a `ServiceAccount` exists to prevent: a deployment that resolves to no `ServiceAccount` runs with full privileges on the downstream cluster, and the downstream RBAC is no longer the source of truth for what it may do.
+
+For this reason, do not treat the absence of a `ServiceAccount` as a security boundary. Set `requireServiceAccount: true` on the `Policy` so that a resource which does not name a `ServiceAccount` is rejected rather than silently deployed as the agent. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the recommended configuration.
+
+The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallback, or the agent itself — is also the identity used to apply `namespaceLabels` and `namespaceAnnotations` to the target namespace. Those namespace mutations are therefore gated by the same downstream RBAC as the deployment itself, rather than by the agent's cluster-admin credentials whenever a `ServiceAccount` is resolved.
+
+== Namespace Creation
+
+By default, {product_name} lets Helm create the target namespace if it does not already exist. Creating a namespace requires the `create` verb on the cluster-scoped `namespaces` resource. That verb cannot be confined to a single namespace or tenant: granting it to a tenant's `ServiceAccount` lets that tenant create *any* namespace on the downstream cluster, which breaks the isolation that pinning to a `ServiceAccount` is meant to provide.
+
+To avoid this, when a `Policy` in the tenant's namespace sets `requireServiceAccount: true`, {product_name} disables Helm namespace creation for deployments in that namespace. The tenant's `ServiceAccount` therefore does not need `namespaces.create`, and the target namespace must already exist on the downstream cluster. Creating it is the operator's responsibility — typically through the same {product_name}-manager-owned `GitRepo` used to bootstrap the tenant's `ServiceAccount` and RBAC. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup].
+
+An operator who has secured namespace creation through other means — a `ValidatingAdmissionPolicy`, Kyverno, or similar — can re-enable it by setting `allowNamespaceCreation: true` on the `Policy`.
+
+Two properties of this field are worth noting:
+
+* It only takes effect together with `requireServiceAccount`. Without a `ServiceAccount` requirement, namespace creation is left at its default (enabled), because there is no tenant boundary to protect.
+* Like the rest of `Policy`, it aggregates across all `Policy` objects in the namespace with *least-restrictive* (OR) semantics. If any `Policy` in the namespace sets `allowNamespaceCreation: true`, namespace creation is enabled for every deployment in that namespace. An operator relying on creation staying disabled must ensure that no `Policy` in the namespace enables it.
+
+Disabling namespace creation does not disable namespace *mutation*: `namespaceLabels` and `namespaceAnnotations` are still applied to the existing namespace, as the resolved `ServiceAccount` and gated by its downstream RBAC (see above).
+
 == What Policy Deliberately Does Not Cover
 
 `Policy` has no field that restricts which downstream namespaces a tenant may deploy to. This is intentional: namespace restrictions are the responsibility of the downstream cluster's RBAC on the tenant's `ServiceAccount`, not of {product_name}.
