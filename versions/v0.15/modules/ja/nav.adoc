@@ -32,6 +32,7 @@
 ** xref:how-tos-for-users/fetch-helm-oci.adoc[ヘルムオプスを取得する]
 ** xref:how-tos-for-users/fine-tune-error.adoc[エラー検出の微調整]
 
+** xref:tutorials/best-practices.adoc[Best Practices]
 * Fleet CLI
 ** xref:how-tos-for-users/install-use-fleet-cli.adoc[Fleet CLI のインストールと使用]
 ** xref:how-tos-for-users/validate-fleet-cli.adoc[Validate Fleet CLI Deployment]

@@ -9,6 +9,7 @@
 ** xref:explanations/concepts.adoc[Conceitos Principais]
 ** xref:explanations/ref-bundle-stages.adoc[Ciclo de Vida do Pacote]
 ** xref:explanations/gitrepo-content.adoc[Conteúdos do Repositório Git]
+** xref:tutorials/best-practices.adoc[Best Practices]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Recursos Personalizados Durante a Implantação]
 ** xref:explanations/glossary.adoc[Recursos Personalizados Durante a Implantação]

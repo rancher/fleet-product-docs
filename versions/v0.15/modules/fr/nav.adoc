@@ -2,6 +2,7 @@
 * xref:persona.adoc[Personas clés et leurs rôles]
 * Didacticiels
 ** xref:tutorials/quickstart.adoc[Quickstart]
+** xref:tutorials/best-practices.adoc[Best Practices]
 ** xref:tutorials/tut-deployment.adoc[Création d'un déploiement]
 ** xref:tutorials/uninstall.adoc[Uninstall]
 * Explications

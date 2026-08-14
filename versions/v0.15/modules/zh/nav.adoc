@@ -32,6 +32,7 @@
 ** xref:how-tos-for-users/fetch-helm-oci.adoc[获取 Helm 操作]
 ** xref:how-tos-for-users/fine-tune-error.adoc[微调错误检测]
 
+** xref:tutorials/best-practices.adoc[Best Practices]
 * Fleet CLI
 ** xref:how-tos-for-users/install-use-fleet-cli.adoc[安装和使用 Fleet CLI]
 ** xref:how-tos-for-users/validate-fleet-cli.adoc[验证 Fleet CLI 部署]
