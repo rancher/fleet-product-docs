@@ -9,6 +9,7 @@
 ** xref:explanations/concepts.adoc[Kernelkonzepte]
 ** xref:explanations/ref-bundle-stages.adoc[Bundle-Lebenszyklus]
 ** xref:explanations/gitrepo-content.adoc[Inhalte des Git-Repositorys]
+** xref:tutorials/best-practices.adoc[Best Practices]
 ** xref:explanations/namespaces.adoc[Namespaces]
 ** xref:explanations/resources-during-deployment.adoc[Benutzerdefinierte Ressourcen während der Implementierung]
 ** xref:explanations/glossary.adoc[Benutzerdefinierte Ressourcen während der Implementierung]
