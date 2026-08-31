@@ -9,6 +9,7 @@
         "@antora/lunr-extension": "1.0.0-alpha.8",
         "@springio/antora-xref-extension": "1.0.0-alpha.4",
         "asciidoctor-kroki": "0.18.1",
-        "@sntke/antora-mermaid-extension": "0.0.8"  
+        "@sntke/antora-mermaid-extension": "0.0.8",
+        "semver": "7.6.3"
     }
 }

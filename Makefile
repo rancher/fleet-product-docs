@@ -9,7 +9,7 @@ FLEET_PRODUCT_REMOTE_PLAYBOOK   = fleet-product-remote-playbook.yml
 
 BUILD_DIR          = build
 FLEET_COMMUNITY_OUT = $(BUILD_DIR)/site-community
-FLEET_PRODUCT_OUT   = $(BUILD_DIR)/site
+FLEET_PRODUCT_OUT   = $(BUILD_DIR)/site-product
 
 .PHONY: local local-community local-product remote remote-community remote-product clean environment preview-community preview-product
 
@@ -60,7 +60,7 @@ environment:
 	npm ci
 
 preview-community:
-	npx http-server $(FLEET_COMMUNITY_OUT) -c-1
+	npx http-server $(FLEET_COMMUNITY_OUT) -c-1 -p 8080
 
 preview-product:
-	npx http-server $(FLEET_PRODUCT_OUT) -c-1
+	npx http-server $(FLEET_PRODUCT_OUT) -c-1 -p 8081
