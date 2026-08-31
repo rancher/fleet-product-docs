@@ -1,8 +1,5 @@
-= "Next 🚧"
-:revdate: 2026-05-21
+= Next Release
+:revdate: 2026-08-31
 :page-revdate: {revdate}
 
-We are still working on the next release.
-
-== Highlights
-
+For the next development version of {product_name}, refer to the https://github.com/rancher/fleet/releases[GitHub Release page].
