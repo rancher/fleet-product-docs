@@ -11,7 +11,7 @@ This repository contains both community and product documentation.
     * Generated site: `build/site-community/`
 * `product-docs` contains product documentation.
     * Source files: `versions/`
-    * Generated site: `build/site/`
+    * Generated site: `build/site-product/`
 
 ### Prerequisites
 
@@ -67,12 +67,12 @@ As a local example, run the command below to build the product site:
 make remote-product
 ```
 
-Navigate to the `./build/site` directory and open the index.html file in your browser to view and navigate the documentation site.
+Navigate to the `./build/site-product` directory and open the index.html file in your browser to view and navigate the documentation site.
 
 Alternatively, run the below command first and then open `http://127.0.0.1:8080/` in your browser for a web server preview:
 
 ```console
-make preview
+make preview-product
 ```
 
 To build the community site, run:
