@@ -46,7 +46,7 @@ git clone https://github.com/rancher/fleet-product-docs.git
 This playbook repository uses a [git submodule](https://git-scm.com/book/en/v2/Git-Tools-Submodules) to get the custom Antora supplemental files that provide a custom GUI theme for the documentation website. Run the command below to get the submodule.
 
 ```console
-git submodule update --init
+git submodule update --init --recursive
 ```
 
 This repository uses the `main` branch for community updates and the `product-docs` branch for product documentation updates in the playbooks.
