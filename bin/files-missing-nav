@@ -1,36 +1,48 @@
 #!/bin/bash
 
-DOCS_DIR="docs"
-
-# Naming convention inconsistent. Check for other variation.
-if [ -d versions ]; then
-  DOCS_DIR="versions"
-fi
-
-if test -f tmp/files-missing-nav.log; then
-    truncate -s 0 tmp/files-missing-nav.log
-elif ! test -d tmp; then
-    mkdir tmp
-fi
-
-MODULE_LANG_DIRS=$(find $DOCS_DIR -type d -iname "pages")
-
-for dir in $MODULE_LANG_DIRS; do
-    MODULE_LANG_FILES=$(find $dir -type f -iname "*.adoc" ! -iname "_*.adoc")
-    for file in $MODULE_LANG_FILES; do
-        MODULE_LANG_RELATIVE_PATH=${file#$dir}
-        MODULE_LANG_RELATIVE_PATH=${MODULE_LANG_RELATIVE_PATH#/}
-        NAV_FILE="${dir%pages}nav.adoc"
-        
-        if ! grep -q $MODULE_LANG_RELATIVE_PATH $NAV_FILE; then
-            echo $file >> tmp/files-missing-nav.log
-        fi
-    done
+# The docs tree is named differently per branch: community-docs on main,
+# versions on product-docs. Scan whichever ones are present rather than
+# guessing a single name, so the check never silently inspects nothing.
+DOCS_DIRS=()
+for candidate in community-docs versions docs; do
+    if [ -d "$candidate" ]; then
+        DOCS_DIRS+=("$candidate")
+    fi
 done
 
-if test -f tmp/files-missing-nav.log; then
-    cat tmp/files-missing-nav.log
+if [ ${#DOCS_DIRS[@]} -eq 0 ]; then
+    echo "Error: no docs directory found (looked for: community-docs, versions, docs)." >&2
     exit 1
-else
-    exit 0
 fi
+
+LOG_FILE="tmp/files-missing-nav.log"
+mkdir -p tmp
+: > "$LOG_FILE"
+
+while IFS= read -r dir; do
+    NAV_FILE="${dir%pages}nav.adoc"
+
+    if [ ! -f "$NAV_FILE" ]; then
+        echo "$NAV_FILE (missing nav file for $dir)" >> "$LOG_FILE"
+        continue
+    fi
+
+    while IFS= read -r file; do
+        MODULE_LANG_RELATIVE_PATH="${file#$dir}"
+        MODULE_LANG_RELATIVE_PATH="${MODULE_LANG_RELATIVE_PATH#/}"
+
+        # -F: match the path literally. Without it the dots in a filename are
+        # regex wildcards, which can match an unrelated entry and hide a gap.
+        if ! grep -qF -- "$MODULE_LANG_RELATIVE_PATH" "$NAV_FILE"; then
+            echo "$file" >> "$LOG_FILE"
+        fi
+    done < <(find "$dir" -type f -iname "*.adoc" ! -iname "_*.adoc")
+done < <(find "${DOCS_DIRS[@]}" -type d -iname "pages")
+
+# -s, not -f: a leftover empty log from a previous run must not fail the check.
+if [ -s "$LOG_FILE" ]; then
+    cat "$LOG_FILE"
+    exit 1
+fi
+
+exit 0
