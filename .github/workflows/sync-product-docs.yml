@@ -3,10 +3,9 @@ name: Sync Community Docs to Product Docs
 on:
   push:
     branches:
-      - automate-changes-prod-from-comm
+      - main
     paths:
       - 'community-docs/**'
-      - '.github/workflows/**' # Temporarily include workflow edits so pushes trigger it
   workflow_dispatch:
 
 jobs:
@@ -90,7 +89,12 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add versions/
-          git commit -m "sync: update versions/ from community-docs [${GITHUB_SHA::7}]"
+          # The Source-Commit trailer records which upstream commit this sync
+          # came from. The next run reads it back off the target branch to work
+          # out the commit range for the PR body.
+          git commit \
+            -m "sync: update versions/ from community-docs [${GITHUB_SHA::7}]" \
+            -m "Source-Commit: ${GITHUB_SHA}"
           echo "changed=true" >> "$GITHUB_OUTPUT"
 
       # The product build runs as the 'test-product' job in test-deploy.yml on
@@ -101,6 +105,40 @@ jobs:
         run: |
           git push origin "$SYNC_BRANCH" --force
 
+          # Build the PR body. The commit range starts at the Source-Commit
+          # trailer left by the previous sync on the target branch; that branch
+          # is still at its pushed state here, since we only push $SYNC_BRANCH.
+          BODY=/tmp/pr-body.md
+          printf 'Automated sync PR generated from changes in `community-docs/`.\n\n' > "$BODY"
+
+          LAST=$(git log "origin/$TARGET_BRANCH" -1 --grep='^Source-Commit:' --pretty=format:%B \
+                 | sed -n 's/^Source-Commit: *//p' | head -1)
+
+          # --is-ancestor guards against a rebased or force-pushed main, where
+          # $LAST..$GITHUB_SHA would be meaningless.
+          if [ -n "$LAST" ] && git merge-base --is-ancestor "$LAST" "$GITHUB_SHA" 2>/dev/null; then
+            git log --no-merges --pretty=format:'- %h %s' "$LAST..$GITHUB_SHA" -- community-docs/ > /tmp/commits.txt
+            printf '\n' >> /tmp/commits.txt
+            COUNT=$(grep -c '^- ' /tmp/commits.txt || true)
+
+            if [ "$COUNT" -gt 0 ]; then
+              {
+                printf '<details>\n'
+                printf '<summary>%s commit(s) since the last sync (<code>%s</code>…<code>%s</code>)</summary>\n\n' \
+                  "$COUNT" "${LAST::7}" "${GITHUB_SHA::7}"
+                head -n 200 /tmp/commits.txt
+                if [ "$COUNT" -gt 200 ]; then
+                  printf -- '- …and %s more\n' "$((COUNT - 200))"
+                fi
+                printf '\n</details>\n'
+              } >> "$BODY"
+            else
+              printf '_No `community-docs/` commits found since the last sync._\n' >> "$BODY"
+            fi
+          else
+            printf '_No previous sync marker found — commit list unavailable for this run. Subsequent syncs will include one._\n' >> "$BODY"
+          fi
+
           # Check existing PR with explicit repo targeting
           if [ -z "$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$SYNC_BRANCH" --base "$TARGET_BRANCH" --state open --json number --jq '.[0].number')" ]; then
             gh pr create \
@@ -108,7 +146,8 @@ jobs:
               --base "$TARGET_BRANCH" \
               --head "$SYNC_BRANCH" \
               --title "Sync: Update versions/ contents from community-docs" \
-              --body "Automated sync PR generated from changes in \`community-docs/\`."
+              --body-file "$BODY"
           else
             echo "PR already open. Updated branch $SYNC_BRANCH with latest changes."
+            gh pr edit "$SYNC_BRANCH" --repo "$GITHUB_REPOSITORY" --body-file "$BODY"
           fi
