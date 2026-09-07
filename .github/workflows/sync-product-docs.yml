@@ -8,6 +8,13 @@ on:
       - 'community-docs/**'
   workflow_dispatch:
 
+# Serialize on a static group: every run contends for the same sync branch and
+# the same PR, whatever ref triggered it. Newest wins, since an older run would
+# sync an earlier state of community-docs/ over a newer one.
+concurrency:
+  group: sync-product-docs
+  cancel-in-progress: true
+
 jobs:
   sync-docs:
     runs-on: ubuntu-latest
