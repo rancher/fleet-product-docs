@@ -41,8 +41,10 @@ done < <(find "${DOCS_DIRS[@]}" -type d -iname "pages")
 
 # -s, not -f: a leftover empty log from a previous run must not fail the check.
 if [ -s "$LOG_FILE" ]; then
+    echo "The following files are missing from nav.adoc. The results have been saved to tmp/files-missing-nav.log."
     cat "$LOG_FILE"
     exit 1
 fi
 
+echo "All files are listed in nav.adoc."
 exit 0
