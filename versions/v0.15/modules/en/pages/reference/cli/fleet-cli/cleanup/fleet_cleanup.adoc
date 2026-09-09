@@ -1,5 +1,4 @@
 = fleet cleanup
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet_cleanup
@@ -11,14 +10,12 @@ Clean up outdated resources
 fleet cleanup [flags]
 ----
 
-[#_options]
 == Options
 
 ----
   -h, --help   help for cleanup
 ----
 
-[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

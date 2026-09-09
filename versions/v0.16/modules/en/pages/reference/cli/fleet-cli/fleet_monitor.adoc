@@ -5,7 +5,6 @@
 
 Advanced diagnostic tool for troubleshooting  {product_name} deployments.
 
-[#_overview]
 == Overview
 
 Extract insights from  {product_name}'s GitOps lifecycle by capturing snapshots of all relevant resources and performing automated
@@ -17,7 +16,6 @@ actionable information about the health of your  {product_name} installation.
 fleet monitor [flags]
 ----
 
-[#_options]
 === Options
 
 [source,text]
@@ -30,7 +28,6 @@ fleet monitor [flags]
   -h, --help                      help for monitor
 ----
 
-[#_quick_start]
 === Quick Start
 
 The monitor command outputs **compact JSON** (one snapshot per line). Use `jq` to format for readability.
@@ -47,7 +44,6 @@ fleet monitor | fleet analyze
 fleet monitor --watch --interval 60 >> monitor.json
 ----
 
-[#_what_it_detects]
 === What It Detects
 
 The monitor command performs comprehensive diagnostics to detect:
@@ -92,7 +88,6 @@ The monitor command performs comprehensive diagnostics to detect:
 * **BundleDeployment SyncGeneration Drift**: BundleDeployment syncGeneration != forceSyncGeneration (agent hasn't applied forced sync)
 * **Content Stale Generation**: Content resources with outdated generation values
 
-[#_usage_examples]
 === Usage Examples
 
 ==== Basic Monitoring
@@ -161,7 +156,6 @@ kubectl edit gitrepo my-repo
 fleet monitor > after.json
 ----
 
-[#_common_troubleshooting_scenarios]
 === Common Troubleshooting Scenarios
 
 ==== Scenario 1: Bundle Not Deploying
@@ -240,7 +234,6 @@ fleet monitor | jq '[.bundles[] | {name, size: .sizeBytes, sizeMB: (.sizeBytes /
 fleet monitor | jq '.diagnostics.bundlesWithMissingContent'
 ----
 
-[#_continuous_monitoring_workflow]
 === Continuous Monitoring Workflow
 
 For long-term monitoring and trend analysis:
@@ -260,7 +253,6 @@ fleet analyze --diff /var/log/fleet-monitor.json > fleet-report-$(date +%Y%m%d).
 find /var/log -name "fleet-report-*.txt" -mtime +7 -delete
 ----
 
-[#_integration_with_alerting]
 === Integration with Alerting
 
 The monitor command can be integrated with monitoring systems:
@@ -286,7 +278,6 @@ fleet monitor | jq -r '
 '
 ----
 
-[#_understanding_diagnostics]
 === Understanding Diagnostics
 
 ==== Stuck Resources
@@ -325,7 +316,6 @@ The monitor tracks Git commit hashes through the entire lifecycle:
 
 Mismatches indicate where the sync process is failing.
 
-[#_performance_considerations]
 === Performance Considerations
 
 * The monitor fetches all Fleet resources in the cluster
@@ -334,7 +324,6 @@ Mismatches indicate where the sync process is failing.
   * Running less frequently (e.g., every 120+ seconds instead of 60)
   * Monitoring resource usage of the monitor command itself
 
-[#_troubleshooting_the_monitor_command]
 === Troubleshooting the Monitor Command
 
 If the monitor command fails:
@@ -355,7 +344,6 @@ kubectl get crds | grep fleet.cattle.io
 fleet monitor --verbose 2>&1 | tee monitor-debug.log
 ----
 
-[#_see_also]
 === SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

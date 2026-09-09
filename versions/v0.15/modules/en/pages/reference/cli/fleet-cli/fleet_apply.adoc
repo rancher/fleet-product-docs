@@ -1,5 +1,4 @@
 = fleet apply
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_apply
@@ -11,7 +10,6 @@ Create bundles from directories, and output them or apply them on a cluster
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
-[#_options]
 == Options
 
 ----
@@ -56,7 +54,6 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --driven-scan-sep                        Separator used for user-driven bundle generation paths. (default: ':')
 ----
 
-[#_good_to_know]
 === Good to know
 
 `fleet apply` reads `known_hosts`` data from an environment variable (`FLEET_KNOWN_HOSTS`), similarly to what the git
@@ -70,6 +67,5 @@ The number of concurrent bundle creation routines can be configured via the `--b
 
 `FLEET_BUNDLE_CREATION_MAX_CONCURRENCY=8 fleet apply <args>`
 
-[#_see_also]
 == SEE ALSO
 * xref:/reference/cli/fleet-cli/fleet.adoc[ {product_name}]	 - Manage {product_name} operations

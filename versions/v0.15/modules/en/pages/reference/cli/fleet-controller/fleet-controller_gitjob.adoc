@@ -1,5 +1,4 @@
 = fleet-controller gitjob
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet-controller_gitjob
@@ -11,7 +10,6 @@ Configure Fleet controller gitjob operations
 fleet-controller gitjob [flags]
 ----
 
-[#_options]
 == Options
 
 ----
@@ -29,7 +27,6 @@ fleet-controller gitjob [flags]
       --shard-node-selector string    node selector to apply to jobs based on the shard ID, if any
 ----
 
-[#_see_also]
 == SEE ALSO
 
 * xref:reference/cli/fleet-controller/fleet-controller.adoc[fleet-controller]	 - Manage the Fleet controller that communicates with the Fleet agent

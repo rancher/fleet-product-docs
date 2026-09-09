@@ -1,0 +1,5 @@
+= Other Releases
+:revdate: 2026-09-07
+:page-revdate: {revdate}
+
+For the complete list of {product_name} {page-component-display-version} releases, including change details, refer to the https://github.com/rancher/fleet/releases?q=tag%3Av{page-component-version}[GitHub Release page].

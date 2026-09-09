@@ -8,7 +8,6 @@ Create bundles from directories, and output them or apply them on a cluster
 fleet apply [flags] BUNDLE_NAME PATH...
 ----
 
-[#_options]
 == Options
 
 ----
@@ -41,7 +40,6 @@ fleet apply [flags] BUNDLE_NAME PATH...
       --username string                        Basic auth username for helm repo
 ----
 
-[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

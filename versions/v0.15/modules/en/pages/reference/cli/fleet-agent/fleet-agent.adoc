@@ -1,5 +1,4 @@
 = fleet-agent
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet-agent
@@ -11,7 +10,6 @@ Manage operations with the Fleet agent that communicates with the Fleet controll
 fleet-agent [flags]
 ----
 
-[#_options]
 == Options
 
 ----
@@ -28,7 +26,6 @@ fleet-agent [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
-[#_see_also]
 == SEE ALSO
 * xref:/reference/cli/fleet-agent/fleet-agent_clusterstatus.adoc[fleet-agent clusterstatus]	 - Continuously report resource status to the upstream cluster
 * xref:/reference/cli/fleet-agent/fleet-agent_register.adoc[fleet-agent register] - Register agent with an upstream cluster

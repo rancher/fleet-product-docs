@@ -24,7 +24,6 @@ When you install Helm charts using {product_name}, it is important to distinguis
 * *Fleet ++valuesFiles++ and ++values++ (Templating supported):*
 ** {product_name} allows you to reference additional values files through ++fleet.yaml++ using the ++valuesFiles++ or ++values++ keys. These {product_name}-specific configurations fully support templating, allowing you to apply dynamic, environment-specific overrides.
 
-[#_how_productname_templating_works]
 == How {product_name} templating works
 
 Before a ++Bundle++ is created, the Fleet controller scans specific files (like ++fleet.yaml++ and ++values.yaml++). It searches for ++${ }++ delimiters. These are used instead of standard Go-template ++{{ }}++ to avoid collisions with Helm's own templating engine.
@@ -47,7 +46,6 @@ values:
   region: us-west
 ----
 
-[#_productname_versus_helm_templating]
 == {product_name} versus Helm templating
 
 {product_name} preprocessing happens before Helm rendering.
@@ -89,7 +87,6 @@ In this example:
 * {product_name} resolves ++${ .ClusterName }++
 * Helm later resolves ++{{ .Values.message }}++
 
-[#_value_precedence]
 == Value precedence
 
 When {product_name} prepares the final values for a deployment, it merges configuration from multiple sources. If the same key exists in multiple places, the source with the highest precedence wins.
@@ -104,7 +101,6 @@ Here are possible sources of values, listed in decreasing order of precedence:
 
 image::value_precedence_templating.svg[Value Precedence in templating]
 
-[#_accessing_cluster_data]
 == Accessing Cluster data
 
 {product_name} injects specific cluster information into the template context. You can access these using the following keys:
@@ -134,7 +130,6 @@ image::value_precedence_templating.svg[Value Precedence in templating]
 
 |===
 
-[#_expressions_and_logic]
 == Expressions and logic
 
 You can also leverage link:https://masterminds.github.io/sprig/[Sprig functions] in {product_name} to use complex string manipulation and logic.
@@ -144,7 +139,6 @@ You can also leverage link:https://masterminds.github.io/sprig/[Sprig functions]
 Avoid using Sprig functions that produce random output (for example, ++uuidv4++). Randomly generated values change on every evaluation and will trigger endless, continuous redeployments. Always guard against null values when writing your templates to prevent rendering errors.
 ====
 
-[#_default_values]
 === Default Values
 
 Use ++default++ to ensure a deployment doesn't fail if a label is missing.
@@ -155,7 +149,6 @@ values:
   region: ${ default "us-east-1" .ClusterLabels.region }
 ----
 
-[#_conditional_logic]
 === Conditional Logic
 
 Change configuration based on the environment.
@@ -167,7 +160,6 @@ values:
   imageTag: ${ if eq .ClusterLabels.env "prod" }stable${ else }latest${ end }
 ----
 
-[#_string_manipulation]
 === String Manipulation
 
 [,yaml]
@@ -177,12 +169,10 @@ values:
   upperName: ${ upper .ClusterName }
 ----
 
-[#_use_templatevalues_for_cluster_specific_data]
 === Use templateValues for cluster-specific data
 
 You can define cluster-specific data mappings directly on the downstream cluster using the ++templateValues++ field in the ++Cluster++ custom resource. These values are then passed into the {product_name} templating engine and can be consumed in your ++fleet.yaml++ (or HelmOp) files using the ++.ClusterValues++ variable.
 
-[#_variable_reuse]
 === Variable Reuse
 
 You can define a value once in ++templateValues++ and reference it multiple times in the ++values++ block using the ++.TemplateValues++ prefix.
@@ -207,7 +197,6 @@ helm:
         siteIdentifier: "${ index .ClusterLabels \"site-id\" }"
 ----
 
-[#_structural_generation_advanced]
 === Structural Generation (Advanced)
 
 Standard YAML blocks must be valid YAML before processing. This prevents you from using ++range++ or ++if++ to generate lists or maps. Because ++templateValues++ is a map of strings, it bypasses this restriction. {product_name} evaluates the string first and then parses the result as YAML.
@@ -231,7 +220,6 @@ This results in
 * If the cluster label is ++env=prod++, then the rendered image tag is ++stable++.
 * If the cluster label is ++env=dev++, then the rendered image tag is ++latest++.
 
-[#_disable_preprocessing]
 == *Disable preprocessing*
 
 If you use other templating languages in your configurations and want to avoid conflicts with {product_name}'s templating engine, you can turn off {product_name}'s templating entirely in fleet.yaml.
@@ -248,14 +236,12 @@ This flowchart below provides a clear path for file processing.
 
 image::disable_preprocessing_templating.svg[Disable Preprocessing Flow]
 
-[#_escaping_expressions]
 == Escaping expressions
 
 To escape a single expression while keeping the engine active, use a double dollar sign (++$$++).
 
 For example, ++value: $${ .ClusterName }++, results in ++value: ${ .ClusterName }++.
 
-[#_test_template_expressions_locally]
 == Test template expressions locally
 
 You can test your values templating and preview how your expressions render using the {product_name} command-line interface (CLI). The ++fleet target++ command evaluates a local bundle file against a live cluster and outputs the exact resources the {product_name} controller would create.
@@ -266,14 +252,12 @@ You can test your values templating and preview how your expressions render usin
 . *Evaluate the targets:* Run the ++fleet target++ command and pass the generated bundle file as an argument. You can specify a namespace as an argument so the CLI knows where to look for your target ++Cluster++ resources. Run ++ fleet target -f bundle.yaml++
 . *Inspect the output:* The command evaluates your targeting rules and prints the ++BundleDeployment++ and ++Content++ resources that would be created. Inspect this output to verify that your template expressions evaluated correctly against the specific cluster labels, names, and values.
 
-[#_best_practices]
 == Best practices
 
 * *Whitespace Control:* Use ++${-++ and ++-}++ to strip leading/trailing whitespace, especially in ++templateValues++ where YAML indentation is sensitive.
 * *Centralize Logic:* Use ++templateValues++ for complex calculations to keep the main ++values++ block clean.
 * *Defensive Coding:* Always provide a ++default++ value for cluster labels to avoid empty string injections.
 
-[#_troubleshooting_templating]
 == Troubleshooting templating
 
 *Template value is empty*
