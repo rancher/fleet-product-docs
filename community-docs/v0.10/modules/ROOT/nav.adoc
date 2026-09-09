@@ -50,6 +50,7 @@
 *** xref:reference/ref-gitrepo.adoc[GitRepo Resource]
 *** xref:reference/ref-bundle.adoc[Bundle Resource]
 *** xref:reference/ref-resources.adoc[List of Deployed Resources]
+*** xref:reference/resources-list.adoc[Resources List]
 ** Configuration Reference
 *** xref:reference/ref-fleet-yaml.adoc[fleet.yaml]
 *** xref:reference/ref-configuration.adoc[Configuration]

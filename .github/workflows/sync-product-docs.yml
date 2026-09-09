@@ -1,0 +1,160 @@
+name: Sync Community Docs to Product Docs
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'community-docs/**'
+  workflow_dispatch:
+
+# Serialize on a static group: every run contends for the same sync branch and
+# the same PR, whatever ref triggered it. Newest wins, since an older run would
+# sync an earlier state of community-docs/ over a newer one.
+concurrency:
+  group: sync-product-docs
+  cancel-in-progress: true
+
+jobs:
+  sync-docs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      TARGET_BRANCH: "product-docs"
+      SYNC_BRANCH: "sync/community-docs-update"
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Sync community-docs into versions/
+        id: sync
+        run: |
+          # 1. Back up community-docs
+          mkdir -p /tmp/docs-sync
+          rsync -av --delete community-docs/ /tmp/docs-sync/
+
+          # 2. Fetch target branch safely
+          if ! git fetch origin "$TARGET_BRANCH"; then
+            echo "Error: Target branch '$TARGET_BRANCH' does not exist on remote."
+            exit 1
+          fi
+
+          # 3. Create or reset sync branch tracking target
+          git checkout -B "$SYNC_BRANCH" "origin/$TARGET_BRANCH"
+
+          # 4. Mirror content per version.
+          #    Source layout: community-docs/<VERSION>/modules/ROOT/...
+          #    Target layout: versions/<VERSION>/modules/en/...
+          #    nav.adoc is synced alongside pages/ so that page moves upstream
+          #    do not leave dangling xrefs in the product nav.
+          #    antora.yml and the translated modules (de, es, fr, ja, pt, zh)
+          #    are product-specific and are never touched.
+          for src_version_dir in /tmp/docs-sync/*/; do
+            src_version_dir="${src_version_dir%/}"
+            version="$(basename "$src_version_dir")"
+            dest_module="versions/$version/modules/en"
+
+            if [ ! -d "versions/$version" ]; then
+              echo "::warning::Skipping '$version': versions/$version does not exist. Create it (including antora.yml) before syncing."
+              continue
+            fi
+
+            for subdir in pages images assets; do
+              src="$src_version_dir/modules/ROOT/$subdir"
+
+              if [ ! -d "$src" ]; then
+                echo "Skipping '$version/$subdir': not present in community-docs."
+                continue
+              fi
+
+              mkdir -p "$dest_module/$subdir"
+              rsync -av --delete "$src/" "$dest_module/$subdir/"
+            done
+
+            src_nav="$src_version_dir/modules/ROOT/nav.adoc"
+            if [ -f "$src_nav" ]; then
+              mkdir -p "$dest_module"
+              rsync -av "$src_nav" "$dest_module/nav.adoc"
+            else
+              echo "Skipping '$version/nav.adoc': not present in community-docs."
+            fi
+          done
+
+          # 5. Commit if changes are detected
+          if [ -z "$(git status --porcelain -- versions/)" ]; then
+            echo "No changes detected between community-docs/ and versions/."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add versions/
+          # The Source-Commit trailer records which upstream commit this sync
+          # came from. The next run reads it back off the target branch to work
+          # out the commit range for the PR body.
+          git commit \
+            -m "sync: update versions/ from community-docs [${GITHUB_SHA::7}]" \
+            -m "Source-Commit: ${GITHUB_SHA}"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      # The product build runs as the 'test-product' job in test-deploy.yml on
+      # the resulting PR. Because the PR is opened with GITHUB_TOKEN, that run
+      # starts in an approval-required state and needs a maintainer to approve it.
+      - name: Push sync branch and open PR
+        if: steps.sync.outputs.changed == 'true'
+        run: |
+          git push origin "$SYNC_BRANCH" --force
+
+          # Build the PR body. The commit range starts at the Source-Commit
+          # trailer left by the previous sync on the target branch; that branch
+          # is still at its pushed state here, since we only push $SYNC_BRANCH.
+          BODY=/tmp/pr-body.md
+          printf 'Automated sync PR generated from changes in `community-docs/`.\n\n' > "$BODY"
+
+          LAST=$(git log "origin/$TARGET_BRANCH" -1 --grep='^Source-Commit:' --pretty=format:%B \
+                 | sed -n 's/^Source-Commit: *//p' | head -1)
+
+          # --is-ancestor guards against a rebased or force-pushed main, where
+          # $LAST..$GITHUB_SHA would be meaningless.
+          if [ -n "$LAST" ] && git merge-base --is-ancestor "$LAST" "$GITHUB_SHA" 2>/dev/null; then
+            git log --no-merges --pretty=format:'- %h %s' "$LAST..$GITHUB_SHA" -- community-docs/ > /tmp/commits.txt
+            printf '\n' >> /tmp/commits.txt
+            COUNT=$(grep -c '^- ' /tmp/commits.txt || true)
+
+            if [ "$COUNT" -gt 0 ]; then
+              {
+                printf '<details>\n'
+                printf '<summary>%s commit(s) since the last sync (<code>%s</code>…<code>%s</code>)</summary>\n\n' \
+                  "$COUNT" "${LAST::7}" "${GITHUB_SHA::7}"
+                head -n 200 /tmp/commits.txt
+                if [ "$COUNT" -gt 200 ]; then
+                  printf -- '- …and %s more\n' "$((COUNT - 200))"
+                fi
+                printf '\n</details>\n'
+              } >> "$BODY"
+            else
+              printf '_No `community-docs/` commits found since the last sync._\n' >> "$BODY"
+            fi
+          else
+            printf '_No previous sync marker found — commit list unavailable for this run. Subsequent syncs will include one._\n' >> "$BODY"
+          fi
+
+          # Check existing PR with explicit repo targeting
+          if [ -z "$(gh pr list --repo "$GITHUB_REPOSITORY" --head "$SYNC_BRANCH" --base "$TARGET_BRANCH" --state open --json number --jq '.[0].number')" ]; then
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base "$TARGET_BRANCH" \
+              --head "$SYNC_BRANCH" \
+              --title "Sync: Update versions/ contents from community-docs" \
+              --body-file "$BODY"
+          else
+            echo "PR already open. Updated branch $SYNC_BRANCH with latest changes."
+            gh pr edit "$SYNC_BRANCH" --repo "$GITHUB_REPOSITORY" --body-file "$BODY"
+          fi
