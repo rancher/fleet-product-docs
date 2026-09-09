@@ -22,7 +22,6 @@ The rollout configuration options are documented in the ++rolloutStrategy++ fiel
 If ++rolloutStrategy++ is not specified in ++fleet.yaml++, {product_name} uses the default values.
 ====
 
-[#_how_does_partitioning_work]
 == How Does Partitioning Work?
 
 Partitions are solely used for grouping and controlling the rollout of ++BundleDeployments++ across clusters. They do not affect deployment options.
@@ -59,14 +58,12 @@ image::flow-rollout-fleet.png[A visual asset displaying flow of rollout in {prod
 | partitions | Define manual partitions by cluster labels or groups. | –
 |===
 
-[#_automatic_partitioning]
 === Automatic Partitioning
 
 {product_name} automatically creates partitions using ++autoPartitionSize++. For 200 clusters with ++autoPartitionSize: 25%++, it creates 4 partitions of 50 clusters each.
 
 Rollout proceeds in batches of 50 clusters, checking ++maxUnavailable++ before continuing.
 
-[#_manual_partitioning]
 === Manual Partitioning
 
 Manual partitions are defined with the ++partitions++ option. This gives control over cluster selection and rollout order.
@@ -101,6 +98,11 @@ env: prod
 . Waits for readiness.
 . Proceeds to the next partition.
 
+[Note]
+====
+When using manual partitions, Fleet only includes targets that match a configured partition selector in the rollout. Targets that do not match any partition selector are discarded, and no rollout is created for them.
+====
+
 image::deploy-targets-partition.png[A visual asset displaying the flow of partition rollout.]
 
 
@@ -117,7 +119,6 @@ image::partition-rollout-flow.png[A visual asset displaying the flow of deployin
 * {product_name} processes partitions in the order they appear in the ++fleet.yaml++ file.
 ====
 
-[#_single_partition]
 === Single Partition
 
 If ++rolloutStrategy.partitions++ is not defined:
@@ -131,14 +132,12 @@ Example with 200 clusters and ++autoPartitionSize: 25%++:
 . Evaluates readiness.
 . Proceeds if conditions are met.
 
-[#_multiple_partitions]
 === Multiple Partitions
 
 If multiple partitions are defined, {product_name} uses ++maxUnavailablePartitions++ to control rollout.
 
 Rollout pauses if the number of ++NotReady++ partitions exceeds ++maxUnavailablePartitions++.
 
-[#_preventing_image_pull_storms]
 == Preventing Image Pull Storms
 
 Each cluster pulls images during rollout. Hundreds of clusters pulling simultaneously can overload registries.
@@ -165,7 +164,6 @@ Rollout proceeds:
 
 Reduce cluster count per partition to slow rollout further.
 
-[#_use_cases_and_behavior]
 == Use Cases and Behavior
 
 If clusters don’t divide evenly, {product_name} rounds down partition sizes.
@@ -175,7 +173,6 @@ Example: 230 clusters with ++autoPartitionSize: 25%++
 * Four partitions of 57 clusters
 * One partition of 2 clusters
 
-[#_scenario_50_clusters]
 === Scenario: 50 Clusters
 
 [source,yaml]
@@ -189,7 +186,6 @@ maxUnavailable: 10%
 
 image::deploy-50Clusters.png[50 clusters scenario]
 
-[#_scenario_100_clusters]
 === Scenario: 100 Clusters
 
 [source,yaml]
@@ -202,7 +198,6 @@ maxUnavailable: 10%
 * {product_name} deploys to 50, then evaluates readiness.
 * Waits if 10 or more clusters are ++NotReady++.
 
-[#_scenario_200_clusters_auto]
 === Scenario: 200 Clusters (Auto)
 
 [source,yaml]
@@ -215,7 +210,6 @@ autoPartitionSize: 10%
 * 10 partitions of 20 clusters.
 * {product_name} waits if 2 or more partitions are ++NotReady++.
 
-[#_scenario_200_clusters_manual]
 === Scenario: 200 Clusters (Manual)
 
 [source,yaml]
@@ -239,7 +233,6 @@ stage: stable
 
 image::partition-fleet-rollout.png[Manual partitions scenario]
 
-[#_rollout_strategy_defaults]
 == Rollout Strategy Defaults
 
 Defaults:

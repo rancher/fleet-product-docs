@@ -10,7 +10,6 @@ Analyze snapshots created by `fleet monitor`
 fleet analyze [flags] MONITOR_FILE
 ----
 
-[#_options]
 == Options
 
 [source,text]
@@ -23,7 +22,6 @@ fleet analyze [flags] MONITOR_FILE
     --no-color     Disable color in output
 ----
 
-[#_usage]
 == Usage
 
 [source,bash]
@@ -55,7 +53,6 @@ fleet analyze --json monitor.json
 fleet analyze --no-color monitor.json
 ----
 
-[#_output_modes]
 == Output Modes
 
 - **Summary (default)**: High-level overview of resources and diagnostics
@@ -65,7 +62,6 @@ fleet analyze --no-color monitor.json
 - **Detailed**: Complete analysis including controller info, API consistency, and events
 - **JSON**: Machine-readable output for scripts and automation
 
-[#_multi_snapshot_analysis]
 == Multi-Snapshot Analysis
 
 When your monitor.json file contains multiple snapshots (one JSON object per line):
@@ -85,7 +81,6 @@ fleet analyze --all monitor.json
 fleet analyze --compare snapshot2.json snapshot1.json
 ----
 
-[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]

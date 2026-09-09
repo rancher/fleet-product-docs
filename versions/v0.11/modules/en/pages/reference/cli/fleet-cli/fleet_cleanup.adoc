@@ -8,7 +8,6 @@ Clean up outdated cluster registrations
 fleet cleanup [flags]
 ----
 
-[#_options]
 == Options
 
 ----
@@ -23,7 +22,6 @@ fleet cleanup [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

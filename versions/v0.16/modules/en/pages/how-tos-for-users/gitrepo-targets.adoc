@@ -22,7 +22,6 @@ If no targets are specified, i.e. when using a single-cluster, the bundles targe
 
 When deploying `GitRepos` to downstream clusters the clusters must be mapped to a target.
 
-[#_defining_targets]
 == Defining Targets
 
 The deployment targets of `GitRepo` is done using the `spec.targets` field to
@@ -63,7 +62,6 @@ spec:
     clusterName: cluster1
 ----
 
-[#_target_matching]
 == Target Matching
 
 All clusters and cluster groups in the same namespace as the `GitRepo` will be evaluated against all targets.
@@ -99,7 +97,6 @@ targets:
 
 When using {product_name} in Rancher, make sure to put the name of the `clusters.fleet.cattle.io` resource.
 
-[#_default_target]
 == Default Target
 
 If no target is set for the `GitRepo` then the default targets value is applied.  The default targets value is as below.
@@ -114,7 +111,6 @@ targets:
 This means if you wish to setup a default location non-configured GitRepos will go to, then just create a cluster group called default
 and add clusters to it.
 
-[#_customization_per_cluster]
 == Customization per Cluster
 
 [IMPORTANT]
@@ -132,7 +128,6 @@ Target customizations allow you to modify bundle deployments for specific cluste
 
 For a comprehensive guide including merge behavior and advanced patterns, see xref:explanations/target-customization.adoc[Target Customization].
 
-[#_example_firstmatch_mode_environment_specific_configuration]
 === Example: FirstMatch Mode (Environment-Specific Configuration)
 
 This example demonstrates the default `FirstMatch` behavior, where only the first matching customization is applied. We will use https://github.com/rancher/fleet-examples/blob/master/multi-cluster/helm/fleet.yaml[multi-cluster/helm/fleet.yaml].
@@ -192,7 +187,6 @@ targetCustomizations:
 Configuration management is not limited to deployments but can be expanded to general configuration management. {product_name} is able to apply configuration management through customization among any set of clusters automatically.
 ====
 
-[#_example_allmatches_mode_layered_customizations]
 === Example: AllMatches Mode (Layered Customizations)
 
 When customizations represent independent concerns that should be combined, use `AllMatches` mode. This example shows how to layer environment-specific configuration with optional user overrides.
@@ -251,13 +245,11 @@ This avoids the need to create separate customizations for every label combinati
 For more examples and detailed merge behavior, see xref:explanations/target-customization.adoc#_common_patterns[Common Patterns].
 ====
 
-[#_limitations]
 === Limitations
 
 For information about limitations when overriding Helm chart settings, bundle size considerations, and workarounds, see xref:explanations/target-customization.adoc#_limitations_and_considerations[Limitations and Considerations].
 
 
-[#_additional_examples]
 == Additional Examples
 
 Examples using raw Kubernetes YAML, Helm charts, Kustomize, and combinations

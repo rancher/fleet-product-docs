@@ -7,14 +7,12 @@
 components work in a two-stage pull model. The {product_name} controller will pull from git and the
 cluster agents will pull from the {product_name} controller.
 
-[#_productname_controller]
 == {product_name} Controller
 
 The {product_name} controller is a set of Kubernetes controllers running in any standard Kubernetes
 cluster.  The only API exposed by the {product_name} controller is the Kubernetes API, there is no
 custom API for the fleet controller.
 
-[#_cluster_agents]
 == Cluster Agents
 
 One cluster agent runs in each cluster and is responsible for talking to the {product_name} controller.
@@ -30,7 +28,6 @@ The cluster agents are not assumed to have an "always on" connection. They will 
 soon as they can connect. Future enhancements will probably add the ability to schedule times of when
 the agent checks in, as it stands right now they will always attempt to connect.
 
-[#_security]
 == Security
 
 The {product_name} controller dynamically creates service accounts, manages their RBAC and then gives the
@@ -43,19 +40,16 @@ The service accounts given to the clusters only have privileges to list `BundleD
 specifically for that cluster. It can also update the `status` subresource of `BundleDeployment` and the `status`
 subresource of it's `Cluster` resource.
 
-[#_component_overview]
 == Component Overview
 
 An overview of the components and how they interact on a high level.
 
 image::FleetComponents.svg[Static, 600]
 
-[#_service_accounts]
 == Service accounts
 
 {product_name} creates and uses several Kubernetes service accounts to securely manage the GitOps lifecycle. Understanding these service accounts and their permissions helps you maintain a least-privilege security model.
 
-[#_management_cluster_service_accounts]
 === Management cluster service accounts
 
 When you install {product_name} on the upstream management cluster, {product_name} creates service accounts for its core controllers. As you register downstream clusters and add Git repositories, {product_name} dynamically creates additional service accounts with restricted permissions.
@@ -111,7 +105,6 @@ Namespace: ++fleet-default++
 
 {product_name} automatically creates a dedicated service account, role, and role binding for each ++GitRepo++ resource. This isolation helps separate permissions between Git repositories and reduces cross-repository access.
 
-[#_downstream_cluster_service_accounts]
 === Downstream cluster service accounts
 
 Downstream clusters run {product_name} agents that retrieve configuration from the management cluster and perform Helm deployments.

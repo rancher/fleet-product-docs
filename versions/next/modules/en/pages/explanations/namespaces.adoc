@@ -3,16 +3,13 @@
 :page-revdate: {revdate}
 :page-aliases: /namespaces
 
-[#_workload_namespaces]
 == Workload Namespaces
 
-[#_namespace_creation_behavior_in_bundles]
 === Namespace Creation Behavior in Bundles
 
 When deploying a {product_name} bundle, the specified namespace will automatically be
 created if it does not already exist.
 
-[#_configuring_workload_namespaces]
 === Configuring Workload Namespaces
 
 When configuring workload namespaces, it is important to be aware that certain
@@ -26,7 +23,6 @@ xref:reference/ref-fleet-yaml.adoc[fleet.yaml] reference.
 
 image::FleetWorkloadNamespaces.png[Configuring Workload Namespaces]
 
-[#_cross_namespace_deployments]
 === Cross Namespace Deployments
 
 It is possible to create a GitRepo that will deploy across namespaces. The
@@ -75,7 +71,7 @@ created bundles from git by putting labels in the `fleet.yaml` file or on the
 
 [IMPORTANT]
 ====
-The `GitRepoRestriction` resource is deprecated and would be removed in a future release. For comprehensive multi-tenant environment governance, it is highly recommended to use the new `Policy` resource instead. For more information, refer to xref:_restricting_what_tenants_may_do_in_a_namespace[restricting tenant deployments for multi tenancy].
+The `GitRepoRestriction` resource is deprecated and would be removed in a future release. For comprehensive multi-tenant environment governance, it is highly recommended to use the new `Policy` resource instead. For more information, refer to xref:_restricting_tenant_deployments_multi_tenancy[restricting tenant deployments for multi tenancy].
 ====
 
 A namespace can contain multiple `GitRepoRestriction` resources. All `GitRepos`
@@ -140,12 +136,11 @@ allowedTargetNamespaceSelector:
     team: frontend
 ----
 
-[#_restricting_what_tenants_may_do_in_a_namespace]
+[#_restricting_tenant_deployments_multi_tenancy]
 === Restricting What Tenants May Do in a Namespace
 
 A namespace can contain one or more `Policy` resources that restrict which service accounts, credential secrets, and source repositories the `GitRepo`, `HelmOp`, and `Bundle` resources in that namespace may use. Downstream namespace restrictions are not expressed at this layer — they are encoded as RBAC on the tenant's downstream `ServiceAccount`. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the trust model and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the operator recipe.
 
-[#_productname_namespaces]
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom
@@ -157,7 +152,6 @@ multi-tenant fashion.
 
 image::FleetNamespaces.svg[Namespace]
 
-[#_gitrepos_bundles_clusters_clustergroups]
 === GitRepos, Bundles, Clusters, ClusterGroups
 
 All selectors for `GitRepo` targets will be evaluated against the `Clusters`
@@ -196,7 +190,6 @@ If you are using {product_name} in a xref:explanations/concepts.adoc[single clus
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct
 repo that will map to the right target clusters.
 
-[#_internal_namespaces]
 === Internal Namespaces
 
 ==== Cluster Registration Namespace: fleet-local

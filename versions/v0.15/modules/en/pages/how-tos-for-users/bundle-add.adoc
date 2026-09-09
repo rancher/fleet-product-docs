@@ -1,5 +1,4 @@
 = Create a Bundle Resource
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /bundle-add
@@ -65,7 +64,6 @@ spec:
   - clusterName: local
 ----
 
-[#_targets]
 == Targets
 
 The bundle can target multiple clusters. It uses the same xref:how-tos-for-users/gitrepo-targets.adoc#_target_matching[targeting as the GitRepo].
@@ -83,7 +81,6 @@ targets:
       replicas: 1
 ----
 
-[#_limitations]
 == Limitations
 
 Helm options related to downloading the helm chart will be ignored. The helm chart is downloaded by the fleet-cli, which creates the bundles. The bundle has to contain all the resources from the chart. Therefore the bundle will ignore:

@@ -8,7 +8,6 @@ For installations with multiple tens up to hundreds of Git repos, and in general
 
 {product_name} currently supports Azure DevOps, GitHub, GitLab, Bitbucket, Bitbucket Server, and Gogs.
 
-[#_1_configure_the_webhook_service_product_name_uses_a_gitjob_service_to_handle_webhook_requests_create_an_ingress_that_points_to_the_gitjob_service]
 == 1. Configure the webhook service. {product_name} uses a gitjob service to handle webhook requests. Create an ingress that points to the gitjob service.
 
 [,yaml]
@@ -58,6 +57,54 @@ spec:
                 number: 80
 ----
 
+Ingress Nginx has been https://kubernetes.io/blog/2025/11/11/ingress-nginx-retirement/[retired], here is an example using Traefik:
+
+[source,yaml]
+----
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  annotations:
+    traefik.ingress.kubernetes.io/router.middlewares: cattle-fleet-system-gitjob-stripprefix@kubernetescrd
+    traefik.ingress.kubernetes.io/router.priority: '100'
+  name: webhook-ingress
+  namespace: cattle-fleet-system
+spec:
+  ingressClassName: traefik
+  rules:
+    - host: your.domain.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: gitjob
+                port:
+                  number: 80
+            path: /gitjob(/|$)(.*)
+            pathType: ImplementationSpecific
+----
+
+[NOTE]
+====
+Use the annotation `traefik.ingress.kubernetes.io/router.priority: '100'` only when two Ingress resources can conflict. This annotation assigns a higher priority to the GitJob route. This depends on the `pathType` property. When `pathType` is set to Prefix, the annotation is required. 
+====
+
+This configuration requires a middleware to strip the additional path from the URL, since `gitjob` responds directly from the root path. This is equivalent to the `nginx.ingress.kubernetes.io/rewrite-target` annotation in Nginx:
+
+[source,yaml]
+----
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: gitjob-stripprefix
+  namespace: cattle-fleet-system
+spec:
+  stripPrefix:
+    prefixes:
+      - /gitjob
+----
+This approach allows a smooth migration from Ingress Nginx to Traefik while keeping the application configuration unchanged.
+
 [IMPORTANT]
 ====
 
@@ -65,7 +112,6 @@ You can configure https://kubernetes.io/docs/concepts/services-networking/ingres
 ====
 
 
-[#_2_go_to_your_webhook_provider_and_configure_the_webhook_callback_url_here_is_a_github_example]
 == 2. Go to your webhook provider and configure the webhook callback url. Here is a Github example.
 
 image::webhook.png[Static, 600]
@@ -88,7 +134,6 @@ If you configured the webhook the polling interval will be automatically adjuste
 ====
 
 
-[#_3_optional_configure_webhook_secret_the_secret_is_for_validating_webhook_payload_make_sure_to_put_it_in_a_k8s_secret_called_gitjob_webhook_in_cattle_fleet_system]
 == 3. (Optional) Configure webhook secret. The secret is for validating webhook payload. Make sure to put it in a k8s secret called `gitjob-webhook` in `cattle-fleet-system`.
 
 |===
@@ -133,5 +178,4 @@ For Azure DevOps:
 kubectl create secret generic gitjob-webhook -n cattle-fleet-system --from-literal=azure-username=user --from-literal=azure-password=pass123
 ----
 
-[#_4_go_to_your_git_provider_and_test_the_connection_you_should_get_a_http_response_code]
 == 4. Go to your git provider and test the connection. You should get a HTTP response code.

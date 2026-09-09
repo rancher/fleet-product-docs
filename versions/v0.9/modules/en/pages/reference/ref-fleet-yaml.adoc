@@ -9,7 +9,6 @@ For more information on how to use the `fleet.yaml` to customize bundles see xre
 
 The content of the fleet.yaml corresponds to the struct at https://github.com/rancher/fleet/blob/b501b7e7864d37e310dfcdb109c73e5aec4240bb/pkg/bundlereader/read.go#L132-L139[pkg/bundlereader/read.go], which contains the xref:reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
-[#_reference]
 == Reference
 
 .fleet.yaml
@@ -199,7 +198,7 @@ targetCustomizations:
   clusterSelector:
     matchLabels:
       env: prod
-  # A selector used to match a specific cluster by name. When using {product_name} in
+  # A selector used to match a specific cluster by name. When using Fleet in
   # Rancher, make sure to put the name of the clusters.fleet.cattle.io resource.
   clusterName: dev-cluster
   # A selector used to match cluster groups.
@@ -224,7 +223,7 @@ dependsOn:
       matchLabels:
         app: weak-monkey
 
-# Ignore fields when monitoring a Bundle. This can be used when {product_name} thinks some conditions in Custom Resources
+# Ignore fields when monitoring a Bundle. This can be used when Fleet thinks some conditions in Custom Resources
 # makes the Bundle to be in an error state when it shouldn't.
 ignore:
   # Conditions to be ignored

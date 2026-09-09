@@ -3,10 +3,10 @@
 :page-revdate: {revdate}
 :date: 2025-02-19 16:56:42 +0000 UTC
 
-[#_release_note]
+*(github-actions[bot]) released this 2025-02-19 16:56:42 +0000 UTC*
+
 == Release Note
 
-[#_what_s_changed]
 === What's Changed
 
 * Prevent empty Patch updates by https://github.com/aruiz14[@aruiz14] in https://github.com/rancher/fleet/pull/3251[#3251]
@@ -18,7 +18,6 @@
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.3...v0.11.4[v0.11.3...v0.11.4]
 
-[#_download]
 == Download
 
 * https://github.com/rancher/fleet/releases/download/v0.11.4/fleet-crd-0.11.4.tgz[fleet-crd-0.11.4.tgz]

@@ -1,5 +1,4 @@
 = fleet cleanup gitjob
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet_cleanup_gitjob
@@ -11,7 +10,6 @@ Clean up outdated git jobs
 fleet cleanup gitjob [flags]
 ----
 
-[#_options]
 == Options
 
 ----
@@ -24,7 +22,6 @@ fleet cleanup gitjob [flags]
   -n, --namespace string    namespace (default "fleet-local")
 ----
 
-[#_see_also]
 == SEE ALSO
 
 * xref:reference/cli/fleet-cli/cleanup/fleet_cleanup.adoc[fleet cleanup]	 - Clean up outdated resources

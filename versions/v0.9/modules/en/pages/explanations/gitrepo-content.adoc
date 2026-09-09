@@ -14,14 +14,13 @@ you want to make sure the directories you are scanning in git do not contain
 arbitrarily large resources. Right now there is a limitation that the resources
 deployed must *gzip to less than 1MB*.
 
-[#_how_repos_are_scanned]
 == How repos are scanned
 
 Multiple paths can be defined for a `GitRepo` and each path is scanned independently.
 Internally each scanned path will become a xref:explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
-The following files are looked for to determine the how the resources will be deployed.
+{product_name} looks for the following files to determine how resources will be deployed.
 
 |===
 | File | Location | Meaning
@@ -47,7 +46,6 @@ The following files are looked for to determine the how the resources will be de
 | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
-[#_excluding_files_and_directories_from_bundles]
 === Excluding files and directories from bundles
 
 {product_name} supports file and directory exclusion by means of `.fleetignore` files, in a similar fashion to how `.gitignore`
@@ -85,7 +83,6 @@ This currently comes with a few limitations, the following not being supported:
 * Double asterisks (`+**+`)
 * Explicit inclusions with `!`
 
-[#_fleet_yaml]
 == `fleet.yaml`
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
@@ -113,7 +110,6 @@ The available fields are documented in the xref:reference/ref-fleet-yaml.adoc[fl
 For a private Helm repo, users can reference a secret from the git repo resource.
 See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories] for more information.
 
-[#_using_helm_values]
 == Using Helm Values
 
 *How changes are applied to `values.yaml`*:
@@ -121,7 +117,6 @@ See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Usi
 * Note that the most recently applied changes to the `values.yaml` will override any previously existing values.
 * When changes are applied to the `values.yaml` from multiple sources at the same time, the values will update in the following order: `helm.values` \-> `helm.valuesFiles` \-> `helm.valuesFrom`. That means `valuesFrom` will take precedence over both, `valuesFiles` and `values`.
 
-[#_using_valuesfrom]
 === Using ValuesFrom
 
 These examples showcase the style and format for using `valuesFrom`. ConfigMaps and Secrets should be created in _downstream clusters_.
@@ -179,11 +174,10 @@ helm:
     replicas: "4"
 ----
 
-[#_per_cluster_customization]
 == Per Cluster Customization
 
 The `GitRepo` defines which clusters a git repository should be deployed to and the `fleet.yaml` in the repository
-determines how the resources are customized per target.
+determines how resources are customized per target.
 
 All clusters and cluster groups in the same namespace as the `GitRepo` will be evaluated against all targets of that
 `GitRepo`. The targets list is evaluated one by one and if there is a match the resource will be deployed to the cluster.
@@ -223,10 +217,9 @@ targetCustomizations:
 
 Refer to xref:how-tos-for-users/gitrepo-targets.adoc[Mapping to Downstream Clusters] for more information and a list of supported customizations.
 
-[#_raw_yaml_resource_customization]
 == Raw YAML Resource Customization
 
-When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how the resource are
+When using Kustomize or Helm the `kustomization.yaml` or the `helm.values` will control how resource are
 customized per target cluster. If you are using raw YAML then the following simple mechanism is built-in and can
 be used.  The `overlays/` folder in the git repo is treated specially as folder containing folders that
 can be selected to overlay on top per target cluster. The resource overlay content

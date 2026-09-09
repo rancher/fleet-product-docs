@@ -116,4 +116,4 @@ After installing {product_name} in Rancher these resources are created in the up
 | fleet-agent-local
 |===
 
-Also see [namespaces]
+Also see xref:explanations/namespaces.adoc[Namespaces].
