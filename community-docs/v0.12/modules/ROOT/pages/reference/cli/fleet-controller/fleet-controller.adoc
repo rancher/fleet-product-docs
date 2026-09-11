@@ -8,6 +8,7 @@ Manage the Fleet controller that communicates with the Fleet agent
 fleet-controller [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -25,6 +26,7 @@ fleet-controller [flags]
       --zap-time-encoding time-encoding   Zap time encoding (one of 'epoch', 'millis', 'nano', 'iso8601', 'rfc3339' or 'rfc3339nano'). Defaults to 'epoch'.
 ----
 
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-controller/fleet-controller_agentmanagement.adoc[fleet-controller agentmanagement]	 - Configure Fleet agent management

@@ -74,6 +74,7 @@ helmOp:
     - tenant-1/.*
 ----
 
+[#_aggregation]
 == Aggregation
 
 Multiple Policy objects in the same namespace are aggregated:
@@ -84,6 +85,7 @@ Multiple Policy objects in the same namespace are aggregated:
 
 Because allow-lists union across all Policy objects in the namespace, write access to Policy must be restricted to administrators. A tenant who can create their own Policy in their namespace can extend the allow-list. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the required RBAC.
 
+[#_where_each_field_is_enforced]
 == Where each field is enforced
 
 [cols="3,1,1,1", options="header"]
