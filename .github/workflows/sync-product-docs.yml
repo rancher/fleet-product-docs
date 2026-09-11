@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'community-docs/**'
+      - '!community-docs/v0.9/**'
+      - '!community-docs/v0.10/**'
+      - '!community-docs/v0.11/**'
   workflow_dispatch:
 
 # Serialize on a static group: every run contends for the same sync branch and
