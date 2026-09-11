@@ -63,6 +63,11 @@ jobs:
             version="$(basename "$src_version_dir")"
             dest_module="versions/$version/modules/en"
 
+            if [ "$version" = "v0.9" ] || [ "$version" = "v0.10" ] || [ "$version" = "v0.11" ]; then
+              echo "Skipping excluded version '$version'."
+              continue
+            fi
+
             if [ ! -d "versions/$version" ]; then
               echo "::warning::Skipping '$version': versions/$version does not exist. Create it (including antora.yml) before syncing."
               continue
