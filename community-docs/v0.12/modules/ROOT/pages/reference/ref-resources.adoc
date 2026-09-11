@@ -4,6 +4,7 @@
 
 After installing {product_name} in Rancher these resources are created in the upstream cluster.
 
+[#_from_helm_initial_setup]
 == From Helm (Initial Setup)
 
 [cols="1,2,2", options="header"]
@@ -27,6 +28,7 @@ After installing {product_name} in Rancher these resources are created in the up
 
 |===
 
+[#_generated_resources]
 == Generated Resources
 
 [cols="1,2,2", options="header"]
@@ -41,6 +43,7 @@ After installing {product_name} in Rancher these resources are created in the up
 
 |===
 
+[#_resources_for_each_registered_cluster]
 == Resources for Each Registered Cluster
 
 [cols="1,2,2", options="header"]
