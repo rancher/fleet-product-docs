@@ -1,7 +1,6 @@
 = Key Personas and Their Roles
 :revdate: 2025-07-23
 :page-revdate: {revdate}
-:page-languages: [en, de, es, fr, ja, pt, zh]
 
 [cols="1,2,2", options="header"]
 |===

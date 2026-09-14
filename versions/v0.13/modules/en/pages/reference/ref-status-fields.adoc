@@ -11,6 +11,7 @@ Since the states from the BundleDeployments are propagated to the Bundle, GitRep
 
 By looking at the GitRepo, the states of all resources related to the GitRepo are displayed there. When looking at the Cluster, the states of all Bundles in that Cluster are displayed, which may span across many GitRepos. When looking at the Bundle, the states of all BundleDeployments in that Bundle are displayed.
 
+[#_ready_condition]
 === Ready Condition
 
 The `Ready` condition is used to determine if the BundleDeployments are in a `Ready` state.  
@@ -31,44 +32,23 @@ status:
     type: Ready
 ----
 
+[#_ready_status_determination]
 ==== Ready Status Determination
 
 {product_name} uses the `kstatus` package of the `sigs.k8s.io/cli-utils` module to determine the Ready status of BundleDeployments based on the status of their resources.  
 For details, see the link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` package README].
 
+[#_propagation_of_ready_status]
 ==== Propagation of Ready Status
 
-[mermaid]
-....
-flowchart TB
-  subgraph Upstream Cluster
-    gr[GitRepo]
-    c[Cluster]
-    cg[ClusterGroup]
-    b[Bundle]
-    bd[BundleDeployment]
-  end
-  
-  subgraph Downstream Clusters
-    a[Agent]
-  end
-  gr -->|triggers creation or update| b
-  b  -->|triggers creation or update| bd
-  bd -->|triggers deployment| a
-  a  -->|updates status| bd
-  bd -->|triggers status update| b
-  bd -->|triggers status update| c
-  b  -->|triggers status update| gr
-  c  -->|triggers status update| cg
-  linkStyle 0,1,2 stroke:#0000AA,stroke-width:2px;
-  linkStyle 3,4,5,6,7 stroke:#00AA00,stroke-width:2px;
-....
+image::PropogationReadyStatus.svg[Propagation of Ready status]
 
+[#_display_state]
 === Display State
 
 The `status.display` field provides a summary of the state. States are ranked, and the worst possible state is used as the `state` in the `status.display` field.
 
-[[state-ranking]]
+[#_state_ranking]
 ==== State Ranking
 
 This is the ranking in which states are displayed. If a Bundle has BundleDeployments in different states, the worst state is used in the `status.display.state` field.  
@@ -87,6 +67,7 @@ From best to worst:
 [#_bundles]
 == Bundles
 
+[#_bundle_statuses]
 === Bundle Statuses
 
 * *Ready* : Bundles have been deployed, and all resources are ready. If not, the `message` field of the `Ready` condition contains an aggregation of BundleDeployment states.
@@ -102,10 +83,12 @@ From best to worst:
 [#_clusters]
 == Clusters
 
+[#_cluster_specific_states]
 === Cluster-Specific States
 
 * *WaitCheckIn* : Waiting for the agent to report registration info and cluster status.
 
+[#_states_from_bundles]
 === States from Bundles
 
 * *Ready* : All Bundles in this cluster are deployed, and resources are ready.
@@ -141,7 +124,7 @@ From best to worst:
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
 
 * `readyBundleDeployments` : A string in the form `%d/%d` showing the number of ready versus total bundle deployments.
-* `state` : Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the <<state-ranking,State Ranking>>. If `Ready`, it’s set to an empty value.
+* `state` : Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the <<_state_ranking,State Ranking>>. If `Ready`, it’s set to an empty value.
 * `message` : Contains relevant deployment condition messages.
 * `error` : `true` if an error message exists.
 
@@ -150,19 +133,8 @@ The `status.display` fields are shared between GitRepos and GitOps. Both resourc
 
 Resources deployed to target clusters are categorized under `GitRepos` and `HelmOps`.
 
-=== GitRepos
 
-The deployed resources are listed under `GitRepos` in `status.Resources`, derived from `bundleDeployments`.
-
-=== HelmOps
-
-Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
-
-[#_resource_counts]
-== Resource Counts
-
-This shows how resource counts propagate between resources.
-
+[#_gitrepos]
 === GitRepos
 
 The `status.ResourceCounts` list for GitRepos is derived from `bundleDeployments`.
@@ -213,6 +185,7 @@ perClusterResourceCounts:
 
 This helps to identify which clusters have incomplete or inconsistent deployments at a glance.
 
+[#_bundledeployment]
 === BundleDeployment
 
 The `BundleDeployment` resource includes two additional fields for better visibility:
@@ -220,14 +193,32 @@ The `BundleDeployment` resource includes two additional fields for better visibi
 * `incompleteState`: which is set to true if non-ready or modified resources status has more than 10 items.
 * `resourceCounts`: which counts the number of resources by their state.
 
+[#_helmops]
 === HelmOps
 
 The `status.ResourceCounts` list for HelmOps is derived from `bundleDeployments`.
 
+[#_resource_counts]
+== Resource Counts
+
+This shows how resource counts propagate between resources.
+
+[#_gitrepos_2]
+=== GitRepos
+
+The deployed resources are listed under `GitRepos` in `status.Resources`, derived from `bundleDeployments`.
+
+[#_helmops_2]
+=== HelmOps
+
+Similarly, deployed resources for `HelmOps` are listed in `status.Resources`, derived from `bundleDeployments`.
+
+[#_clusters_2]
 === Clusters
 
 In Clusters, `status.ResourceCounts` is derived from GitRepos.
 
+[#_clustergroups]
 === ClusterGroups
 
 In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.
@@ -235,73 +226,4 @@ In ClusterGroups, `status.ResourceCounts` is derived from GitRepos.
 [#_class_diagram]
 == Class Diagram
 
-[mermaid]
-....
-classDiagram
-    direction TB
-    class HelmOp {
-        HelmOpStatus Status
-    }
-    class GitRepo {
-        GitRepoStatus Status
-    }
-    class HelmOpStatus {
-        StatusBase
-        metav1.Time LastPollingTime
-        string Version
-    }
-    class GitRepoStatus {
-        StatusBase
-        int64 ObservedGeneration
-        int64 UpdateGeneration
-        string Commit
-        string WebhookCommit
-        string GitJobStatus
-        metav1.Time LastSyncedImageScanTime
-        metav1.Time LastPollingTime
-    }
-    class StatusBase {
-        int ReadyClusters
-        int DesiredReadyClusters
-        BundleSummary Summary
-        StatusDisplay Display
-        []genericcondition.GenericCondition Conditions
-        []Resource Resources
-        ResourceCounts ResourceCounts
-        map[string]*ResourceCounts PerClusterResourceCounts
-    }
-    class StatusDisplay {
-        string ReadyBundleDeployments
-        string State
-        string Message
-        bool Error
-    }
-    class BundleSummary {
-        int NotReady
-        int WaitApplied
-        int ErrApplied
-        int OutOfSync
-        int Modified
-        int Ready
-        int Pending
-        int DesiredReady
-        NonReadyResource[] NonReadyResources
-    }
-    class ResourceCounts {
-        int Ready
-        int DesiredReady
-        int WaitApplied
-        int Modified
-        int Orphaned
-        int Missing
-        int Unknown
-        int NotReady
-    }
-    HelmOp "1" --> "1" HelmOpStatus : Status
-    GitRepo "1" --> "1" GitRepoStatus : Status
-    HelmOpStatus "1" --|> "1" StatusBase : embeds StatusBase
-    GitRepoStatus "1" --|> "1" StatusBase : embeds StatusBase
-    StatusBase "1" --> "1" StatusDisplay : Display
-    StatusBase "1" --> "1" BundleSummary : Summary
-    StatusBase "1" --> "1" ResourceCounts : ResourceCounts
-....
+image::ClusterGroups_classDiagram.svg[Propagation of Ready status]

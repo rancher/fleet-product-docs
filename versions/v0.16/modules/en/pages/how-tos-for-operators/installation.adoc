@@ -157,7 +157,7 @@ helm -n cattle-fleet-system upgrade fleet fleet/fleet \
 When interacting with git repositories through SSH, strict host key checks are enabled by default, meaning that
 {product_name} will reject SSH connection attempts to hosts for which no `known_hosts` entry exists.
 
-More information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[strict host key checks].
+More information, refer to s xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[strict host key checks].
 
 By default, Fleet installs `known_hosts` entries for a few widely used git hosting providers.
 
@@ -316,6 +316,7 @@ clusters:
     server: https://example.com:6443
 ----
 
+[#_extract_ca_certificate]
 ==== Extract CA Certificate
 
 The `certificate-authority-data` field is Base64 encoded.  
@@ -340,6 +341,7 @@ For multi-cluster kubeconfigs:
 kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem
 ----
 
+[#_extract_api_server]
 ==== Extract API Server
 
 [source,bash]
@@ -348,6 +350,7 @@ API_SERVER_URL=$(kubectl config view -o json --raw | jq -r '.clusters[] | select
 API_SERVER_CA="ca.pem"
 ----
 
+[#_validate]
 ==== Validate
 
 Verify the API server URL:
