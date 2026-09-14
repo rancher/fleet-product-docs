@@ -7,6 +7,7 @@ This page describes the trust model {product_name} uses to support multiple tena
 
 For the operator setup recipe, see xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup]. For the field-by-field schema of the resource enforcing the model, see xref:reference/ref-policy.adoc[Policy Resource].
 
+[#_the_trust_model]
 == The Trust Model
 
 {product_name} runs upstream on a manager cluster and deploys workloads downstream by impersonating a `ServiceAccount` on each target cluster. Tenant isolation is the question of who decides which `ServiceAccount` a tenant's workloads run as, and which permissions that account holds on the downstream cluster.
@@ -18,6 +19,7 @@ For the operator setup recipe, see xref:how-tos-for-operators/tenant-setup.adoc[
 
 The upstream enforcement mechanism is the `Policy` custom resource.
 
+[#_the_policy_resource]
 == The Policy Resource
 
 A `Policy` lives in the same namespace as the tenant's `GitRepo`, `HelmOp`, and `Bundle` resources. It carries the operator's restrictions:
@@ -29,6 +31,7 @@ If a tenant submits a resource that violates the active `Policy`, the resource's
 
 For the full field reference, see xref:reference/ref-policy.adoc[Policy Resource].
 
+[#_aggregation]
 === Aggregation
 
 A namespace may contain multiple `Policy` objects. The reconcilers aggregate them with OR/union semantics, sorted by name:
@@ -39,6 +42,7 @@ A namespace may contain multiple `Policy` objects. The reconcilers aggregate the
 
 This makes `Policy` composable across multiple administrators, but it implies that tenants must not have write access to `Policy` objects in their own namespace. A tenant who can create their own `Policy` can extend the allow-list and reference service accounts the operator did not intend to grant. The xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] guide spells out the required RBAC.
 
+[#_the_pre_existing_serviceaccount_requirement]
 == The Pre-Existing ServiceAccount Requirement
 
 When a `GitRepo`, `HelmOp`, or `Bundle` deploys downstream, the {product_name} agent impersonates the named `ServiceAccount` on the downstream cluster. The {product_name} manager does not create that `ServiceAccount` for you — it must already exist before the deployment runs.
@@ -49,6 +53,7 @@ In practice, the operator is responsible for creating the `ServiceAccount` (plus
 
 If a tenant's resource names a `ServiceAccount` that does not exist on the downstream cluster, the deployment fails with a clear error.
 
+[#_the_default_fleet_default_serviceaccount]
 == The Default `fleet-default` ServiceAccount
 
 A tenant resource does not have to name a `ServiceAccount` explicitly. When none is configured, the {product_name} agent looks for a `ServiceAccount` named `fleet-default` in the `cattle-fleet-system` namespace on the downstream cluster and impersonates it if it exists.
@@ -59,6 +64,7 @@ For this reason, do not treat the absence of a `ServiceAccount` as a security bo
 
 The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallback, or the agent itself — is also the identity used to apply `namespaceLabels` and `namespaceAnnotations` to the target namespace. Those namespace mutations are therefore gated by the same downstream RBAC as the deployment itself, rather than by the agent's cluster-admin credentials whenever a `ServiceAccount` is resolved.
 
+[#_namespace_creation]
 == Namespace Creation
 
 By default, {product_name} lets Helm create the target namespace if it does not already exist. Creating a namespace requires the `create` verb on the cluster-scoped `namespaces` resource. That verb cannot be confined to a single namespace or tenant: granting it to a tenant's `ServiceAccount` lets that tenant create *any* namespace on the downstream cluster, which breaks the isolation that pinning to a `ServiceAccount` is meant to provide.
@@ -74,6 +80,7 @@ Two properties of this field are worth noting:
 
 Disabling namespace creation does not disable namespace *mutation*: `namespaceLabels` and `namespaceAnnotations` are still applied to the existing namespace, as the resolved `ServiceAccount` and gated by its downstream RBAC (see above).
 
+[#_what_policy_deliberately_does_not_cover]
 == What Policy Deliberately Does Not Cover
 
 `Policy` has no field that restricts which downstream namespaces a tenant may deploy to. This is intentional: namespace restrictions are the responsibility of the downstream cluster's RBAC on the tenant's `ServiceAccount`, not of {product_name}.
@@ -82,6 +89,7 @@ If a tenant should only be able to write to namespaces `app-1` and `app-2` on a 
 
 Splitting the responsibility this way means downstream RBAC remains the single source of truth for downstream authority. {product_name}'s job is to make sure the right `ServiceAccount` is used; the permissions of that `ServiceAccount` are the operator's job to set.
 
+[#_why_requireserviceaccount_is_its_own_field]
 == Why `requireServiceAccount` Is Its Own Field
 
 The `Policy` resource declares `requireServiceAccount` as a distinct field rather than inferring the requirement from the presence of a default and an allow-list. The declarative form is preferred for two reasons:
@@ -89,12 +97,14 @@ The `Policy` resource declares `requireServiceAccount` as a distinct field rathe
 * It expresses operator intent explicitly. Auditing a `Policy` answers the question "must this tenant set a `ServiceAccount`?" by looking at one field.
 * It makes the rule uniform across `GitRepo`, `HelmOp`, and `Bundle`. A separate default per resource kind would not extend to the Bundle reconciler, which validates without applying defaults.
 
+[#_where_gitreporestriction_fits]
 == Where GitRepoRestriction Fits
 
 The `GitRepoRestriction` custom resource predates `Policy`. It will be deprecated in v0.17 and may be removed as soon as v0.18; it remains supported until removed. Do not use it for security-sensitive setups: its repo patterns are matched unanchored, meaning a pattern like `github.com/myorg` also matches a URL such as `https://evil.com/?ref=github.com/myorg`. It also has no coverage of `HelmOp` or `Bundle` resources, so a tenant who can create those resources bypasses `GitRepoRestriction` entirely. `Policy` covers what `GitRepoRestriction` did for `GitRepo` and extends the same model to `HelmOp` and `Bundle`, with anchored regex patterns and a clearer separation between upstream enforcement and downstream authority.
 
 Operators migrating an existing setup should follow xref:how-tos-for-operators/tenant-setup.adoc#_migration_from_gitreporestriction[Migration from GitRepoRestriction] in the Tenant Setup guide.
 
+[#_glossary]
 == Glossary
 
 * *Tenant*: a team or project that shares a {product_name} manager (and often downstream clusters) with other teams. Tenants are isolated at the upstream namespace level and at the downstream `ServiceAccount` RBAC level.

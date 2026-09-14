@@ -9,6 +9,7 @@ For more information about customizing bundles using `fleet.yaml`, see xref:expl
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`], which contains the xref:/reference/ref-crds.adoc#_bundlespec[BundleSpec].
 
+[#_full_example]
 == Full Example
 
 [%collapsible]
@@ -138,10 +139,13 @@ overrideTargets:
 ----
 ====
 
+[#_helm_options]
 == Helm Options
 
+[#_main_options]
 === Main options
 
+[#_chart]
 ==== chart
 
 This specifies a custom location for the Helm chart. This can refer to any go-getter URL or OCI registry based Helm
@@ -157,6 +161,7 @@ However, this does not work with custom CA bundles.
 See link:https://github.com/rancher/fleet/issues/3646[fleet#3646].
 ====
 
+[#_version]
 ==== version
 
 [NOTE]
@@ -166,6 +171,7 @@ See link:https://github.com/rancher/fleet/issues/3646[fleet#3646].
 OCI registries don't support the `{plus}` character.
 ====
 
+[#_how_fleet_agent_deploys_the_bundle]
 === How fleet-agent deploys the bundle
 
 - releaseName
@@ -177,18 +183,21 @@ OCI registries don't support the `{plus}` character.
 - skipSchemaValidation
 - waitForJobs
 
+[#_helm_chart_download_options]
 === Helm Chart Download Options
 
 - chart
 - repo
 - version
 
+[#_helm_chart_value_options]
 === Helm Chart Value Options
 
 - values
 - valuesFiles
 - valueFrom
 
+[#_values]
 == Values
 
 Values are processed in different stages of the xref:explanations/ref-bundle-stages.adoc[Bundle lifecycle]
@@ -197,6 +206,7 @@ Values are processed in different stages of the xref:explanations/ref-bundle-sta
 * templating `${ }`
 * valuesFrom
 
+[#_templating]
 == Templating
 
 link:https://masterminds.github.io/sprig/[sprig templating library]

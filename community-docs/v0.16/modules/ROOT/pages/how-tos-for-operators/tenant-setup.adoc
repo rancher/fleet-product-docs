@@ -21,6 +21,7 @@ Tenant isolation in {product_name} relies on each of the three layers being conf
 ====
 
 
+[#_step_1_upstream_tenant_rbac]
 == Step 1 — Upstream Tenant RBAC
 
 Each tenant gets one or more upstream namespaces (in stand-alone {product_name}) or one or more `FleetWorkspace` objects (in a Rancher-integrated setup). Inside those namespaces, the tenant may create and manage their own `GitRepo`, `HelmOp`, and `Bundle` resources. They must *not* create, update, patch, or delete `Policy` objects.
@@ -36,6 +37,7 @@ Whether to grant access to `Cluster`, `ClusterGroup`, and `ClusterRegistrationTo
 
 Both examples below include the cluster resources. Remove them if using the operator-managed model.
 
+[#_stand_alone_productname]
 === Stand-alone {product_name}
 
 This creates a tenant whose service account can manage their own resources in namespace `workspace1`. The `tenant1-policy-read` role is optional — omit it if you prefer tenants not to see the `Policy` directly.
@@ -70,6 +72,7 @@ kubectl create rolebinding tenant1-policy-read -n workspace1 \
 
 For a second tenant in their own namespace, repeat with a different name and namespace; the two `ClusterRole` objects can be reused.
 
+[#_rancher_integrated_productname]
 === Rancher-integrated {product_name}
 
 In a Rancher-integrated setup, Rancher's own auth provider (local users, LDAP, OIDC) manages tenant identity — no `ServiceAccount` needs to be created. Each tenant gets a `FleetWorkspace` and the tenant's users get a `GlobalRole` that grants the necessary verbs on the workspace's backing namespace.
@@ -158,6 +161,7 @@ ifeval::["{product}" == "continuous-delivery"]
 Assign the `GlobalRole` to users or groups; see the https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher docs] for details.
 endif::[]
 
+[#_allow_tenants_to_target_downstream_clusters]
 === Allow Tenants to Target Downstream Clusters
 
 In the operator-managed model, the operator places a `BundleNamespaceMapping` in the tenant's namespace to connect their bundles to the clusters registered in the operator-owned namespace. In the tenant-managed model, no `BundleNamespaceMapping` is needed — the tenant's resources and clusters share the same namespace.
@@ -183,6 +187,7 @@ namespaceSelector:
 See xref:explanations/namespaces.adoc#_cross_namespace_deployments[Cross Namespace Deployments] for the full mechanism.
 
 
+[#_step_2_downstream_serviceaccount_and_rbac]
 == Step 2 — Downstream ServiceAccount and RBAC
 
 For each downstream cluster a tenant will deploy to, the operator creates a `ServiceAccount` plus a `Role` (or `ClusterRole`) and `RoleBinding` describing what that tenant may do on the cluster. This RBAC is the source of truth for the tenant's downstream authority — see xref:explanations/multi-tenancy.adoc#_the_pre_existing_serviceaccount_requirement[The Pre-Existing ServiceAccount Requirement].
@@ -262,6 +267,7 @@ roleRef:
 
 This `Role` grants the tenant write access to a small set of resource kinds in a specific namespace. Using `Role` rather than `ClusterRole` is deliberate: a `Role` confines the tenant to the named namespace and prevents creation of cluster-scoped resources such as `Namespace`, `ClusterRole`, or `PersistentVolume`. If a tenant genuinely needs to manage cluster-scoped resources, use a `ClusterRole` and be explicit about which resource kinds and verbs are granted — a `ClusterRole` with `verbs: ["*"]` on all resources is equivalent to cluster-admin. Adapt the resource list, verbs, and namespace set to what each tenant actually needs.
 
+[#_bootstrap_pattern_roll_out_tenant_serviceaccounts_to_all_downstream_clusters]
 === Bootstrap Pattern: Roll Out Tenant ServiceAccounts to All Downstream Clusters
 
 In a realistic deployment with many downstream clusters, the operator does not apply the YAML above to each cluster by hand. Instead, the operator uses {product_name} itself — from a privileged upstream namespace that the operator alone controls — to fan the manifests out to every relevant downstream cluster.
@@ -300,6 +306,7 @@ A few things to note about this bootstrap:
 * For tenants whose downstream surface differs per cluster, structure the git repository so each cluster's RBAC lives in a per-cluster directory and use the GitRepo's `targetCustomizations` to select the right directory per cluster.
 
 
+[#_step_3_the_policy]
 == Step 3 — The Policy
 
 With the upstream RBAC and downstream ``ServiceAccount``s in place, the `Policy` in the tenant's upstream namespace ties the two together. It declares that the tenant must use one of the allowed ``ServiceAccount``s and may pull from a restricted set of repositories and credential secrets.
@@ -335,6 +342,7 @@ helmOp:
 For the field-by-field reference, see xref:reference/ref-policy.adoc[Policy Resource]. Repeat for each tenant in their own namespace, adjusting the allowed `ServiceAccount`, allowed repositories, and allowed secrets.
 
 
+[#_step_4_tenants_first_gitrepo]
 == Step 4 — Tenant's First GitRepo
 
 A tenant working under the configuration above creates a `GitRepo` like this:
@@ -368,6 +376,7 @@ If the tenant submits a `GitRepo` that violates the `Policy` — for example, a 
 A tenant's `HelmOp` works the same way, validated against the `helmOp.*` fields of the same `Policy`.
 
 
+[#_verifying_isolation]
 == Verifying Isolation
 
 After applying the configuration, verify each layer:
@@ -378,6 +387,7 @@ After applying the configuration, verify each layer:
 * On a downstream cluster, attempt to use the tenant's `ServiceAccount` to write to a namespace not granted by the `Role`. The request should be denied by Kubernetes RBAC.
 
 
+[#_common_mistakes]
 == Common Mistakes
 
 * *Granting tenants write access to `Policy`.* Allow-lists union across all `Policy` objects in a namespace, so a tenant who can write `Policy` can widen their own restrictions. Tenants must have at most `get`/`list`/`watch` on `policies.fleet.cattle.io`.
@@ -390,6 +400,7 @@ After applying the configuration, verify each layer:
 ** `Policy` resources which restrict `GitRepo`, `HelmOp` and ultimately `Bundle` resources.
 
 
+[#_migration_from_gitreporestriction]
 == Migration from GitRepoRestriction
 
 `GitRepoRestriction` will be deprecated in v0.17 and may be removed as soon as v0.18; it remains supported by the controller until removed. Migration is strongly recommended for security reasons: its repo patterns are matched unanchored (a pattern like `github.com/myorg` also matches `https://evil.com/?ref=github.com/myorg`), and it provides no coverage of `HelmOp` or `Bundle` resources. To migrate:
@@ -407,6 +418,7 @@ While a `GitRepoRestriction` and a `Policy` coexist in the same namespace, their
 Default values follow the same merging: `GitRepoRestriction` defaults take precedence over `Policy` defaults. If both set a `defaultServiceAccount`, the `GitRepoRestriction` value wins until it is removed.
 ====
 
+[#_field_mapping]
 === Field Mapping
 
 [cols="2,2,3", options="header"]

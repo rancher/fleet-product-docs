@@ -23,13 +23,14 @@ This diagram shows the different rendering stages a bundle goes through until de
 
 image::FleetBundleStages.svg[Bundle Stages]
 
-[[examining-the-bundle-lifecycle-with-the-cli]]
+[#_examining_the_bundle_lifecycle_with_the_cli]
 == Examining the Bundle Lifecycle With the CLI
 
 Several fleet CLI commands help with debugging bundles.
 
 image::fleetCLI-key-components.svg[A diagram explaining how Fleet CLI key commands work]
 
+[#_fleet_apply]
 === fleet apply
 
 xref:reference/cli/fleet-cli/fleet_apply.adoc[Apply] renders a folder with Kubernetes resources, such as a Helm chart, manifests, or kustomize folders, into a {product_name} bundle resource.
@@ -42,17 +43,19 @@ fleet apply -n fleet-local -o bundle.yaml testbundle simple-chart/
 
 More information on how to create bundles with `fleet apply` can be found in the xref:how-tos-for-users/bundle-add.adoc[section on bundles].
 
-[[fleet-target]]
+[#_fleet_target]
 === fleet target
 
 xref:reference/cli/fleet-cli/fleet_target.adoc[Target] reads a bundle from a file and works with a live cluster to print out the `bundledeployment` & `content` resource, which fleetcontroller would create. It takes a namespace as an argument, so it can look in that namespace for e.g. cluster resources. It can also dump the data structure which is used during "targeting", so decisions taken regarding labels and cluster names can be checked.
 
+[#_fleet_deploy]
 === fleet deploy
 
 xref:reference/cli/fleet-cli/fleet_deploy.adoc[Deploy] takes the output of `fleet target`, or a dumped bundledeployment/content resource and deploys it to a cluster, just like fleet-agent would. It supports a dry run mode, to print out the resources which would be created, instead of installing them with helm. Since the command doesn't create the input resources, a running fleet-agent would likely garbage collect the deployment.
 
 The deploy command can be used to bring bundles to air-gapped clusters.
 
+[#_lifecycle_cli]
 === Lifecycle CLI
 
 Fleet CLI commands help you debug and understand the bundle lifecycle. The following example uses the full bundle lifecycle using CLI:

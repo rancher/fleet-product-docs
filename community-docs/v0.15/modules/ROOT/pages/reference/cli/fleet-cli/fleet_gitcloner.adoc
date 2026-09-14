@@ -9,6 +9,7 @@ Clones a git repository
 fleet gitcloner [REPO] [PATH] [flags]
 ----
 
+[#_options]
 == Options
 
 ----
@@ -23,6 +24,7 @@ fleet gitcloner [REPO] [PATH] [flags]
   -u, --username string               user name for basic auth
 ----
 
+[#_see_also]
 == SEE ALSO
 
 * xref:/reference/cli/fleet-cli/fleet.adoc[fleet]	 - Manage {product_name} operations

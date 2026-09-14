@@ -4,6 +4,7 @@
 
 Target customizations allow you to modify how bundles are deployed to specific clusters without creating separate bundles or GitRepos. This enables you to maintain a single source of truth while adapting deployments to different environments, regions, or cluster configurations.
 
+[#_what_are_target_customizations]
 == What are Target Customizations?
 
 Target customizations are rules defined in `fleet.yaml` that match specific clusters and override bundle configuration for those clusters. Each customization can override:
@@ -15,6 +16,7 @@ Target customizations are rules defined in `fleet.yaml` that match specific clus
 * Deployment options (atomic, force, etc.)
 * Drift correction settings
 
+[#_how_matching_works]
 == How Matching Works
 
 When {product_name} deploys a bundle to a cluster, it evaluates all `targetCustomizations` entries to determine which apply to that cluster. Each customization can match clusters using:
@@ -38,10 +40,12 @@ targetCustomizations:
 
 This matches clusters that are in the `prod` cluster group AND have the label `region: us-east`.
 
+[#_customization_modes]
 == Customization Modes
 
 {product_name} supports two modes for applying target customizations, controlled by the `targetCustomizationMode` field in `fleet.yaml`:
 
+[#_firstmatch_mode_default]
 === FirstMatch Mode (Default)
 
 In `FirstMatch` mode, {product_name} evaluates customizations in the order they appear and applies only the **first matching entry**. This is the traditional behavior and remains the default for backward compatibility.
@@ -72,12 +76,14 @@ targetCustomizations:
         replicas: 1
 ----
 
+[#_behavior]
 ==== Behavior
 
 * Cluster `my-special-cluster`: Gets `replicas: 10` (first match)
 * Any other cluster with `env: prod`: Gets `replicas: 3` (second entry matches)
 * All other clusters: Get `replicas: 1` (catch-all matches)
 
+[#_when_to_use]
 ==== When to use
 
 * When you have a clear precedence order
@@ -90,6 +96,7 @@ Because only the first match wins, `doNotDeploy` entries must be placed *before*
 If a broader entry appears first, it matches the cluster before the `doNotDeploy` entry is ever evaluated.
 ====
 
+[#_allmatches_mode]
 === AllMatches Mode
 
 In `AllMatches` mode, {product_name} evaluates **all** customizations and applies every matching entry in order, merging their configurations.
@@ -128,22 +135,26 @@ targetCustomizations:
           enabled: true
 ----
 
+[#_behavior_2]
 ==== Behavior
 
 * Cluster with labels `edge: "true"` and `custom-values: "true"`: Gets both `values/edge.yaml` AND values from the ConfigMap
 * Cluster with labels `edge: "true"` and `monitoring: "enabled"`: Gets `values/edge.yaml` AND `metrics.enabled: true`
 * Cluster with all three labels: Gets all three customizations merged
 
+[#_when_to_use_2]
 ==== When to use
 
 * When customizations are orthogonal (independent concerns)
 * When you need to layer configurations from different dimensions (environment, region, special features)
 * When you want to avoid combinatorial explosion of customization entries
 
+[#_merge_behavior]
 == Merge Behavior
 
 When using `AllMatches` mode, {product_name} merges customizations in order. The merge behavior depends on the field type:
 
+[#_scalar_fields_last_wins]
 === Scalar Fields (Last Wins)
 
 For scalar fields like `namespace`, `defaultNamespace`, `releaseName`, the **last matching customization wins**:
@@ -166,6 +177,7 @@ targetCustomizations:
 
 A cluster with `special: "true"` gets `defaultNamespace: app-special` (override wins).
 
+[#_additive_fields_accumulated]
 === Additive Fields (Accumulated)
 
 For list/array fields, all values are accumulated:
@@ -212,6 +224,7 @@ targetCustomizations:
 
 Both overlays (`common` and `production`) are applied.
 
+[#_helm_values_deep_merge]
 === Helm Values (Deep Merge)
 
 The `helm.values` field is deep-merged using Helm's merge logic, where later keys override earlier ones:
@@ -253,6 +266,7 @@ monitoring:
   enabled: true        # Added by 'scale'
 ----
 
+[#_boolean_flags_sticky]
 === Boolean Flags (Sticky)
 
 Some boolean fields like `force`, `atomic`, `takeOwnership` are OR'd together and cannot be unset once enabled:
@@ -273,8 +287,10 @@ targetCustomizations:
 
 If both match, `force` remains `true`.
 
+[#_limitations_and_considerations]
 == Limitations and Considerations
 
+[#_chart_source_cannot_be_customized_per_cluster]
 === Chart Source Cannot Be Customized Per Cluster
 
 {product_name} retrieves the Helm chart during the initial **Bundle creation** phase using the top-level `helm` configuration. This happens before `targetCustomizations` are processed.
@@ -302,6 +318,7 @@ targetCustomizations:
       chart: myapp
 ----
 
+[#_workaround]
 ==== Workaround
 
 If different environments require different chart sources, use one of these approaches:
@@ -310,6 +327,7 @@ If different environments require different chart sources, use one of these appr
 * Use separate `GitRepo` resources pointing to different paths
 * Use OCI registries with mirroring for airgapped environments
 
+[#_what_you_can_customize]
 ==== What you CAN customize
 
 While chart *source* cannot vary, you can still customize:
@@ -329,6 +347,7 @@ When overriding `helm.version` in multiple `targetCustomizations`, {product_name
 For more details, see https://github.com/rancher/fleet/issues/1650[fleet#1650].
 ====
 
+[#_values_files_are_pre_processed]
 === Values Files Are Pre-Processed
 
 The `helm.valuesFiles` field references files **within the bundle**. These are processed during bundle creation and merged into `helm.values` before deployment.
@@ -353,8 +372,10 @@ targetCustomizations:
         - values/prod.yaml   # ✅ Merged with base
 ----
 
+[#_common_patterns]
 == Common Patterns
 
+[#_pattern_base_environment_specific_overrides]
 === Pattern: Base + Environment-Specific Overrides
 
 [source,yaml]
@@ -398,6 +419,7 @@ targetCustomizations:
             memory: 1Gi      # Override base
 ----
 
+[#_pattern_feature_flags]
 === Pattern: Feature Flags
 
 [source,yaml]
@@ -439,6 +461,7 @@ targetCustomizations:
 
 A cluster with labels `monitoring: "enabled"` and `tls: "enabled"` gets both features without creating a separate customization entry.
 
+[#_pattern_user_overrides_via_configmap]
 === Pattern: User Overrides via ConfigMap
 
 [source,yaml]
@@ -468,13 +491,16 @@ targetCustomizations:
 
 Users can create a ConfigMap named `user-overrides` on clusters labeled `custom-config: "true"` to inject custom values without modifying the GitRepo.
 
+[#_best_practices]
 == Best Practices
 
+[#_use_firstmatch_for_precedence_allmatches_for_orthogonal_concerns]
 === Use FirstMatch for Precedence, AllMatches for Orthogonal Concerns
 
 * **FirstMatch**: When customizations represent alternatives (dev OR prod OR staging)
 * **AllMatches**: When customizations represent independent features (monitoring AND tls AND scaling)
 
+[#_order_matters_in_allmatches_mode]
 === Order Matters in AllMatches Mode
 
 Since later customizations override earlier ones for scalar fields, structure your customizations from general to specific:
@@ -494,6 +520,7 @@ targetCustomizations:
     clusterName: critical-prod-01
 ----
 
+[#_avoid_overly_complex_selectors]
 === Avoid Overly Complex Selectors
 
 Instead of creating combinatorial customizations:
@@ -542,6 +569,7 @@ targetCustomizations:
     # ... monitoring config
 ----
 
+[#_use_donotdeploy_for_exclusions]
 === Use DoNotDeploy for Exclusions
 
 The `doNotDeploy` field prevents {product_name} from creating a `BundleDeployment` for matching clusters.
@@ -574,6 +602,7 @@ Any other cluster falls through to the `deploy-everywhere` entry.
 
 In `AllMatches` mode the whole list is always evaluated, so `doNotDeploy` works regardless of position: if any matching customization carries `doNotDeploy: true`, the cluster is skipped.
 
+[#_see_also]
 == See Also
 
 * xref:reference/ref-fleet-yaml.adoc#_targeting_and_customization[fleet.yaml Reference - Targeting and Customization]

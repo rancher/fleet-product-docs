@@ -6,6 +6,9 @@ on:
       - main
     paths:
       - 'community-docs/**'
+      - '!community-docs/v0.9/**'
+      - '!community-docs/v0.10/**'
+      - '!community-docs/v0.11/**'
   workflow_dispatch:
 
 # Serialize on a static group: every run contends for the same sync branch and
@@ -59,6 +62,11 @@ jobs:
             src_version_dir="${src_version_dir%/}"
             version="$(basename "$src_version_dir")"
             dest_module="versions/$version/modules/en"
+
+            if [ "$version" = "v0.9" ] || [ "$version" = "v0.10" ] || [ "$version" = "v0.11" ]; then
+              echo "Skipping excluded version '$version'."
+              continue
+            fi
 
             if [ ! -d "versions/$version" ]; then
               echo "::warning::Skipping '$version': versions/$version does not exist. Create it (including antora.yml) before syncing."
