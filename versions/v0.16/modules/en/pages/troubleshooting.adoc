@@ -146,6 +146,7 @@ Available in Rancher v2.6.3 ({product_name} v0.3.8), the ability to enable debug
 * Select *Apps & Marketplace*, then *Installed Apps* from the dropdown
 * From there, you will upgrade the {product_name} chart with the value `debug=true`. You can also set `debugLevel=5` if desired.
 
+[#_via_fleet_install_options]
 ==== Via Fleet Install Options
 
 You can create a config map `rancher-config` in the `cattle-system` namespace with xref:reference/ref-configuration.adoc#_configure_productname_install_options_in_rancher[Fleet Installation Options].
@@ -311,6 +312,7 @@ Based on the above log, you can add the following entry to remove the operation:
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
+[#_gitrepo_sync_fails_without_retry]
 ==== GitRepo sync fails without retry
 
 A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the GitJob controller logs can show network timeouts or etcd request timeouts. This issue is more likely when {product_name} is under high load.

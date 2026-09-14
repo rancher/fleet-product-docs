@@ -1,5 +1,4 @@
 = Generating Diffs to Ignore Modified GitRepos
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /bundle-diffs
@@ -249,6 +248,7 @@ Based on this summary, there are three objects which need to be patched.
 
 We will look at these one at a time.
 
+[#_1_validatingwebhookconfiguration]
 ==== 1. ValidatingWebhookConfiguration:
 
 The gatekeeper-validating-webhook-configuration validating webhook has two ValidatingWebhooks in its spec.
@@ -346,6 +346,7 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path":"/webhooks/1/rules"}
 ----
 
+[#_2_deployment_gatekeeper_controller_manager]
 ==== 2. Deployment gatekeeper-controller-manager:
 
 The gatekeeper-controller-manager deployment is modified since there are cpu limits and tolerations applied (which are not in the actual bundle).
@@ -393,6 +394,7 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
+[#_3_deployment_gatekeeper_audit]
 ==== 3. Deployment gatekeeper-audit:
 
 The gatekeeper-audit deployment is modified in a similarly, to the gatekeeper-controller-manager, with additional cpu limits and tolerations applied.
@@ -440,6 +442,7 @@ Based on this information, our diff patch would look as follows:
     - {"op": "remove", "path": "/spec/template/spec/tolerations"}
 ----
 
+[#_combining_it_all_together]
 ==== Combining It All Together
 
 We can now combine all these patches as follows:

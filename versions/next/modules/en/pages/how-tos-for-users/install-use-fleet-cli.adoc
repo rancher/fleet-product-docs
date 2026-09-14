@@ -22,7 +22,7 @@ For more information, see xref:how-tos-for-operators/installation.adoc[Install F
 
 Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases?q=prerelease%3Afalse&expanded=true[Fleet GitHub releases page].
 
-[#_linux_macos]
+[#_linuxmacos]
 === Linux/macOS
 
 [source,bash]

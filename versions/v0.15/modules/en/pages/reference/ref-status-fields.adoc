@@ -1,5 +1,4 @@
 = Status Fields
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /ref-status-fields
@@ -34,11 +33,13 @@ status:
     type: Ready
 ----
 
+[#_ready_status_determination]
 ==== Ready Status Determination
 
 {product_name} uses the `kstatus` package of the `sigs.k8s.io/cli-utils` module to determine the Ready status of BundleDeployments based on the status of their resources.  
 For details, see the link:https://pkg.go.dev/sigs.k8s.io/cli-utils@v0.37.2/pkg/kstatus#section-readme[`kstatus` package README].
 
+[#_propagation_of_ready_status]
 ==== Propagation of Ready Status
 
 image::PropogationReadyStatus.svg[Propagation of Ready status]
@@ -48,7 +49,7 @@ image::PropogationReadyStatus.svg[Propagation of Ready status]
 
 The `status.display` field provides a summary of the state. States are ranked, and the worst possible state is used as the `state` in the `status.display` field.
 
-[_state_ranking]
+[#_state_ranking]
 ==== State Ranking
 
 This is the ranking in which states are displayed. If a Bundle has BundleDeployments in different states, the worst state is used in the `status.display.state` field.  
@@ -124,7 +125,7 @@ From best to worst:
 The `status.display` fields are shared between GitRepos and GitOps. Both resources contain a `status.display` field summarizing the state of the resource. The value of `state` may differ depending on resource type.
 
 * `readyBundleDeployments` : A string in the form `%d/%d` showing the number of ready versus total bundle deployments.
-* `state` : Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the xref:_state_ranking[State Ranking]. If `Ready`, it’s set to an empty value.
+* `state` : Represents the GitRepo’s state (for example, `GitUpdating`) or the highest BundleState per the <<_state_ranking,State Ranking>>. If `Ready`, it’s set to an empty value.
 * `message` : Contains relevant deployment condition messages.
 * `error` : `true` if an error message exists.
 
