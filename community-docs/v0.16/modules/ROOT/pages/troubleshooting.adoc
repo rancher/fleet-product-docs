@@ -44,7 +44,7 @@ Go to each downstream cluster and run the following command for the local cluste
 # Downstream cluster
 $ kubectl logs -l app=fleet-agent -n cattle-fleet-system
 # Local cluster
-$ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
+$ kubectl logs -l app=fleet-agent -n cattle-fleet-local-system
 ----
 
 [#_fetch_detailed_error_logs_from_gitrepos_and_bundles]
