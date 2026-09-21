@@ -62,7 +62,7 @@ If `fleet-default` does not exist either, the agent falls back to its own identi
 
 For this reason, do not treat the absence of a `ServiceAccount` as a security boundary. Set `requireServiceAccount: true` on the `Policy` so that a resource which does not name a `ServiceAccount` is rejected rather than silently deployed as the agent. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the recommended configuration.
 
-The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallback, or the agent itself — is also the identity used to apply `namespaceLabels` and `namespaceAnnotations` to the target namespace. Those namespace mutations are therefore gated by the same downstream RBAC as the deployment itself, rather than by the agent's cluster-admin credentials whenever a `ServiceAccount` is resolved.
+The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallback, or the agent itself — is also the identity used to apply `namespaceLabels` and `namespaceAnnotations` to the target namespace and, since {product_name} v0.16.2, to write the Secrets and ConfigMaps listed in `downstreamResources`. Those writes are therefore gated by the same downstream RBAC as the deployment itself, rather than by the agent's cluster-admin credentials whenever a `ServiceAccount` is resolved.
 
 [#_namespace_creation]
 == Namespace Creation
