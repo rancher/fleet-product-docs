@@ -29,6 +29,13 @@ requireServiceAccount: true
 allowedServiceAccounts:
   - tenant-1-deployer
 
+# When true, Helm may create the target namespace on downstream clusters.
+# Only has an effect together with requireServiceAccount: true, which
+# disables namespace creation by default so that tenant service accounts do
+# not need the cluster-scoped namespaces create verb. Set it to true only if
+# namespace creation is secured by other means.
+allowNamespaceCreation: false
+
 # GitRepo-specific defaults and restrictions. Applied only by the GitRepo
 # reconciler, before the top-level checks run.
 gitRepo:
@@ -82,6 +89,7 @@ Multiple Policy objects in the same namespace are aggregated:
 * Allow-lists (`allowedServiceAccounts`, `gitRepo.allowedClientSecretNames`, `gitRepo.allowedRepoPatterns`, `helmOp.allowedHelmSecretNames`, `helmOp.allowedHelmRepoPatterns`, `helmOp.allowedChartPatterns`) are unioned across all Policy objects in the namespace.
 * For default fields (`gitRepo.defaultServiceAccount`, `gitRepo.defaultClientSecretName`, `helmOp.defaultServiceAccount`, `helmOp.defaultHelmSecretName`), the first non-empty value wins after sorting Policy objects by name.
 * `requireServiceAccount` is true if any Policy in the namespace sets it.
+* `allowNamespaceCreation` is true if any Policy in the namespace sets it. See xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation].
 
 Because allow-lists union across all Policy objects in the namespace, write access to Policy must be restricted to administrators. A tenant who can create their own Policy in their namespace can extend the allow-list. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the required RBAC.
 
@@ -101,6 +109,11 @@ Because allow-lists union across all Policy objects in the namespace, write acce
 | validates
 | validates
 | validates (top-level + per-target)
+
+| `allowNamespaceCreation`
+| —
+| —
+| applies (disables Helm namespace creation when `requireServiceAccount` is true and this field is false)
 
 | `gitRepo.defaultServiceAccount`
 | applies
@@ -148,4 +161,4 @@ Because allow-lists union across all Policy objects in the namespace, write acce
 | —
 |===
 
-A Policy violation surfaces as a status condition on the offending GitRepo, HelmOp, or Bundle. The Bundle reconciler validates only and does not apply defaults. The GitRepo reconciler writes resolved defaults back to the GitRepo resource. The HelmOp reconciler applies defaults in memory and carries them into the generated Bundle; the HelmOp resource itself is left unchanged.
+A Policy violation surfaces as a status condition on the offending GitRepo, HelmOp, or Bundle. The Bundle reconciler does not apply defaults. Apart from validating, it only resolves `allowNamespaceCreation` and writes the result into the BundleDeployments it creates. The GitRepo reconciler writes resolved defaults back to the GitRepo resource. The HelmOp reconciler applies defaults in memory and carries them into the generated Bundle; the HelmOp resource itself is left unchanged.
