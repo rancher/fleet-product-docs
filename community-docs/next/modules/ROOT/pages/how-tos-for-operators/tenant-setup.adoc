@@ -199,6 +199,16 @@ The example below sets up two tenants, each scoped to one workload namespace on 
 [source,yaml]
 ----
 apiVersion: v1
+kind: Namespace
+metadata:
+  name: workspace1-workloads
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: workspace2-workloads
+---
+apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tenant-1-deployer
@@ -297,13 +307,74 @@ spec:
     - clusterSelector: {}
 ----
 
-Inside the `tenant-rbac` directory in the git repository, place the `ServiceAccount` / `Role` / `RoleBinding` YAML for *all tenants* the operator has provisioned. Every downstream cluster matched by the selector will receive the manifests for every tenant. Adding or removing a tenant becomes a git commit on the operator's repository.
+Inside the `tenant-rbac` directory in the git repository, place the `Namespace` / `ServiceAccount` / `Role` / `RoleBinding` YAML for *all tenants* the operator has provisioned. Every downstream cluster matched by the selector will receive the manifests for every tenant. Adding or removing a tenant becomes a git commit on the operator's repository.
 
 A few things to note about this bootstrap:
 
 * The bootstrap `GitRepo` runs with an operator-level `ServiceAccount` (`operator-bootstrap` above), which must itself pre-exist on every downstream cluster and have permission to create cluster-scoped RBAC. The operator's `Policy` should keep this `ServiceAccount` off the tenant allow-list.
 * If you use a `ClusterGroup` for the downstream cluster set, target the `ClusterGroup` instead of using `clusterSelector: {}`.
 * For tenants whose downstream surface differs per cluster, structure the git repository so each cluster's RBAC lives in a per-cluster directory and use the GitRepo's `targetCustomizations` to select the right directory per cluster.
+
+[#_target_namespaces]
+=== Target Namespaces
+
+The `Policy` in Step 3 sets `requireServiceAccount: true`. With that setting, {product_name} does not let Helm create the namespaces a tenant deploys to, so the tenant's `ServiceAccount` does not need permission to create namespaces, see xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation]. A deployment into a namespace that does not exist fails. Create every target namespace as the operator, for example with the `Namespace` objects in the example above, rolled out through the bootstrap pattern.
+
+[#_namespace_labels_and_annotations]
+==== Namespace Labels and Annotations
+
+A tenant can set `namespaceLabels` and `namespaceAnnotations` in `fleet.yaml`. {product_name} writes them to the target namespace as the deployment's `ServiceAccount`, whether or not {product_name} created the namespace. The `ServiceAccount` then needs `get` and `update` on that namespace:
+
+[source,yaml]
+----
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tenant-1-namespace-metadata
+  namespace: workspace1-workloads
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces"]
+    verbs: ["get", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tenant-1-namespace-metadata
+  namespace: workspace1-workloads
+subjects:
+  - kind: ServiceAccount
+    name: tenant-1-deployer
+    namespace: cattle-fleet-system
+roleRef:
+  kind: Role
+  name: tenant-1-namespace-metadata
+  apiGroup: rbac.authorization.k8s.io
+----
+
+Kubernetes treats a request for a `Namespace` object as a request in that namespace, so a `Role` in the namespace is enough and grants nothing on other namespaces. To check the permission with `kubectl auth can-i`, pass the namespace explicitly, for example `kubectl auth can-i -n workspace1-workloads update namespaces/workspace1-workloads --as=system:serviceaccount:cattle-fleet-system:tenant-1-deployer`. Without `-n`, the command answers `no` even though the request is allowed.
+
+Before granting this, consider what it hands over:
+
+* `namespaceLabels` replaces the labels of the namespace. Labels it does not list are removed, except `kubernetes.io/metadata.name`. `namespaceAnnotations` does the same for annotations. Labels and annotations set by the operator or by other tools are removed as soon as a deployment sets either field.
+* With `update` on the namespace, the tenant controls every label and annotation on it, including ones other components rely on, such as labels selected by `NetworkPolicy` rules, service mesh injection labels, or Pod Security Admission labels.
+
+If a namespace carries labels or annotations the tenant must not control, do not grant these permissions, and set the metadata as the operator instead, on the `Namespace` objects in the bootstrap repository. A deployment that sets `namespaceLabels` or `namespaceAnnotations` without the permission installs its resources, but does not become ready. It reports the error, and {product_name} retries until the permission is granted or the fields are removed.
+
+[NOTE]
+.Rancher
+====
+When rancher-webhook runs on the downstream cluster, as it does on clusters managed by Rancher, changing a `pod-security.kubernetes.io/*` label also requires the custom verb `updatepsa` on `projects.management.cattle.io`. Without it, the whole update is rejected, including all other labels and annotations of that deployment. This protects Pod Security Admission labels only. Removing the `field.cattle.io/projectId` annotation, which `namespaceAnnotations` does unless it lists that annotation, is not blocked.
+====
+
+[#_letting_helm_create_namespaces]
+==== Letting Helm Create Namespaces
+
+If the operator sets `allowNamespaceCreation: true` on the `Policy` instead, Helm creates missing target namespaces as the tenant's `ServiceAccount`. It also writes to target namespaces that already exist, so the `ServiceAccount` needs:
+
+* `patch` on each existing target namespace, which a `Role` in that namespace can grant.
+* `create` on `namespaces` at cluster scope, through a `ClusterRole`, to create a missing namespace. This lets the `ServiceAccount` create any namespace on the cluster.
+* `create` on `namespaces` at cluster scope even for an existing namespace, if the deployment sets `helm.takeOwnership`, `helm.force` or `correctDrift.force`. In that case Helm does not use server-side apply and sends a create request for the namespace.
 
 
 [#_step_3_the_policy]
@@ -338,6 +409,8 @@ helmOp:
   allowedChartPatterns:
     - tenant-1/.*
 ----
+
+Because this `Policy` sets `requireServiceAccount: true`, {product_name} does not create the tenant's target namespaces, see <<_target_namespaces,Target Namespaces>>.
 
 For the field-by-field reference, see xref:reference/ref-policy.adoc[Policy Resource]. Repeat for each tenant in their own namespace, adjusting the allowed `ServiceAccount`, allowed repositories, and allowed secrets.
 
@@ -394,6 +467,8 @@ After applying the configuration, verify each layer:
 * *Forgetting `requireServiceAccount: true`.* Without this field, a tenant who omits `serviceAccount` from their `GitRepo` or `HelmOp` leaves it empty, which the downstream agent may resolve to a privileged identity. Set it explicitly.
 * *Setting a `defaultServiceAccount` that is not in `allowedServiceAccounts`.* Defaults are applied before validation, so a default outside the allow-list is rejected, not silently accepted. Every `GitRepo` or `HelmOp` that omits the field and falls back to the default then fails validation. Keep defaults inside the allow-list.
 * *Forgetting to bootstrap the downstream `ServiceAccount` on every cluster the tenant targets.* Deployments to clusters without the `ServiceAccount` fail at the agent. Use the bootstrap pattern in Step 2 to keep coverage in sync with the cluster inventory.
+* *Expecting {product_name} to create the tenant's target namespaces.* With `requireServiceAccount: true`, Helm does not create namespaces, and a deployment into a missing namespace fails. Create target namespaces as the operator, see <<_target_namespaces,Target Namespaces>>.
+* *Granting `update` on a namespace without checking what it hands over.* `namespaceLabels` and `namespaceAnnotations` replace all labels or annotations of the namespace, and `update` lets the tenant set any of them. See <<_namespace_labels_and_annotations,Namespace Labels and Annotations>>.
 * *Configuring `Policy` for `GitRepo` only, ignoring `HelmOp`.* The `helmOp.*` block must be set if tenants have RBAC to create `HelmOp` resources. Without it, only the top-level `requireServiceAccount` / `allowedServiceAccounts` constrain HelmOps; source repositories, charts, and Helm credential secrets remain unrestricted.
 * *Granting tenants write access to `BundleDeployment`*: tenants should not have permissions to create `bundledeployments`, as those resources are meant to be created from `bundles`, by Fleet controllers. Ensuring that only Fleet controllers can create `bundledeployments` enables greater control over workloads, with:
 ** `GitRepoRestriction` resources restricting `GitRepo`, and hence `Bundle` resources
