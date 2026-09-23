@@ -267,6 +267,28 @@ roleRef:
 
 This `Role` grants the tenant write access to a small set of resource kinds in a specific namespace. Using `Role` rather than `ClusterRole` is deliberate: a `Role` confines the tenant to the named namespace and prevents creation of cluster-scoped resources such as `Namespace`, `ClusterRole`, or `PersistentVolume`. If a tenant genuinely needs to manage cluster-scoped resources, use a `ClusterRole` and be explicit about which resource kinds and verbs are granted — a `ClusterRole` with `verbs: ["*"]` on all resources is equivalent to cluster-admin. Adapt the resource list, verbs, and namespace set to what each tenant actually needs.
 
+[#_permissions_for_downstreamresources]
+=== Permissions for `downstreamResources`
+
+A deployment can list Secrets and ConfigMaps in `downstreamResources` to have {product_name} copy them from the management cluster to each targeted downstream cluster, see xref:how-tos-for-users/downstream-resource-propagation.adoc[Automatically copying resources to downstream clusters]. Since {product_name} v0.16.2, the agent writes those copies into the deployment namespace as the deployment's `ServiceAccount`, so the tenant's downstream RBAC gates them in the same way it gates the rest of the deployment.
+
+In the deployment namespace, the `ServiceAccount` therefore needs:
+
+* `get`, `create` and `update` on `secrets`, if the deployment copies Secrets.
+* `get`, `create` and `update` on `configmaps`, if the deployment copies ConfigMaps.
+
+The example `Role` above already grants these. A `Role` that grants less, for example one limited to the kinds a chart deploys, must add them.
+
+The deployment namespace must exist before the copy runs. If it does not, {product_name} tries to create it as the `ServiceAccount`, which requires `create` on the cluster-scoped `namespaces` resource. Do not grant that verb to a tenant, for the reasons given in xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation]. Create the namespace as the operator instead, for example through the bootstrap `GitRepo` described below.
+
+Removing the copies when the deployment is deleted, or when a cluster is no longer targeted, is done by the agent itself and needs no permission on the `ServiceAccount`. The agent only removes objects that carry the `fleet.cattle.io/bundledeployment` label {product_name} sets on the copies.
+
+[NOTE]
+.A missing permission is not a failed deployment
+====
+If the `ServiceAccount` may not create the deployment namespace or write a copied object, {product_name} stops before installing anything. The bundle deployment reports not ready, with a message naming the namespace or object and the `forbidden` error, and {product_name} retries on its own. Once the permission is granted or the namespace is created, the deployment proceeds without further action.
+====
+
 [#_bootstrap_pattern_roll_out_tenant_serviceaccounts_to_all_downstream_clusters]
 === Bootstrap Pattern: Roll Out Tenant ServiceAccounts to All Downstream Clusters
 

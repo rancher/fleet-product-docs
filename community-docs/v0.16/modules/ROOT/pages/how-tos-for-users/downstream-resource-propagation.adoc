@@ -46,6 +46,11 @@ remain on the upstream cluster, though.
 If resources referenced through `downstreamResources` should stay on downstream clusters even after they are no longer targeted, xref:/reference/ref-bundle.adoc[keepResources] should be set to `true` on the HelmOp.
 ====
 
+[#_permissions]
+=== Permissions
+
+Since {product_name} v0.16.2, when a `ServiceAccount` is resolved for the deployment on the downstream cluster, the agent writes the copies as that `ServiceAccount`. This is the account set in `serviceAccount`, or the `fleet-default` account if none is set and it exists. The `ServiceAccount` needs `get`, `create` and `update` on the copied kinds in the deployment namespace, and the namespace must already exist unless the `ServiceAccount` may create namespaces. If a permission is missing, the deployment reports not ready and retries until the permission is granted. See xref:how-tos-for-operators/tenant-setup.adoc#_permissions_for_downstreamresources[Permissions for downstreamResources].
+
 [#_monitoring]
 == Monitoring
 
