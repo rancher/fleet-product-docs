@@ -67,6 +67,8 @@ The resolved identity — a pinned `ServiceAccount`, the `fleet-default` fallbac
 [#_namespace_creation]
 == Namespace Creation
 
+NOTE: The behavior described in this section, the `allowNamespaceCreation` field, and applying `namespaceLabels` and `namespaceAnnotations` as the resolved `ServiceAccount` are available since {product_name} v0.16.1. In v0.16.0, Helm creates missing target namespaces regardless of `requireServiceAccount`, and the agent applies `namespaceLabels` and `namespaceAnnotations` with its own credentials.
+
 By default, {product_name} lets Helm create the target namespace if it does not already exist. Creating a namespace requires the `create` verb on the cluster-scoped `namespaces` resource. That verb cannot be confined to a single namespace or tenant: granting it to a tenant's `ServiceAccount` lets that tenant create *any* namespace on the downstream cluster, which breaks the isolation that pinning to a `ServiceAccount` is meant to provide.
 
 To avoid this, when a `Policy` in the tenant's namespace sets `requireServiceAccount: true`, {product_name} disables Helm namespace creation for deployments in that namespace. The tenant's `ServiceAccount` therefore does not need `namespaces.create`, and the target namespace must already exist on the downstream cluster. Creating it is the operator's responsibility — typically through the same {product_name}-manager-owned `GitRepo` used to bootstrap the tenant's `ServiceAccount` and RBAC. See xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup].
