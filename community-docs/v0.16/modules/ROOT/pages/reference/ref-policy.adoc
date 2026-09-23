@@ -29,7 +29,8 @@ requireServiceAccount: true
 allowedServiceAccounts:
   - tenant-1-deployer
 
-# When true, Helm may create the target namespace on downstream clusters.
+# Since Fleet v0.16.1. When true, Helm may create the target namespace on
+# downstream clusters.
 # Only has an effect together with requireServiceAccount: true, which
 # disables namespace creation by default so that tenant service accounts do
 # not need the cluster-scoped namespaces create verb. Set it to true only if
@@ -113,7 +114,7 @@ Because allow-lists union across all Policy objects in the namespace, write acce
 | `allowNamespaceCreation`
 | —
 | —
-| applies (disables Helm namespace creation when `requireServiceAccount` is true and this field is false)
+| applies (disables Helm namespace creation when `requireServiceAccount` is true and this field is false). Since {product_name} v0.16.1.
 
 | `gitRepo.defaultServiceAccount`
 | applies

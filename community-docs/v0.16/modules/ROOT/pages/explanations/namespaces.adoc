@@ -12,7 +12,7 @@
 When deploying a {product_name} bundle, the specified namespace will automatically be
 created if it does not already exist.
 
-This does not apply when a `Policy` in the bundle's namespace sets `requireServiceAccount: true` without `allowNamespaceCreation: true`. The namespace must then exist before the deployment, see xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation].
+Since {product_name} v0.16.1, this does not apply when a `Policy` in the bundle's namespace sets `requireServiceAccount: true` without `allowNamespaceCreation: true`. The namespace must then exist before the deployment, see xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation].
 
 [#_configuring_workload_namespaces]
 === Configuring Workload Namespaces

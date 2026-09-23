@@ -318,6 +318,8 @@ A few things to note about this bootstrap:
 [#_target_namespaces]
 === Target Namespaces
 
+NOTE: This section describes {product_name} v0.16.1 and later. In v0.16.0, Helm creates missing target namespaces regardless of `requireServiceAccount`, `allowNamespaceCreation` does not exist, and the agent applies `namespaceLabels` and `namespaceAnnotations` with its own credentials.
+
 The `Policy` in Step 3 sets `requireServiceAccount: true`. With that setting, {product_name} does not let Helm create the namespaces a tenant deploys to, so the tenant's `ServiceAccount` does not need permission to create namespaces, see xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation]. A deployment into a namespace that does not exist fails. Create every target namespace as the operator, for example with the `Namespace` objects in the example above, rolled out through the bootstrap pattern.
 
 [#_namespace_labels_and_annotations]
