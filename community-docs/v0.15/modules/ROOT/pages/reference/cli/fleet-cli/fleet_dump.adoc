@@ -1,4 +1,7 @@
 = fleet dump
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_dump

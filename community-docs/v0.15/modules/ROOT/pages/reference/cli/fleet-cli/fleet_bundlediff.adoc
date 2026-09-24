@@ -1,4 +1,7 @@
 = fleet bundlediff
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-03-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_bundlediff
