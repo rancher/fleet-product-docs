@@ -1,5 +1,5 @@
 = Create a GitRepo Resource
-:revdate: 2025-07-23
+:revdate: 2026-09-24
 :page-revdate: {revdate}
 :doctype: book
 :page-aliases: /gitrepo-add
@@ -38,7 +38,7 @@ For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you us
 
 The `targetNamespace` field will override any namespace in the bundle. If the deployment contains cluster scoped resources, it will fail.
 
-It takes precendence over all other namespace definitions:
+It takes precedence over all other namespace definitions:
 
 `gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
 
@@ -64,7 +64,7 @@ ssh-keygen -t rsa -b 4096 -m pem -C "user@email.com"
 
 [NOTE]
 ====
-The private key format has to be in `EC PRIVATE KEY`, `RSA PRIVATE KEY` or `PRIVATE KEY` and should not contain a passphase.
+The private key format has to be in `EC PRIVATE KEY`, `RSA PRIVATE KEY` or `PRIVATE KEY` and should not contain a passphrase.
 ====
 
 Put your private key into secret, use the namespace the GitRepo is in:
@@ -138,31 +138,31 @@ stringData:
 [#_strict_host_key_checks]
 ==== Strict host key checks
 
-Chart value `insecureSkipHostKeyChecks` defines how Fleet behaves with regards to `known_hosts` when establishing SSH
+Chart value `insecureSkipHostKeyChecks` defines how {product_name} behaves with regards to `known_hosts` when establishing SSH
 connections.
 
-When that value is set to `false`, Fleet will enforce strict host key checks, meaning that it will fail to establish any
+When that value is set to `false`, {product_name} will enforce strict host key checks, meaning that it will fail to establish any
 SSH connections to hosts for which no matching `known_hosts` entry can be found.
 
-This is the default behaviour from Fleet v0.13 onwards.
+This is the default behavior from {product_name} v0.13 onwards.
 
 `known_hosts` entries are sourced in priority from secrets referenced in `GitRepo` resources, e.g. `helmSecretName` for
 accessing Helm charts or `clientSecretName` for cloning git repositories.
 
-Note that this is compatible with Fleet looking for a `gitcredential` secret if no secret is referenced in the
+Note that this is compatible with {product_name} looking for a `gitcredential` secret if no secret is referenced in the
 `GitRepo`.
 
-If no such secret exists, or no `known_hosts` entries are available in that secret, then Fleet uses its own
+If no such secret exists, or no `known_hosts` entries are available in that secret, then {product_name} uses its own
 `known-hosts` config map, newly created at installation time with static entries for the most widely used git providers.
 
 More details xref:how-tos-for-operators/installation.adoc#_additional_ssh_known_hosts[here] on where the default entries
 come from and how to populate additional ones at installation time.
 
-The absence of the config map, should no secret be available, is considered a symptom of an incomplete Fleet deployment,
+The absence of the config map, should no secret be available, is considered a symptom of an incomplete {product_name} deployment,
 and reported as such.
 
-Fleet only uses a single_source of `known_hosts` entries at a time. This means that, even if a secret contains invalid
-(or insufficient) entries, then Fleet will not look for valid entries in the config map. This applies to a secret
+{product_name} only uses a single_source of `known_hosts` entries at a time. This means that, even if a secret contains invalid
+(or insufficient) entries, then {product_name} will not look for valid entries in the config map. This applies to a secret
 referenced in a `GitRepo` as well as to a possible `gitcredential` secret, if no secret is referenced in the `GitRepo`.
 
 [#_using_http_auth]

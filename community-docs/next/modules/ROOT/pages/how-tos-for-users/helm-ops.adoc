@@ -1,5 +1,5 @@
 = HelmOps
-:revdate: 2025-07-01
+:revdate: 2026-09-24
 :page-revdate: {revdate}
 :page-aliases: /helm-ops
 
@@ -197,7 +197,7 @@ spec:
       name: application-collection-secret
 ----
 
-For more details on `downstreamResources`, including lifecycle and monitoring behaviour, refer to
+For more details on `downstreamResources`, including lifecycle and monitoring behavior, refer to
 xref:how-tos-for-users/downstream-resource-propagation.adoc[Automatically copying resources to downstream clusters].
 
 [#_status_updates]

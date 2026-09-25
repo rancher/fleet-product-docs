@@ -1,5 +1,5 @@
 = Create a GitRepo Resource
-:revdate: 2025-07-23
+:revdate: 2026-09-24
 :page-revdate: {revdate}
 :doctype: book
 :page-aliases: /gitrepo-add
@@ -144,7 +144,7 @@ connections.
 When that value is set to `false`, Fleet will enforce strict host key checks, meaning that it will fail to establish any
 SSH connections to hosts for which no matching `known_hosts` entry can be found.
 
-This is the default behaviour from Fleet v0.13 onwards.
+This is the default behavior from {product_name} v0.13 onwards.
 
 `known_hosts` entries are sourced in priority from secrets referenced in `GitRepo` resources, e.g. `helmSecretName` for
 accessing Helm charts or `clientSecretName` for cloning git repositories.
