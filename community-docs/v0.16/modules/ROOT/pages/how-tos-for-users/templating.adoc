@@ -148,11 +148,12 @@ Avoid using Sprig functions that produce random output (for example, ++uuidv4++)
 === Default Values
 
 Use ++default++ to ensure a deployment doesn't fail if a label is missing.
+Look the label up with ++index++: accessing a missing key directly (++.ClusterLabels.region++) fails the rendering with ++map has no entry for key "region"++, even when it is passed to ++default++.
 
 [,yaml]
 ----
 values:
-  region: ${ default "us-east-1" .ClusterLabels.region }
+  region: ${ index .ClusterLabels "region" | default "us-east-1" }
 ----
 
 [#_conditional_logic]
@@ -251,9 +252,11 @@ image::disable_preprocessing_templating.svg[Disable Preprocessing Flow]
 [#_escaping_expressions]
 == Escaping expressions
 
-To escape a single expression while keeping the engine active, use a double dollar sign (++$$++).
+To escape a single expression while keeping the engine active, wrap it in a raw string (backticks) inside an expression.
 
-For example, ++value: $${ .ClusterName }++, results in ++value: ${ .ClusterName }++.
+For example, ++value: ${ `${ .ClusterName }` }++, results in ++value: ${ .ClusterName }++.
+
+A double dollar sign does not escape an expression: ++value: $${ .ClusterName }++ results in ++value: $++ followed by the cluster name.
 
 [#_test_template_expressions_locally]
 == Test template expressions locally
@@ -263,7 +266,7 @@ You can test your values templating and preview how your expressions render usin
 *Prerequisites:* Unlike the ++fleet apply++ command, which can run entirely locally without a cluster, ++fleet target++ requires access to a running Kubernetes cluster where {product_name} is installed.
 
 . *Create a local bundle:* First, use the ++fleet apply++ command to convert your existing local directory into a bundle file. Run  ++ fleet apply -o bundle.yaml++.
-. *Evaluate the targets:* Run the ++fleet target++ command and pass the generated bundle file as an argument. You can specify a namespace as an argument so the CLI knows where to look for your target ++Cluster++ resources. Run ++ fleet target -f bundle.yaml++
+. *Evaluate the targets:* Run the ++fleet target++ command and pass the generated bundle file as an argument. You can specify a namespace as an argument so the CLI knows where to look for your target ++Cluster++ resources. Run ++ fleet target -b bundle.yaml++
 . *Inspect the output:* The command evaluates your targeting rules and prints the ++BundleDeployment++ and ++Content++ resources that would be created. Inspect this output to verify that your template expressions evaluated correctly against the specific cluster labels, names, and values.
 
 [#_best_practices]
@@ -271,7 +274,7 @@ You can test your values templating and preview how your expressions render usin
 
 * *Whitespace Control:* Use ++${-++ and ++-}++ to strip leading/trailing whitespace, especially in ++templateValues++ where YAML indentation is sensitive.
 * *Centralize Logic:* Use ++templateValues++ for complex calculations to keep the main ++values++ block clean.
-* *Defensive Coding:* Always provide a ++default++ value for cluster labels to avoid empty string injections.
+* *Defensive Coding:* Always provide a ++default++ value for cluster labels to avoid empty string injections, and read optional labels with ++index++ (for example ++${ index .ClusterLabels "region" | default "us-east-1" }++).
 
 [#_troubleshooting_templating]
 == Troubleshooting templating
