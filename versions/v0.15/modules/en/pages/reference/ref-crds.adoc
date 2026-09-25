@@ -1,5 +1,4 @@
 = Custom Resources Spec
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :doctype: book

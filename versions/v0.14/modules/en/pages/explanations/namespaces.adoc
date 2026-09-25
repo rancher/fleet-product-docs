@@ -104,7 +104,7 @@ cluster. If an allowedTargetNamespaces restriction is present, all `GitRepos`
 must specify a `targetNamespace` and the specified namespace must be in the
 allow list. This also prevents the creation of cluster wide resources.
 
-[#_product_name_namespaces]
+[#_productname_namespaces]
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom

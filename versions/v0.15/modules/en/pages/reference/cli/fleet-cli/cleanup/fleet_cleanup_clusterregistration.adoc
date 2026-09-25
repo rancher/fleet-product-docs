@@ -1,5 +1,4 @@
 = fleet cleanup clusterregistration
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet_cleanup_clusterregistration

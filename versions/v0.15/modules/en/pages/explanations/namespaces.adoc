@@ -1,5 +1,4 @@
 = Namespaces
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /namespaces
@@ -97,6 +96,7 @@ defaultClientSecretName: ""
 defaultServiceAccount: ""
 ----
 
+[#_allowed_target_namespaces]
 ==== Allowed Target Namespaces
 
 This can be used to limit a deployment to a set of namespaces on a downstream
@@ -104,6 +104,7 @@ cluster. If an allowedTargetNamespaces restriction is present, all `GitRepos`
 must specify a `targetNamespace` and the specified namespace must be in the
 allow list. This also prevents the creation of cluster wide resources.
 
+[#_allowed_target_namespace_selector]
 ==== Allowed target namespace selector
 
 `allowedTargetNamespaceSelector` restricts deployments to namespaces on
@@ -190,6 +191,7 @@ repo that will map to the right target clusters.
 [#_internal_namespaces]
 === Internal Namespaces
 
+[#_cluster_registration_namespace_fleet_local]
 ==== Cluster Registration Namespace: fleet-local
 
 The *fleet-local* namespace is a special namespace used for the single cluster
@@ -203,17 +205,20 @@ named `default`. This means that all `GitRepos` created in `fleet-local` will
 automatically target the `local` `Cluster`. The `local` `Cluster` refers to the
 cluster the {product_name} manager is running on.
 
+[#_system_namespace_cattle_fleet_system]
 ==== System Namespace: cattle-fleet-system
 
 The {product_name} controller and {product_name} agent run in this namespace. All service accounts
 referenced by `GitRepos` are expected to live in this namespace in the
 downstream cluster.
 
+[#_system_registration_namespace_cattle_fleet_clusters_system]
 ==== System Registration Namespace: cattle-fleet-clusters-system
 
 This namespace holds secrets for the cluster registration process. It should
 contain no other resources in it, especially secrets.
 
+[#_cluster_namespaces]
 ==== Cluster Namespaces
 
 For every cluster that is registered a namespace is created by the {product_name} manager
