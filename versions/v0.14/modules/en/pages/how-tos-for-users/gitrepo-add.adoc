@@ -33,7 +33,7 @@ If you are using {product_name} in a xref:explanations/concepts.adoc[single clus
 
 For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you use the correct repo that will map to the right target clusters.
 
-[#_override_workload_s_namespace]
+[#_override_workloads_namespace]
 == Override Workload's Namespace
 
 The `targetNamespace` field will override any namespace in the bundle. If the deployment contains cluster scoped resources, it will fail.
@@ -271,8 +271,8 @@ endif::[]
 
 [CAUTION]
 ====
-The credentials will be used unconditionally for all Helm repositories referenced by the gitrepo resource.
-Make sure you don't leak credentials by mixing public and private repositories. Use <<Use different helm credentials for each path,different helm credentials for each path>>, or split them into different gitrepos, or use `helmRepoURLRegex` to limit the scope of credentials to certain servers.
+Helm credentials are forwarded only when `helmRepoURLRegex` is set and matches the Helm repository URL.
+Use specific `helmRepoURLRegex` patterns so credentials are only forwarded to trusted Helm repository URLs. You can also use <<Use different helm credentials for each path,different helm credentials for each path>> or split charts into different gitrepos.
 ====
 
 

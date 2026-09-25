@@ -342,7 +342,7 @@ helmOp:
 For the field-by-field reference, see xref:reference/ref-policy.adoc[Policy Resource]. Repeat for each tenant in their own namespace, adjusting the allowed `ServiceAccount`, allowed repositories, and allowed secrets.
 
 
-[#_step_4_tenant_s_first_gitrepo]
+[#_step_4_tenants_first_gitrepo]
 == Step 4 — Tenant's First GitRepo
 
 A tenant working under the configuration above creates a `GitRepo` like this:

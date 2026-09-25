@@ -12,7 +12,7 @@ When a bundle fails to deploy to a cluster, e.g. because the cluster is missing 
 
 The agent has been switched from a StatefulSet to a Deployment. This change allows the agent to scale horizontally and is a step towards making the agent more resilient to failures. The agent now exposes the number of worker goroutines it is running, which can be used to tune the agent's performance.
 
-[#_what_s_changed]
+[#_whats_changed]
 === What's Changed
 
 * Bump Copyright statements to 2025 by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/3176
@@ -28,7 +28,7 @@ The agent has been switched from a StatefulSet to a Deployment. This change allo
 * Move agent's clusterstatus controller into the controller container by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3429
 * Remove "fleet apply" config files from bundle resources by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3403
 
-*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.5...v0.12.0[v0.11.5\...v0.12.0]
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.11.0...v0.12.0[v0.11.0...v0.12.0]
 
 [#_additions]
 === Additions

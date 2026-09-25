@@ -317,9 +317,9 @@ dependsOn:
   #     opni-fleet-examples-fleets-opni-ui-plugin-operator-crd becomes
   #     opni-fleet-examples-fleets-opni-ui-plugin-opera-021f7
   - name: one-multi-cluster-hello-world
-      acceptedStates:
-        - Ready
-        - Modified
+    acceptedStates:
+      - Ready
+      - Modified
   # Select bundles to depend on based on their label.
   - selector:
       matchLabels:
@@ -415,6 +415,7 @@ The chart reference can be one of the following:
 * Helm repository (`repo` + `chart` + optional `version`)
 * OCI Helm repository (`repo: oci://...` + `version`)
 
+[#_helm_repo]
 ==== `helm.repo`
 
 For OCI registries, `helm.repo` is the canonical field for the OCI URL. Use it like this:
@@ -428,6 +429,7 @@ helm:
 
 This is consistent with how OCI registries are referenced in xref:how-tos-for-users/helm-ops.adoc#_oci_registry[HelmOp resources].
 
+[#_helm_chart]
 ==== `helm.chart`
 
 Specifies a local path or go-getter URL for the Helm chart. When `helm.repo` is set to a standard (non-OCI) Helm repository URL, `helm.chart` holds the chart name within that repository.
@@ -464,6 +466,7 @@ helm:
 ----
 ====
 
+[#_helm_version]
 ==== `helm.version`
 
 Determines which chart to download from OCI registries.

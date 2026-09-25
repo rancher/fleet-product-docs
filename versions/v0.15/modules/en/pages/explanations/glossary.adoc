@@ -1,5 +1,4 @@
 = Glossary
-:page-languages: [en, de, es, fr, ja, pt, zh]
 :revdate: 2026-02-18
 :page-revdate: {revdate}
 :page-aliases: /glossary
@@ -27,7 +26,7 @@ A cluster refers to:
 * a https://kubernetes.io/docs/concepts/architecture/[Kubernetes cluster] managed by {product_name}
 * a `Cluster` https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/cluster_types.go#L59[resource] in Fleet's API, which {product_name} uses to manage that Kubernetes cluster
 
-[#_continuous_delivery_deployment]
+[#_continuous_deliverydeployment]
 == Continuous Delivery/Deployment
 
 Definitions and distinctions between Continuous Delivery and Continuous Deployment greatly vary, for instance

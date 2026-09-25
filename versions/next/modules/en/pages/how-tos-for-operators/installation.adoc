@@ -316,6 +316,7 @@ clusters:
     server: https://example.com:6443
 ----
 
+[#_extract_ca_certificate]
 ==== Extract CA Certificate
 
 The `certificate-authority-data` field is Base64 encoded.  
@@ -340,6 +341,7 @@ For multi-cluster kubeconfigs:
 kubectl config view -o json --raw | jq -r '.clusters[] | select(.name=="CLUSTERNAME").cluster["certificate-authority-data"]' | base64 -d > ca.pem
 ----
 
+[#_extract_api_server]
 ==== Extract API Server
 
 [source,bash]
@@ -348,6 +350,7 @@ API_SERVER_URL=$(kubectl config view -o json --raw | jq -r '.clusters[] | select
 API_SERVER_CA="ca.pem"
 ----
 
+[#_validate]
 ==== Validate
 
 Verify the API server URL:
