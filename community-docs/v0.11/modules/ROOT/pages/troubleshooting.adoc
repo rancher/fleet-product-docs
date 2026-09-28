@@ -1,4 +1,5 @@
 = Troubleshooting
+:description: Troubleshoot Fleet by checking logs, statuses, and configurations for issues with bundles, GitRepos, and agents
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

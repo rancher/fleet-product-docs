@@ -1,4 +1,5 @@
 = v0.9.18
+:description: This version includes updates to go modules and provides downloadable files for different platforms so users can install and use the latest features
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2025-05-16 12:14:19 +0000 UTC

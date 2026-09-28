@@ -1,4 +1,5 @@
 = v0.10.7
+:description: This release includes a change that disables the jobs cleanup cronjob when gitOps is turned off and provides downloadable files for different operating systems
 :revdate: 2025-07-04
 :page-revdate: {revdate}
 :page-date: 2024-12-11 12:15:23 +0000 UTC

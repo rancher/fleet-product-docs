@@ -1,4 +1,5 @@
 = Namespaces
+:description: Create and manage workload namespaces to control where resources are deployed ensuring that bundles are automatically created in the specified namespace if
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

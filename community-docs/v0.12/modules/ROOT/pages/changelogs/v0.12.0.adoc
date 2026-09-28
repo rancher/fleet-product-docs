@@ -1,4 +1,5 @@
 = v0.12.0
+:description: Update v0.12.0 adds a new experimental HelmOps controller that lets users manage Helm charts with the HelmApp CRD and improves error messages to help identify
 :revdate: 2025-02-05
 :page-revdate: {revdate}
 

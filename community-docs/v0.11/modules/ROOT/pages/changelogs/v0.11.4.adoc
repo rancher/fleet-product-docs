@@ -1,4 +1,5 @@
 = v0.11.4
+:description: Update v0.11.4 includes changes to prevent empty patch updates, improve job handling, adjust image scan parameters, and enhance error messages for better
 :revdate: 2025-07-04
 :page-revdate: {revdate}
 :date: 2025-02-19 16:56:42 +0000 UTC

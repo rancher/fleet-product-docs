@@ -1,4 +1,5 @@
 = v0.9.1
+:description: Update the version to v0.9.1 by applying changes to the gitjob chart, OCI tests, CI configuration, and dependencies while removing support for s390x
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2024-03-21 16:35:26 +0000 UTC

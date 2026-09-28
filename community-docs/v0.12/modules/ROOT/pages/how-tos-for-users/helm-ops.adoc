@@ -1,4 +1,5 @@
 = HelmOps
+:description: Create a HelmOp resource to deploy Helm charts directly from a Helm repository or OCI registry without needing a git repository
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

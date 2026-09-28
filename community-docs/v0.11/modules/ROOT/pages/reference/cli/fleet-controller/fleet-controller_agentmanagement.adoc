@@ -1,4 +1,5 @@
 = fleet-controller agentmanagement
+:description: Configure Fleet agent management to set up and control how agents communicate with the Fleet controller, allowing you to define settings and options
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

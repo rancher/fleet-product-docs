@@ -1,4 +1,5 @@
 = Status Fields
+:description: Understand the different status fields used to show the state of resources such as GitRepos, HelmOps, Clusters, and Bundles
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

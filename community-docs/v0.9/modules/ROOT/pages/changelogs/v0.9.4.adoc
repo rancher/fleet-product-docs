@@ -1,4 +1,5 @@
 = v0.9.4
+:description: Update v0.9.4 includes changes to dependencies and new versions of files for different operating systems and architectures that users can download and use
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2024-05-02 12:48:10 +0000 UTC

@@ -1,4 +1,5 @@
 = fleet-controller gitjob
+:description: Configure Fleet controller gitjob operations to manage how the Fleet controller interacts with the Fleet agent using source or text options
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

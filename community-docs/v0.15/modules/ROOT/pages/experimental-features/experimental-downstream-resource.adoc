@@ -1,4 +1,5 @@
 = Automatically copying resources to downstream clusters
+:description: Copying resources such as secrets and config maps to downstream clusters automatically ensures that workloads deployed through Helm charts use the most up-to-date versions
 :revdate: 2025-11-04
 :page-revdate: {revdate}
 :page-aliases: /experimental-downstream-resource

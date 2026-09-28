@@ -1,4 +1,5 @@
 = Rollout Strategy
+:description: Understand how to control app deployment across clusters using partitions and rollout strategy settings
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

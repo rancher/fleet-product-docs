@@ -1,4 +1,5 @@
 = fleet bundlediff
+:description: Display bundle diffs from resource status by extracting and showing changes between the desired state from Git or Helm and the actual state in the cluster
 :revdate: 2026-03-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_bundlediff

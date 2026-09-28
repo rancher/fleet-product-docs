@@ -1,6 +1,7 @@
 :doctype: book
 
 = Installation Details
+:description: Install Fleet in single-cluster or multi-cluster mode to manage Kubernetes resources using GitOps and Helm charts
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /installation

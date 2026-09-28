@@ -1,4 +1,5 @@
 = fleet-agent
+:description: Manage the Fleet agent to communicate with the Fleet controller and register with an upstream cluster
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

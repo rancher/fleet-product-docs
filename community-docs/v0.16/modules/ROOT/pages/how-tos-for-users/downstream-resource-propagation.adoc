@@ -1,4 +1,5 @@
 = Automatically copying resources to downstream clusters
+:description: Automatically copying resources to downstream clusters helps manage dependencies by ensuring secrets and config maps are copied to each targeted cluster
 :revdate: 2026-06-11
 :page-revdate: {revdate}
 :page-aliases: /downstream-resources

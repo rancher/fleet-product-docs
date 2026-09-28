@@ -1,4 +1,5 @@
 = v0.10.1
+:description: Find what has changed in version 0.10.1 of Fleet, including new features, bug fixes, and updates to tools and configurations
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 :date: 2024-08-15 04:25:51 +0000 UTC

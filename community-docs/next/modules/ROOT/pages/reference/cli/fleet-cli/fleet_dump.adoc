@@ -1,4 +1,5 @@
 = fleet dump
+:description: Dump cluster data into an archive containing Fleet resources, Kubernetes events, and metrics from Fleet controllers
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_dump

@@ -1,4 +1,5 @@
 = Tenant Setup
+:description: Set up a tenant with proper isolation using upstream and downstream RBAC and a policy in the tenant's namespace
 :revdate: 2026-05-21
 :page-revdate: {revdate}
 :page-aliases: /how-tos-for-operators/multi-user, /multi-user, /tenant-setup

@@ -1,4 +1,5 @@
 = fleet monitor
+:description: Monitor Fleet deployments to find problems like stuck bundles, resource mismatches, and agent issues by capturing and analyzing resource snapshots
 :revdate: 2026-03-03
 :page-revdate: {revdate}
 :page-aliases: /fleet_monitor

@@ -1,4 +1,5 @@
 = Multi-Tenancy
+:description: Understand how Fleet manages multiple tenants using ServiceAccounts and RBAC to control access and permissions on downstream clusters
 :revdate: 2026-05-21
 :page-revdate: {revdate}
 :page-aliases: /multi-tenancy

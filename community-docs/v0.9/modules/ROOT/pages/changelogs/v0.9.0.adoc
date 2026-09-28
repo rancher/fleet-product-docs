@@ -1,4 +1,5 @@
 = v0.9.0
+:description: Read about changes in version 0.9.0 including updates to Gitjob, performance improvements, and bug fixes
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2023-11-07 12:30:45 +0000 UTC

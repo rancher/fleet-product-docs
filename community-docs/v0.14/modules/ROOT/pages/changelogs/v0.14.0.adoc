@@ -1,4 +1,5 @@
 = v0.14.0
+:description: Update v0.14.0 adds support for authentication through GitHub Apps and introduces new features such as scheduling GitOps deployments and managing downstream
 :revdate: 2025-11-18
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC

@@ -1,4 +1,5 @@
 = v0.10.0
+:description: Read about the changes in version 0.10.0, including new features, deprecations, and improvements to controllers, logging, and deployment options
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 :date: 2024-07-17 11:54:57 +0000 UTC
