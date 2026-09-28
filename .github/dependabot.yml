@@ -5,9 +5,13 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 0
 
   - package-ecosystem: "gitsubmodule"
     directory: "/"
     target-branch: "product-docs"
     schedule:
       interval: "daily"
+    cooldown:
+      default-days: 0
