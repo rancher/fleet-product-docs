@@ -1,4 +1,5 @@
 = Best Practices
+:description: Learn how to organize repositories, manage branches, and design bundles to improve performance and scalability in Fleet
 :revdate: 2026-04-15
 :page-revdate: {revdate}
 

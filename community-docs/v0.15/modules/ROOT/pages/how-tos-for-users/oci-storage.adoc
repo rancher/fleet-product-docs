@@ -1,4 +1,5 @@
 = OCI Storage
+:description: Configure OCI storage for Kubernetes bundle resources by creating a secret with registry information and using it in GitRepo resources
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /oci-storage

@@ -1,4 +1,5 @@
 = v0.9.16
+:description: This release updates the software to version 0.9.16 and includes changes made by a contributor to a specific part of the system and downloadable files
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2025-03-04 15:05:45 +0000 UTC

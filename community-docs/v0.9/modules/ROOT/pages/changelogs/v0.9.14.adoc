@@ -1,4 +1,5 @@
 = v0.9.14
+:description: Update the go git tool to version 5.13.1 and download the latest files for Fleet v0.9.14 including fleet-crd-0.9.14.tgz and fleet-0.9.14
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :date: 2025-02-20 09:56:41 +0000 UTC*

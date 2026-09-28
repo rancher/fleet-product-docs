@@ -1,4 +1,5 @@
 = Configuration
+:description: Configure Fleet by using environment variables, ConfigMaps, and labels to set up agent and controller behavior
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /ref-configuration

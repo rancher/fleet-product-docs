@@ -1,4 +1,5 @@
 = v0.9.17
+:description: This version includes updates to the gitjob component and provides downloadable files for users to install and use the latest features and improvements
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2025-04-07 10:35:44 +0000 UTC

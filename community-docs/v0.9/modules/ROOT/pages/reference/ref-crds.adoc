@@ -1,4 +1,5 @@
 = Custom Resources Spec
+:description: Define the structure and properties of a custom resource specification that describes how application resources and deployment configurations are organized
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 :doctype: book

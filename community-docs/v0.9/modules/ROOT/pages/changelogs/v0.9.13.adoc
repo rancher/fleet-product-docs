@@ -1,5 +1,6 @@
 
 = v0.9.13
+:description: Update the software to version 0.9.13 by downloading the latest files and applying the changes that include updated libraries and new features for the system
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :date: 2025-01-20 12:37:50 +0000 UTC

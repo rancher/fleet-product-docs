@@ -1,4 +1,5 @@
 = Validate Fleet CLI Deployment
+:description: Validate Fleet CLI deployment by checking Bundle and BundleDeployment status to see if the bundle is ready and applied correctly
 :revdate: 2025-10-6
 :page-revdate: {revdate}
 :page-aliases: /validate-fleet-cli

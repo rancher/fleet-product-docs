@@ -1,4 +1,5 @@
 = Create a Bundle Resource
+:description: Create a Bundle Resource to deploy resources without a git repository by explicitly specifying them in the Bundle Spec
 :revdate: 2025-06-16
 :page-revdate: {revdate}
 

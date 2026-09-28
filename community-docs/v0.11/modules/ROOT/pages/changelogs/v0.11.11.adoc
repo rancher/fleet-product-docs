@@ -1,4 +1,5 @@
 = v0.11.11
+:description: This release updates the xz library to version 0.5.15 and includes new binary files for different platforms allowing users to download and install the latest
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-date: 2025-09-18 09:13:26 +0000 UTC

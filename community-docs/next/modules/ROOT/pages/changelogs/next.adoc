@@ -1,4 +1,5 @@
 = Next Release
+:description: Release v0.16.0 introduces changes to how Helm repository credentials are forwarded, requires a new configuration pattern for credential sending and adds
 :revdate: 2026-08-31
 :page-revdate: {revdate}
 

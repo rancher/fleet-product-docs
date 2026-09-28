@@ -1,4 +1,5 @@
 = Core Concepts
+:description: Understand the main components and concepts of Fleet, including GitOps management, controllers, clusters, and deployment units
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /concepts

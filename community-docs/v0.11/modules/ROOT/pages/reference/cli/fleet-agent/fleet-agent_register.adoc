@@ -1,4 +1,5 @@
 = fleet-agent register
+:description: Register the fleet-agent with an upstream cluster to manage operations using configuration files and command-line options provided by Fleet.
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

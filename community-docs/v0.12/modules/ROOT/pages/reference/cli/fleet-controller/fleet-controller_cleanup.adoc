@@ -1,4 +1,5 @@
 = fleet-controller cleanup
+:description: Remove old controller resources using the fleet-controller cleanup command to keep your system organized and running smoothly
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

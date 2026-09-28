@@ -1,4 +1,5 @@
 = Setup Multi User
+:description: Set up multi-user access by creating separate namespaces for each tenant and using GitRepoRestriction to control resource access
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

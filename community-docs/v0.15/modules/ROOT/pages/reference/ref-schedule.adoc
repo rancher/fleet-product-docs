@@ -1,4 +1,5 @@
 = Schedule Resource
+:description: Define the Schedule resource to set time windows when Fleet accepts changes to Clusters and refer to Scheduling for more details on how to use it
 :revdate: 2025-10-10
 :page-revdate: {revdate}
 :page-aliases: /ref-schedule

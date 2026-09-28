@@ -1,4 +1,5 @@
 = Git Repository Contents
+:description: Find what files and structures are in a Git repository and how Fleet uses them to create and manage bundles
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

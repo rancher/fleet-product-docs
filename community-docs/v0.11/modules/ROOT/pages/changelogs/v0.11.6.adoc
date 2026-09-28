@@ -1,4 +1,5 @@
 = v0.11.6
+:description: Update v0.11.6 includes changes to improve reliability and security, such as ensuring consistent bundle selection and supporting strict host key checks.
 :revdate: 2025-07-04
 :page-revdate: {revdate}
 :date: 2025-04-17 08:11:53 +0000 UTC

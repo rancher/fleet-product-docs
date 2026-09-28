@@ -1,4 +1,5 @@
 = OCI Storage
+:description: Choose OCI registry as storage for bundle resources to avoid etcd size limits and store bundle resources in the configured OCI registry
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

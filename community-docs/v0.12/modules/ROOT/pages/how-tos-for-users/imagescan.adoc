@@ -1,4 +1,5 @@
 = Using Image Scan to Update Container Image References
+:description: Use image scan to automatically update container image references in your git repository without manual changes to manifests
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

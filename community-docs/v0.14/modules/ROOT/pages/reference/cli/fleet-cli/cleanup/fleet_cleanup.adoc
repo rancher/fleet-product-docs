@@ -1,4 +1,5 @@
 = fleet cleanup
+:description: Clean up outdated resources using fleet cleanup commands for cluster registrations, git jobs, and text sources
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

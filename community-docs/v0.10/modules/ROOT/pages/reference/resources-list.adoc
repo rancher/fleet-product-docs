@@ -1,4 +1,5 @@
 = Resources
+:description: Find resources deployed in bundles and GitRepos and see how resource counts are derived from bundleDeployments
 
 == Resources List
 :revdate: 2025-10-27

@@ -1,4 +1,5 @@
 = v0.11.11
+:description: Update the Kubernetes version to v0.31.14 and base images to version 15.7 in Dockerfiles and go to v1.24.12 in release v0.11
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-date: 2026-01-21 14:35:42 +0000 UTC

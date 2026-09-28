@@ -1,4 +1,5 @@
 = Automatically copying resources to downstream clusters
+:description: Copy resources such as secrets and config maps to downstream clusters automatically using the downstreamResources field in HelmOps ensuring they are
 :revdate: 2025-11-04
 :page-revdate: {revdate}
 :page-aliases: /experimental-downstream-resource

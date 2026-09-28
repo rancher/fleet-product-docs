@@ -1,4 +1,5 @@
 = GitRepo Resource
+:description: Create a GitRepo resource to define and manage git repositories, including access methods, bundle locations, and configurations that specify how the system
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

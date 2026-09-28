@@ -1,4 +1,5 @@
 = v0.9.12
+:description: Update the Kubernetes libraries to version v1.28.12 and the gitjob version to 0.9.18 in the v0.9.12 release of the tool to improve compatibility
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :date: 2024-11-04 06:02:50 +0000 UTC

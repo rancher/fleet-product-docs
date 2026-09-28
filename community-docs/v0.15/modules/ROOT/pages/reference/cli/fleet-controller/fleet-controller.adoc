@@ -1,4 +1,5 @@
 = fleet-controller
+:description: Configure the Fleet controller to manage communication with the Fleet agent and perform tasks such as agent management, resource cleanup, and gitjob operations
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet-controller

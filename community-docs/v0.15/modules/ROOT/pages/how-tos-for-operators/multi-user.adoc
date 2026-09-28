@@ -1,4 +1,5 @@
 = Setup Multi User
+:description: Set up multi-user access by creating isolated namespaces and using GitRepoRestriction to control resource deployment
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /multi-user

@@ -1,4 +1,5 @@
 = v0.10.9
+:description: This release version v0.10.9 includes updates to ensure the system returns results with the RequeueAfter field set and prevents empty Patch updates
 :revdate: 2025-07-04
 :page-revdate: {revdate}
 :page-date: 2025-02-19 17:08:31 +0000 UTC

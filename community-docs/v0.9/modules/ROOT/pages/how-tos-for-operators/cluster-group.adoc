@@ -1,4 +1,5 @@
 = Create Cluster Groups
+:description: Create cluster groups to organize clusters in a namespace by defining a named selector that helps manage and monitor deployments more efficiently as your
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = fleet.yaml
+:description: Create a fleet.yaml file to define settings for a bundle, including namespace options, labels, Helm chart details, and other configurations that control how
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

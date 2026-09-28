@@ -1,4 +1,5 @@
 = Mapping to Downstream Clusters
+:description: Map clusters to downstream targets to control where GitRepos are deployed using grouping configuration and target matching rules
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

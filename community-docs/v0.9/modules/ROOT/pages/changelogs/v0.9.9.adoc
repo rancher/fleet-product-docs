@@ -1,4 +1,5 @@
 = v0.9.9
+:description: Update the software to version 0.9.9 by downloading the latest files and applying the changes to your system to use the new features and improvements.
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2024-09-13 12:44:41 +0000 UTC

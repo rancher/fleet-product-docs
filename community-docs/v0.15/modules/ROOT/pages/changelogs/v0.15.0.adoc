@@ -1,4 +1,5 @@
 = v0.15.0
+:description: This release introduces Helm v4, changes how image scanning works, adds new commands to the CLI, improves how Fleet handles drift correction, and updates how
 :revdate: 2025-03-23
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC

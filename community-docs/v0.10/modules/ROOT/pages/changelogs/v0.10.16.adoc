@@ -1,4 +1,5 @@
 = v0.10.15
+:description: Update version v0.10.15 includes changes to dependencies and new features from the latest release allowing users to download and apply updates to the fleet
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-date: 2025-09-18 09:00:23 +0000 UTC

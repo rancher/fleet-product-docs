@@ -1,4 +1,5 @@
 = Setup Multi User
+:description: Set up a multi-user environment by configuring namespaces, permissions, and restrictions for GitRepo resources
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

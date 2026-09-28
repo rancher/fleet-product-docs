@@ -1,4 +1,5 @@
 = Architecture
+:description: Describe the architecture of the system that manages clusters and Git repositories by explaining how the Fleet controller and cluster agents interact
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /architecture
