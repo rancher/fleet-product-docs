@@ -1,5 +1,5 @@
 = v0.9.8
-:description: Update the Gitjob version to 0.9.13 and download the latest files for fleet-crd, fleet-agent, and fleet to apply changes and use new features in version 0.9.13.
+:description: Update the Gitjob version to 0.9.13 and download the latest files for fleet-crd, fleet-agent, and fleet to apply changes and use new features in version 0.9.13
 :revdate: 2025-04-07
 :page-revdate: {revdate}
 :date: 2024-08-13 14:30:43 +0000 UTC

@@ -1,5 +1,5 @@
 = Fine Tuning Error Detection
-:description: Adjust error detection settings in Fleet by using environment variables or the ignore.conditions setting in Fleet.
+:description: Adjust error detection settings in Fleet by using environment variables or the ignore.conditions setting during GitOps operations
 :revdate: 2025-09-12
 :page-revdate: {revdate}
 

@@ -1,5 +1,5 @@
 = fleet
-:description: Use the fleet tool to manage cluster operations, including deploying bundles, cleaning up registrations, and monitoring issues.
+:description: Use the fleet tool to manage cluster operations, including deploying bundles, cleaning up registrations, and monitoring issues
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

@@ -1,5 +1,5 @@
 = v0.11.8
-:description: This release includes updates to the Stable BundleDeployment status, changes to prevent empty patches drift, modifications to semaphore calls, and removal.
+:description: This release includes updates to the Stable BundleDeployment status, changes to prevent empty patches drift, modifications to semaphore calls, and removal
 :revdate: 2025-07-04
 :page-revdate: {revdate}
 :date: 2025-05-16 08:32:50 +0000 UTC

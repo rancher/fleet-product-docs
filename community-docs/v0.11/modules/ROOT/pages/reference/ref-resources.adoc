@@ -1,5 +1,5 @@
 = List of Deployed Resources
-:description: List of Deployed Resources shows what objects are created in the upstream cluster after installing Fleet in Rancher and includes namespace details.
+:description: List of Deployed Resources shows what objects are created in the upstream cluster after installing Fleet in Rancher and includes namespace details
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

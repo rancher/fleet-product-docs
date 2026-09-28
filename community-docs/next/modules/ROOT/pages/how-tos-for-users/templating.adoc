@@ -1,5 +1,5 @@
 = {product_name} Templating
-:description: Customize cluster deployments using Fleet templating to apply dynamic values, environment-specific settings, and reusable configurations in Fleet.
+:description: Customize cluster deployments using Fleet templating to apply dynamic values, environment-specific settings, and reusable configurations in Fleet
 :revdate: 2026-05-14
 :page-revdate: {revdate}
 :page-aliases: /templating

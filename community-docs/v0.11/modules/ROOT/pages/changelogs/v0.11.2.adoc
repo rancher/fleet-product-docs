@@ -1,5 +1,5 @@
 = v0.11.2
-:description: Update version v0.11.2 includes changes to remove duplicate status messages, disable jobs cleanup when gitOps is not active, and downloadable files.
+:description: Update version v0.11.2 includes changes to remove duplicate status messages, disable jobs cleanup when gitOps is not active, and downloadable files
 :revdate: 2025-07-04
 :page-revdate: {revdate}
 :date: 2024-12-12 15:16:49 +0000 UTC

@@ -1,5 +1,5 @@
 = v0.10.5
-:description: Update the status field using Patch instead of Update to fix conflicts between agent and fleet-controller, improve GitRepo status resources, and update Go to 1.
+:description: Update the status field using Patch instead of Update to fix conflicts between agent and fleet-controller, improve GitRepo status resources, and update Go to 1
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 :date: 2024-11-06 15:45:37 +0000 UTC
