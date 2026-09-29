@@ -7,7 +7,7 @@
 components work in a two-stage pull model. The {product_name} controller will pull from git and the
 cluster agents will pull from the {product_name} controller.
 
-[#_product_name_controller]
+[#_productname_controller]
 == {product_name} Controller
 
 The {product_name} controller is a set of Kubernetes controllers running in any standard Kubernetes

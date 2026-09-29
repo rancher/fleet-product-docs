@@ -44,7 +44,7 @@ Go to each downstream cluster and run the following command for the local cluste
 # Downstream cluster
 $ kubectl logs -l app=fleet-agent -n cattle-fleet-system
 # Local cluster
-$ kubectl logs -l app=fleet-agent -n cattle-local-fleet-system
+$ kubectl logs -l app=fleet-agent -n cattle-fleet-local-system
 ----
 
 [#_fetch_detailed_error_logs_from_gitrepos_and_bundles]
@@ -114,7 +114,7 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 ----
 
 [#_debug_fleet_controller_and_fleet_agent_containers]
-=== Debug fleet-controller and fleet-agent containers 
+=== Debug fleet-controller and fleet-agent containers
 
 For {product_name} v0.16, runtime images use `bci-nano` and do not include a shell.
 Use `kubectl debug` with `--target` to inspect a running Fleet container.
@@ -146,6 +146,7 @@ Available in Rancher v2.6.3 ({product_name} v0.3.8), the ability to enable debug
 * Select *Apps & Marketplace*, then *Installed Apps* from the dropdown
 * From there, you will upgrade the {product_name} chart with the value `debug=true`. You can also set `debugLevel=5` if desired.
 
+[#_via_fleet_install_options]
 ==== Via Fleet Install Options
 
 You can create a config map `rancher-config` in the `cattle-system` namespace with xref:reference/ref-configuration.adoc#_configure_productname_install_options_in_rancher[Fleet Installation Options].
@@ -193,7 +194,7 @@ done ; wait
 
 . For CRD terms like `clusters` and `gitrepos`, you must reference the full CRD name. For example, the cluster CRD's complete name is `cluster.fleet.cattle.io`, and the gitrepo CRD's complete name is `gitrepo.fleet.cattle.io`.
 . `Bundles`, which are created from the `GitRepo`, follow the pattern `$gitrepoName-$path` in the same workspace/namespace where the `GitRepo` was created. Note that `$path` is the path directory in the git repository that contains the `bundle` (`fleet.yaml`).
-. `BundleDeployments`, which are created from the `bundle`, follow the pattern `$bundleName-$clusterName` in the namespace `clusters-$workspace-$cluster-$generateHash`. Note that `$clusterName` is the cluster to which the bundle will be deployed.
+. `BundleDeployments`, which are created from the `bundle`, have the same name as the `bundle` (`$bundleName`) and are created in the namespace `cluster-$workspace-$cluster-$generateHash`, one per target cluster. Note that the cluster to which the bundle will be deployed is identified by this namespace, not by the `BundleDeployment` name.
 
 [#_http_secrets_in_github]
 === HTTP secrets in Github
@@ -311,6 +312,7 @@ Based on the above log, you can add the following entry to remove the operation:
 {"op":"remove", "path":"/spec/template/spec/hostNetwork"}
 ----
 
+[#_gitrepo_sync_fails_without_retry]
 ==== GitRepo sync fails without retry
 
 A `GitRepo` may stop syncing and remain in a **Failed** state. In this case, the GitJob controller logs can show network timeouts or etcd request timeouts. This issue is more likely when {product_name} is under high load.

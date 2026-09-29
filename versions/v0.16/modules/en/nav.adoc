@@ -90,3 +90,4 @@
 
 * Changelog
 ** xref:changelogs/v0.16.0.adoc[v0.16.0]
+** xref:changelogs/other.adoc[Other Releases]

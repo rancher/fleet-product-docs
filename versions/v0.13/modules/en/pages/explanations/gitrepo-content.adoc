@@ -13,12 +13,12 @@ The `fleet.yaml` file contains all the options for the deployment.
 
 By default, bundle names will also be generated from the GitRepo's name and the path from which the bundle is created. However, a bundle's name can be overridden by using the `name` field in a `fleet.yaml` file.
 
-Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added.
+Bundle lifecycles are tracked between releases by the Helm `releaseName` field added to each bundle. If the releaseName is not specified within `fleet.yaml` it is generated from `GitRepo.name + path`. Long names are truncated and a `-<hash>` prefix is added (Bundle names are limited to 53 characters long).
 
 [#_how_repos_are_scanned]
 == How repos are scanned
 
-*The git repository has no explicitly required structure.* It is important
+**The git repository has no explicitly required structure**. It is important
 to realize the scanned resources will be saved as a resource in Kubernetes so
 you want to make sure the directories you are scanning in git do not contain
 arbitrarily large resources. Right now there is a limitation that the resources
@@ -27,16 +27,15 @@ Multiple paths can be defined for a `GitRepo` and each path is scanned independe
 Internally each scanned path will become a xref:/explanations/concepts.adoc[bundle] that {product_name} will manage,
 deploy, and monitor independently.
 
-The following files are looked for to determine the how the resources will be deployed.
-
+{product_name} looks for the following files to determine how resources will be deployed.
 [cols="1,1,2", options="header"]
 |===
 | File | Location | Meaning
-| *Chart.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
-| *kustomization.yaml* | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
-| *fleet.yaml* | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
-| *.yaml* | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
-| *overlays/+{name}+* | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
+| Chart.yaml | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed as a Helm chart. Refer to the `fleet.yaml` for more options.
+| kustomization.yaml | / relative to `path` or custom path from `fleet.yaml` | The resources will be deployed using Kustomize. Refer to the `fleet.yaml` for more options.
+| fleet.yaml | Any subpath | If any fleet.yaml is found a new xref::/explanations/concepts.adoc[bundle] will be defined. This allows mixing charts, kustomize, and raw YAML in the same repo.
+| .yaml | Any subpath | If a `Chart.yaml` or `kustomization.yaml` is not found then any `.yaml` or `.yml` file will be assumed to be a Kubernetes resource and will be deployed.
+| overlays/+{name}+ | / relative to `path` | When deploying using raw YAML (not Kustomize or Helm) `overlays` is a special directory for customizations.
 |===
 
 [#_alternative_scan_explicitly_defined_by_the_user]
@@ -47,8 +46,8 @@ In addition to the previously described method, {product_name} also supports a m
 In this mode, {product_name} will load all resources found within the specified base directory. It will only attempt to locate a `fleet.yaml` file at the root of that directory if an options file is not explicitly provided.
 Unlike the traditional scanning method, this one is not recursive and does not attempt to find Bundle definitions other than those explicitly specified by the user.
 
-[#_example_file_structure]
-==== Example File Structure
+[#_example_directory_structure]
+==== Example Directory Structure
 
 [source,bash]
 ----
@@ -163,7 +162,7 @@ With the previous scanning option, {product_name} cannot determine which YAML we
 Excluding irrelevant files from user-scanned bundles
 
 When using this bundle scanning mode, {product_name} does not exclude bundle configuration files which are not explicitly
-referenced in the GitRepo. For instance, in the above example file structure:
+referenced in the GitRepo. For instance, in the above example directory structure:
 
 * by default, neither `prod.yaml` nor `test.yaml` would be excluded from the bundle using `dev.yaml` as its options file  
 * similarly, by default, neither `dev.yaml` nor `prod.yaml` would be excluded from the bundle using `test.yaml` as its options file
@@ -211,7 +210,7 @@ Unsupported:
 == `fleet.yaml`
 
 The `fleet.yaml` is an optional file that can be included in the git repository to change the behavior of how
-the resources are deployed and customized. The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
+resources are deployed and customized. The `fleet.yaml` is always at the root relative to the `path` of the `GitRepo`
 and if a subdirectory is found with a `fleet.yaml` a new xref::/explanations/concepts.adoc[bundle] is defined that will then be
 configured differently from the parent bundle.
 
@@ -229,7 +228,7 @@ Refer to Rancher's {product_name} docs for more information.
 ====
 
 The available fields are documented in the xref::/reference/ref-fleet-yaml.adoc[fleet.yaml reference].
-For a private Helm repo, users can reference a secret from the git repo resource.
+For a private Helm repo, users can reference a secret from the git repo resource and set `spec.helmRepoURLRegex` to match trusted Helm or OCI repository URLs.
 See xref:how-tos-for-users/gitrepo-add.adoc#_using_private_helm_repositories[Using Private Helm Repositories].
 
 [#_using_helm_values]
@@ -263,12 +262,12 @@ These examples showcase the style and format for using `valuesFrom`.
 
 [Note]
 ====
-**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in *downstream clusters*.
+**Propagating ConfigMaps and Secrets to downstream clusters**: ConfigMaps and Secrets should generally be created directly in downstream clusters .
 
 However, from {product_name} v0.14.0 onwards, they can also be referenced through a HelmOp's `downstreamResources` field to be
 automatically propagated to targeted downstream clusters.
 
-Refer to link:https://documentation.suse.com/cloudnative/continuous-delivery/v0.14/en/experimental-features/experimental-downstream-resource.html[experimental downstream resources] for more information.
+Refer to https://fleet.rancher.io/0.14/experimental-features/experimental-downstream-resource[experimental downstream resources] for more information.
 ====
 
 Example ConfigMap:

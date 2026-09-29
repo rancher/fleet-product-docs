@@ -8,7 +8,6 @@ For more information about customizing bundles using `fleet.yaml`, see xref:expl
 
 The contents of `fleet.yaml` correspond to the `FleetYAML` struct in
 https://github.com/rancher/fleet/blob/main/pkg/apis/fleet.cattle.io/v1alpha1/fleetyaml.go[`fleetyaml.go`], which contains the xref:/reference/ref-crds.adoc#_bundlespec[BundleSpec].
-[#_full_example]
 == Full Example
 
 [%collapsible]
@@ -408,8 +407,8 @@ Determines which chart to download from OCI registries.
 
 [NOTE]
 ====
-OCI registries do not support the `+` character in semver tags. Helm replaces `+` with `_` automatically when pushing charts.  
-Use the `+` version in `fleet.yaml`; {product_name} performs the same replacement internally.
+OCI registries do not support the `{plus}` character in semver tags. Helm replaces `{plus}` with `_` automatically when pushing charts.
+Use the `{plus}` version in `fleet.yaml`; {product_name} performs the same replacement internally.
 ====
 
 [#_values]

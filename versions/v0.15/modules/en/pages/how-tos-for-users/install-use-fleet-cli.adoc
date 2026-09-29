@@ -1,5 +1,7 @@
 = Install and Use Fleet CLI
+ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-10-6
 :page-revdate: {revdate}
 :page-aliases: /install-use-fleet-cli
@@ -23,7 +25,7 @@ For more information, see xref:how-tos-for-operators/installation.adoc[Install F
 
 Fleet CLI is a stand-alone binary that you can download from the link:https://github.com/rancher/fleet/releases?q=prerelease%3Afalse+tag%3Av0.15&expanded=true[Fleet GitHub releases page].
 
-[#_linux_macos]
+[#_linuxmacos]
 === Linux/macOS
 
 [source,bash]

@@ -286,7 +286,7 @@ However, certain resources are naturally amended at runtime by native Kubernetes
 
 * Reference: xref:reference/ref-fleet-yaml.adoc[fleet.yaml Reference], https://youtu.be/1nhYdSy-VTE?si=Qr0oS3KZ3FWWjWZn[Lessons learnt from implementing GitOps and Continuous Delivery at scale]
 
-[#_testing_and_ci_cd_integration]
+[#_testing_and_cicd_integration]
 == Testing and CI/CD Integration
 
 [#_dry_run_and_testing_cli]

@@ -1,4 +1,7 @@
 = {product_name} Templating
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-05-14
 :page-revdate: {revdate}
 :page-aliases: /templating
