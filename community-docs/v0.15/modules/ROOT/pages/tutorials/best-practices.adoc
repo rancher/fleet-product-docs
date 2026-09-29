@@ -1,4 +1,7 @@
 = Best Practices
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-04-15
 :page-revdate: {revdate}
 

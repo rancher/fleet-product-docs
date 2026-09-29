@@ -1,4 +1,7 @@
 = HelmOps
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-01
 :page-revdate: {revdate}
 :page-aliases: /helm-ops

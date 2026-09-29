@@ -1,6 +1,9 @@
 :doctype: book
 
 = Installation Details
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /installation
@@ -121,7 +124,7 @@ To remedy this, install Fleet with `--set imagescan.enabled=true`.
 When interacting with git repositories through SSH, strict host key checks are enabled by default, meaning that
 {product_name} will reject SSH connection attempts to hosts for which no `known_hosts` entry exists.
 
-More information, refer to s xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[strict host key checks].
+More information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[strict host key checks].
 
 By default, Fleet installs `known_hosts` entries for a few widely used git hosting providers.
 

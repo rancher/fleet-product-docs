@@ -1,4 +1,7 @@
 = Automatically copying resources to downstream clusters
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-11-04
 :page-revdate: {revdate}
 :page-aliases: /experimental-downstream-resource

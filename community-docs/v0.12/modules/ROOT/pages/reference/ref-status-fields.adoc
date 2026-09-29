@@ -1,5 +1,5 @@
 = Status Fields
-:revdate: 2025-07-23
+:revdate: 2026-09-24
 :page-revdate: {revdate}
 
 [#_cluster_and_bundle_display_states]
@@ -14,11 +14,11 @@ Clusters and Bundles have different states in each phase of applying Bundles.
 
 * *NotReady*: Bundles have been deployed and some resources are not ready.
 
-* *WaitApplied*: Bundles have been synced from Fleet controller and downstream cluster, but are waiting to be deployed.
+* *WaitApplied*: Bundles have been synced from {product_name} controller and downstream cluster, but are waiting to be deployed.
 
 * *ErrApplied*: Bundles have been synced from the Fleet controller and the downstream cluster, but there were some errors when deploying the Bundle.
 
-* *OutOfSync*: Bundles have been synced from Fleet controller, but downstream agent hasn't synced the change yet.
+* *OutOfSync*: Bundles have been synced from {product_name} controller, but downstream agent hasn't synced the change yet.
 
 * *Pending*: Bundles are being processed by Fleet controller.
 

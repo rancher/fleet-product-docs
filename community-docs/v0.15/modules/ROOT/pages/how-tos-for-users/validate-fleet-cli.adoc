@@ -1,4 +1,7 @@
 = Validate Fleet CLI Deployment
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-10-6
 :page-revdate: {revdate}
 :page-aliases: /validate-fleet-cli
