@@ -37,7 +37,7 @@ Whether to grant access to `Cluster`, `ClusterGroup`, and `ClusterRegistrationTo
 
 Both examples below include the cluster resources. Remove them if using the operator-managed model.
 
-[#_stand_alone_productname]
+[#_stand_alone_fleet]
 === Stand-alone {product_name}
 
 This creates a tenant whose service account can manage their own resources in namespace `workspace1`. The `tenant1-policy-read` role is optional — omit it if you prefer tenants not to see the `Policy` directly.
@@ -72,7 +72,7 @@ kubectl create rolebinding tenant1-policy-read -n workspace1 \
 
 For a second tenant in their own namespace, repeat with a different name and namespace; the two `ClusterRole` objects can be reused.
 
-[#_rancher_integrated_productname]
+[#_rancher_integrated_fleet]
 === Rancher-integrated {product_name}
 
 In a Rancher-integrated setup, Rancher's own auth provider (local users, LDAP, OIDC) manages tenant identity — no `ServiceAccount` needs to be created. Each tenant gets a `FleetWorkspace` and the tenant's users get a `GlobalRole` that grants the necessary verbs on the workspace's backing namespace.

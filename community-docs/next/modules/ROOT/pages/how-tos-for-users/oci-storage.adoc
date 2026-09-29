@@ -92,7 +92,7 @@ The fields you can configure are:
 | `cacerts`         | PEM-encoded CA bundle for registries using custom or private Certificate Authorities. | Base64-encoded PEM data | When set, {product_name} merges these certificates with the system root CA pool for TLS validation against the OCI registry.
 |===
 
-[#_productname_example]
+[#_fleet_example]
 == {product_name} Example
 
 Consider the following `GitRepo` file:

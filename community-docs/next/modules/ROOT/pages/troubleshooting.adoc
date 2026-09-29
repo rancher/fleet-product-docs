@@ -149,7 +149,7 @@ Available in Rancher v2.6.3 ({product_name} v0.3.8), the ability to enable debug
 [#_via_fleet_install_options]
 ==== Via Fleet Install Options
 
-You can create a config map `rancher-config` in the `cattle-system` namespace with xref:reference/ref-configuration.adoc#_configure_productname_install_options_in_rancher[Fleet Installation Options].
+You can create a config map `rancher-config` in the `cattle-system` namespace with xref:reference/ref-configuration.adoc#_configure_fleet_install_options_in_rancher[Fleet Installation Options].
 
 For example, to enable debug logging for `fleet-controller` and `fleet-agent`, you can create a config map with the following content:
 
@@ -186,7 +186,7 @@ for kind in gitrepos.fleet.cattle.io bundles.fleet.cattle.io bundledeployments.f
 done ; wait
 ====
 
-[#_additional_solutions_for_other_productname_issues]
+[#_additional_solutions_for_other_fleet_issues]
 == *Additional Solutions for Other {product_name} Issues*
 
 [#_naming_conventions_for_crds]
@@ -213,7 +213,7 @@ endif::[]
 +
 . Use your token as the secret.
 
-[#_productname_fails_with_bad_response_code_403]
+[#_fleet_fails_with_bad_response_code_403]
 === {product_name} fails with bad response code: 403
 
 If your GitJob returns the error below, the problem may be that {product_name} cannot access the Helm repo you specified in your xref:reference/ref-fleet-yaml.adoc[`fleet.yaml`]:
@@ -272,7 +272,7 @@ Certificate:
 ...
 ----
 
-[#_productname_deployment_stuck_in_modified_state]
+[#_fleet_deployment_stuck_in_modified_state]
 === {product_name} deployment stuck in modified state
 
 When you deploy bundles to {product_name}, some of the components are modified, and this causes the "modified" flag in the {product_name} environment.
@@ -410,7 +410,7 @@ You can force a redeployment of an agent for a given cluster by setting `redeplo
 kubectl patch clusters.fleet.cattle.io -n fleet-local local --type=json -p '[{"op": "add", "path": "/spec/redeployAgentGeneration", "value": -1}]'
 ----
 
-[#_migrate_the_local_cluster_to_the_productname_default_cluster_workspace]
+[#_migrate_the_local_cluster_to_the_fleet_default_cluster_workspace]
 === Migrate the local cluster to the {product_name} default cluster workspace?
 
 Users can create new workspaces and move clusters across workspaces.
