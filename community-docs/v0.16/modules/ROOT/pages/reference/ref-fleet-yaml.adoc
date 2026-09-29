@@ -33,13 +33,15 @@ defaultNamespace: default
 # Default: ""
 namespace: default
 
-# namespaceLabels are labels that will be appended to the namespace created by
-# Fleet.
+# namespaceLabels replace the labels of the namespace the bundle is deployed to,
+# whether or not Fleet created it. Labels not listed here are removed, except
+# kubernetes.io/metadata.name.
 namespaceLabels:
   key: value
 
-# namespaceAnnotations are annotations that will be appended to the namespace
-# created by Fleet.
+# namespaceAnnotations replace the annotations of the namespace the bundle is
+# deployed to, whether or not Fleet created it. Annotations not listed here are
+# removed.
 namespaceAnnotations:
   key: value
 
@@ -375,8 +377,8 @@ These options control the Kubernetes namespace where resources will be deployed.
 
 | `defaultNamespace` | Default namespace for resources that don’t specify one. | All
 | `namespace` | Assigns all resources in the bundle to this namespace. Fails if any cluster-scoped resources exist. | All
-| `namespaceLabels` | Labels to be added to the namespace created by {product_name}. | All
-| `namespaceAnnotations` | Annotations to be added to the namespace created by {product_name}. | All
+| `namespaceLabels` | Labels to set on the namespace the bundle is deployed to, whether or not {product_name} created it. They replace the namespace's labels: labels not listed are removed, except `kubernetes.io/metadata.name`. Since {product_name} v0.16.1, they are applied with the same identity as the deployment, so a `ServiceAccount` used for the deployment needs `get` and `update` on that namespace. See xref:how-tos-for-operators/tenant-setup.adoc#_namespace_labels_and_annotations[Namespace Labels and Annotations]. | All
+| `namespaceAnnotations` | Annotations to set on the namespace the bundle is deployed to, whether or not {product_name} created it. They replace the namespace's annotations: annotations not listed are removed. Since {product_name} v0.16.1, they are applied with the same identity as the deployment, so a `ServiceAccount` used for the deployment needs `get` and `update` on that namespace. See xref:how-tos-for-operators/tenant-setup.adoc#_namespace_labels_and_annotations[Namespace Labels and Annotations]. | All
 |===
 
 [#_helm_bundle_configuration]
