@@ -245,7 +245,7 @@ BundleResource represents the content of a single resource from the bundle, like
 | false
 
 | dependsOn
-| DependsOn refers to the bundles which must be in an accepted state before this bundle can be deployed.
+| DependsOn refers to the bundles which must be ready before this bundle can be deployed.
 | []<<BundleRef,BundleRef>>
 | false
 
