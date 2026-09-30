@@ -42,26 +42,23 @@ Install the following Helm charts to set up {product_name}.
 Rancher includes separate Helm charts for {product_name} and uses a different repository.
 ====
 
-[#_add_the_fleet_helm_repository]
-=== Add the Fleet Helm repository
-
+. Add the Fleet Helm repository
++
 [source,bash]
 ----
 helm repo add fleet https://rancher.github.io/fleet-helm-charts/
 ----
-
-[#_install_the_fleet_customresourcedefinitions]
-=== Install the Fleet CustomResourceDefinitions
-
++
+. Install the Fleet CustomResourceDefinitions
++
 [source,bash]
 ----
 helm -n cattle-fleet-system install --create-namespace --wait fleet-crd \
     fleet/fleet-crd
 ----
-
-[#_install_the_fleet_controllers]
-=== Install the Fleet controllers
-
++
+. Install the Fleet controllers
++
 [source,bash]
 ----
 helm -n cattle-fleet-system install --create-namespace --wait fleet \

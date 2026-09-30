@@ -86,7 +86,7 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 You can now xref:how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
 
-[#_tweaking_your_product_name_installation]
+[#_tweaking_your_productname_installation]
 == Tweaking Your {product_name} Installation
 
 [#_controller_and_agent_replicas]

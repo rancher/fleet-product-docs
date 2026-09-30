@@ -3,6 +3,8 @@
 :page-revdate: {revdate}
 :page-date: 2025-07-23 15:09:14 +0000 UTC
 
+_(github-actions[bot]) released this 2025-07-23 15:09:14 +0000 UTC_
+
 [#_breaking_changes]
 == Breaking changes
 
@@ -90,7 +92,7 @@ And also:
 * Using SSH with keys to download Helm charts should work again by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/3863
 
 
-[#_what_s_changed]
+[#_whats_changed]
 == What's Changed
 * The benchmark suite:
     * Outputs a report improved by https://github.com/manno[@manno] in https://github.com/rancher/fleet/pull/3550
@@ -115,7 +117,7 @@ And also:
 
 * https://github.com/rbreddy[@rbreddy] made their first contribution in https://github.com/rancher/fleet/pull/3485
 
-_Full Changelog_: https://github.com/rancher/fleet/compare/v0.13.0-rc.3...v0.13.0
+*Full Changelog*: https://github.com/rancher/fleet/compare/v0.12.0...v0.13.0[v0.12.0...v0.13.0]
 
 
 [#_download]

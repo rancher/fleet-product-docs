@@ -24,7 +24,7 @@ For installations with many repositories or when you want to reduce latency (the
 [IMPORTANT]
 ====
 Support for unauthenticated webhooks is deprecated and will be removed in a future release.
-See <<configure-a-webhook-secret,Configure a Webhook Secret>> to set one up.
+See <<_3_configure_a_webhook_secret,Configure a Webhook Secret>> to set one up.
 ====
 
 [#_1_configure_the_webhook_service]
@@ -159,7 +159,7 @@ Only `application/json` is supported due to limitations in the webhook library.
 When a webhook is configured, the polling interval automatically adjusts to one hour.
 ====
 
-[#configure-a-webhook-secret]
+[#_3_configure_a_webhook_secret]
 == 3. Configure a Webhook Secret
 
 Each supported provider uses a specific key name in the Kubernetes secret.

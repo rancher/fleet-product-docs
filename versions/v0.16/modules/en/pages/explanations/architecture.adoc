@@ -60,12 +60,14 @@ image::FleetComponents.svg[Static, 600]
 
 When you install {product_name} on the upstream management cluster, {product_name} creates service accounts for its core controllers. As you register downstream clusters and add Git repositories, {product_name} dynamically creates additional service accounts with restricted permissions.
 
+[#_fleet_controller_service_account]
 ==== fleet-controller service account
 
 Namespace: ++cattle-fleet-system++
 
 The ++fleet-controller++ service account is used by the main Fleet controller pod. It manages bundles, clusters, and cluster groups, reconciles {product_name} resources, and runs GitJobs to process Git repositories.
 
+[#_gitjob_service_account]
 ==== gitjob service account
 
 Namespace: ++cattle-fleet-system++
@@ -74,6 +76,7 @@ The ++gitjob++ service account is used to run the GitJob controller and the inte
 
 This service account is not used to execute the temporary pods that clone Git repositories and generate bundles. Instead, those operational pods run under a dedicated service account created automatically for each Git repository, named `git-<gitrepo_name>`.
 
+[#_import_service_account]
 ==== import service account
 
 Namespace: ++fleet-default++
@@ -87,6 +90,7 @@ The ++import++ service account is created temporarily during downstream cluster 
 
 After cluster registration completes, the downstream agent removes the service account and no longer uses it.
 
+[#_request_service_account]
 ==== request service account
 
 Namespace: ++fleet-default++
@@ -105,6 +109,7 @@ The account cannot:
 * modify desired state resources
 * manage resources outside its assigned namespace
 
+[#_gitrepo_service_accounts]
 ==== GitRepo service accounts
 
 Namespace: ++fleet-default++
@@ -116,6 +121,7 @@ Namespace: ++fleet-default++
 
 Downstream clusters run {product_name} agents that retrieve configuration from the management cluster and perform Helm deployments.
 
+[#_fleet_agent_service_account]
 ==== fleet-agent service account
 
 Namespace: ++cattle-fleet-system++
@@ -124,6 +130,7 @@ The ++fleet-agent++ service account is used by the Fleet agent running on downst
 
 The agent authenticates using the credentials associated with the ++request++ service account.
 
+[#_deployment_service_accounts]
 ==== Deployment service accounts
 
 When {product_name} deploys workloads to a downstream cluster, it uses a deployment service account to execute the deployment.
@@ -135,6 +142,7 @@ You can explicitly configure which downstream service account {product_name} sho
 
 All service accounts referenced by a ++GitRepo++ must exist in the ++cattle-fleet-system++ namespace on the downstream cluster.
 
+[#_restrict_allowed_service_accounts]
 ==== Restrict allowed service accounts
 
 In multi-tenant environments, restrict which service accounts users can reference in Git repositories.

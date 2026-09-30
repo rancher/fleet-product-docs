@@ -76,12 +76,14 @@ targetCustomizations:
         replicas: 1
 ----
 
+[#_behavior]
 ==== Behavior
 
 * Cluster `my-special-cluster`: Gets `replicas: 10` (first match)
 * Any other cluster with `env: prod`: Gets `replicas: 3` (second entry matches)
 * All other clusters: Get `replicas: 1` (catch-all matches)
 
+[#_when_to_use]
 ==== When to use
 
 * When you have a clear precedence order
@@ -133,12 +135,14 @@ targetCustomizations:
           enabled: true
 ----
 
+[#_behavior_2]
 ==== Behavior
 
 * Cluster with labels `edge: "true"` and `custom-values: "true"`: Gets both `values/edge.yaml` AND values from the ConfigMap
 * Cluster with labels `edge: "true"` and `monitoring: "enabled"`: Gets `values/edge.yaml` AND `metrics.enabled: true`
 * Cluster with all three labels: Gets all three customizations merged
 
+[#_when_to_use_2]
 ==== When to use
 
 * When customizations are orthogonal (independent concerns)
@@ -314,6 +318,7 @@ targetCustomizations:
       chart: myapp
 ----
 
+[#_workaround]
 ==== Workaround
 
 If different environments require different chart sources, use one of these approaches:
@@ -322,6 +327,7 @@ If different environments require different chart sources, use one of these appr
 * Use separate `GitRepo` resources pointing to different paths
 * Use OCI registries with mirroring for airgapped environments
 
+[#_what_you_can_customize]
 ==== What you CAN customize
 
 While chart *source* cannot vary, you can still customize:

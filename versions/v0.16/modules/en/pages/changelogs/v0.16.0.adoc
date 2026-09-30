@@ -24,19 +24,23 @@ Helm repository credentials are no longer forwarded to a chart repository by def
 [#_additions]
 === Additions
 
+[#_multi_tenancy_and_access_control]
 ==== Multi-tenancy and access control
 * Introduce `Policy` custom resource for multi-tenant authorization by link:https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/5152[#5152]
 * Allow rejecting empty TTL and restrict cluster registration secret access (https://github.com/rancher/fleet/issues/5157[#5157]) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/5158[#5158]
 
+[#_targeting_and_bundle_management]
 ==== Targeting and bundle management
 * Allow more than one `targetCustomization` to be applied (https://github.com/rancher/fleet/issues/3512[#3512]) by link:https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/4940[#4940]
 * `rollout`: Make `maxNew` configurable (https://github.com/rancher/fleet/issues/3829[#3829]) by link:https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/4746[#4746]
 * Propagate per-target `DownstreamResources` to clusters (https://github.com/rancher/fleet/issues/4727[#4727]) by link:https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/5177[#5177]
 * Remove experimental guard from downstream resource copy by link:https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/5207[#5207]
 
+[#_drift_detection]
 ==== Drift detection
 Enable drift correction after the Bundle is deployed (https://github.com/rancher/fleet/issues/4945[#4945]) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/5114[#5114]
 
+[#_helm_and_git]
 ==== Helm and Git
 * HTTP proxy support for SSH in GitOps (https://github.com/rancher/fleet/issues/3595[#3595]) by link:https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/4781[#4781]
 * Make CA bundle configurable for `HTTPS_PROXY` (https://github.com/rancher/fleet/issues/4870[#4870]) by link:https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/4888[#4888]
@@ -45,16 +49,19 @@ Enable drift correction after the Bundle is deployed (https://github.com/rancher
 * Use Custom CAs when pulling OCI artifact (https://github.com/rancher/fleet/issues/4897[#4897]) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/5128[#5128]
 * Add Go duration validation across CRDs, Helm schemas, and config loader by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/5299[#5299]
 
+[#_agent_management]
 ==== Agent management
 * Add option to disable the management cluster's agent (https://github.com/rancher/fleet/issues/4807[#4807]) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/5250[#5250]
 * Support image pull secrets for Fleet controllers and agents (https://github.com/rancher/fleet/issues/5050[#5050]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/5201[#5201]
 * Support cluster-level image pull secrets for agent deployments (https://github.com/rancher/fleet/issues/5254[#5254]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/5258[#5258]
 * Propagate `CATTLE_WRANGLER_CHECK_GVK_ERROR_MAPPING` to `fleet-agent` (https://github.com/rancher/fleet/issues/5060[#5060]) by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/5085[#5085]
 
+[#_cli]
 ==== CLI
 * `fleet-cli`: add missing flag wiring for `apply`, `cleanup` subcommands (https://github.com/rancher/fleet/issues/5170[#5170]) by https://github.com/apoorvajagtap[@apoorvajagtap] in https://github.com/rancher/fleet/pull/5171[#5171]
 * Return CLI: `List` error closer to where it was returned by https://github.com/0xavi0[@0xavi0] in https://github.com/rancher/fleet/pull/4822[#4822]
 
+[#_security_hardening]
 ==== Security hardening
 * Remove `go-getter` dependency, replacing git/HTTP fetching with native `go-git/stdlib` (https://github.com/rancher/fleet/issues/4877[#4877]) by link:https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4841[#4841]
 * Reduce Fleet image footprint and CVE exposure with bci-nano (https://github.com/rancher/fleet/issues/5407[#5407]) by link:https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/5346[#5346]
@@ -62,6 +69,7 @@ Enable drift correction after the Bundle is deployed (https://github.com/rancher
 [#_bugfixes]
 == Bugfixes
 
+[#_stability]
 === Stability
 * Fix `doNotDeploy` bypassed when a broader target precedes it in the target list (https://github.com/rancher/fleet/issues/3580[#3580]) by https://github.com/dockerized-nl[@dockerized-nl] in #4688
 * Refine conditions for reconciles from cluster updates across shards (https://github.com/rancher/fleet/issues/4484[#4484]) by https://github.com/weyfonk[@weyfonk] in https://github.com/rancher/fleet/pull/4730[#4730]
@@ -78,6 +86,7 @@ Enable drift correction after the Bundle is deployed (https://github.com/rancher
 * Catch unknown-field errors in `deployErrToStatus` by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4956[#4956]
 * Fix stale bundle error when cluster is offline after a bad commit by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4780[#4780]
 
+[#_helm_and_git_2]
 === Helm and Git
 * Fix discrepancy of OCI chart fields between GitOps and HelmOps (https://github.com/rancher/fleet/issues/3859[#3859]) by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/4698[#4698]
 * Fix `--gitrepo` and `--bundle`filters not including HelmOps by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4825[#4825]
@@ -90,6 +99,7 @@ Enable drift correction after the Bundle is deployed (https://github.com/rancher
 * Prefer final chart over RC when computing the latest release version by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4866[#4866]
 * Honor `insecureSkipTLS` in OCI storage secret by https://github.com/khushalchandak17[@khushalchandak17] in https://github.com/rancher/fleet/pull/4890[#4890]
 
+[#_security]
 === Security
 * Fix credential leaks and DoS risk in `GetContent` archive handling (https://github.com/rancher/fleet/issues/4877[#4877]) by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/4891[#4891]
 * webhook: use `regexp.QuoteMeta` for hostname and path (GHSA-jmf4-m7j9-g72r) by https://github.com/p-se[@p-se] in https://github.com/rancher/fleet/pull/5153[#5153]
@@ -98,6 +108,7 @@ Enable drift correction after the Bundle is deployed (https://github.com/rancher
 * Validate `kubeConfig` namespaces against known Fleet namespaces by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/5224[#5224]
 * Verify cluster in API server before deleting namespace (#3830) by https://github.com/thardeck[@thardeck] in https://github.com/rancher/fleet/pull/5224[#5224]
 
+[#_observability]
 === Observability
 * Collect `fleet dump` metrics services across namespaces by https://github.com/immanuwell[@immanuwell] in https://github.com/rancher/fleet/pull/5188[#5188]
 

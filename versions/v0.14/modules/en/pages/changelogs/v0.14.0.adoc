@@ -3,6 +3,9 @@
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC
 
+_(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
+
+
 [#_notable_changes]
 == Notable changes
 
@@ -61,7 +64,7 @@
 - Improve Bundle Value Secret Logging by https://github.com/manno[@manno] in #4026
 - Don't add same field multiple times to logger by https://github.com/manno[@manno] in #4156
 
-[#_better_management_of_product_name_resources]
+[#_better_management_of_productname_resources]
 === Better management of {product_name} resources
 - Deletes the cluster's namespace on Cluster deletion by https://github.com/0xavi0[@0xavi0] in #4224
 - Track UID of existing bundle deployment to prevent orphaning on failure by https://github.com/thardeck[@thardeck] in #4276
@@ -75,7 +78,7 @@
 - Fix copying of helm secrets to downstream clusters by https://github.com/0xavi0[@0xavi0] in #3983
 - Fix hash mismatch error in bundles by https://github.com/0xavi0[@0xavi0] in #3917
 
-[#_what_s_changed]
+[#_whats_changed]
 == What's Changed
 
 *Full Changelog*: https://github.com/rancher/fleet/compare/v0.13.0...v0.14.0[v0.13.0...v0.14.0]
