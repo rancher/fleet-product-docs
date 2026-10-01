@@ -27,7 +27,7 @@ When you install Helm charts using {product_name}, it is important to distinguis
 * *Fleet ++valuesFiles++ and ++values++ (Templating supported):*
 ** {product_name} allows you to reference additional values files through ++fleet.yaml++ using the ++valuesFiles++ or ++values++ keys. These {product_name}-specific configurations fully support templating, allowing you to apply dynamic, environment-specific overrides.
 
-[#_how_productname_templating_works]
+[#_how_fleet_templating_works]
 == How {product_name} templating works
 
 Before a ++Bundle++ is created, the Fleet controller scans specific files (like ++fleet.yaml++ and ++values.yaml++). It searches for ++${ }++ delimiters. These are used instead of standard Go-template ++{{ }}++ to avoid collisions with Helm's own templating engine.
@@ -50,7 +50,7 @@ values:
   region: us-west
 ----
 
-[#_productname_versus_helm_templating]
+[#_fleet_versus_helm_templating]
 == {product_name} versus Helm templating
 
 {product_name} preprocessing happens before Helm rendering.

@@ -7,7 +7,7 @@ endif::[]
 
 image::fleet-architecture.svg[Static, 600]
 
-[#_what_is_productname]
+[#_what_is_fleet]
 [discrete]
 === What is {product_name}?
 

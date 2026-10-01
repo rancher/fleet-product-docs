@@ -95,11 +95,11 @@ configured differently from the parent bundle.
 
 *Helm chart dependencies*:
 
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://ranchermanager.docs.rancher.com/integrations-in-rancher/fleet/overview#helm-chart-dependencies[{product_name} docs] in Rancher for more information.
 endif::[]
 
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 It is up to the user to fulfill the dependency list for the Helm charts. As such, you must manually run `helm dependencies update $chart` OR run `helm dependencies build $chart` prior to install. See the https://documentation.suse.com/cloudnative/rancher-manager/latest/en/integrations/fleet/overview.html#_helm_chart_dependencies[{product_name} docs] in Rancher for more information.
 endif::[]
 ====
