@@ -168,12 +168,12 @@ In the previous example credentials for username `user` will be used for the pat
 
 [NOTE]
 ====
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
 endif::[]
 
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 If you use link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
 endif::[]

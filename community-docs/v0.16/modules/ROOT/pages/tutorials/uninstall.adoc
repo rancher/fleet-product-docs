@@ -72,9 +72,9 @@ When disabled, the gitjob deployment is no longer deployed into the Rancher serv
 
 More information can be found in the {rancher-product-name} documentation:
 
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 * https://ranchermanager.docs.rancher.com/how-to-guides/advanced-user-guides/enable-experimental-features/continuous-delivery[Continuous Delivery]
 endif::[]
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 * https://documentation.suse.com/cloudnative/rancher-manager/latest/en/rancher-admin/experimental-features/continuous-delivery.html[Continuous Delivery]
 endif::[]

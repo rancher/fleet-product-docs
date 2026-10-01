@@ -153,11 +153,11 @@ rules:
       - '*'
 ----
 
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 Assign the `GlobalRole` to users or groups; see the https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/authentication-permissions-and-global-configuration/manage-role-based-access-control-rbac/global-permissions#configuring-global-permissions-for-individual-users[Rancher docs] for details.
 endif::[]
 
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 Assign the `GlobalRole` to users or groups; see the https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/users/authn-and-authz/manage-role-based-access-control-rbac/global-permissions.html#_configuring_global_permissions_for_individual_users[Rancher docs] for details.
 endif::[]
 
