@@ -147,7 +147,7 @@ allowedTargetNamespaceSelector:
 
 A namespace can contain one or more `Policy` resources that restrict which service accounts, credential secrets, and source repositories the `GitRepo`, `HelmOp`, and `Bundle` resources in that namespace may use. Downstream namespace restrictions are not expressed at this layer — they are encoded as RBAC on the tenant's downstream `ServiceAccount`. See xref:explanations/multi-tenancy.adoc[Multi-Tenancy] for the trust model and xref:how-tos-for-operators/tenant-setup.adoc[Tenant Setup] for the operator recipe.
 
-[#_productname_namespaces]
+[#_fleet_namespaces]
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom

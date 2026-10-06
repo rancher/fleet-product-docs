@@ -64,7 +64,7 @@ _(github-actions[bot]) released this 2025-11-18 14:56:48 +0000 UTC_
 - Improve Bundle Value Secret Logging by https://github.com/manno[@manno] in #4026
 - Don't add same field multiple times to logger by https://github.com/manno[@manno] in #4156
 
-[#_better_management_of_productname_resources]
+[#_better_management_of_fleet_resources]
 === Better management of {product_name} resources
 - Deletes the cluster's namespace on Cluster deletion by https://github.com/0xavi0[@0xavi0] in #4224
 - Track UID of existing bundle deployment to prevent orphaning on failure by https://github.com/thardeck[@thardeck] in #4276
