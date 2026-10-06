@@ -202,7 +202,7 @@ To maximize performance benefits, use node selectors to assign different control
 
 * Reference: xref:troubleshooting.adoc[{product_name} Troubleshooting].
 
-[#_dedicate_nodes_for_productname]
+[#_dedicate_nodes_for_fleet]
 === Dedicate Nodes for {product_name}
 
 *The Best Practice:* The {product_name} controller is CPU-intensive and can overwhelm the Kubernetes API server. Schedule the controller on dedicated worker nodes to ensure consistent performance.
@@ -322,7 +322,7 @@ The default values for:
 [#_observability_and_debugging]
 == Observability and Debugging
 
-[#_use_the_productname_benchmark_suite]
+[#_use_the_fleet_benchmark_suite]
 === Use the {product_name} Benchmark Suite
 
 *The Best Practice:* Do not estimate hardware capacity. Run benchmarks to identify bottlenecks in bundle creation and target matching for your specific environment.

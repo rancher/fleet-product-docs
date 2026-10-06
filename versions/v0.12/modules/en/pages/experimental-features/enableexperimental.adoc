@@ -14,7 +14,7 @@ Currently, {product_name} has xref:experimental-features/oci-storage.adoc[`OCI S
 [#_enabling_an_experimental_feature]
 == Enabling an experimental feature
 
-[#_enabling_when_installing_productname_stand_alone]
+[#_enabling_when_installing_fleet_stand_alone]
 === Enabling when installing {product_name} stand-alone
 
 When installing {product_name}, pass something similar to the following to your helm install or update command:
@@ -31,7 +31,7 @@ When installing {product_name}, pass something similar to the following to your 
 You must use `--set-string`, otherwise the boolean value does not work as expected.
 ====
 
-[#_enabling_when_installing_productname_with_rancher]
+[#_enabling_when_installing_fleet_with_rancher]
 === Enabling when installing {product_name} with Rancher
 
 You can also activate the experimental features in {product_name} when installing Rancher.
