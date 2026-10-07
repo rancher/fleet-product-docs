@@ -1,5 +1,5 @@
 = Observability
-:revdate: 2025-07-23
+:revdate: 2026-10-07
 :page-revdate: {revdate}
 :page-aliases: /observability
 
@@ -24,6 +24,89 @@ See xref:reference/ref-status-fields.adoc[status fields reference] for more info
 * `FailedToCheckCommit`- cannot get latest commit from the git server
 * `FailedToGetGitJob`- cannot retrieve information from the git cloning job
 * `Failed`- polling is disabled, triggered via webhook, but cannot get latest commit from the git server
+
+[#_source_labels]
+== Source Labels on Deployed Resources
+
+{product_name} labels every resource it deploys with the source it came from. Use these labels to find which `GitRepo`, `HelmOp` or `Bundle` manages a resource in a downstream cluster.
+
+[cols="1,3"]
+|===
+|Label |Value
+
+|`fleet.cattle.io/managed-by-kind`
+|The kind of source: `gitrepo`, `helmop` or `bundle`. `bundle` is used for bundles created directly, not through a `GitRepo` or `HelmOp`.
+
+|`fleet.cattle.io/managed-by-name`
+|The name of the source. A name longer than 63 characters is shortened, so that it fits in a label value.
+
+|`fleet.cattle.io/managed-by-namespace`
+|The namespace of the source in the {product_name} management cluster, for example `fleet-default`.
+|===
+
+To see which source manages each resource, show the labels as columns. Run this in a downstream cluster:
+
+[source,bash]
+----
+kubectl get deployments -A \
+  -L fleet.cattle.io/managed-by-kind,fleet.cattle.io/managed-by-name,fleet.cattle.io/managed-by-namespace
+----
+
+[source,text]
+----
+NAMESPACE   NAME       READY   UP-TO-DATE   AVAILABLE   AGE   MANAGED-BY-KIND   MANAGED-BY-NAME   MANAGED-BY-NAMESPACE
+my-app      frontend   1/1     1            1           2m    gitrepo           my-app            fleet-default
+kafka       kafka      1/1     1            1           5m    helmop            kafka             fleet-default
+legacy      api        1/1     1            1           30d
+----
+
+To list only the resources deployed from the `GitRepo` named `my-app` in `fleet-default`:
+
+[source,bash]
+----
+kubectl get deployments,services,configmaps -A \
+  -l fleet.cattle.io/managed-by-kind=gitrepo,fleet.cattle.io/managed-by-name=my-app,fleet.cattle.io/managed-by-namespace=fleet-default
+----
+
+{product_name} does not add these labels to its own resources, such as the `fleet-agent` deployment.
+
+[NOTE]
+====
+The labels are informational. Users who can create or edit a source can influence their values, so do not use them for authorization decisions.
+====
+
+[#_source_labels_after_upgrade]
+=== Resources Deployed Before an Upgrade
+
+{product_name} adds the source labels when it deploys a resource. After upgrading {product_name}, resources that were already deployed stay unlabelled until their source is deployed again. A `GitRepo` or `HelmOp` that does not change after the upgrade keeps its resources unlabelled, like `legacy/api` in the example above.
+
+To check whether a source's resources are labelled yet, show the label columns in the namespace it deploys to. Empty columns mean the resource has not been labelled:
+
+[source,bash]
+----
+kubectl get deployments,services,configmaps -n legacy \
+  -L fleet.cattle.io/managed-by-kind,fleet.cattle.io/managed-by-name,fleet.cattle.io/managed-by-namespace
+----
+
+To label the resources of an unchanged source, deploy it again by incrementing its `spec.forceSyncGeneration`. {product_name} redeploys only when the value changes, so read the current value and set it one higher. If the field is not set yet, the new value is `1`.
+
+For a `GitRepo`:
+
+[source,bash]
+----
+GEN=$(kubectl get gitrepo my-app -n fleet-default -o jsonpath='{.spec.forceSyncGeneration}')
+kubectl patch gitrepo my-app -n fleet-default --type=merge \
+  -p "{\"spec\":{\"forceSyncGeneration\":$((GEN + 1))}}"
+----
+
+For a `HelmOp`:
+
+[source,bash]
+----
+GEN=$(kubectl get helmop kafka -n fleet-default -o jsonpath='{.spec.forceSyncGeneration}')
+kubectl patch helmop kafka -n fleet-default --type=merge \
+  -p "{\"spec\":{\"forceSyncGeneration\":$((GEN + 1))}}"
+----
 
 [#_metrics]
 == Metrics
