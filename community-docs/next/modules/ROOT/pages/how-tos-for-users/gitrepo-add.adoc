@@ -1,5 +1,5 @@
 = Create a GitRepo Resource
-:revdate: 2026-09-24
+:revdate: 2026-10-07
 :page-revdate: {revdate}
 :doctype: book
 :page-aliases: /gitrepo-add
@@ -13,6 +13,8 @@ to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for ex
 xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
 
 The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
+
+{product_name} labels every resource it deploys from a `GitRepo` with `fleet.cattle.io/managed-by-kind: gitrepo`, and with the GitRepo's name and namespace in `fleet.cattle.io/managed-by-name` and `fleet.cattle.io/managed-by-namespace`. See xref:how-tos-for-users/observability.adoc#_source_labels[Source Labels on Deployed Resources].
 Adding A Private Git Repository
 [NOTE]
 ====
