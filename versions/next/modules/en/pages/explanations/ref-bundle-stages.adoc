@@ -1,5 +1,5 @@
 = Bundle Lifecycle
-:revdate: 2025-07-23
+:revdate: 2026-10-06
 :page-revdate: {revdate}
 :page-aliases: /ref-bundle-stages
 
@@ -22,6 +22,49 @@ The job pod with the image name `rancher/tekton-utils` will be under the same na
 This diagram shows the different rendering stages a bundle goes through until deployment.
 
 image::FleetBundleStages.svg[Bundle Stages]
+
+[#_deployment_errors_and_retries]
+== Deployment Errors and Retries
+
+When the `fleet-agent` fails to deploy a bundle to a downstream cluster, it reports the error in the bundle's status. Depending on the error, the agent then either retries on its own or waits for the bundle to change.
+
+[#_errors_that_are_retried]
+=== Errors That Are Retried
+
+Most errors are retried. These are usually temporary problems, for example a CRD that is not installed yet, a Helm repository or OCI registry that cannot be reached, or a resource rejected by an admission webhook. The bundle is shown as `ErrApplied` until a retry succeeds.
+
+* *Exponential backoff*: the first retry happens after a few milliseconds, and the delay doubles after each failure, up to a maximum of 1000 seconds (about 17 minutes). After roughly 20 minutes of continuous failures, the agent retries about every 17 minutes.
+* *No retry limit*: the agent keeps retrying until the deployment succeeds or the bundle is paused or deleted.
+* *Changes are applied immediately*: a change to the bundle, such as a new commit, starts a new attempt right away, without waiting for the backoff delay. Restarting the `fleet-agent` resets the backoff.
+
+A few situations are retried at a fixed interval instead:
+
+* A bundle waiting for its <<_dependencies,dependencies>> is checked every 15 seconds.
+* If the deployment's service account is not allowed to create the target namespace, set its labels or annotations, or copy downstream resources into it, the deployment is retried every 2 minutes. It succeeds once the missing permissions are granted.
+
+[#_errors_that_are_not_retried]
+=== Errors That Are Not Retried
+
+Some errors cannot be fixed by trying again, because the bundle itself must change. {product_name} records these errors in the bundle's status and does not retry them:
+
+* The chart requires a Kubernetes version that is not compatible with the cluster (`kubeVersion`).
+* The manifests are invalid, for example because of YAML parse errors, schema validation errors or unknown fields.
+* The bundle changes a field that cannot be updated, for example an immutable field of a resource.
+* A resource already belongs to a different Helm release.
+* Helm timed out waiting for resources to become ready, when `helm.timeoutSeconds` is set.
+* An upgrade failed and was rolled back, when `helm.atomic` is set.
+
+The bundle is shown as `NotReady`, with the error in its message. {product_name} tries to deploy it again only when the bundle changes. To do so, fix the problem and push a new commit, or select *Force Update* on the GitRepo. Restarting the `fleet-agent` does not trigger a new attempt.
+
+[#_dependencies]
+=== Dependencies
+
+A bundle that uses xref:reference/ref-fleet-yaml.adoc[`dependsOn`] is only deployed once all of its dependencies are in an accepted state, which is `Ready` by default. Dependencies are checked separately on each downstream cluster: a dependency must be deployed to the same cluster as the bundle that depends on it.
+
+* While a dependency is not in an accepted state, the dependent bundle is shown as `WaitingForDependency` and is checked again every 15 seconds. It waits indefinitely: there is no timeout.
+* A dependent bundle which is already deployed is not removed when a dependency leaves its accepted state, but it does not receive updates until the dependency is back in an accepted state.
+* If {product_name} finds no deployment of a dependency for the cluster, for example because the dependency does not target that cluster, does not exist yet, or its name or selector is wrong, the dependent bundle is shown as `ErrApplied` with a `no bundles matching labels` message. It is then retried with exponential backoff, so it may take up to about 17 minutes to notice the dependency once it appears.
+* A dependency that failed with an <<_errors_that_are_not_retried,error that is not retried>> blocks its dependent bundles until the dependency is fixed.
 
 [#_examining_the_bundle_lifecycle_with_the_cli]
 == Examining the Bundle Lifecycle With the CLI
