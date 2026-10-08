@@ -50,6 +50,21 @@ remain on the upstream cluster, though.
 If resources referenced through `downstreamResources` should stay on downstream clusters even after they are no longer targeted, xref:/reference/ref-bundle.adoc[keepResources] should be set to `true` on the HelmOp.
 ====
 
+[#_permissions]
+=== Permissions
+
+Since {product_name} v0.14.11, when a `ServiceAccount` is resolved for the deployment on the downstream cluster, the agent writes the copies as that `ServiceAccount`. This is the account set in `serviceAccount`, or the `fleet-default` account in `cattle-fleet-system` if none is set and it exists. The `ServiceAccount` needs `get`, `create` and `update` on the copied kinds in the deployment namespace.
+
+The deployment namespace must exist before the copy runs. If it does not, {product_name} tries to create it as the `ServiceAccount`, which requires `create` on the cluster-scoped `namespaces` resource. Do not grant that verb to a tenant, because it cannot be limited to particular namespaces. Create the namespace as an operator instead.
+
+Removing the copies when a cluster is no longer targeted is done by the agent itself and needs no permission on the `ServiceAccount`. The agent only removes objects that carry the `fleet.cattle.io/bundledeployment` label {product_name} sets on the copies.
+
+[NOTE]
+.A missing permission is not a failed deployment
+====
+If the `ServiceAccount` may not create the deployment namespace or write a copied object, {product_name} stops before installing anything. The bundle deployment reports not ready, with a message naming the namespace or object and the `forbidden` error, and {product_name} retries on its own. Once the permission is granted or the namespace is created, the deployment proceeds without further action.
+====
+
 [#_monitoring]
 == Monitoring
 
