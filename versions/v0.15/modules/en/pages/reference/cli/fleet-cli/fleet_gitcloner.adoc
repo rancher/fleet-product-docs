@@ -1,4 +1,5 @@
 = fleet gitcloner
+:description: Clones a git repository from a source or text using fleet gitcloner with options to customize the cloning process
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

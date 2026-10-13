@@ -1,6 +1,7 @@
 :doctype: book
 
 = Resource Limits
+:description: Configure resource limits and requests for Fleet controllers and downstream cluster agents using the resources and agentResources fields
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

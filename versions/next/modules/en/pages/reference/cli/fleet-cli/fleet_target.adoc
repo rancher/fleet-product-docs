@@ -1,4 +1,5 @@
 = fleet target
+:description: Print the clusters that a bundle can target, and show the live cluster list that Fleet uses when it selects those clusters
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet_target

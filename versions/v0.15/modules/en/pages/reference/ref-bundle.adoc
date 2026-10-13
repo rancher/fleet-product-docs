@@ -1,4 +1,5 @@
 = Bundle Resource
+:description: Create a Bundle Resource to define the structure and contents of the bundle that Fleet automatically generates when a GitRepo is created
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

@@ -1,4 +1,5 @@
 = Core Concepts
+:description: Learn the key components and concepts of Fleet, including Fleet Manager, Fleet controller, GitRepo, Bundle, and Downstream Cluster
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /concepts

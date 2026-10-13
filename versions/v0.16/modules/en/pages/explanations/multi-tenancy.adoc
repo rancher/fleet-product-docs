@@ -1,4 +1,5 @@
 = Multi-Tenancy
+:description: Understand how Fleet manages trust between multiple tenants to ensure secure and isolated resource access in shared clusters
 :revdate: 2026-09-24
 :page-revdate: {revdate}
 :page-aliases: /multi-tenancy

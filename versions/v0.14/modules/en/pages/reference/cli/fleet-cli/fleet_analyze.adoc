@@ -1,4 +1,5 @@
 = fleet analyze
+:description: Analyze fleet monitor snapshots to check resource status, detect issues, and compare changes over time
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_analyze

@@ -1,4 +1,5 @@
 = Target Customization
+:description: Target customizations let you adjust bundle settings for specific clusters without creating separate bundles or GitRepos
 :revdate: 2026-04-13
 :page-revdate: {revdate}
 

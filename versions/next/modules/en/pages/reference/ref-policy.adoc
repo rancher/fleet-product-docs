@@ -1,4 +1,5 @@
 = Policy Resource
+:description: Understand how the Policy resource controls GitRepo, HelmOp, and Bundle actions and sets default values in a namespace
 :revdate: 2026-05-21
 :page-revdate: {revdate}
 :page-aliases: /ref-policy

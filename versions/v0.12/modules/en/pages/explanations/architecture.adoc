@@ -1,4 +1,5 @@
 = Architecture
+:description: Architecture defines how Fleet controller and cluster agents interact to manage clusters using a two-stage pull model
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

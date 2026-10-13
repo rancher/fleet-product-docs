@@ -1,4 +1,5 @@
 = fleet deploy
+:description: Create a Helm release to deploy a bundledeployment/content resource to a cluster without directly deploying the bundledeployment/content resource
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet_deploy

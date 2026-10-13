@@ -1,4 +1,5 @@
 = Bundle Resource
+:description: Create a Bundle Resource to define the structure and contents of the bundle that Fleet automatically generates when a GitRepo is created
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /ref-bundle

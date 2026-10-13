@@ -1,4 +1,5 @@
 = Troubleshooting
+:description: Check the logs for Kubernetes job pods in the local management cluster to find errors in the GitRepo or Helm repo
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

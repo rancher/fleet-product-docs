@@ -1,4 +1,5 @@
 = fleet.yaml
+:description: Create or modify a bundle by using the fleet.yaml file to set options like namespace, labels, and Helm chart settings
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]
@@ -316,9 +317,9 @@ dependsOn:
   #     opni-fleet-examples-fleets-opni-ui-plugin-operator-crd becomes
   #     opni-fleet-examples-fleets-opni-ui-plugin-opera-021f7
   - name: one-multi-cluster-hello-world
-      acceptedStates:
-        - Ready
-        - Modified
+    acceptedStates:
+      - Ready
+      - Modified
   # Select bundles to depend on based on their label.
   - selector:
       matchLabels:

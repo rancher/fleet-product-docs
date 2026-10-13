@@ -1,4 +1,5 @@
 = Automatically copying resources to downstream clusters
+:description: Copy resources to downstream clusters automatically using the downstreamResources field in HelmOps to manage secrets and config maps across clusters
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

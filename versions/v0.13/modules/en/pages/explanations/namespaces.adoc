@@ -1,4 +1,5 @@
 = Namespaces
+:description: Understand how to create, configure, and restrict namespaces for deploying workloads and managing resources across clusters
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

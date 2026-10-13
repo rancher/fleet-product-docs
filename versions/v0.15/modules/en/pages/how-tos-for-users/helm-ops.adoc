@@ -1,4 +1,5 @@
 = HelmOps
+:description: Create a HelmOp resource to deploy Helm charts directly from a Helm repository or OCI registry without using a git repository
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]
