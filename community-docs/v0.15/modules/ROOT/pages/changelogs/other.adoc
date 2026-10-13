@@ -1,5 +1,5 @@
 = Other Releases
-:description: Find all previous versions of Fleet, along with information about what changed in each release, by visiting the official GitHub Release page where every update
+:description: To find all Fleet releases and their detailed change information, visit the GitHub Release page for the complete list
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

@@ -1,5 +1,5 @@
 = Key Personas and Their Roles
-:description: Identify the main people involved in a project and describe their responsibilities to help team members understand who is responsible for what during different
+:description: Understand the roles of platform engineers, application developers, and security administrators in managing cluster deployments and ensuring compliance
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

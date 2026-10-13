@@ -1,5 +1,5 @@
 = Automatically copying resources to downstream clusters
-:description: Automatically copying resources to downstream clusters simplifies managing dependencies for charts and ensures workloads use the latest versions of referenced
+:description: Copy resources such as secrets and config maps to downstream clusters automatically using the downstreamResources field in HelmOps
 :revdate: 2026-06-11
 :page-revdate: {revdate}
 :page-aliases: /downstream-resources
