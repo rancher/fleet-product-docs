@@ -1,4 +1,5 @@
 = fleet test
+:description: Match a bundle to a cluster or cluster group and render the resources for that match. The fleet test command is deprecated
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

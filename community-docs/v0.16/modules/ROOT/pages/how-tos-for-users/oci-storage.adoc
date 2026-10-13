@@ -1,4 +1,5 @@
 = OCI Storage
+:description: Use OCI storage to avoid etcd size limits and manage large Kubernetes bundle resources more efficiently
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /oci-storage

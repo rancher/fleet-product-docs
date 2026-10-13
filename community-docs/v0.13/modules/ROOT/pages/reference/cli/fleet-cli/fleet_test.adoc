@@ -1,4 +1,5 @@
 = fleet test
+:description: Test a fleet by matching a bundle to a target and generate output using available options to manage and verify fleet operations
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

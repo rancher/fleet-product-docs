@@ -1,4 +1,5 @@
 = Best Practices
+:description: Learn best practices for organizing repositories, managing branch watches, avoiding nested resources, and designing bundles to improve performance
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

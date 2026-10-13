@@ -1,4 +1,5 @@
 = Setup Multi User
+:description: Set up a multi-user environment by configuring namespaces, GitRepo resources, and GlobalRoles to isolate tenant access and control fleet workspaces
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /multi-user

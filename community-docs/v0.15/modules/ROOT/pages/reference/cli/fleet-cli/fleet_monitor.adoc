@@ -1,4 +1,5 @@
 = fleet monitor
+:description: Monitor Fleet deployments to find and fix problems by checking resource states and diagnosing issues in the GitOps lifecycle
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

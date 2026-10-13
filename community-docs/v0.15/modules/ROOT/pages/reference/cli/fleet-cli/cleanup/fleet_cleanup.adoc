@@ -1,4 +1,5 @@
 = fleet cleanup
+:description: Clean up outdated resources using fleet cleanup commands for cluster registrations, git jobs, and other sources
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

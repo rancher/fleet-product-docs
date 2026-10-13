@@ -1,4 +1,5 @@
 = v0.14.0
+:description: V0.14.0 adds support for GitHub App authentication, experimental GitOps scheduling, and improves traceability and error reporting in Fleet
 :revdate: 2025-11-18
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC

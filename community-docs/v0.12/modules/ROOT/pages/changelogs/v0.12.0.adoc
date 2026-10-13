@@ -1,4 +1,5 @@
 = v0.12.0
+:description: The v0.12.0 release adds a new HelmOps controller that allows managing Helm charts with the HelmApp CRD
 :revdate: 2025-02-05
 :page-revdate: {revdate}
 

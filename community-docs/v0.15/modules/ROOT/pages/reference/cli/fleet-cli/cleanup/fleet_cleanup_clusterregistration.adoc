@@ -1,4 +1,5 @@
 = fleet cleanup clusterregistration
+:description: Remove outdated cluster registrations from the fleet cleanup process to ensure only current and valid cluster information is maintained in the system
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

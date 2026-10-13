@@ -1,6 +1,7 @@
 :doctype: book
 
 = Installation Details
+:description: Installation Details describes how to set up Fleet on a Kubernetes cluster using Helm charts and configure it for single or multi-cluster use
 :revdate: 2026-09-24
 :page-revdate: {revdate}
 :page-aliases: /installation

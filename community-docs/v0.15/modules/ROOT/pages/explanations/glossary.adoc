@@ -1,4 +1,5 @@
 = Glossary
+:description: Define terms used in Fleets system, such as agent, bundle, cluster, and GitRepo, to help you understand how workloads are managed and deployed
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]
