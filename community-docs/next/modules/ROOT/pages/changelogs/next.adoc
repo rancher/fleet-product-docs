@@ -1,5 +1,5 @@
 = Next Release
-:description: Release v0.16.0 introduces changes to how Helm repository credentials are forwarded, requires a new configuration pattern for credential sending and adds
+:description: Check the GitHub Release page to find information about the next development version of Fleet and see the changes and features
 :revdate: 2026-08-31
 :page-revdate: {revdate}
 

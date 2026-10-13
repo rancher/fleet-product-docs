@@ -1,6 +1,7 @@
 :doctype: book
 
 = Register Downstream Clusters
+:description: Register a downstream cluster by installing an agent and using a registration token to start the process
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

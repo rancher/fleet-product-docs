@@ -1,4 +1,5 @@
 = Custom Resources During Deployment
+:description: Create a deployment from a git repository by identifying and managing the custom resources, including internal ones, needed for the process
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

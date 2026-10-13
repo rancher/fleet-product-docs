@@ -1,4 +1,5 @@
 = Schedule Resource
+:description: Define the Schedule resource to set time windows when Fleet accepts changes to Clusters and refer to Scheduling for more details on how to use it effectively
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

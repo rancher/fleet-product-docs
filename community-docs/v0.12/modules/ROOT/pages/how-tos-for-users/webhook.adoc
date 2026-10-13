@@ -1,5 +1,5 @@
 = Using Webhooks Instead of Polling
-:description: Configure webhooks to replace polling in Fleet so the system can automatically trigger reconciliation when new commits are pushed to a Git repository
+:description: Configure webhooks to replace polling in Fleet and reduce the delay between a Git push and Fleet processing changes by setting up a webhook service
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

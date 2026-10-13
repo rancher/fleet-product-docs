@@ -1,5 +1,4 @@
 = Create a GitRepo Resource
-:description: Create a GitRepo resource to register a Git repository in Kubernetes and manage its use in Fleet workspaces
 :revdate: 2025-06-16
 :page-revdate: {revdate}
 :doctype: book

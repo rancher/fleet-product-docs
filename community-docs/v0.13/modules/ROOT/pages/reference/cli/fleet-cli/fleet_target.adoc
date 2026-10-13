@@ -1,4 +1,5 @@
 = fleet target
+:description: List available targets for a bundle to help manage fleet operations and understand which targets can be included in a fleet task
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = fleet
+:description: Manage Fleet operations by using commands to create, deploy, clean up, monitor, and analyze cluster setups, helping you control
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

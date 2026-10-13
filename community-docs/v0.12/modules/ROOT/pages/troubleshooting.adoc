@@ -1,5 +1,5 @@
 = Troubleshooting
-:description: Troubleshoot Fleet by checking logs, statuses, and configurations for issues with bundles, GitRepos, and agents
+:description: Check the logs for Kubernetes job pods in the local management cluster to find errors in the GitRepo or Helm repo
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

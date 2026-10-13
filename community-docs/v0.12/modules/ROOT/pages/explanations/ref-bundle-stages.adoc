@@ -1,5 +1,5 @@
 = Bundle Lifecycle
-:description: Create a GitRepo that points to a repository, then use the fleet CLI to apply, target, and deploy a bundle to monitor its lifecycle as it is generated
+:description: Understand how a bundle is created, updated, and deployed across clusters using GitRepo and Fleet components
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

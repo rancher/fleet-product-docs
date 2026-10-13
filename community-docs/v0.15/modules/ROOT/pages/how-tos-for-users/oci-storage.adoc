@@ -1,4 +1,5 @@
 = OCI Storage
+:description: Use OCI storage to avoid etcd size limits and manage large Kubernetes bundle resources more efficiently
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

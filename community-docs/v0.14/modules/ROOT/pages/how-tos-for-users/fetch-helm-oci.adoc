@@ -1,5 +1,5 @@
 = Fetch Helm Charts from OCI Registries
-:description: Fetch Helm charts from OCI registries by specifying the OCI repository URL in the repo field of a fleet
+:description: Fetch Helm charts from OCI registries by using the repo field in a fleet.yaml file to reference the chart and specify the version
 :revdate: 2025-09-01
 :page-revdate: {revdate}
 :page-aliases: /fetch-helm-oci

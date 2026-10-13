@@ -1,5 +1,5 @@
 = Configuration
-:description: Configure Fleet by using environment variables, ConfigMaps, and labels to set up agent and controller behavior
+:description: Configure Fleet by using Helm values in a ConfigMap named rancher-config in the cattle-system namespace
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /ref-configuration

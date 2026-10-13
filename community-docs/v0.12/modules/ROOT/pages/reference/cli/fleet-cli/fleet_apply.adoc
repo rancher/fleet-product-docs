@@ -1,5 +1,5 @@
 = fleet apply
-:description: Apply fleet configurations to a cluster by creating bundles from directories and using environment variables to control known hosts and bundle creation
+:description: Apply fleet bundles to a cluster and configure bundle creation settings using command-line options or environment variables
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

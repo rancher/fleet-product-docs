@@ -1,4 +1,5 @@
 = Scheduling
+:description: Define when clusters can receive updates by creating a schedule with a cron expression, duration, and target clusters
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

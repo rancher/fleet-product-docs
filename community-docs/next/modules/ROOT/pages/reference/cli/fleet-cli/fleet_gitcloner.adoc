@@ -1,4 +1,5 @@
 = fleet gitcloner
+:description: Clones a git repository from a source or text using fleet gitcloner with options to customize the cloning process
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet_gitcloner

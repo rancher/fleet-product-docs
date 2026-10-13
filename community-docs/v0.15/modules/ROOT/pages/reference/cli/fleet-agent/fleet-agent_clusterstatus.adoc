@@ -1,4 +1,5 @@
 = fleet-agent clusterstatus
+:description: Monitor and update the status of resources in the cluster by sending continuous reports to the upstream cluster using fleet-agent
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

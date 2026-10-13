@@ -1,5 +1,4 @@
 = Setup Multi User
-:description: Set up a multi-user fleet environment by creating separate namespaces for each tenant and using GitRepoRestriction to control access and deployment scope
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 

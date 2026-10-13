@@ -1,5 +1,5 @@
 = Install and Use Fleet CLI
-:description: Install Fleet CLI to manage and deploy bundles directly from your local machine using commands like apply, target, and deploy
+:description: Install Fleet CLI to create, apply, and inspect bundles from your local machine without needing GitRepo
 :revdate: 2025-10-6
 :page-revdate: {revdate}
 

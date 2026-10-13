@@ -1,5 +1,5 @@
 = Glossary
-:description: Define terms related to Fleet in a clear and structured way so users can understand key concepts such as agent, bundle, cluster, deployment, and GitOps
+:description: Define terms used in Fleets system, such as agent, bundle, cluster, and GitRepo, to help you understand how workloads are managed and deployed
 :revdate: 2026-02-18
 :page-revdate: {revdate}
 :page-aliases: /glossary

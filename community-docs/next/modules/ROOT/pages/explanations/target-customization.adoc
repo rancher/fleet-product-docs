@@ -1,5 +1,5 @@
 = Target Customization
-:description: Customize how bundles are deployed to specific clusters using target customizations in fleet.yaml
+:description: Target customizations let you adjust bundle settings for specific clusters without creating separate bundles or GitRepos
 :revdate: 2026-04-13
 :page-revdate: {revdate}
 

@@ -1,4 +1,5 @@
 = Automatically copying resources to downstream clusters
+:description: Copy resources such as secrets and config maps from an upstream cluster to targeted downstream clusters automatically before deploying workloads to ensure
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

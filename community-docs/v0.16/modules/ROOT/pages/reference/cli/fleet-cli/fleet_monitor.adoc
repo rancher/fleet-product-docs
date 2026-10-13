@@ -1,5 +1,5 @@
 = fleet monitor
-:description: Monitor Fleet deployments to find problems like stuck bundles, resource mismatches, and agent issues by capturing and analyzing resource snapshots
+:description: Monitor Fleet deployments to find and fix problems by checking resource states and diagnosing issues in the GitOps lifecycle
 :revdate: 2026-03-03
 :page-revdate: {revdate}
 :page-aliases: /fleet_monitor

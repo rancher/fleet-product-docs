@@ -1,5 +1,5 @@
 = v0.16.0
-:description: Release v0.16.0 introduces changes to how Helm repository credentials are forwarded, requires a new configuration pattern for credential sending and adds
+:description: Update v0.16.0 introduces changes to how credentials are forwarded to Helm repositories and adds a new Policy resource to manage multi-tenant access control
 :revdate: 2025-03-23
 :page-revdate: {revdate}
 :page-date: 2025-11-18 14:56:48 +0000 UTC

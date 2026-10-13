@@ -1,5 +1,5 @@
 = Setup Multi User
-:description: Set up a multi-user environment by creating isolated namespaces and assigning permissions to control GitRepo resources
+:description: Set up multi-user access by configuring namespaces, GitRepo restrictions, and GlobalRoles to isolate and manage tenant resources
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

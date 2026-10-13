@@ -1,5 +1,5 @@
 = Observability
-:description: Observability helps users track and understand the state of resources using status fields, Kubernetes events, Prometheus metrics, and Grafana dashboards
+:description: Understand how Fleet reports resource status, generates Kubernetes events, and provides metrics for monitoring and observability
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /observability

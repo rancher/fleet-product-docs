@@ -1,4 +1,5 @@
 = fleet bundlediff
+:description: Display bundle diffs from resource status to see changes between the desired state from Git or Helm and the actual state in the cluster by extracting
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

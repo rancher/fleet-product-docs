@@ -1,5 +1,5 @@
 = fleet.yaml
-:description: Create a fleet.yaml file to define settings for a bundle, including namespace options, labels, Helm chart details, and other configurations that control how
+:description: Create or modify a bundle by using the fleet.yaml file to set options like namespace, labels, and Helm chart settings
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

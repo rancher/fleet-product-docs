@@ -1,4 +1,5 @@
 = Bundle Lifecycle
+:description: Understand how a bundle is created, updated, and deployed across clusters using GitRepo and Fleet components
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

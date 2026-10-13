@@ -1,5 +1,4 @@
 = Cluster Registration Internals
-:description: Learn how cluster registration works by following the process of creating resources, secrets, and service accounts used to register a cluster
 :revdate: 2025-04-30
 :page-revdate: {revdate}
 
