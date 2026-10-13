@@ -1,5 +1,7 @@
 = Create a Bundle Resource
-:description: Create a Bundle Resource to deploy resources without a git repository by explicitly specifying them in the Bundle Spec
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /bundle-add

@@ -1,5 +1,7 @@
 = fleet monitor
-:description: Monitor Fleet deployments to find problems like stuck bundles, resource mismatches, and agent issues by capturing and analyzing resource snapshots
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-03-03
 :page-revdate: {revdate}
 :page-aliases: /fleet_monitor

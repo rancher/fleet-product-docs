@@ -1,6 +1,5 @@
 = Create a GitRepo Resource
-:description: Create a GitRepo resource to register a Git repository in Kubernetes and manage its use in Fleet workspaces
-:revdate: 2025-07-23
+:revdate: 2026-10-07
 :page-revdate: {revdate}
 :doctype: book
 :page-aliases: /gitrepo-add
@@ -14,6 +13,8 @@ to the xref:tutorials/tut-deployment.adoc[creating a deployment tutorial] for ex
 xref:explanations/gitrepo-content.adoc[Git Repository Contents] has detail about the content of the Git repository.
 
 The available fields of the GitRepo custom resource are documented in the xref:reference/ref-gitrepo.adoc[GitRepo resource reference]
+
+{product_name} labels every resource it deploys from a `GitRepo` with `fleet.cattle.io/managed-by-kind: gitrepo`, and with the GitRepo's name and namespace in `fleet.cattle.io/managed-by-name` and `fleet.cattle.io/managed-by-namespace`. See xref:how-tos-for-users/observability.adoc#_source_labels[Source Labels on Deployed Resources].
 Adding A Private Git Repository
 [NOTE]
 ====
@@ -39,7 +40,7 @@ For a xref:explanations/concepts.adoc[multi-cluster] style, please ensure you us
 
 The `targetNamespace` field will override any namespace in the bundle. If the deployment contains cluster scoped resources, it will fail.
 
-It takes precendence over all other namespace definitions:
+It takes precedence over all other namespace definitions:
 
 `gitRepo.targetNamespace > fleet.yaml namespace > namespace in workload's manifest > fleet.yaml defaultNamespace`
 
@@ -65,7 +66,7 @@ ssh-keygen -t rsa -b 4096 -m pem -C "user@email.com"
 
 [NOTE]
 ====
-The private key format has to be in `EC PRIVATE KEY`, `RSA PRIVATE KEY` or `PRIVATE KEY` and should not contain a passphase.
+The private key format has to be in `EC PRIVATE KEY`, `RSA PRIVATE KEY` or `PRIVATE KEY` and should not contain a passphrase.
 ====
 
 Put your private key into secret, use the namespace the GitRepo is in:
@@ -139,31 +140,31 @@ stringData:
 [#_strict_host_key_checks]
 ==== Strict host key checks
 
-Chart value `insecureSkipHostKeyChecks` defines how Fleet behaves with regards to `known_hosts` when establishing SSH
+Chart value `insecureSkipHostKeyChecks` defines how {product_name} behaves with regards to `known_hosts` when establishing SSH
 connections.
 
-When that value is set to `false`, Fleet will enforce strict host key checks, meaning that it will fail to establish any
+When that value is set to `false`, {product_name} will enforce strict host key checks, meaning that it will fail to establish any
 SSH connections to hosts for which no matching `known_hosts` entry can be found.
 
-This is the default behaviour from Fleet v0.13 onwards.
+This is the default behavior from {product_name} v0.13 onwards.
 
 `known_hosts` entries are sourced in priority from secrets referenced in `GitRepo` resources, e.g. `helmSecretName` for
 accessing Helm charts or `clientSecretName` for cloning git repositories.
 
-Note that this is compatible with Fleet looking for a `gitcredential` secret if no secret is referenced in the
+Note that this is compatible with {product_name} looking for a `gitcredential` secret if no secret is referenced in the
 `GitRepo`.
 
-If no such secret exists, or no `known_hosts` entries are available in that secret, then Fleet uses its own
+If no such secret exists, or no `known_hosts` entries are available in that secret, then {product_name} uses its own
 `known-hosts` config map, newly created at installation time with static entries for the most widely used git providers.
 
 More details xref:how-tos-for-operators/installation.adoc#_additional_ssh_known_hosts[here] on where the default entries
 come from and how to populate additional ones at installation time.
 
-The absence of the config map, should no secret be available, is considered a symptom of an incomplete Fleet deployment,
+The absence of the config map, should no secret be available, is considered a symptom of an incomplete {product_name} deployment,
 and reported as such.
 
-Fleet only uses a single_source of `known_hosts` entries at a time. This means that, even if a secret contains invalid
-(or insufficient) entries, then Fleet will not look for valid entries in the config map. This applies to a secret
+{product_name} only uses a single_source of `known_hosts` entries at a time. This means that, even if a secret contains invalid
+(or insufficient) entries, then {product_name} will not look for valid entries in the config map. This applies to a secret
 referenced in a `GitRepo` as well as to a possible `gitcredential` secret, if no secret is referenced in the `GitRepo`.
 
 [#_using_http_auth]
@@ -242,7 +243,7 @@ Validating a repository using a certificate signed by a custom Certificate Autho
 
 [IMPORTANT]
 ====
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Using a Private CA Signed Certificate]
 and
@@ -250,7 +251,7 @@ https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade
 {product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 endif::[]
 
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
@@ -276,7 +277,7 @@ For a private Helm repo, users can reference a secret with the following keys:
 
 [IMPORTANT]
 ====
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade/resources/add-tls-secrets[Using a Private CA Signed Certificate]
 and
@@ -284,7 +285,7 @@ https://ranchermanager.docs.rancher.com/getting-started/installation-and-upgrade
 {product_name} will use those CA bundles if no CA bundle is specified in the `GitRepo`.
 endif::[]
 
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 Note that if secrets specifying CA bundles exist, for instance if {product_name} is installed with Rancher (see the respective pages on
 https://documentation.suse.com/cloudnative/rancher-manager/latest/en/installation-and-upgrade/resources/tls-secrets.html#_using_a_private_ca_signed_certificate[Using a Private CA Signed Certificate]
 and
@@ -426,12 +427,12 @@ kubectl create secret generic test-multipasswd -n fleet-local --from-file=secret
 The secret must be created in the same namespace as the `GitRepo` resource.
 ====
 
-ifeval::["{product}" == "fleet"]
+ifeval::["{build-type}" == "community"]
 If you use link:rancher-backups[https://ranchermanager.docs.rancher.com/how-to-guides/new-user-guides/backup-restore-and-disaster-recovery/back-up-rancher] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
 endif::[]
 
-ifeval::["{product}" == "continuous-delivery"]
+ifeval::["{build-type}" == "product"]
 If you use link:rancher-backups[https://documentation.suse.com/cloudnative/rancher-manager/v2.12/en/rancher-admin/back-up-restore-and-disaster-recovery/back-up.html] and want to include this secret in your backups, label it with `resources.cattle.io/backup: true`:
 
 endif::[]

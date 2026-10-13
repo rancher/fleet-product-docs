@@ -1,5 +1,7 @@
 = fleet analyze
-:description: Analyze snapshots created by fleet monitor to check resource status, diagnostics, and changes over time
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_analyze

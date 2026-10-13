@@ -1,5 +1,7 @@
 = fleet-agent clusterstatus
-:description: Monitor and report the status of resources in the cluster to the upstream system using the fleet-agent to ensure proper communication with the Fleet controller
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet-agent_clusterstatus

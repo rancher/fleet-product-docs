@@ -1,7 +1,9 @@
 :doctype: book
 
 = Quick Start
-:description: Install Fleet using a Helm chart by following the official instructions to set up the Helm 3 CLI and add the Fleet repository then use the Helm chart
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /quickstart

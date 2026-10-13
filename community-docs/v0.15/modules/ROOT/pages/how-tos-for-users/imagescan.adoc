@@ -1,5 +1,7 @@
 = Using Image Scan to Update Container Image References
-:description: Use image scan to automatically update container image references in your git repository without manual changes to manifests
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /imagescan

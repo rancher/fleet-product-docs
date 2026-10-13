@@ -1,5 +1,7 @@
 = Scheduling
-:description: Define when clusters can apply updates by creating a schedule with a cron expression, duration, and target clusters
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-10-10
 :page-revdate: {revdate}
 :page-aliases: /scheduling

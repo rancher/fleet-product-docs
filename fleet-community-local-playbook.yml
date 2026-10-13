@@ -26,6 +26,7 @@ asciidoc:
     page-pagination: ''
     page-toclevels: 4@
     product: fleet
+    rancher-product-name: "Rancher"
   extensions:
     - '@asciidoctor/tabs'
 antora:

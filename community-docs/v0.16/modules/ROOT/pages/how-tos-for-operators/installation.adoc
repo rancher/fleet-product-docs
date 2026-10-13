@@ -1,8 +1,7 @@
 :doctype: book
 
 = Installation Details
-:description: Install Fleet in single-cluster or multi-cluster mode to manage Kubernetes resources using GitOps and Helm charts
-:revdate: 2025-07-23
+:revdate: 2026-09-24
 :page-revdate: {revdate}
 :page-aliases: /installation
 
@@ -87,7 +86,7 @@ fleet-controller-64f49d756b-n57wq   1/1     Running   0          3m21s
 
 You can now xref:how-tos-for-users/gitrepo-add.adoc[register Git repositories] in the `fleet-local` namespace to start deploying resources.
 
-[#_tweaking_your_productname_installation]
+[#_tweaking_your_fleet_installation]
 == Tweaking Your {product_name} Installation
 
 [#_controller_and_agent_replicas]
@@ -158,7 +157,7 @@ helm -n cattle-fleet-system upgrade fleet fleet/fleet \
 When interacting with git repositories through SSH, strict host key checks are enabled by default, meaning that
 {product_name} will reject SSH connection attempts to hosts for which no `known_hosts` entry exists.
 
-More information, refer to s xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[strict host key checks].
+More information, refer to xref:how-tos-for-users/gitrepo-add.adoc#_strict_host_key_checks[strict host key checks].
 
 By default, Fleet installs `known_hosts` entries for a few widely used git hosting providers.
 

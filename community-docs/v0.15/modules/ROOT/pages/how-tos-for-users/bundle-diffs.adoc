@@ -1,5 +1,7 @@
 = Generating Diffs to Ignore Modified GitRepos
-:description: Generate diffs to ignore modified GitRepos in Fleet by using comparePatches to exclude expected runtime changes from affecting bundle status
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /bundle-diffs

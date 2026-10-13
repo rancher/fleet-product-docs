@@ -1,5 +1,7 @@
 = OCI Storage
-:description: Configure OCI storage for Kubernetes bundle resources by creating a secret with registry information and using it in GitRepo resources
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /oci-storage
@@ -91,7 +93,7 @@ The fields you can configure are:
 | `basicHTTP`       | Enables HTTP instead of HTTPS.              | Base64-encoded `true/false` | Not recommended. Allows insecure traffic. By default, `basicHTTP` is set to `false`.
 |===
 
-[#_productname_example]
+[#_fleet_example]
 == {product_name} Example
 
 Consider the following `GitRepo` file:

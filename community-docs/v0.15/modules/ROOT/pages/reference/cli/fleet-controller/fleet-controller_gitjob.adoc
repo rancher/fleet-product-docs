@@ -1,5 +1,7 @@
 = fleet-controller gitjob
-:description: Configure Fleet controller gitjob operations to manage how the Fleet controller interacts with the Fleet agent using source or text options
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet-controller_gitjob

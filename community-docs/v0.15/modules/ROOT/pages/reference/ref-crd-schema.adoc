@@ -1,5 +1,7 @@
 = {product_name} CRD Schema Summary
-:description: Find the schema details for Fleet CRDs that define application, deployment, and cluster configuration management
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /ref-crd-schema

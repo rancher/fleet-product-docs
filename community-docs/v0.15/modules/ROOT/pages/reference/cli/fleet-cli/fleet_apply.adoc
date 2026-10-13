@@ -1,5 +1,7 @@
 = fleet apply
-:description: Apply fleet configurations to a cluster by creating bundles from directories and using environment variables to control known hosts and bundle creation
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-02-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_apply

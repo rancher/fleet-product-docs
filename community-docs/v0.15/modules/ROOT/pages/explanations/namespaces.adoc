@@ -1,5 +1,7 @@
 = Namespaces
-:description: Create and manage workload namespaces to control where resources are deployed ensuring that bundles are automatically created in the specified namespace if
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /namespaces
@@ -138,7 +140,7 @@ allowedTargetNamespaceSelector:
     team: frontend
 ----
 
-[#_productname_namespaces]
+[#_fleet_namespaces]
 == {product_name} Namespaces
 
 All types in the {product_name} manager are namespaced. The namespaces of a custom

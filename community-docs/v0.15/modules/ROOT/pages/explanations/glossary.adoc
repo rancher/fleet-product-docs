@@ -1,5 +1,7 @@
 = Glossary
-:description: Define terms related to Fleet in a clear and structured way so users can understand key concepts such as agent, bundle, cluster, deployment, and GitOps
+ifeval::["{product}" == "continuous-delivery"]
+:page-languages: [en, de, es, fr, ja, pt, zh]
+endif::[]
 :revdate: 2026-02-18
 :page-revdate: {revdate}
 :page-aliases: /glossary
