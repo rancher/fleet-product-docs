@@ -1,4 +1,5 @@
 = fleet target
+:description: Print available targets for a bundle to help manage Fleet operations and understand which devices or systems are included in the current configuration
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

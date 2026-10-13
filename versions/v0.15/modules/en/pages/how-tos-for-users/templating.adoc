@@ -1,4 +1,5 @@
 = {product_name} Templating
+:description: Customize cluster deployments with Fleet templating by using dynamic values, labels, and reusable variables in fleet.yaml and Helm charts
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

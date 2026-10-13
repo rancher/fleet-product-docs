@@ -1,6 +1,7 @@
 :doctype: book
 
 = Creating a Deployment
+:description: Create a deployment by setting up a Git repo and applying a GitRepo resource with correct configuration
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

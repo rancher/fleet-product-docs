@@ -1,4 +1,5 @@
 = Automatically copying resources to downstream clusters
+:description: Fleet automatically copies secrets and config maps to downstream clusters before deploying workloads
 :revdate: 2025-11-04
 :page-revdate: {revdate}
 :page-aliases: /experimental-downstream-resource

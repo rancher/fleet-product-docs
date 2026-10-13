@@ -1,4 +1,5 @@
 = Fine Tuning Error Detection
+:description: Use the ignore.conditions setting in the fleet.yaml file to tell Fleet to ignore specific conditions
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

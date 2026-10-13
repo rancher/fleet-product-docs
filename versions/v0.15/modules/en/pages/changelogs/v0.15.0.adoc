@@ -1,4 +1,5 @@
 = v0.15.0
+:description: This release introduces Helm v4 and, since this version also incorporates Server-Side Apply, drift correction may be affected
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

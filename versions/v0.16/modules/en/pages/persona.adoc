@@ -1,4 +1,5 @@
 = Key Personas and Their Roles
+:description: Understand the roles of platform engineers, application developers, and security administrators in managing cluster deployments and ensuring compliance
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

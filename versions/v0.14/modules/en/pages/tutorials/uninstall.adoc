@@ -1,4 +1,5 @@
 = Uninstall
+:description: Uninstall the Fleet Standalone components by removing Helm charts, workloads, custom resources, and namespaces
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /uninstall

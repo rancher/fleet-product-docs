@@ -1,4 +1,5 @@
 = Overview
+:description: What Fleet is and how it helps manage Kubernetes clusters by using GitOps to control and monitor deployments allowing users to manage resources from Git
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

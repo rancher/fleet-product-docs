@@ -1,4 +1,5 @@
 = Using Webhooks Instead of Polling
+:description: Configure webhooks to replace polling in Fleet and reduce the delay between a Git push and Fleet processing changes by setting up a webhook service
 ifeval::["{product}" == "continuous-delivery"]
 :page-languages: [en, de, es, fr, ja, pt, zh]
 endif::[]

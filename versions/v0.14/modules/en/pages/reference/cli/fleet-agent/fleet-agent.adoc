@@ -1,4 +1,5 @@
 = fleet-agent
+:description: Monitor and control cluster resources by using the Fleet agent to send status updates and register with an upstream cluster
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 :page-aliases: /fleet-agent

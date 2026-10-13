@@ -1,4 +1,5 @@
 = Create Cluster Groups
+:description: Create cluster groups to organize clusters under a named selector for easier management and aggregated status
 :revdate: 2025-07-23
 :page-revdate: {revdate}
 

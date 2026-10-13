@@ -1,4 +1,5 @@
 = fleet bundlediff
+:description: Use the fleet bundlediff command to display diff patches from Bundle or BundleDeployment resources that show changes between desired and current states
 :revdate: 2026-03-05
 :page-revdate: {revdate}
 :page-aliases: /fleet_bundlediff
