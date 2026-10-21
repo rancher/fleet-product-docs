@@ -490,3 +490,37 @@ metadata:
 spec:
   kubeConfigSecret: my-cluster-kubeconfig
 ----
+
+[#_reference_a_kubeconfig_secret_in_another_namespace]
+=== Reference a Kubeconfig Secret in Another Namespace
+
+NOTE: The restrictions described in this section apply since {product_name} v0.15.8.
+
+By default, {product_name} reads the kubeconfig secret from the namespace of the `Cluster` resource. The `kubeConfigSecretNamespace` field selects a different namespace:
+
+[,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: clusters
+spec:
+  kubeConfigSecret: my-cluster-kubeconfig
+  kubeConfigSecretNamespace: kubeconfigs
+----
+
+{product_name} only uses a kubeconfig secret in another namespace if the secret carries the label `fleet.cattle.io/kubeconfig-referenceable-from` with the namespace of the `Cluster` as its value. Only users who can modify secrets in the namespace of the secret can set this label, so they decide which namespace can use the credentials stored there. For example, to allow `Cluster` resources in the `clusters` namespace to use the secret above:
+
+[,shell]
+----
+kubectl -n kubeconfigs label secret my-cluster-kubeconfig fleet.cattle.io/kubeconfig-referenceable-from=clusters
+----
+
+If the label is missing or names a different namespace, {product_name} does not import the cluster, and the `Imported` condition of the `Cluster` names the required label. An agent that is already deployed stays in place. {product_name} detects a label that is added later without further changes.
+
+Rancher keeps the kubeconfig secret of a cluster that is assigned to a workspace other than `fleet-default` in the `fleet-default` namespace. Rancher versions that bundle this {product_name} release add the label to these secrets automatically.
+
+Earlier releases accepted unlabeled kubeconfig secrets from any namespace if the secret was in one of the well-known {product_name} namespaces: `fleet-local`, `fleet-default`, and the {product_name} system namespaces, such as `cattle-fleet-system` and `cattle-fleet-clusters-system`. To keep this behavior until the affected secrets are labeled, install {product_name} with `--set allowUnlabeledKubeConfigSecretNamespaces=true`. This weakens the protection described in this section, so use it only temporarily. A secret with a nonempty label can still only be used from the namespace that the label names.
+
+Independently of the label and this setting, {product_name} only deploys an agent onto the management cluster for `Cluster` resources in the bootstrap namespace, `fleet-local` by default, or in the {product_name} system namespaces.
