@@ -241,6 +241,7 @@ as then one cluster could impersonate another.  The client ID is optional and if
 resource will be used as the client ID. Upon registration if the client ID is found on a `Cluster` resource in the {product_name} manager it will associate
 the agent with that `Cluster`.  If no `Cluster` resource is found with that client ID a new `Cluster` resource will be created with the specific
 client ID.
+After registration, the `Cluster` is bound to the registration token it registered with, see <<_registration_token_binding,Registration Token Binding>>.
 
 The {product_name} agent is installed as a Helm chart. The only parameters to the helm chart installation should be the cluster registration token, which
 is represented by the `values.yaml` file and the client ID.  The client ID is optional.
@@ -355,12 +356,15 @@ token after a successful registration please note that usually other system boot
 
 Since the cluster registration token is forgotten, if you need to re-register a cluster you must
 give the cluster a new registration token.
+If that token has a different name than the token the cluster registered with, update the binding first, see <<_registration_token_binding,Registration Token Binding>>.
 
 [#_token_ttl]
 ==== Token TTL
 
 Cluster registration tokens can be reused by any cluster in a namespace.  The tokens can be given a TTL
 such that it will expire after a specific time.
+
+Clusters registered with the same token are not distinguished from each other. Do not share a cluster registration token across tenants or trust boundaries. Instead, use a separate namespace with its own tokens for each tenant.
 
 [#_create_a_new_token]
 ==== Create a new Token
@@ -407,6 +411,31 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 ----
 
 Once the `values.yaml` is ready it can be used repeatedly by clusters to register until the TTL expires.
+
+[#_registration_token_binding]
+==== Registration Token Binding
+
+NOTE: Registration token binding is available since {product_name} v0.15.8.
+
+{product_name} binds each cluster registered through agent-initiated registration to the cluster registration token it registered with. The name of that token is recorded in the `fleet.cattle.io/registered-token` annotation of the `Cluster` resource. New clusters receive the annotation when they are created. Existing clusters without the annotation receive it the next time a registration is granted for them after an upgrade of {product_name}.
+
+A registration that uses the client ID of an existing cluster together with a different registration token is not granted. The registration stays pending, and {product_name} emits a `RegistrationTokenMismatch` warning event on the `Cluster`. The event names the annotation value that allows the new token:
+
+[,shell]
+----
+kubectl -n clusters get events --field-selector reason=RegistrationTokenMismatch
+----
+
+Re-registration with a token of the same name is not affected, and neither are clusters whose agent is deployed by {product_name} through <<_manager_initiated,manager-initiated registration>>. If the registration token named by a registration does not exist, the registration stays pending until the token exists.
+
+To re-register a cluster with a different registration token on purpose, set the annotation to the name of the new token. {product_name} then processes the pending registrations of that cluster again:
+
+[,shell]
+----
+kubectl -n clusters annotate --overwrite clusters.fleet.cattle.io my-cluster fleet.cattle.io/registered-token=new-token
+----
+
+To accept registrations with a different registration token without updating the annotation, as in earlier releases, install {product_name} with `--set allowClusterRegistrationTokenChange=true`. This disables the protection described in this section.
 
 [#_manager_initiated]
 == Manager Initiated
