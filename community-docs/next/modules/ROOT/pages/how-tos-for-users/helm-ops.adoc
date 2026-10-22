@@ -1,6 +1,6 @@
 = HelmOps
 :description: Create a HelmOp resource to deploy Helm charts directly from a Helm repository or OCI registry without using a git repository
-:revdate: 2026-10-07
+:revdate: 2026-10-20
 :page-revdate: {revdate}
 :page-aliases: /helm-ops
 
@@ -202,6 +202,97 @@ spec:
 
 For more details on `downstreamResources`, including lifecycle and monitoring behavior, refer to
 xref:how-tos-for-users/downstream-resource-propagation.adoc[Automatically copying resources to downstream clusters].
+
+[#_customizing_values_per_cluster]
+== Customizing values per cluster
+
+The `targets` field of a `HelmOp` selects the downstream clusters to deploy to. Each target can also override
+deployment options, such as Helm values, for the clusters it matches:
+
+[source,yaml]
+----
+spec:
+  helm:
+    repo: https://foo.bar/baz
+    chart: fantastic-chart
+    values:
+      replicas: 1
+  targets:
+  - name: prod
+    clusterSelector:
+      matchLabels:
+        env: prod
+    helm:
+      values:
+        replicas: 3
+  - name: edge
+    clusterName: edge-42
+    helm:
+      values:
+        resources:
+          limits:
+            memory: 256Mi
+  - name: all
+    clusterSelector: {}
+----
+
+{product_name} evaluates targets in order and applies the first one that matches a cluster. Helm values from that
+target are merged over `spec.helm.values`. Clusters which match no target do not get the chart, so add a catch-all
+target at the end if the chart should be deployed everywhere. If `targets` is empty, {product_name} targets the
+`default` cluster group.
+
+{product_name} resolves one chart version per `HelmOp`, so all targeted clusters run the same version.
+
+Values can also be templated from cluster labels, for example `${ .ClusterLabels.region }`. Refer to
+xref:reference/ref-fleet-yaml.adoc#_values_templating[Values Templating] for the available variables.
+
+[#_dependencies]
+== Dependencies
+
+Use `dependsOn` to deploy a `HelmOp` only after other bundles are ready. Each entry references a bundle by name or by
+label selector. The bundle created from a `HelmOp` has the same name as the `HelmOp`, and {product_name} copies
+`spec.labels` to it, so other `HelmOp` resources and bundles created from a `GitRepo` can select it:
+
+[source,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+  name: cert-manager
+  namespace: fleet-default
+spec:
+  labels:
+    tier: infra
+  helm:
+    repo: https://charts.jetstack.io
+    chart: cert-manager
+    values:
+      crds:
+        enabled: true
+  namespace: cert-manager
+---
+apiVersion: fleet.cattle.io/v1alpha1
+kind: HelmOp
+metadata:
+  name: my-app
+  namespace: fleet-default
+spec:
+  helm:
+    repo: https://foo.bar/baz
+    chart: fantastic-chart
+  dependsOn:
+  - selector:
+      matchLabels:
+        tier: infra
+----
+
+{product_name} deploys `my-app` to a cluster only after the `cert-manager` bundle is ready on that cluster. By
+default only the `Ready` state counts; set `acceptedStates` on a `dependsOn` entry to accept other
+xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states].
+
+If you don't need or want separate `HelmOp` resources for installation dependencies such as cert-manager, combine
+the charts into one chart that includes them as subcharts. {product_name} does not run
+`helm dependency update` for a `HelmOp`, so subcharts must be packaged in the chart's `charts/` directory.
 
 [#_status_updates]
 == Status updates
