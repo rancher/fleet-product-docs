@@ -233,11 +233,13 @@ cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   202
 Client IDs are for the purpose of predefining clusters in the {product_name} manager with existing labels and repos targeted to them.
 A client ID is not required and is just one approach to managing clusters.
 The *client ID* is a unique string that will identify the cluster.
+
 This string is user generated and opaque to the {product_name} manager and agent.  It is assumed to be sufficiently unique. For security reasons one should not be able to easily guess this value
 as then one cluster could impersonate another.  The client ID is optional and if not specified the UID field of the `kube-system` namespace
 resource will be used as the client ID. Upon registration if the client ID is found on a `Cluster` resource in the {product_name} manager it will associate
 the agent with that `Cluster`.  If no `Cluster` resource is found with that client ID a new `Cluster` resource will be created with the specific
 client ID.
+
 After registration, the `Cluster` is bound to the registration token it registered with, see <<_registration_token_binding,Registration Token Binding>>.
 
 The {product_name} agent is installed as a Helm chart. The only parameters to the helm chart installation should be the cluster registration token, which
@@ -416,7 +418,7 @@ NOTE: Registration token binding is available since {product_name} v0.14.12.
 
 {product_name} binds each cluster registered through agent-initiated registration to the cluster registration token it registered with. The name of that token is recorded in the `fleet.cattle.io/registered-token` annotation of the `Cluster` resource. New clusters receive the annotation when they are created. Existing clusters without the annotation receive it the next time a registration is granted for them after an upgrade of {product_name}.
 
-A registration that uses the client ID of an existing cluster together with a different registration token is not granted. The registration stays pending, and {product_name} emits a `RegistrationTokenMismatch` warning event on the `Cluster`. The event names the annotation value that allows the new token:
+A registration that uses the client ID of an existing cluster together with a different registration token is not granted. The registration stays pending, and {product_name} emits a `RegistrationTokenMismatch` warning event on the `Cluster`. The event names the annotation value that allows the new token. The commands below assume the `Cluster` is in the `clusters` namespace; replace `clusters` with its actual namespace:
 
 [,shell]
 ----
