@@ -8,6 +8,9 @@
     "product-docs"
   ],
   "prHourlyLimit": 2,
+  "git-submodules": {
+    "enabled": true
+  },
   "packageRules": [
     {
       "description": "Activate automerge for eligible updates",

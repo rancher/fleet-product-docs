@@ -33,6 +33,8 @@ Antora requires an active long term support (LTS) release of Node.js. Run the co
 node -v
 ```
 
+The minimum supported version is declared in the `engines` field of `package.json` and enforced during `make environment` because `.npmrc` sets `engine-strict=true`. An older Node.js version fails the install instead of the build.
+
 If you don't have Node.js installed on your machine, install it, preferably via [nvm](https://github.com/nvm-sh/nvm)
 
 ### Clone the Playbook repository
