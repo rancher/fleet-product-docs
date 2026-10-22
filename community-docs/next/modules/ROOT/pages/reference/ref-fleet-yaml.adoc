@@ -1,6 +1,6 @@
 = fleet.yaml
 :description: Create or modify a bundle by using the fleet.yaml file to set options like namespace, labels, and Helm chart settings
-:revdate: 2026-10-06
+:revdate: 2026-10-21
 :page-revdate: {revdate}
 :page-aliases: /ref-fleet-yaml
 
@@ -368,10 +368,71 @@ These options define the fundamental properties and behavior of the bundle itsel
 
 | `paused` | If true, the bundle will not be updated on downstream clusters. Instead, it will be marked as *OutOfSync*. You can then manually approve the deployment. | All
 | `labels` | A map of key-value pairs set at the bundle level. These can be used in a `dependsOn.selector` to define dependencies. | All
-| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in an accepted state. Accepted states correspond to any valid  xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states]. For how {product_name} waits for dependencies, refer to xref:explanations/ref-bundle-stages.adoc#_dependencies[Dependencies]. | All
+| `dependsOn` | A list of bundles that this bundle depends on. The current bundle is deployed only after all dependencies are in an accepted state. Accepted states correspond to any valid  xref:reference/ref-status-fields.adoc#_bundle_statuses[bundle states]. Selector `matchLabels` values support <<_dependency_selector_templates,templates>>. For how {product_name} waits for dependencies, refer to xref:explanations/ref-bundle-stages.adoc#_dependencies[Dependencies]. | All
 | `ignore` | Specifies fields to ignore when monitoring bundle status. Useful for preventing false error states from Custom Resources. | All
 | `overrideTargets` | A list of target customizations that override any targets defined in the GitRepo. | All
 |===
+
+[#_dependency_selector_templates]
+=== Dependency Selector Templates
+
+When multiple GitRepo resources deploy the same source to the same downstream cluster, a dependency selector containing only component labels can match prerequisites from every instance. Separate workload namespaces do not isolate dependency matching: selectors match `BundleDeployment` resources for the target cluster.
+
+Use Go template expressions in `dependsOn[].selector.matchLabels` values to scope dependencies to the originating GitRepo. Dependency selector templates use the `${ }` delimiters and cluster context described in <<_values_templating,Values Templating>>. For bundles generated from a GitRepo, the context also includes:
+
+* `.GitRepo.Name`: the name of the originating GitRepo resource.
+* `.GitRepo.Namespace`: the namespace containing that GitRepo and its bundles. This can differ from `.ClusterNamespace`, which identifies the cluster's registration namespace, and from the downstream workload namespace.
+
+{product_name} preserves the GitRepo-supplied `fleet.cattle.io/repo-name` label when merging labels from `fleet.yaml`, so source labels cannot replace that repository identity.
+
+Only `matchLabels` values are templated. Label keys, dependency `name` fields, `matchExpressions`, and `acceptedStates` are not templated. Literal selectors and accepted-state handling retain their existing behavior. Rendered values must be valid Kubernetes label values.
+
+Templates are evaluated during targeting for each cluster. The source `Bundle` retains the expressions, while its `BundleDeployment` contains the resolved selectors. Setting `helm.disablePreProcess: true` does not disable dependency selector templating.
+
+==== Example: Independent Application Instances
+
+Consider a shared Git repository containing `app/configs`, `app/secrets`, and `app/application`. Each directory contains its workload manifests and a `fleet.yaml`. The application depends on both configs and secrets:
+
+.app/configs/fleet.yaml
+[source,yaml]
+----
+labels:
+  example.com/component: configs
+----
+
+.app/secrets/fleet.yaml
+[source,yaml]
+----
+labels:
+  example.com/component: secrets
+----
+
+.app/application/fleet.yaml
+[source,yaml]
+----
+labels:
+  example.com/component: application
+dependsOn:
+  - selector:
+      matchLabels:
+        fleet.cattle.io/repo-name: "${ .GitRepo.Name }"
+        fleet.cattle.io/bundle-namespace: "${ .GitRepo.Namespace }"
+        example.com/component: configs
+  - selector:
+      matchLabels:
+        fleet.cattle.io/repo-name: "${ .GitRepo.Name }"
+        fleet.cattle.io/bundle-namespace: "${ .GitRepo.Namespace }"
+        example.com/component: secrets
+----
+
+Create GitRepo resources named `application-dev` and `application-qa` in `fleet-default`. Point both at the same Git repository with `paths: [app]` and target the same downstream cluster. Set their `targetNamespace` fields to `application-dev` and `application-qa`, respectively, to separate the workload resources.
+
+For `application-dev`, the repository and namespace expressions resolve to `application-dev` and `fleet-default`. Its application depends only on its own configs and secrets. The same source resolves to `application-qa` and `fleet-default` for QA. A QA prerequisite that is not ready blocks QA's application without blocking dev's application. With `acceptedStates` omitted, dependencies must be `Ready`.
+
+[NOTE]
+====
+Keep Bundle names distinct within their namespace. This example omits `name` in each `fleet.yaml`, so {product_name} generates names such as `application-dev-app-configs` and `application-qa-app-configs`. Setting the same explicit Bundle name in shared source can cause collisions; dependency selector templates do not change Bundle naming or ownership. See xref:explanations/gitrepo-content.adoc#_bundle_names[Bundle Names].
+====
 
 [#_namespace_configuration]
 === Namespace Configuration
@@ -572,7 +633,7 @@ They also apply to *kustomize-* and *manifest-style bundles*.
 | `helm.force` | Override immutable resources. | All
 | `helm.atomic` | Use Helm `--atomic` flag. | All
 | `helm.waitForJobs` | Wait for all Jobs before marking GitRepo as ready. | All
-| `helm.disablePreProcess` | Disable Go template preprocessing. | All
+| `helm.disablePreProcess` | Disable Go template preprocessing of Helm values. Does not disable <<_dependency_selector_templates,dependency selector templating>>. | All
 | `helm.disableDNS` | Disable DNS resolution in templates. | All
 | `helm.skipSchemaValidation` | Skip `values.schema.json` validation. | All
 |===
