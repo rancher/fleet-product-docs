@@ -103,6 +103,16 @@ helm:
     valueFromEnv:
       "${ .ClusterLabels.ENV }": ${ .ClusterValues.someValue | upper | quote }
 
+  # Values whose content is a template string. Each entry is rendered first and
+  # then parsed as YAML, so templates can generate lists and maps. Each key
+  # becomes a top-level value and replaces the same key from `values`.
+  # This one creates an entry for each host in the Cluster's templateValues.
+  templateValues:
+    ingressHosts: |-
+      ${- range index .ClusterValues "hosts" }
+      - host: ${ . }
+      ${- end }
+
   # Path to any values files that need to be passed to helm during install.
   valuesFiles:
     - values1.yaml
@@ -489,6 +499,7 @@ Options for customizing Helm chart values.
 | Option | Description | Applies to
 
 | `helm.values` | Key-value pairs passed to Helm as custom values. Supports templating. | Helm
+| `helm.templateValues` | Map of template strings. Each entry is rendered, parsed as YAML and set as a top-level value, replacing the same key from `helm.values`. | Helm
 | `helm.valuesFiles` | Paths to values files passed to Helm. | Helm
 | `helm.valuesFrom` | Load values from ConfigMaps or Secrets in downstream clusters. | Helm
 |===
@@ -552,6 +563,40 @@ Example:
 ${ if hasKey .ClusterLabels "LABELNAME" }${ .ClusterLabels.LABELNAME }${ else }missing${ end}
 ----
 ====
+
+[#_helm_templatevalues]
+==== `helm.templateValues`
+
+Because `helm.values` must be valid YAML before it is templated, you cannot use `range` or `if` there to build lists or maps. `helm.templateValues` lifts this restriction. It is a map of strings, and {product_name} renders each string with the same template context as `helm.values`, then parses the result as YAML.
+
+* Each key becomes a top-level key in the Helm values.
+* If the same key also exists in `helm.values`, the `helm.templateValues` entry replaces it entirely. The two are not merged.
+* Keys in `helm.templateValues` are not available as template variables, so `helm.values` cannot reference them.
+* `helm.templateValues` is not the same as the `templateValues` field of the `Cluster` resource, which templates read as `.ClusterValues`.
+* If `helm.disablePreProcess` is `true`, `helm.templateValues` is ignored.
+
+Example:
+
+[source,yaml]
+----
+helm:
+  templateValues:
+    ingressHosts: |-
+      ${- range index .ClusterValues "hosts" }
+      - host: ${ . }
+      ${- end }
+----
+
+Using `index` keeps the deployment working on clusters that do not set `hosts`. They get no host entries. For a cluster whose `spec.templateValues` contains `hosts: [app.example.com, app.example.org]`, this renders as:
+
+[source,yaml]
+----
+ingressHosts:
+- host: app.example.com
+- host: app.example.org
+----
+
+For more examples, see xref:how-tos-for-users/templating.adoc#_structural_generation_advanced[Structural Generation].
 
 [#_helm_deployment]
 == Helm Deployment
@@ -652,6 +697,7 @@ For detailed examples and merge behavior, see xref:explanations/target-customiza
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.ReleaseName]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.Repo]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.TakeOwnership]
+* xref:/reference/ref-crds.adoc#_helmoptions[Helm.TemplateValues]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.TimeoutSeconds]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.ValuesFrom]
 * xref:/reference/ref-crds.adoc#_helmoptions[Helm.Values]
