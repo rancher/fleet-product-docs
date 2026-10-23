@@ -6,7 +6,7 @@
         "@sntke/antora-mermaid-extension": "0.0.8"  
     },
     "dependencies": {
-        "@antora/lunr-extension": "1.0.0-alpha.8",
+        "@antora/lunr-extension": "1.0.0-alpha.13",
         "@springio/antora-xref-extension": "1.0.0-alpha.4",
         "asciidoctor-kroki": "0.18.1",
         "@sntke/antora-mermaid-extension": "0.0.8",
