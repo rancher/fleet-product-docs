@@ -153,8 +153,14 @@ Use ++default++ to ensure a deployment doesn't fail if a label is missing.
 [,yaml]
 ----
 values:
-  region: ${ default "us-east-1" .ClusterLabels.region }
+  region: ${ default "us-east-1" (index .ClusterLabels "region") }
 ----
+
+[NOTE]
+....
+Look up the key with ++index++, as shown above. {product_name} fails to render a template that references a missing key directly, for example ++${ default "us-east-1" .ClusterLabels.region }++, and ++default++ is never applied.
+This applies to ++.ClusterLabels++, ++.ClusterAnnotations++, and ++.ClusterValues++.
+....
 
 [#_conditional_logic]
 === Conditional Logic
