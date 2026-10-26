@@ -153,8 +153,14 @@ Use ++default++ to ensure a deployment doesn't fail if a label is missing.
 [,yaml]
 ----
 values:
-  region: ${ default "us-east-1" .ClusterLabels.region }
+  region: ${ default "us-east-1" (index .ClusterLabels "region") }
 ----
+
+[NOTE]
+....
+Look up the key with ++index++, as shown above. {product_name} fails to render a template that references a missing key directly, for example ++${ default "us-east-1" .ClusterLabels.region }++, and ++default++ is never applied.
+This applies to ++.ClusterLabels++, ++.ClusterAnnotations++, and ++.ClusterValues++.
+....
 
 [#_conditional_logic]
 === Conditional Logic
@@ -272,10 +278,14 @@ You can test your values templating and preview how your expressions render usin
 
 * *Whitespace Control:* Use ++${-++ and ++-}++ to strip leading/trailing whitespace, especially in ++templateValues++ where YAML indentation is sensitive.
 * *Centralize Logic:* Use ++templateValues++ for complex calculations to keep the main ++values++ block clean.
-* *Defensive Coding:* Always provide a ++default++ value for cluster labels to avoid empty string injections.
+* *Defensive Coding:* Always provide a ++default++ value for cluster labels to avoid empty string injections. Look the labels up with ++index++, see <<_default_values>>.
 
 [#_troubleshooting_templating]
 == Troubleshooting templating
+
+*Error: map has no entry for key*
+
+* A template looks up a missing label, annotation, or ++templateValues++ key directly. Add the key to the ++Cluster++ resource, or use ++index++ with ++default++, see <<_default_values>>.
 
 *Template value is empty*
 
