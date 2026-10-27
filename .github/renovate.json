@@ -8,28 +8,10 @@
     "product-docs"
   ],
   "prHourlyLimit": 2,
-  "lockFileMaintenance": {
-    "enabled": true,
-    "automerge": true,
-    "schedule": [
-      "* * * * 2"
-    ]
-  },
   "git-submodules": {
     "enabled": true
   },
   "packageRules": [
-    {
-      "description": "Group all @antora/* npm packages",
-      "matchManagers": [
-        "npm"
-      ],
-      "matchPackageNames": [
-        "@antora/*"
-      ],
-      "groupName": "Antora",
-      "commitMessageExtra": "{{{upgrades.0.depName}}}"
-    },
     {
       "description": "Activate automerge for eligible updates",
       "matchBaseBranches": [
