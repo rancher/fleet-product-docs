@@ -2,7 +2,7 @@
 
 This repository is the source of the Fleet (community) and SUSE Rancher Prime Continuous Delivery (product) documentation. [Antora](https://docs.antora.org/antora/latest/) builds it from [AsciiDoc](https://docs.asciidoctor.org/asciidoc/latest/) files.
 
-Read [README.md](README.md) first. It is the authoritative source for prerequisites, builds, file layout, branching, backporting and troubleshooting. The files below add only agent-specific guidance and link back to the README instead of repeating it.
+The files below provide agent-specific guidance for prerequisites, builds, file layout, branching, backporting and troubleshooting, and refer to [README.md](README.md) where necessary instead of repeating it.
 
 ## Which file to read
 

@@ -10,15 +10,6 @@ This repository uses [Antora](https://docs.antora.org/antora/latest/) to build [
 
 ### Prerequisites
 
-#### git
-
-You need git to get the source code of this repository. Run the command below to check whether git is installed on your machine.
-
-```bash
-git --version
-```
-
-If you don't have git installed on your machine, it is recommended to install it through your operating system or distribution's package manager. Otherwise, you can download and install from the [git downloads](https://git-scm.com/downloads) page.
 
 #### Node.js
 
@@ -227,19 +218,3 @@ The list of available locales for each page is defined by the `:page-languages:`
 
 **Issue:** Changes aren't updating in the browser.
 **Fix:** Antora does not feature "live-reload". Every time you make a change to a file, you must stop your terminal process, rerun `npx antora <PLAYBOOK_FILE>`, and refresh your browser.
-
-## License
-
-Copyright (c) 2014-2026 [SUSE, LLC.](https://www.suse.com/)
-
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-[http://www.apache.org/licenses/LICENSE-2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
