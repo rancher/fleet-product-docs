@@ -2,18 +2,23 @@ name: Test deployment
 
 on:
   pull_request:
-    paths-ignore:
-      - '**/README.md'
     types: [opened, edited, synchronize, reopened]
 
+concurrency:
+  group: test-deploy-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
 jobs:
-  # ============================================================
-  # Community docs build
-  # ============================================================
+  # `paths-ignore` was removed so every PR produces both check runs: a PR that
+  # skips the workflow entirely leaves a required check pending forever. A job
+  # whose `if` does not match reports as skipped, which satisfies branch
+  # protection, so one job name can be required on both branches.
   test-community:
     name: Test community docs
     runs-on: ubuntu-latest
-    # Only runs if the PR is targeting the 'main' branch
     if: github.base_ref == 'main'
 
     steps:
@@ -28,6 +33,9 @@ jobs:
         with:
           node-version: 24
 
+      # Fails on a package.json/package-lock.json mismatch, unresolved peer
+      # dependencies, and packages excluded by `engines` (.npmrc sets
+      # `engine-strict`, so an unsupported Node version also fails here).
       - name: Install Antora and dependencies
         run: make environment
 
@@ -49,13 +57,9 @@ jobs:
       - name: Check community nav entries
         run: bin/files-missing-nav
 
-  # ============================================================
-  # Product docs build
-  # ============================================================
   test-product:
     name: Test product docs
     runs-on: ubuntu-latest
-    # Only runs if the PR is targeting the 'product-docs' branch
     if: github.base_ref == 'product-docs'
 
     steps:
@@ -70,6 +74,9 @@ jobs:
         with:
           node-version: 24
 
+      # Fails on a package.json/package-lock.json mismatch, unresolved peer
+      # dependencies, and packages excluded by `engines` (.npmrc sets
+      # `engine-strict`, so an unsupported Node version also fails here).
       - name: Install Antora and dependencies
         run: make environment
 
