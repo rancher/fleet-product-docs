@@ -7,7 +7,7 @@
     },
     "dependencies": {
         "@antora/lunr-extension": "1.0.0-alpha.13",
-        "@springio/antora-xref-extension": "1.0.0-alpha.4",
+        "@springio/antora-xref-extension": "1.0.0-alpha.5",
         "semver": "7.8.5"
     },
     "engines": {
