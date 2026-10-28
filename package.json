@@ -12,5 +12,9 @@
     },
     "engines": {
         "node": ">=24"
+    },
+    "overrides": {
+        "convict": "6.2.5",
+        "handlebars": "4.7.10"
     }
 }
