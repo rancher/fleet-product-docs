@@ -12,5 +12,8 @@
     },
     "engines": {
         "node": ">=24"
+    },
+    "overrides": {
+        "handlebars": "4.7.10"
     }
 }
