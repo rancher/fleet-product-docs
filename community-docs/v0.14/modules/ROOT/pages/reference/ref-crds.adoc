@@ -1097,6 +1097,11 @@ HelmOptions for the deployment. For Helm-based bundles, all options can be used,
 | *GenericMap
 | false
 
+| templateValues
+| Template Values passed to Helm. It is possible to specify the keys and values as go template strings. Unlike .values, content of each key will be templated first, before serializing to yaml. This allows to template complex values, like ranges and maps. templateValues keys have precedence over values keys in case of conflict.
+| map[string]string
+| false
+
 | valuesFrom
 | ValuesFrom loads the values from configmaps and secrets.
 | []<<ValuesFrom,ValuesFrom>>
