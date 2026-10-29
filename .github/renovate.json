@@ -21,6 +21,20 @@
       "extends": [
         "github>rancher/renovate-config//automerge#release"
       ]
+    },
+    {
+      "description": "Automerge git submodule digest updates",
+      "matchBaseBranches": [
+        "main",
+        "product-docs"
+      ],
+      "matchManagers": [
+        "git-submodules"
+      ],
+      "matchUpdateTypes": [
+        "digest"
+      ],
+      "automerge": true
     }
   ]
 }
