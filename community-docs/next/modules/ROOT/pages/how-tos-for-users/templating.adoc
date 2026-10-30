@@ -23,7 +23,7 @@ When you install Helm charts using {product_name}, it is important to distinguis
 * *Helm chart ++values.yaml++ (No templating):*
 ** The default ++values.yaml++ file bundled inside a Helm chart does not support {product_name} templating. Any substitutions happen during the standard Helm chart rendering phase, before {product_name} applies the chart. If you use ++${var}++ in this file, Helm treats it as plain text.
 * *Fleet ++valuesFiles++ and ++values++ (Templating supported):*
-** {product_name} allows you to reference additional values files through ++fleet.yaml++ using the ++valuesFiles++ or ++values++ keys. These {product_name}-specific configurations fully support templating, allowing you to apply dynamic, environment-specific overrides.
+** {product_name} allows you to reference additional values files through ++fleet.yaml++ using the ++valuesFiles++ or ++values++ keys. These {product_name}-specific configurations fully support templating, allowing you to apply dynamic, environment-specific overrides. Since {product_name} v0.17, you can use the same templating in ++namespaceLabels++ and ++namespaceAnnotations++ values, for example to label a namespace with the cluster's environment. <<_namespace_labels_and_annotations,See the example below>>.
 
 [#_how_fleet_templating_works]
 == How {product_name} templating works
@@ -153,7 +153,26 @@ Use ++default++ to ensure a deployment doesn't fail if a label is missing.
 [,yaml]
 ----
 values:
-  region: ${ default "us-east-1" .ClusterLabels.region }
+  region: ${ default "us-east-1" (index .ClusterLabels "region") }
+----
+
+[NOTE]
+....
+Look up the key with ++index++, as shown above. {product_name} fails to render a template that references a missing key directly, for example ++${ default "us-east-1" .ClusterLabels.region }++, and ++default++ is never applied.
+This applies to ++.ClusterLabels++, ++.ClusterAnnotations++, and ++.ClusterValues++.
+....
+
+[#_namespace_labels_and_annotations]
+=== Use cluster data in namespace labels and annotations
+
+Since {product_name} v0.17, {product_name} also renders templates in the ++namespaceLabels++ and ++namespaceAnnotations++ values of ++fleet.yaml++. You can use any of the variables from <<_accessing_cluster_data>>, but unlike Helm values, only the values are rendered, not the keys.
+
+[,yaml]
+----
+namespaceLabels:
+  env: ${ .ClusterLabels.env }
+namespaceAnnotations:
+  field.cattle.io/projectId: ${ .ClusterName }:p-myproject
 ----
 
 [#_conditional_logic]
