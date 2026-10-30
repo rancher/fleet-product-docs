@@ -233,11 +233,14 @@ cluster-ab13e54400f1   1/1             1/1           k3d-cluster2-server-0   202
 Client IDs are for the purpose of predefining clusters in the {product_name} manager with existing labels and repos targeted to them.
 A client ID is not required and is just one approach to managing clusters.
 The *client ID* is a unique string that will identify the cluster.
+
 This string is user generated and opaque to the {product_name} manager and agent.  It is assumed to be sufficiently unique. For security reasons one should not be able to easily guess this value
 as then one cluster could impersonate another.  The client ID is optional and if not specified the UID field of the `kube-system` namespace
 resource will be used as the client ID. Upon registration if the client ID is found on a `Cluster` resource in the {product_name} manager it will associate
 the agent with that `Cluster`.  If no `Cluster` resource is found with that client ID a new `Cluster` resource will be created with the specific
 client ID.
+
+After registration, the `Cluster` is bound to the registration token it registered with, see <<_registration_token_binding,Registration Token Binding>>.
 
 The {product_name} agent is installed as a Helm chart. The only parameters to the helm chart installation should be the cluster registration token, which
 is represented by the `values.yaml` file and the client ID.  The client ID is optional.
@@ -352,12 +355,15 @@ token after a successful registration please note that usually other system boot
 
 Since the cluster registration token is forgotten, if you need to re-register a cluster you must
 give the cluster a new registration token.
+If that token has a different name than the token the cluster registered with, update the binding first, see <<_registration_token_binding,Registration Token Binding>>.
 
 [#_token_ttl]
 ==== Token TTL
 
 Cluster registration tokens can be reused by any cluster in a namespace.  The tokens can be given a TTL
 such that it will expire after a specific time.
+
+Clusters registered with the same token are not distinguished from each other. Do not share a cluster registration token across tenants or trust boundaries. Instead, use a separate namespace with its own tokens for each tenant.
 
 [#_create_a_new_token]
 ==== Create a new Token
@@ -404,6 +410,31 @@ kubectl --namespace clusters get secret new-token -o 'jsonpath={.data.values}' |
 ----
 
 Once the `values.yaml` is ready it can be used repeatedly by clusters to register until the TTL expires.
+
+[#_registration_token_binding]
+==== Registration Token Binding
+
+NOTE: Registration token binding is available since {product_name} v0.14.12.
+
+{product_name} binds each cluster registered through agent-initiated registration to the cluster registration token it registered with. The name of that token is recorded in the `fleet.cattle.io/registered-token` annotation of the `Cluster` resource. New clusters receive the annotation when they are created. Existing clusters without the annotation receive it the next time a registration is granted for them after an upgrade of {product_name}.
+
+A registration that uses the client ID of an existing cluster together with a different registration token is not granted. The registration stays pending, and {product_name} emits a `RegistrationTokenMismatch` warning event on the `Cluster`. The event names the annotation value that allows the new token. The commands below assume the `Cluster` is in the `clusters` namespace; replace `clusters` with its actual namespace:
+
+[,shell]
+----
+kubectl -n clusters get events --field-selector reason=RegistrationTokenMismatch
+----
+
+Re-registration with a token of the same name is not affected, and neither are clusters whose agent is deployed by {product_name} through <<_manager_initiated,manager-initiated registration>>. If the registration token named by a registration does not exist, the registration stays pending until the token exists.
+
+To re-register a cluster with a different registration token on purpose, set the annotation to the name of the new token. {product_name} then processes the pending registrations of that cluster again:
+
+[,shell]
+----
+kubectl -n clusters annotate --overwrite clusters.fleet.cattle.io my-cluster fleet.cattle.io/registered-token=new-token
+----
+
+To accept registrations with a different registration token without updating the annotation, as in earlier releases, install {product_name} with `--set allowClusterRegistrationTokenChange=true`. This disables the protection described in this section.
 
 [#_manager_initiated]
 == Manager Initiated
@@ -458,3 +489,37 @@ metadata:
 spec:
   kubeConfigSecret: my-cluster-kubeconfig
 ----
+
+[#_reference_a_kubeconfig_secret_in_another_namespace]
+=== Reference a Kubeconfig Secret in Another Namespace
+
+NOTE: The restrictions described in this section apply since {product_name} v0.14.12.
+
+By default, {product_name} reads the kubeconfig secret from the namespace of the `Cluster` resource. The `kubeConfigSecretNamespace` field selects a different namespace:
+
+[,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: my-cluster
+  namespace: clusters
+spec:
+  kubeConfigSecret: my-cluster-kubeconfig
+  kubeConfigSecretNamespace: kubeconfigs
+----
+
+{product_name} only uses a kubeconfig secret in another namespace if the secret carries the label `fleet.cattle.io/kubeconfig-referenceable-from` with the namespace of the `Cluster` as its value. Only users who can modify secrets in the namespace of the secret can set this label, so they decide which namespace can use the credentials stored there. For example, to allow `Cluster` resources in the `clusters` namespace to use the secret above:
+
+[,shell]
+----
+kubectl -n kubeconfigs label secret my-cluster-kubeconfig fleet.cattle.io/kubeconfig-referenceable-from=clusters
+----
+
+If the label is missing or names a different namespace, {product_name} does not import the cluster, and the `Imported` condition of the `Cluster` names the required label. An agent that is already deployed stays in place. {product_name} detects a label that is added later without further changes.
+
+Rancher keeps the kubeconfig secret of a cluster that is assigned to a workspace other than `fleet-default` in the `fleet-default` namespace. Rancher versions that bundle this {product_name} release add the label to these secrets automatically.
+
+Earlier releases accepted unlabeled kubeconfig secrets from any namespace if the secret was in one of the well-known {product_name} namespaces: `fleet-local`, `fleet-default`, and the {product_name} system namespaces, such as `cattle-fleet-system` and `cattle-fleet-clusters-system`. To keep this behavior until the affected secrets are labeled, install {product_name} with `--set allowUnlabeledKubeConfigSecretNamespaces=true`. This weakens the protection described in this section, so use it only temporarily. A secret with a nonempty label can still only be used from the namespace that the label names.
+
+Independently of the label and this setting, {product_name} only deploys an agent onto the management cluster for `Cluster` resources in the bootstrap namespace, `fleet-local` by default, or in the {product_name} system namespaces.
