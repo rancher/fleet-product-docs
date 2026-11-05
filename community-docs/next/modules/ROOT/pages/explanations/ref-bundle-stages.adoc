@@ -1,6 +1,6 @@
 = Bundle Lifecycle
 :description: Understand how a bundle is created, updated, and deployed across clusters using GitRepo and Fleet components
-:revdate: 2026-10-06
+:revdate: 2026-10-21
 :page-revdate: {revdate}
 :page-aliases: /ref-bundle-stages
 
@@ -61,6 +61,8 @@ The bundle is shown as `NotReady`, with the error in its message. {product_name}
 === Dependencies
 
 A bundle that uses xref:reference/ref-fleet-yaml.adoc[`dependsOn`] is only deployed once all of its dependencies are in an accepted state, which is `Ready` by default. Dependencies are checked separately on each downstream cluster: a dependency must be deployed to the same cluster as the bundle that depends on it.
+
+Selectors can match dependencies from other GitRepos targeting the same cluster, even when their workloads use different namespaces. To keep dependencies within each GitRepo instance when reusing shared source, see xref:reference/ref-fleet-yaml.adoc#_dependency_selector_templates[Dependency Selector Templates].
 
 * While a dependency is not in an accepted state, the dependent bundle is shown as `WaitingForDependency` and is checked again every 15 seconds. It waits indefinitely: there is no timeout.
 * A dependent bundle which is already deployed is not removed when a dependency leaves its accepted state, but it does not receive updates until the dependency is back in an accepted state.
