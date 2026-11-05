@@ -182,56 +182,87 @@ values:
 [#_use_templatevalues_for_cluster_specific_data]
 === Use templateValues for cluster-specific data
 
-You can define cluster-specific data mappings directly on the downstream cluster using the ++templateValues++ field in the ++Cluster++ custom resource. These values are then passed into the {product_name} templating engine and can be consumed in your ++fleet.yaml++ (or HelmOp) files using the ++.ClusterValues++ variable.
+You can define cluster-specific data mappings directly on the ++Cluster++ resource that represents a downstream cluster, using its ++templateValues++ field. The ++Cluster++ resource lives in the {product_name} management cluster, in the workspace namespace (for example ++fleet-default++). These values are then passed into the {product_name} templating engine and can be consumed in your ++fleet.yaml++ (or HelmOp) files using the ++.ClusterValues++ variable.
 
 [#_variable_reuse]
 === Variable Reuse
 
-You can define a value once in ++templateValues++ and reference it multiple times in the ++values++ block using the ++.TemplateValues++ prefix.
+You can define a value once in the ++templateValues++ field of the ++Cluster++ resource and reference it multiple times in the ++values++ block using the ++.ClusterValues++ prefix.
+
+Define the value once on the ++Cluster++ resource:
+
+[,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: prod-eu
+  namespace: fleet-default
+spec:
+  templateValues:
+    region: eu-west
+----
+
+Reference it in ++fleet.yaml++ as often as needed:
 
 [,yaml]
 ----
 helm:
-  templateValues:
-    # 1. Define once
-    templateValues:
-      environment: production
-      region: eu-west
-      enableMetrics: "true"
   values:
-    values:
-      app:
-        env: "${ .ClusterValues.environment }"
-        region: "${ .ClusterValues.region }"
-      metrics:
-        enabled: "${ .ClusterValues.enableMetrics }"
-        # Example of using ClusterLabels alongside ClusterValues
-        siteIdentifier: "${ index .ClusterLabels \"site-id\" }"
+    region: ${ index .ClusterValues "region" | default "us-east-1" }
+    ingress:
+      host: app.${ index .ClusterValues "region" | default "us-east-1" }.example.com
 ----
+
+Using ++index++ with ++default++ keeps the deployment working on clusters that do not set ++region++. A plain ++${ .ClusterValues.region }++ fails to render on such clusters, and ++index++ without ++default++ renders ++<no value>++.
+
+Each ++Cluster++ can carry different values, so the same ++fleet.yaml++ renders differently on each cluster it targets.
 
 [#_structural_generation_advanced]
 === Structural Generation (Advanced)
 
 Standard YAML blocks must be valid YAML before processing. This prevents you from using ++range++ or ++if++ to generate lists or maps. Because ++templateValues++ is a map of strings, it bypasses this restriction. {product_name} evaluates the string first and then parses the result as YAML.
 
-The following example deploys different image tags depending on the cluster environment.
+Each key in ++helm.templateValues++ becomes a top-level key in the Helm values. If the same key also exists in ++values++, the ++templateValues++ entry replaces it entirely. The two are not merged. Keys in ++helm.templateValues++ are not available as template variables, so you cannot reference them from ++values++.
+
+NOTE: ++helm.templateValues++ in ++fleet.yaml++ is not the same as the ++templateValues++ field of the ++Cluster++ resource, which is read with ++.ClusterValues++.
+
+The following example creates one ingress host entry for each host name listed on the ++Cluster++ resource.
+
+[,yaml]
+----
+apiVersion: fleet.cattle.io/v1alpha1
+kind: Cluster
+metadata:
+  name: prod-eu
+  namespace: fleet-default
+spec:
+  templateValues:
+    hosts:
+      - app.example.com
+      - app.example.org
+----
 
 [,yaml]
 ----
 helm:
   templateValues:
-    imageTag: ${ if eq .ClusterLabels.env "prod" }stable${ else }latest${ end }
-
-  values:
-    image:
-      repository: nginx
-      tag: ${ .TemplateValues.imageTag }
+    ingressHosts: |-
+      ${- range index .ClusterValues "hosts" }
+      - host: ${ . }
+      ${- end }
 ----
 
-This results in
+Using ++index++ keeps the deployment working on clusters that do not set ++hosts++. They get no host entries.
 
-* If the cluster label is ++env=prod++, then the rendered image tag is ++stable++.
-* If the cluster label is ++env=dev++, then the rendered image tag is ++latest++.
+This results in the following Helm values for that cluster:
+
+[,yaml]
+----
+ingressHosts:
+- host: app.example.com
+- host: app.example.org
+----
 
 [#_disable_preprocessing]
 == *Disable preprocessing*
