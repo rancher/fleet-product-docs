@@ -1,6 +1,6 @@
 = Automatically copying resources to downstream clusters
 :description: Fleet automatically copies secrets and config maps to downstream clusters before deploying workloads
-:revdate: 2025-11-04
+:revdate: 2026-11-11
 :page-revdate: {revdate}
 :page-aliases: /experimental-downstream-resource
 
@@ -22,6 +22,7 @@ Those resources must:
 
 * Be either secrets or config maps. No other `kind`s are currently supported.
 * Exist before being referenced from the HelmOp, and live in the same namespace as the HelmOp referencing them.
+* Match an entry of `allowedDownstreamResources` in a `Policy` in that namespace, if a `Policy` there sets `requireServiceAccount: true` or has any entries. See <<_tenant_namespaces,Tenant namespaces>>.
 
 Example:
 
@@ -66,7 +67,70 @@ Removing the copies when a cluster is no longer targeted is done by the agent it
 If the `ServiceAccount` may not create the deployment namespace or write a copied object, {product_name} stops before installing anything. The bundle deployment reports not ready, with a message naming the namespace or object and the `forbidden` error, and {product_name} retries on its own. Once the permission is granted or the namespace is created, the deployment proceeds without further action.
 ====
 
+[#_tenant_namespaces]
+=== Tenant namespaces
+
+The {product_name} controller reads the referenced Secrets and ConfigMaps on the management cluster with its own credentials. Without a restriction, anyone who can create a deployment in the namespace could have any Secret or ConfigMap in it copied to a downstream cluster, where a workload in the deployment namespace can read it.
+
+Since {product_name} v0.14.13, a `Policy` decides which of them may be copied, through the field `allowedDownstreamResources`. Each entry names a `kind`, `Secret` or `ConfigMap`, and either a `name` or a `namePattern`:
+
+[source,yaml]
+----
+kind: Policy
+apiVersion: fleet.cattle.io/v1alpha1
+metadata:
+  name: tenant-policy
+  namespace: workspace1
+requireServiceAccount: true
+allowedDownstreamResources:
+  - kind: Secret
+    name: my-secret
+  - kind: ConfigMap
+    namePattern: app-config-.*
+----
+
+The entries of all `Policy` objects in the namespace are combined into one list, and `requireServiceAccount` counts as true if any `Policy` there sets it:
+
+* If the combined list has entries, every Secret and ConfigMap in `downstreamResources` must match one of them, whichever `Policy` it comes from.
+* If the combined list is empty and a `Policy` sets `requireServiceAccount: true`, no Secret or ConfigMap is copied.
+* If the combined list is empty and no `Policy` sets `requireServiceAccount: true`, every referenced object is copied, as before.
+
+If a referenced object is not allowed, {product_name} refuses the Bundle. The Bundle, and the `GitRepo` or `HelmOp` it comes from, report `Ready=False` with a message naming the object:
+
+----
+downstream resource Secret my-secret is not allowed by Policy: it is not listed in allowedDownstreamResources
+----
+
+The check covers the `downstreamResources` of the deployment and those set on its targets. It only compares kinds and names and does not read the objects. While the Bundle is refused, its existing deployments stay as they are and no changes are rolled out. Once the `Policy` allows the object, {product_name} picks up the change and proceeds without further action.
+
+Removing an entry refuses the Bundle again. Copies that were already made are kept, on the management cluster and on downstream clusters, but no longer updated.
+
+Only list objects whose content may be visible to whoever deploys from that namespace. Do not list credentials that are meant to be used but not read, such as Git or Helm repository credentials.
+
+Whoever can write `Policy` objects in a namespace decides what may be copied from it. Restrict write access to `Policy` objects to administrators.
+
+[#_finding_the_objects_to_list]
+==== Finding the objects to list
+
+After upgrading from a version before v0.14.13, Bundles in a namespace whose `Policy` sets `requireServiceAccount: true` are refused until every Secret and ConfigMap they reference matches an entry. The following lists those objects, and can be run before the upgrade. It needs `kubectl` and `jq`, and read access to `Policy` and `Bundle` objects on the management cluster:
+
+[source,sh]
+----
+for ns in $(kubectl get policies.fleet.cattle.io -A -o json |
+  jq -r '.items[] | select(.requireServiceAccount == true) | .metadata.namespace' | sort -u); do
+  kubectl get bundles.fleet.cattle.io -n "$ns" -o json |
+    jq -r --arg ns "$ns" '.items[]
+      | (.spec.downstreamResources // []) + ([.spec.targets[]?.downstreamResources // []] | add // [])
+      | .[] | select(.kind | ascii_downcase | . == "secret" or . == "configmap")
+      | "\($ns) \(.kind) \(.name)"'
+done | sort -u
+----
+
+Each line is `<namespace> <kind> <name>`. The entries can go into any `Policy` in the namespace, including a new one, since the lists of all `Policy` objects in a namespace are combined.
+
 [#_monitoring]
 == Monitoring
 
 From version v0.14.0 onwards, {product_name} monitors changes made to secrets and configmaps that are listed in `DownstreamResources`. It also checks whether a secret or configmap was created after the Bundle was created.
+
+Since {product_name} v0.14.13, changes to a `Policy` in the namespace are picked up the same way, see <<_tenant_namespaces,Tenant namespaces>>.

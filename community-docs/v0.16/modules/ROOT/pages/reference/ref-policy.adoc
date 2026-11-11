@@ -1,6 +1,6 @@
 = Policy Resource
 :description: Understand how the Policy resource controls GitRepo, HelmOp, and Bundle actions and sets default values in a namespace
-:revdate: 2026-05-21
+:revdate: 2026-11-11
 :page-revdate: {revdate}
 :page-aliases: /ref-policy
 
@@ -37,6 +37,20 @@ allowedServiceAccounts:
 # not need the cluster-scoped namespaces create verb. Set it to true only if
 # namespace creation is secured by other means.
 allowNamespaceCreation: false
+
+# Since Fleet v0.16.4. Secrets and ConfigMaps that GitRepo, HelmOp, and
+# Bundle resources may copy to downstream clusters through
+# downstreamResources. Each entry sets a kind (Secret or ConfigMap) and
+# exactly one of name or namePattern. Patterns are anchored as
+# ^(?:<pattern>)$, so explicit ^ and $ anchors are not required.
+# When non-empty, every Secret and ConfigMap in downstreamResources must
+# match an entry. When empty, none may be copied if requireServiceAccount
+# is true, and all may be copied otherwise.
+allowedDownstreamResources:
+  - kind: Secret
+    name: tenant-1-app-secret
+  - kind: ConfigMap
+    namePattern: tenant-1-.*
 
 # GitRepo-specific defaults and restrictions. Applied only by the GitRepo
 # reconciler, before the top-level checks run.
@@ -88,7 +102,7 @@ helmOp:
 
 Multiple Policy objects in the same namespace are aggregated:
 
-* Allow-lists (`allowedServiceAccounts`, `gitRepo.allowedClientSecretNames`, `gitRepo.allowedRepoPatterns`, `helmOp.allowedHelmSecretNames`, `helmOp.allowedHelmRepoPatterns`, `helmOp.allowedChartPatterns`) are unioned across all Policy objects in the namespace.
+* Allow-lists (`allowedServiceAccounts`, `allowedDownstreamResources`, `gitRepo.allowedClientSecretNames`, `gitRepo.allowedRepoPatterns`, `helmOp.allowedHelmSecretNames`, `helmOp.allowedHelmRepoPatterns`, `helmOp.allowedChartPatterns`) are unioned across all Policy objects in the namespace.
 * For default fields (`gitRepo.defaultServiceAccount`, `gitRepo.defaultClientSecretName`, `helmOp.defaultServiceAccount`, `helmOp.defaultHelmSecretName`), the first non-empty value wins after sorting Policy objects by name.
 * `requireServiceAccount` is true if any Policy in the namespace sets it.
 * `allowNamespaceCreation` is true if any Policy in the namespace sets it. See xref:explanations/multi-tenancy.adoc#_namespace_creation[Namespace Creation].
@@ -116,6 +130,11 @@ Because allow-lists union across all Policy objects in the namespace, write acce
 | —
 | —
 | applies (disables Helm namespace creation when `requireServiceAccount` is true and this field is false). Since {product_name} v0.16.1.
+
+| `allowedDownstreamResources`
+| —
+| —
+| validates (top-level + per-target `downstreamResources`). Since {product_name} v0.16.4.
 
 | `gitRepo.defaultServiceAccount`
 | applies

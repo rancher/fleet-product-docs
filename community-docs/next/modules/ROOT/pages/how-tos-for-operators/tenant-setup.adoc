@@ -1,6 +1,6 @@
 = Tenant Setup
 :description: Set up a tenant with proper isolation by creating upstream RBAC, downstream RBAC, and a policy that restricts access and defines allowed actions
-:revdate: 2026-05-21
+:revdate: 2026-11-11
 :page-revdate: {revdate}
 :page-aliases: /how-tos-for-operators/multi-user, /multi-user, /tenant-setup
 
@@ -437,8 +437,26 @@ helmOp:
 
 Because this `Policy` sets `requireServiceAccount: true`, {product_name} does not create the tenant's target namespaces, see <<_target_namespaces,Target Namespaces>>.
 
+It also copies Secrets and ConfigMaps through `downstreamResources` only if they match an entry of `allowedDownstreamResources`, see <<_allowing_secrets_and_configmaps_to_be_copied,Allowing Secrets and ConfigMaps to Be Copied>>.
+
 For the field-by-field reference, see xref:reference/ref-policy.adoc[Policy Resource]. Repeat for each tenant in their own namespace, adjusting the allowed `ServiceAccount`, allowed repositories, and allowed secrets.
 
+
+[#_allowing_secrets_and_configmaps_to_be_copied]
+=== Allowing Secrets and ConfigMaps to Be Copied
+
+Since {product_name} v0.16.4 and v0.17.0, with `requireServiceAccount: true`, a tenant's deployment can only copy a Secret or ConfigMap to downstream clusters through `downstreamResources` if it matches an entry of the `allowedDownstreamResources` field of the `Policy`. Add an entry for each object in the tenant's namespace that the tenant's deployments may copy:
+
+[source,yaml]
+----
+allowedDownstreamResources:
+  - kind: Secret
+    name: tenant-1-app-config
+----
+
+Only list objects whose content the tenant may see. A copy can be mounted by any workload in the deployment namespace on the downstream cluster, so copying an object discloses it to the tenant. Do not list credentials that the tenant may use but not read, such as the secrets in `gitRepo.allowedClientSecretNames` or `helmOp.allowedHelmSecretNames`.
+
+For how the entries are evaluated, and how to find the objects that existing deployments reference, see xref:how-tos-for-users/downstream-resource-propagation.adoc#_tenant_namespaces[Tenant namespaces].
 
 [#_step_4_tenants_first_gitrepo]
 == Step 4 — Tenant's First GitRepo
@@ -483,6 +501,7 @@ After applying the configuration, verify each layer:
 * As the tenant, attempt to create a `GitRepo` that references a `serviceAccount` outside the allow-list. The request should be accepted, but the `GitRepo`'s status condition should report the `Policy` violation and no `Bundle` should be produced.
 * As the tenant, attempt to create a `GitRepo` whose `repo` URL does not match `allowedRepoPatterns`. Same outcome.
 * On a downstream cluster, attempt to use the tenant's `ServiceAccount` to write to a namespace not granted by the `Role`. The request should be denied by Kubernetes RBAC.
+* As the tenant, create a `Bundle` that lists a Secret in `downstreamResources` that matches no entry of `allowedDownstreamResources`. The `Bundle` should report `Ready=False` with a `Policy` message, and nothing should be copied.
 
 
 [#_common_mistakes]
@@ -494,6 +513,7 @@ After applying the configuration, verify each layer:
 * *Forgetting to bootstrap the downstream `ServiceAccount` on every cluster the tenant targets.* Deployments to clusters without the `ServiceAccount` fail at the agent. Use the bootstrap pattern in Step 2 to keep coverage in sync with the cluster inventory.
 * *Expecting {product_name} to create the tenant's target namespaces.* With `requireServiceAccount: true`, Helm does not create namespaces, and a deployment into a missing namespace fails. Create target namespaces as the operator, see <<_target_namespaces,Target Namespaces>>.
 * *Granting `update` on a namespace without checking what it hands over.* `namespaceLabels` and `namespaceAnnotations` replace all labels or annotations of the namespace, and `update` lets the tenant set any of them. See <<_namespace_labels_and_annotations,Namespace Labels and Annotations>>.
+* *Allowing credential secrets in `allowedDownstreamResources`.* A Secret that matches an entry can be copied to a downstream cluster and read there. A broad `namePattern` such as `.*` matches them too. Allow only objects the tenant may read, see <<_allowing_secrets_and_configmaps_to_be_copied,Allowing Secrets and ConfigMaps to Be Copied>>.
 * *Configuring `Policy` for `GitRepo` only, ignoring `HelmOp`.* The `helmOp.*` block must be set if tenants have RBAC to create `HelmOp` resources. Without it, only the top-level `requireServiceAccount` / `allowedServiceAccounts` constrain HelmOps; source repositories, charts, and Helm credential secrets remain unrestricted.
 * *Granting tenants write access to `BundleDeployment`*: tenants should not have permissions to create `bundledeployments`, as those resources are meant to be created from `bundles`, by Fleet controllers. Ensuring that only Fleet controllers can create `bundledeployments` enables greater control over workloads, with:
 ** `GitRepoRestriction` resources restricting `GitRepo`, and hence `Bundle` resources
