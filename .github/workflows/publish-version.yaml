@@ -202,21 +202,11 @@ jobs:
           BODY_FILE="/tmp/pr-body-${BASE}.md"
 
           if [ "$CHANGELOG_URL" != "https://github.com/rancher/fleet/releases" ]; then
-            cat <<EOF | sed 's/^ *//' > "$BODY_FILE"
-              Publish docs version \`${DIR_TAG}\` for \`${BASE}\` (based on release \`${RELEASE_TAG}\`).
-
-              - **Changelog**: ${CHANGELOG_URL}
-
-              cc @rancher/fleet
-            EOF
+            printf "Publish docs version \`%s\` for \`%s\` (based on release \`%s\`).\n\n- **Changelog**: %s\n\ncc @rancher/fleet\n" \
+              "$DIR_TAG" "$BASE" "$RELEASE_TAG" "$CHANGELOG_URL" > "$BODY_FILE"
           else
-            cat <<EOF | sed 's/^ *//' > "$BODY_FILE"
-              Publish docs version \`${DIR_TAG}\` for \`${BASE}\`.
-
-              - **Changelog**: ${CHANGELOG_URL}
-
-              cc @rancher/fleet
-            EOF
+            printf "Publish docs version \`%s\` for \`%s\`.\n\n- **Changelog**: %s\n\ncc @rancher/fleet\n" \
+              "$DIR_TAG" "$BASE" "$CHANGELOG_URL" > "$BODY_FILE"
           fi
 
           EXISTING_PR=$(gh pr list \
@@ -225,7 +215,7 @@ jobs:
             --base "$BASE" \
             --state open \
             --json number \
-            --jq '.[0].number')
+            --jq '.[0].number // empty')
 
           if [ -n "$EXISTING_PR" ]; then
             echo "PR #$EXISTING_PR already open. Updating description..."
