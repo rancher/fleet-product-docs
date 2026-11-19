@@ -1,14 +1,12 @@
 name: Publish new docs version
 
 on:
-  push:
-    tags:
-    - 'v*' # Push events to matching v*, i.e. v1.0, v20.15.10
-
-env:
-  TAG: ${{ github.ref_name }}
-  PR_BRANCH_PREFIX: publish-version
-
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version or tag (e.g. v0.17.0-rc.2 or 0.17)"
+        required: true
+        type: string
 
 permissions:
   contents: write
@@ -16,137 +14,221 @@ permissions:
 
 jobs:
   publish:
+    name: Publish version for ${{ matrix.base_branch }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
-        base_branch: [ "main", "dsc-single-source" ]
-    # run once per base_branch value
+        base_branch: [ "main", "product-docs" ]
+
     steps:
-      - name: Show context
-        run: |
-          echo "Tag: $TAG"
-          echo "Target base branch: ${{ matrix.base_branch }}"
-
-      - name: Checkout target base branch
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          ref: refs/heads/${{ matrix.base_branch }}
-          fetch-depth: 0
-          persist-credentials: true
-          path: repo
-
-      - name: Prepare the tag values
-        run: |
-          echo "TRIMMED_TAG=${TAG#v}" >> $GITHUB_ENV
-          echo "TAG=${TAG%.*}" >> $GITHUB_ENV
-
-      - name: Update example versions in documentation
-        run: |
-          set -euo pipefail
-          cd repo
-          go run tools/setexampleversion/main.go -version=v${{ env.TRIMMED_TAG }} \
-            versions/next/modules/en/pages/user/clusterclass.adoc \
-            versions/next/modules/en/pages/operator/certificationsuite.adoc \
-            versions/next/modules/en/pages/operator/manual.adoc \
-            versions/next/modules/en/pages/tutorials/quickstart.adoc \
-            versions/next/modules/en/pages/user/clusters.adoc
-
-      - name: Copy docs directory for new version
-        run: |
-          set -euo pipefail
-          cd repo
-          mkdir -p versions/${TAG}
-          cp -r versions/next/* versions/${TAG}
-
-      - name: Update Antora metadata for new version
-        run: |
-          set -euo pipefail
-          cd repo
-          sed -i "s/^version: .*/version: ${TAG}/" versions/${TAG}/antora.yml
-          sed -i '/prerelease/d' versions/${TAG}/antora.yml || true
-          sed -i "s/^display_version: .*/display_version: '${TAG}'/" versions/${TAG}/antora.yml
-          # Update playbook start_page and start_paths only if playbook exists in repo root
-          if [ -f fleet-local-community-playbook.yml ]; then
-            sed -i "s|start_page:.*|start_page: ${TAG}@fleet:en:index.adoc|" fleet-local-community-playbook.yml
-            sed -i "s|start_paths: \[|start_paths: [versions/${TAG}, |" fleet-local-community-playbook.yml
-          fi
-
-      - name: Show git changes (debug)
-        run: |
-          cd repo
-          git --no-pager status --porcelain || true
-          git --no-pager diff --name-only || true
-
-      - name: Commit changes to branch and push
-        id: commit_push
+      - name: Validate and parse version input
+        id: parse_version
         env:
-          TRIM: ${{ env.TRIMMED_TAG }}
-          BASE: ${{ matrix.base_branch }}
-          PR_BASE: ${{ env.PR_BRANCH_PREFIX }}
+          INPUT_VERSION: ${{ inputs.version }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          cd repo
 
-          # Compose branch name including base branch short name to avoid collisions
-          BR_NAME="${PR_BASE}-${TRIM}-${BASE}"
-          # Normalize to remove slashes if any
-          BR_NAME="${BR_NAME//\//-}"
-
-          # If branch exists remotely or locally, append timestamp
-          if git ls-remote --exit-code --heads origin "${BR_NAME}" >/dev/null 2>&1 || git show-ref --verify --quiet "refs/heads/${BR_NAME}"; then
-            BR_NAME="${BR_NAME}-$(date +%s)"
-          fi
-
-          # Ensure we are on the intended base branch
-          git fetch origin "${BASE}:${BASE}" || true
-          git checkout --force "${BASE}"
-
-          # Stage changes and exit early if nothing changed
-          git add -A || true
-          if git diff --cached --quiet --exit-code && git diff --quiet --exit-code; then
-            echo "changed=false" >> $GITHUB_OUTPUT
-            echo "No changes to commit for base branch ${BASE}."
-            echo "branch=${BR_NAME}" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-
-          git checkout -b "${BR_NAME}"
-          git commit -m "Add docs version v${TRIM} for ${BASE} [ci skip]" || true
-          git push --set-upstream origin "${BR_NAME}"
-
-          echo "changed=true" >> $GITHUB_OUTPUT
-          echo "branch=${BR_NAME}" >> $GITHUB_OUTPUT
-
-      - name: Create Pull Request via REST API (when changes)
-        if: steps.commit_push.outputs.changed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE: ${{ matrix.base_branch }}
-        run: |
-          set -euo pipefail
-          # read branch name from previous step output
-          BRANCH=$(jq -r '.branch' <<< "${{ steps.commit_push.outputs }}" 2>/dev/null || echo "${{ steps.commit_push.outputs.branch }}")
-          if [ -z "$BRANCH" ]; then
-            echo "No branch found; exiting"
+          RAW_VER="${INPUT_VERSION#v}"
+          if [[ ! "$RAW_VER" =~ ^([0-9]+)\.([0-9]+)(\.([0-9]+))?(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::Invalid version format '$INPUT_VERSION'. Expected format like 'v0.17.0-rc.2', 'v0.18.0-alpha.2', or '0.17.0'."
             exit 1
           fi
 
-          TITLE="Publish docs: v${{ env.TRIMMED_TAG }} (target ${BASE})"
-          # Ensure semver-like tag for changelog link
-          tag="${{ env.TRIMMED_TAG }}"
-          if [[ ! "$tag" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-            tag="${tag}.0"
+          MAJOR="${BASH_REMATCH[1]}"
+          MINOR="${BASH_REMATCH[2]}"
+          PATCH="${BASH_REMATCH[4]:-0}"
+          SUFFIX="${BASH_REMATCH[5]:-}"
+
+          DISPLAY_VERSION="${MAJOR}.${MINOR}"
+          DIR_TAG="v${MAJOR}.${MINOR}"
+          REQUESTED_TAG="v${MAJOR}.${MINOR}.${PATCH}${SUFFIX}"
+
+          echo "display_version=${DISPLAY_VERSION}" >> "$GITHUB_OUTPUT"
+          echo "dir_tag=${DIR_TAG}" >> "$GITHUB_OUTPUT"
+
+          echo "Parsed version inputs:"
+          echo "  Display Version: ${DISPLAY_VERSION}"
+          echo "  Directory Tag:   ${DIR_TAG}"
+          echo "  Requested Tag:   ${REQUESTED_TAG}"
+
+          # Resolve changelog release tag against rancher/fleet
+          CHANGELOG_TAG="$REQUESTED_TAG"
+          CHANGELOG_URL="https://github.com/rancher/fleet/releases/tag/${CHANGELOG_TAG}"
+
+          if ! gh release view "$CHANGELOG_TAG" --repo rancher/fleet >/dev/null 2>&1; then
+            echo "Release '$CHANGELOG_TAG' not found on rancher/fleet. Searching for latest '${DIR_TAG}.*' release..."
+            MATCHING_TAG=$(gh api "repos/rancher/fleet/releases?per_page=100" 2>/dev/null | jq -r --arg prefix "${DIR_TAG}." '[.[] | select(.tag_name | startswith($prefix))] | .[0].tag_name // empty' || true)
+            if [ -n "$MATCHING_TAG" ]; then
+              echo "Discovered latest release tag: $MATCHING_TAG"
+              CHANGELOG_TAG="$MATCHING_TAG"
+              CHANGELOG_URL="https://github.com/rancher/fleet/releases/tag/${CHANGELOG_TAG}"
+            else
+              echo "No release found for ${DIR_TAG}.*; linking to releases list."
+              CHANGELOG_URL="https://github.com/rancher/fleet/releases"
+            fi
           fi
-          BODY="Update docs version v${tag}\n\nChangelog: https://github.com/${REPO}/releases/tag/v${tag}\n\ncc @rancher/fleet"
 
-          PAYLOAD=$(jq -n --arg title "$TITLE" --arg head "$BRANCH" --arg base "$BASE" --arg body "$BODY" \
-            '{title:$title, head:$head, base:$base, body:$body}')
+          echo "release_tag=${CHANGELOG_TAG}" >> "$GITHUB_OUTPUT"
+          echo "changelog_url=${CHANGELOG_URL}" >> "$GITHUB_OUTPUT"
 
-          curl -sS -X POST "https://api.github.com/repos/${REPO}/pulls" \
-            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
-            -H "Accept: application/vnd.github+json" \
-            -d "${PAYLOAD}" \
-            | jq .
+          echo "Final release metadata:"
+          echo "  Release Tag:     ${CHANGELOG_TAG}"
+          echo "  Changelog URL:   ${CHANGELOG_URL}"
 
-      - name: Done
-        run: echo "Publish job for base ${matrix.base_branch} completed."
+      - name: Checkout target branch
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ matrix.base_branch }}
+          fetch-depth: 0
+
+      - name: Create new version documentation
+        env:
+          BASE: ${{ matrix.base_branch }}
+          DIR_TAG: ${{ steps.parse_version.outputs.dir_tag }}
+          DISPLAY_VERSION: ${{ steps.parse_version.outputs.display_version }}
+        run: |
+          set -euo pipefail
+
+          # 1. Branch-specific doc directory and antora.yml creation
+          if [ "$BASE" = "main" ]; then
+            SRC_DIR="community-docs/next"
+            DEST_DIR="community-docs/${DIR_TAG}"
+
+            if [ -d "$DEST_DIR" ]; then
+              echo "::error::Directory '$DEST_DIR' already exists on branch '$BASE'."
+              exit 1
+            fi
+
+            echo "Copying $SRC_DIR to $DEST_DIR..."
+            cp -r "$SRC_DIR" "$DEST_DIR"
+
+            # Update Antora component metadata
+            sed -i "s/^version: .*/version: '${DISPLAY_VERSION}'/" "$DEST_DIR/antora.yml"
+            sed -i "s/^display_version: .*/display_version: '${DISPLAY_VERSION}'/" "$DEST_DIR/antora.yml"
+            sed -i '/^prerelease: .*/d' "$DEST_DIR/antora.yml"
+
+          elif [ "$BASE" = "product-docs" ]; then
+            SRC_DIR="versions/next"
+            DEST_DIR="versions/${DIR_TAG}"
+
+            if [ -d "$DEST_DIR" ]; then
+              echo "::error::Directory '$DEST_DIR' already exists on branch '$BASE'."
+              exit 1
+            fi
+
+            echo "Copying $SRC_DIR to $DEST_DIR..."
+            cp -r "$SRC_DIR" "$DEST_DIR"
+
+            # Update Antora component metadata
+            sed -i "s/^version: .*/version: ${DIR_TAG}/" "$DEST_DIR/antora.yml"
+            sed -i "s/^display_version: .*/display_version: '${DISPLAY_VERSION}'/" "$DEST_DIR/antora.yml"
+            sed -i '/^prerelease: .*/d' "$DEST_DIR/antora.yml"
+          fi
+
+          # 2. Update all four playbooks on both branches
+          echo "Updating community playbooks..."
+          for playbook in fleet-community-local-playbook.yml fleet-community-remote-playbook.yml; do
+            if [ -f "$playbook" ]; then
+              echo "Updating $playbook..."
+              sed -i "s|^  start_page:.*|  start_page: ${DISPLAY_VERSION}@ROOT:ROOT:index.adoc|" "$playbook"
+              if ! grep -q "community-docs/${DIR_TAG}" "$playbook"; then
+                if grep -q "community-docs/next, " "$playbook"; then
+                  sed -i "s|community-docs/next, |community-docs/next, community-docs/${DIR_TAG}, |" "$playbook"
+                else
+                  sed -i "s|start_paths: \[|start_paths: [community-docs/${DIR_TAG}, |" "$playbook"
+                fi
+              fi
+            fi
+          done
+
+          echo "Updating product playbooks..."
+          for playbook in fleet-product-local-playbook.yml fleet-product-remote-playbook.yml; do
+            if [ -f "$playbook" ]; then
+              echo "Updating $playbook..."
+              sed -i "s|^  start_page:.*|  start_page: ${DIR_TAG}@continuous-delivery:en:index.adoc|" "$playbook"
+              if ! grep -q "versions/\*" "$playbook" && ! grep -q "versions/${DIR_TAG}" "$playbook"; then
+                if grep -q "versions/next, " "$playbook"; then
+                  sed -i "s|versions/next, |versions/next, versions/${DIR_TAG}, |" "$playbook"
+                else
+                  sed -i "s|start_paths: \[|start_paths: [versions/${DIR_TAG}, |" "$playbook"
+                fi
+              fi
+            fi
+          done
+
+      - name: Commit changes and push branch
+        id: commit_push
+        env:
+          BASE: ${{ matrix.base_branch }}
+          DIR_TAG: ${{ steps.parse_version.outputs.dir_tag }}
+        run: |
+          set -euo pipefail
+
+          PR_BRANCH="publish-version-${DIR_TAG}-${BASE}"
+          echo "branch=${PR_BRANCH}" >> "$GITHUB_OUTPUT"
+
+          git checkout -B "$PR_BRANCH"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          git add -A
+
+          if git diff --cached --quiet; then
+            echo "No changes detected to commit."
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          git commit -m "Add docs version ${DIR_TAG} for ${BASE}"
+          git push origin "$PR_BRANCH" --force
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Create or update Pull Request
+        if: steps.commit_push.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE: ${{ matrix.base_branch }}
+          PR_BRANCH: ${{ steps.commit_push.outputs.branch }}
+          DIR_TAG: ${{ steps.parse_version.outputs.dir_tag }}
+          RELEASE_TAG: ${{ steps.parse_version.outputs.release_tag }}
+          CHANGELOG_URL: ${{ steps.parse_version.outputs.changelog_url }}
+        run: |
+          set -euo pipefail
+
+          TITLE="Publish docs: ${DIR_TAG} (target ${BASE})"
+          BODY_FILE="/tmp/pr-body-${BASE}.md"
+
+          if [ "$CHANGELOG_URL" != "https://github.com/rancher/fleet/releases" ]; then
+            printf "Publish docs version \`%s\` for \`%s\` (based on release \`%s\`).\n\n- **Changelog**: %s\n\ncc @rancher/fleet\n" \
+              "$DIR_TAG" "$BASE" "$RELEASE_TAG" "$CHANGELOG_URL" > "$BODY_FILE"
+          else
+            printf "Publish docs version \`%s\` for \`%s\`.\n\n- **Changelog**: %s\n\ncc @rancher/fleet\n" \
+              "$DIR_TAG" "$BASE" "$CHANGELOG_URL" > "$BODY_FILE"
+          fi
+
+          EXISTING_PR=$(gh pr list \
+            --repo "$GITHUB_REPOSITORY" \
+            --head "$PR_BRANCH" \
+            --base "$BASE" \
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [ -n "$EXISTING_PR" ]; then
+            echo "PR #$EXISTING_PR already open. Updating description..."
+            gh pr edit "$EXISTING_PR" \
+              --repo "$GITHUB_REPOSITORY" \
+              --title "$TITLE" \
+              --body-file "$BODY_FILE"
+          else
+            echo "Creating new PR targeting $BASE..."
+            gh pr create \
+              --repo "$GITHUB_REPOSITORY" \
+              --base "$BASE" \
+              --head "$PR_BRANCH" \
+              --title "$TITLE" \
+              --body-file "$BODY_FILE"
+          fi
