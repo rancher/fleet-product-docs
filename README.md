@@ -81,6 +81,12 @@ The following targets are available in the `Makefile` for building the documenta
 - `make local-community`
 - `make local-product`
 
+To build both the community and product documentation at once without changing the branch from `main` to `product-docs` or viceversa, run:
+
+```bash
+make local
+```
+
 To preview the built documentation using a local HTTP server, you can use the following targets:
 
 - `make preview-community`
