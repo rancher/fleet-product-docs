@@ -201,13 +201,27 @@ jobs:
           TITLE="Publish docs: ${DIR_TAG} (target ${BASE})"
           BODY_FILE="/tmp/pr-body-${BASE}.md"
 
-          if [ "$CHANGELOG_URL" != "https://github.com/rancher/fleet/releases" ]; then
-            printf "Publish docs version \`%s\` for \`%s\` (based on release \`%s\`).\n\n- **Changelog**: %s\n\ncc @rancher/fleet\n" \
-              "$DIR_TAG" "$BASE" "$RELEASE_TAG" "$CHANGELOG_URL" > "$BODY_FILE"
-          else
-            printf "Publish docs version \`%s\` for \`%s\`.\n\n- **Changelog**: %s\n\ncc @rancher/fleet\n" \
-              "$DIR_TAG" "$BASE" "$CHANGELOG_URL" > "$BODY_FILE"
-          fi
+          {
+            if [ "$CHANGELOG_URL" != "https://github.com/rancher/fleet/releases" ]; then
+              printf 'Publish docs version `%s` for `%s` (based on release `%s`).\n\n' \
+                "$DIR_TAG" "$BASE" "$RELEASE_TAG"
+            else
+              printf 'Publish docs version `%s` for `%s`.\n\n' \
+                "$DIR_TAG" "$BASE"
+            fi
+
+            printf -- '- **Changelog**: %s\n\n' "$CHANGELOG_URL"
+
+            if [ "$BASE" = "product-docs" ]; then
+              printf '> [!NOTE]\n'
+              printf '> **Merge order:** Merge this PR **first**, before the corresponding PR for `main` (`publish-version-%s-main`).\n' "$DIR_TAG"
+              printf '> This ensures that the `versions/%s` directory exists when the automated docs sync (`sync-product-docs.yml`) runs after merging to `main`.\n\n' "$DIR_TAG"
+            else
+              printf '> [!IMPORTANT]\n'
+              printf '> **Merge order:** Merge the corresponding PR for `product-docs` (`publish-version-%s-product-docs`) **first**, before merging this PR.\n' "$DIR_TAG"
+              printf '> If this PR is merged first, `sync-product-docs.yml` will skip `%s` because `versions/%s` does not yet exist on `product-docs`. In that case, `sync-product-docs.yml` must be triggered manually via `workflow_dispatch` once the `product-docs` PR is merged.\n\n' "$DIR_TAG" "$DIR_TAG"
+            fi
+          } > "$BODY_FILE"
 
           EXISTING_PR=$(gh pr list \
             --repo "$GITHUB_REPOSITORY" \
@@ -232,3 +246,14 @@ jobs:
               --title "$TITLE" \
               --body-file "$BODY_FILE"
           fi
+
+          {
+            echo "### Publish Docs: ${DIR_TAG} (${BASE})"
+            echo "- Target branch: \`${BASE}\`"
+            echo "- PR branch: \`${PR_BRANCH}\`"
+            if [ "$BASE" = "product-docs" ]; then
+              echo "- **Merge order**: Merge this PR **first** before merging the \`main\` PR."
+            else
+              echo "- **Merge order**: Merge the \`product-docs\` PR **first** before merging this PR."
+            fi
+          } >> "$GITHUB_STEP_SUMMARY"

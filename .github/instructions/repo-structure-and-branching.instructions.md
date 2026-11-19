@@ -20,6 +20,14 @@ The layout, branch model, backporting script, navigation and translation rules a
 - `next` is the unreleased version. Edit it for new features and general updates.
 - If fixes and general updates apply to a released version, backport the changes to that version's directory, for example `community-docs/v0.16/`.
 
+## Publishing a new version
+
+When publishing a new docs version using the `publish-version.yaml` workflow:
+
+- The workflow creates two pull requests: one targeting `product-docs` (`publish-version-<VERSION>-product-docs`) and one targeting `main` (`publish-version-<VERSION>-main`).
+- Merge the `product-docs` pull request first, then merge the `main` pull request. This ensures that the new version directory (`versions/<VERSION>/`) exists on `product-docs` when `sync-product-docs.yml` triggers upon merging to `main`.
+- If `main` is merged first, `sync-product-docs.yml` will skip the new version; trigger `sync-product-docs.yml` manually via `workflow_dispatch` after merging the `product-docs` PR.
+
 ## Translations
 
 Do not edit any locale other than `en` (on `product-docs`). Translations are imported in batches.
