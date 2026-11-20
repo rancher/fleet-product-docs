@@ -1,0 +1,6 @@
+= Next Release
+:description: Check the GitHub Release page to find information about the next development version of Fleet and see the changes and features
+:revdate: 2026-08-31
+:page-revdate: {revdate}
+
+For the next development version of {product_name}, refer to the https://github.com/rancher/fleet/releases[GitHub Release page].

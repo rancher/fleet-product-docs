@@ -1,16 +1,17 @@
 site:
   title: Fleet
   url: /
-  start_page: 0.13@ROOT:ROOT:index.adoc
+  start_page: 0.17@ROOT:ROOT:index.adoc
 
 content:
   sources:
     - url: ./
-      start_paths: [community-docs/v0.13, community-docs/v0.12,community-docs/v0.11, community-docs/v0.10,community-docs/v0.9]
-      branches: HEAD
+      start_paths: [community-docs/v0.17, community-docs/v0.16, community-docs/v0.15, community-docs/v0.14, community-docs/v0.13, community-docs/v0.12, community-docs/v0.11, community-docs/v0.10, community-docs/v0.9]
+      branches: [main]
 
 urls:
   html_extension_style: drop
+  latest_version_segment: ''
 
 # Description: SUSE UI bundle
 ui:
@@ -24,12 +25,19 @@ asciidoc:
     page-pagination: ''
     page-toclevels: 4@
     product: fleet
+    rancher-product-name: "Rancher"
   extensions:
     - '@asciidoctor/tabs'
 antora:
   extensions:
   - require: '@antora/lunr-extension'
+    index_latest_only: true
   - require: '@springio/antora-xref-extension'
+  - require: ./product-docs-common/extensions/dynamic-loading-attributes/load-global-site-attributes.js
+    attributefile: ./product-docs-common/global-attributes.yml
+    enabled: true
+  - require: ./product-docs-common/extensions/unpublish-unlisted-pages/unpublish-unlisted-pages.js
+    component: 'fleet'
 
 output:
   dir: build/site-community
