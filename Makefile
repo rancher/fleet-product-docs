@@ -33,7 +33,7 @@ local-product:
 
 ## ---- Remote / CI builds (with npm ci) ---------------------------------
 
-remote: remote-fleet remote-product
+remote: remote-community remote-product
 
 remote-community:
 	mkdir -p tmp
