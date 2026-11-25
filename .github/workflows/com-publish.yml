@@ -1,4 +1,4 @@
-name: Rancher continous delivery documentation - publish to GitHub Pages with Lunr Search Extension
+name: Rancher continuous delivery documentation - publish to GitHub Pages with Lunr Search Extension
 on:
   # Runs whenever a change is pushed to the main branch
   push:
